@@ -41,7 +41,8 @@ const handleRegistration = async function(req,res){
     } catch (error) {
         //handle hashing error\
         console.log(error);
-        return res.status(404).json({message:"Error Occurr"});
+       
+        return res.status(404).json({message:"Email Already Register"});
     }
    
 
@@ -83,13 +84,39 @@ const handleLogin = async function (req,res){
   const token = jwt.sign({ id: buyer.email }, process.env.JWT_KEY, {
     expiresIn: tokenExpireTime,
   });
- // if cookie already present then remove;
-  let checkCookie = req.headers.cookie;
-  console.log("Checking Cookie.......", checkCookie);
-  if (req.cookies[`${buyer.email}`]) {
-    req.cookies[`${buyer.email}`] = "";
-  }
+
+  //In Browser Remove Cookiess - 
+
+  //------------------This code works only for browser cookie---------------------------
+
+ //if cookie already present then remove;
+  // let checkCookie = req.headers.cookie;
+  // //console.log("Checking Cookie.......", checkCookie);
+  // console.log(req.cookies)
+  // if (req.cookies[`${buyer.email}`]) {
+  //   req.cookies[`${buyer.email}`] = "";
+  // }
    
+  // //if there are two or more than different users login cookies then remove it from loop
+
+  // if (checkCookie) {
+  //   let cookieArray = req.headers.cookie.split(";");
+  //   console.log(cookieArray);
+  //   cookieArray.forEach((cookie) => {
+  //     let key = cookie.trim().split("=")[0];
+  //     if (req.cookies[`${key}`]) {
+  //       //if user cookie already present then remove it
+  //       console.log("This cookie already present", key);
+  //       //req.cookies[`${key}`]="";
+  //       res.clearCookie(`${key}`, { path: "/" });
+  //       return;
+  //     }
+  //   });
+  // }
+
+
+
+
      //set cookies to response
   res.cookie(String(buyer.email), token, {
     path: "/",

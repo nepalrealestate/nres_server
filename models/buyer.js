@@ -19,6 +19,7 @@ async function createBuyer(name,email,password){
         return result;
     } catch (error) {
         console.log(error);
+        throw error;
     }
     
    
