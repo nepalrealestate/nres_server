@@ -1,23 +1,25 @@
 
-const mysql = require('mysql');
+const mysql = require('mysql2');
 require('dotenv').config();
-const connection =  mysql.createConnection({
-    host:"localhost",
-    user:'root',
-    password:process.env.DB_PASSWORD,
-   // database:'auth'
-})
 
+<<<<<<< HEAD
 async function connectMysql(){
     connection.connect(function(err){
         if(err){
             console.error("error connection: "+err.stack);
             return;
         }
+=======
 
-        console.log("connection as Id "+connection.threadId)
-    });
-}
+>>>>>>> 2c9fd95767939e93baa69fa6ca105b81a221b5a1
+
+const pool = mysql.createPool({
+        host:"localhost",
+        user:'root',
+        password:process.env.DB_PASSWORD,
+        database:'nres',
+}).promise()//the promise() allow to use promises version
 
 
-module.exports={connectMysql}
+
+module.exports={pool}
