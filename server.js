@@ -18,7 +18,7 @@ app.use(cors({credentials:true,origin:"*"}));
 app.use(express.json())
 app.use("/buyer",buyerRouter);
 
-connectMysql();
+//connectMysql();
 
 
 app.listen(port,()=>{
