@@ -9,8 +9,6 @@ const connection =  mysql.createConnection({
 })
 
 async function connectMysql(){
-    
-
     connection.connect(function(err){
         if(err){
             console.error("error connection: "+err.stack);
