@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
-const {connection}  = require('../connection');
-const {createBuyer,findBuyer} = require('../models/buyer')
+const {connection}  = require('../../connection');
+const {createBuyer,findBuyer} = require("../../models/users/buyer")
 const jwt = require("jsonwebtoken");
 const {login} = require('./commonAuthCode')
 

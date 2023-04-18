@@ -1,7 +1,7 @@
 
 const express = require("express");
 const router  = express.Router();
-const {handleBuyers, handleRegistration, handleLogin}  = require('../controllers/buyer')
+const {handleBuyers, handleRegistration, handleLogin}  = require('../../controllers/users/buyer')
 
 //specific router middleware for buyer
 

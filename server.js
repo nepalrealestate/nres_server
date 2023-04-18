@@ -1,5 +1,5 @@
 const express = require("express");
-const buyerRouter = require('./routes/buyer')
+const buyerRouter = require('./routes/users/buyer')
 const app  = express();
 const cors = require("cors")
 const bodyParser = require('body-parser')
