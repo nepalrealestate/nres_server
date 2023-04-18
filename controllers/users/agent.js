@@ -1,19 +1,19 @@
 const bcrypt = require('bcrypt');
-const {connection}  = require('../../connection');
-const {createBuyer,findBuyer} = require("../../models/users/buyer")
+const {registerAgent,findAgent}  = require("../../models/users/agent");
 const jwt = require("jsonwebtoken");
 const {login} = require('./commonAuthCode')
 
 const saltRound  = 10;
 
 const tokenExpireTime = '1hr';
+const handleGetAgent = async (req,res)=>{
+    console.log("Get Agent Api Hit");
+    
+    return res.status(200).json({message:"Successfully getting data....."})
+}
 
 
-
-const handleRegistration = async function(req,res){
-    
-    
-    
+const handleRegistration = async(req,res)=>{
     const {name:name,email:email,password:password,confirmPassword:confirmPassword} = req.body
 
     //validate  password
@@ -27,7 +27,7 @@ const handleRegistration = async function(req,res){
         
         const hashPassword  = await bcrypt.hash(password,saltRound);
         //store details in DB
-        const result = await createBuyer(name,email,hashPassword);
+        const result = await registerAgent(name,email,hashPassword);
         if(result===undefined){
             return res.status(403).json({message:"Duplicate Email"});
         }
@@ -47,38 +47,22 @@ const handleRegistration = async function(req,res){
     }
    
 
-
-
 }
 
-
-const handleLogin = async function (req,res){
-
+const handleLogin  = async (req,res)=>{
     const {email} = req.body;
   
     //find buyer userName in DB
 
-    const buyer =  await findBuyer(email);
-    console.log(buyer);
+    const agent =  await findAgent(email);
+    console.log(agent);
 
     //this login function handle all logic
 
-    return login(req,res,buyer);
+    return login(req,res,agent);
 
 }
 
 
 
-async function handleBuyers (req,res){
-
-    console.log(req.body);
-    console.log("Buyer Api Hitt!!!!")
-
-    return res.status(200)
-}
-
-
-
-
-
-module.exports ={handleBuyers,handleRegistration,handleLogin}
+module.exports = {handleRegistration,handleGetAgent,handleLogin};

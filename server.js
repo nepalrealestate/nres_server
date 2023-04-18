@@ -1,5 +1,6 @@
 const express = require("express");
 const buyerRouter = require('./routes/users/buyer')
+const agentRouter = require("./routes/users/agent")
 const app  = express();
 const cors = require("cors")
 const bodyParser = require('body-parser')
@@ -17,6 +18,7 @@ app.use(cors({credentials:true,origin:"*"}));
 //Routes
 app.use(express.json())
 app.use("/buyer",buyerRouter);
+app.use("/agent",agentRouter);
 
 //connectMysql();
 
