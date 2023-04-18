@@ -10,7 +10,7 @@ const tokenExpireTime = '1hr';
 
 
 
-const handleRegistration = async function(req,res){
+const handleBuyerRegistration = async function(req,res){
     
     
     
@@ -52,7 +52,7 @@ const handleRegistration = async function(req,res){
 }
 
 
-const handleLogin = async function (req,res){
+const handleBuyerLogin = async function (req,res){
 
     const {email} = req.body;
   
@@ -81,4 +81,4 @@ async function handleBuyers (req,res){
 
 
 
-module.exports ={handleBuyers,handleRegistration,handleLogin}
+module.exports ={handleBuyers,handleBuyerRegistration,handleBuyerLogin}

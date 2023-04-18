@@ -1,19 +1,11 @@
 const bcrypt = require('bcrypt');
-const {registerAgent,findAgent}  = require("../../models/users/agent");
-const jwt = require("jsonwebtoken");
-const {login} = require('./commonAuthCode')
+const {registerRental,findRental} = require("../../models/users/rental");
+const {login} = require("./commonAuthCode");
 
-const saltRound  = 10;
+const saltRound = 10;
 
-const tokenExpireTime = '1hr';
-const handleGetAgent = async (req,res)=>{
-    console.log("Get Agent Api Hit");
-    
-    return res.status(200).json({message:"Successfully getting data....."})
-}
+const handleRentalRegistration = async(req,res)=>{
 
-
-const handleAgentRegistration = async(req,res)=>{
     const {name:name,email:email,password:password,confirmPassword:confirmPassword} = req.body
 
     //validate  password
@@ -27,7 +19,7 @@ const handleAgentRegistration = async(req,res)=>{
         
         const hashPassword  = await bcrypt.hash(password,saltRound);
         //store details in DB
-        const result = await registerAgent(name,email,hashPassword);
+        const result = await registerRental(name,email,hashPassword);
         if(result===undefined){
             return res.status(403).json({message:"Duplicate Email"});
         }
@@ -47,22 +39,35 @@ const handleAgentRegistration = async(req,res)=>{
     }
    
 
+
 }
 
-const handleAgentLogin  = async (req,res)=>{
+
+const handleRentalLogin = async(req,res)=>{
+
+
     const {email} = req.body;
   
-    //find buyer userName in DB
+    //find rental userName in DB
 
-    const agent =  await findAgent(email);
-    console.log(agent);
+    const rental =  await findRental(email);
+    console.log(rental);
 
     //this login function handle all logic
 
-    return login(req,res,agent);
+    return login(req,res,rental);
+
 
 }
 
 
+const handleGetRental = async(req,res)=>{
+    console.log("Get Rental Api Hit Hard!!")
+    return res.status(200).json({message:"Very Soon Getting Rental Data"});
+}
 
-module.exports = {handleAgentRegistration,handleGetAgent,handleAgentLogin};
+
+module.exports = {handleRentalRegistration,handleGetRental,handleRentalLogin};
+
+
+

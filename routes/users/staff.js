@@ -1,7 +1,12 @@
 const express = require("express");
-const router  = express.Router();
-const {handleStaff} = require('../controllers/staff');
 
-router.get("/",handleStaff);
+const {handleGetStaff, handleStaffRegistration, handleStaffLogin} = require('../../controllers/users/staff');
+
+
+const router  = express.Router();
+
+router.get("/",handleGetStaff);
+router.post("/register",handleStaffRegistration);
+router.post("/login",handleStaffLogin);
 
 module.exports = router;

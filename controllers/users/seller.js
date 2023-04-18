@@ -1,19 +1,21 @@
-const bcrypt = require('bcrypt');
-const {registerAgent,findAgent}  = require("../../models/users/agent");
-const jwt = require("jsonwebtoken");
-const {login} = require('./commonAuthCode')
 
-const saltRound  = 10;
+const bcrypt = require("bcrypt");
+const {login } = require('./commonAuthCode');
+const { registerSeller, findSeller } = require("../../models/users/seller");
 
-const tokenExpireTime = '1hr';
-const handleGetAgent = async (req,res)=>{
-    console.log("Get Agent Api Hit");
-    
-    return res.status(200).json({message:"Successfully getting data....."})
+const saltRound = 10;
+
+const handleGetSeller = async(req,res)=>{
+
+   console.log("Seller API HIT");
+   return res.status(200).json({message:"Getting Seller Soon !!!"})
+
+
 }
 
+const handleSellerRegistration = async (req,res)=>{
 
-const handleAgentRegistration = async(req,res)=>{
+
     const {name:name,email:email,password:password,confirmPassword:confirmPassword} = req.body
 
     //validate  password
@@ -27,7 +29,7 @@ const handleAgentRegistration = async(req,res)=>{
         
         const hashPassword  = await bcrypt.hash(password,saltRound);
         //store details in DB
-        const result = await registerAgent(name,email,hashPassword);
+        const result = await registerSeller(name,email,hashPassword);
         if(result===undefined){
             return res.status(403).json({message:"Duplicate Email"});
         }
@@ -45,24 +47,20 @@ const handleAgentRegistration = async(req,res)=>{
        
         return res.status(404).json({message:"Email Already Register"});
     }
-   
-
 }
 
-const handleAgentLogin  = async (req,res)=>{
+const handleSellerLogin = async (req,res)=>{
+
     const {email} = req.body;
   
-    //find buyer userName in DB
+    //find seller userName in DB
 
-    const agent =  await findAgent(email);
-    console.log(agent);
+    const rental =  await findSeller(email);
+    console.log(rental);
 
     //this login function handle all logic
 
-    return login(req,res,agent);
-
+    return login(req,res,rental);
 }
 
-
-
-module.exports = {handleAgentRegistration,handleGetAgent,handleAgentLogin};
+module.exports = {handleGetSeller,handleSellerRegistration,handleSellerLogin}
