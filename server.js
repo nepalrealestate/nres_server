@@ -5,6 +5,7 @@ const rentalRouter = require("./routes/users/rental");
 const sellerRouter = require("./routes/users/seller");
 const staffRouter = require("./routes/users/staff");
 const superAdminRouter = require("./routes/users/superAdmin")
+const houseRouter = require("./routes/property/routes.house");
 const app  = express();
 const cors = require("cors")
 const bodyParser = require('body-parser')
@@ -26,7 +27,8 @@ app.use("/agent",agentRouter);
 app.use("/rental",rentalRouter);
 app.use("/seller",sellerRouter);
 app.use("/staff",staffRouter);
-app.use("/superAdmin",superAdminRouter)
+app.use("/superAdmin",superAdminRouter);
+app.use("/house",houseRouter);
 
 //connectMysql();
 
