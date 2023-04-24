@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const {registerAgent,findAgent}  = require("../../models/users/agent");
 const jwt = require("jsonwebtoken");
-const {login} = require('./commonAuthCode')
+const {login,verifyToken} = require('./commonAuthCode')
 
 const saltRound  = 10;
 
@@ -63,6 +63,12 @@ const handleAgentLogin  = async (req,res)=>{
 
 }
 
+const handleAgnetVerifyToken = async (req,res,next)=>{
+
+    return verifyToken(req,res,next);
+}
 
 
-module.exports = {handleAgentRegistration,handleGetAgent,handleAgentLogin};
+
+
+module.exports = {handleAgentRegistration,handleGetAgent,handleAgentLogin,handleAgnetVerifyToken};
