@@ -6,6 +6,7 @@ const router  = express.Router();
 
 router.get("/",handleGetAgent);
 router.post("/register",handleAgentRegistration);
-router.post("/login",handleAgentLogin)
+router.post("/login",handleAgentLogin);
+
 
 module.exports = router;

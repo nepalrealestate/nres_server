@@ -81,4 +81,84 @@ const login = async (req,res,user)=>{
 
 }
 
-module.exports = {login};
+
+
+const verifyToken = (req, res, next) => {
+  //geeting cookies from frontEnd
+  const cookies = req.headers.cookie;
+  // console.log("THIS IS COOKIES",req.headers.cookie);
+  if (!cookies) {
+    console.log("No cookies Bro !!!!!!!");
+    return res.status(404).json({ message: "Cannot get information" });
+  }
+
+  const token = cookies.split("=")[1];
+  console.log(token);
+  if (!token) {
+    return res.status(404).json({ message: "No Token found" });
+  }
+  jwt.verify(String(token), process.env.JWT_KEY, (err, user) => {
+    if (err) {
+      return res.status(400).json({ message: "Invalid Token" });
+    }
+
+    console.log(user.email);
+    //set request id
+    req.id = user.email;
+  });
+  console.log("Token Verify  !!!");
+  //go to next function in router
+  next();
+};
+
+const refreshToken = async (req, res, next) => {
+  const cookies = req.headers.cookie;
+  let prevToken;
+  if (typeof cookies === "string") {
+    prevToken = cookies.split("=")[1]; //slipt headers from token
+  }
+
+  if (!prevToken) {
+    return res.status(400).json({ message: "No Token found" });
+  }
+
+  jwt.verify(String(prevToken), process.env.JWT_KEY, (err, decode) => {
+    if (err) {
+      console.log(err);
+      return res.status(403).json({ message: "Authentication Failed" });
+    }
+
+    //clear cookies from response
+    res.clearCookie(`${decode.email}`);
+    //clear cookies from headers
+    req.cookies[`${decode.email}`] = "";
+
+    //generate new token
+    const newToken = jwt.sign({ id: decode.email }, process.env.JWT_KEY, {
+      expiresIn: tokenExpireTime,
+    });
+
+    //set new Token to cookie
+    res.cookie(String(decode.email), newToken, {
+      path: "/",
+      expires: new Date(Date.now() + 1000 * 1000 * 60),
+      httpOnly: true,
+      sameSite: "lax",
+    });
+
+    //set request id to user id
+    req.id = decode.email;
+    console.log("Refresh TOken Successfull  ");
+    next();
+  });
+};
+
+
+
+
+
+
+
+
+
+module.exports = {login,verifyToken,refreshToken};
