@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {handleAddHouse} = require("../../controllers/property/controllers.house");
+const {handleAddHouse} = require("../../controllers/property/controller.house");
 
 router.post("/",handleAddHouse);
 

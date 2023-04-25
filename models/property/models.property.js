@@ -1,10 +1,14 @@
 
 const {pool} = require("../../connection");
+const { isTableExists } = require("../commonModels");
 
 const propertyTableName = 'Property'
 const houseTableName = 'House';
 const landTableName = 'Land';
 const apartmentTableName = 'Apartment';
+
+
+
 
 //--------------Create Table------------------------------------
 
@@ -48,7 +52,7 @@ async function createHouseTable(){
     await createPropertyTable();
     const sqlQuery = `CREATE TABLE IF NOT EXISTS ${houseTableName} 
     (
-        property_ID INT,
+        property_ID INT NOT NULL PRIMARY KEY,
         room INT,
         floor FLOAT,
         furnish_status BOOL,
@@ -118,8 +122,54 @@ async function createApartmentTable (){
 
 //-------------------------------Insert Data------------------------------------
 
+async function insertProperty(property){
+
+    const isTablePresent = await isTableExists(propertyTableName);
+
+
+    const {property_ID,property_type,listed_for,price,area_aana,area_sq_ft,facing_direction,state,district,city,ward_number,tole_name} = property;
+
+    const insertQuery = `INSERT INTO ${propertyTableName} VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`;
+
+    try {
+        const [result,field] = await pool.query(insertQuery,[property_ID,property_type,listed_for,price,area_aana,area_sq_ft,facing_direction,state,district,city,ward_number,tole_name])
+        console.log(result);
+
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+
+async function insertHouseProperty(property,houseProperty){
+
+         console.log(property,houseProperty)
+
+        await createHouseTable();
+
+        //two different object recieve for store data 
+        await insertProperty(property);
+
+        
+
+        const { property_ID,room,floor,furnish_status,parking,road_access_ft,facilities } = houseProperty;
+
+        const insertQuery = `INSERT INTO ${houseTableName} VALUES (?,?,?,?,?,?,?)`;
+
+        try {
+            const [result,field] = await pool.query(insertQuery,[property_ID,room,floor,furnish_status,parking,road_access_ft,facilities])
+            console.log(result);
+        } catch (error) {
+
+            console.log(error);
+            
+        }
+    
+
+}
 
 
 
 
-module.exports = {createHouseTable}
+module.exports = {insertHouseProperty}
