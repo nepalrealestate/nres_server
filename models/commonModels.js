@@ -1,5 +1,5 @@
 
-const exp = require("constants");
+
 const {pool}  = require("../connection");
 
 
