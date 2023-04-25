@@ -11,7 +11,7 @@ const handleGetStaff = async function (req,res){
     return res.status(200).json({message:"Getting Staff Data Soon!!"});
 }
 
-const handleStaffRegistration = async()=>{
+const handleStaffRegistration = async(req,res)=>{
     const {name:name,email:email,password:password,confirmPassword:confirmPassword} = req.body
 
     //validate  password
@@ -45,7 +45,7 @@ const handleStaffRegistration = async()=>{
     }
 }
 
-const handleStaffLogin  = async()=>{
+const handleStaffLogin  = async(req,res)=>{
 
     const {email} = req.body;
   
