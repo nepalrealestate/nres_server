@@ -18,4 +18,8 @@ const handleAddHouse = async (req,res)=>{
 }
 
 
+
+
+
+
 module.exports = {handleAddHouse}

@@ -52,7 +52,7 @@ async function createHouseTable(){
     await createPropertyTable();
     const sqlQuery = `CREATE TABLE IF NOT EXISTS ${houseTableName} 
     (
-        property_ID INT NOT NULL PRIMARY KEY,
+        property_ID INT NOT NULL PRIMARY KEY UNIQUE,
         room INT,
         floor FLOAT,
         furnish_status BOOL,
@@ -76,7 +76,9 @@ async function createHouseTable(){
 // Create Land Table
 
 async function createLandTable(){
-    const sqlQuery = `CREATE TABLE ${landTableName} 
+      // create property table before apartment table
+      await createPropertyTable();
+    const sqlQuery = `CREATE TABLE  IF NOT EXISTS ${landTableName} 
     (
         property_ID INT,
         land_type VARCHAR(255),
@@ -99,10 +101,13 @@ async function createLandTable(){
 
 async function createApartmentTable (){
 
-    const sqlQuery = `CREATE TABLE ${apartmentTableName} 
+    // create property table before apartment table
+    await createPropertyTable();
+
+    const sqlQuery = `CREATE TABLE  IF NOT EXISTS ${apartmentTableName} 
     (
         property_ID INT,
-        BHK INT,
+        bhk INT,
         situated_floor INT,
         furnish_status BOOL,
         parking BOOL,
@@ -170,6 +175,57 @@ async function insertHouseProperty(property,houseProperty){
 }
 
 
+async function insertLandProperty(property,houseProperty){
+
+    // if table is not create then create table
+    await createLandTable();
+
+    // insert property object data in property
+    await insertProperty(property);
 
 
-module.exports = {insertHouseProperty}
+    const {property_ID,land_type,soil,road_access_ft} = houseProperty;
+
+    const insertQuery = `INSERT INTO ${landTableName} VALUES (?,?,?,?)`;
+
+    try {
+        const [result,field] = await pool.query(insertQuery,[property_ID,land_type,soil,road_access_ft])
+        console.log(result);
+    } catch (error) {
+        console.log(error);
+    }
+
+
+}
+
+async function insertApartmentProperty(property,apartmentProperty){
+
+        // if table is not create then create table
+        await createApartmentTable();
+
+        // insert property object data in property
+        await insertProperty(property);
+
+       
+
+        const {property_ID,bhk,situated_floor,furnish_status,parking,facilities} = apartmentProperty;
+
+        const insertQuery = `INSERT INTO ${apartmentTableName} VALUES (?,?,?,?)`;
+
+        try {
+            
+            const [result,field] = await pool.query(insertQuery,[property_ID,bhk,situated_floor,furnish_status,parking,facilities]);
+            console.log(result);
+
+        } catch (error) {
+            
+            console.log(error);
+
+        }
+
+
+}
+
+
+
+module.exports = {insertHouseProperty,insertLandProperty,insertApartmentProperty}
