@@ -1,4 +1,4 @@
-const {insertLandProperty, getLandProperty}   = require("../../models/property/model.land");
+const {insertLandProperty, getLandProperty, insertLandFeedback}   = require("../../models/property/model.land");
 
 // only for test purpose
 
@@ -52,8 +52,20 @@ const handleGetLand = async (req,res)=>{
 
 }
 
+const handleLandFeedback = async(req,res)=>{
+   const {property_ID,feedback} = req.body;
+   
+   try {
+      const result = await insertLandFeedback(property_ID,feedback);
+      return res.status(200).json({message:"Feedback Submit"});
+   } catch (error) {
+      console.log(error);
+      return res.status(500).json({message:"Internal Serval Error"})
+   }
+}
 
 
 
 
-module.exports = {handleAddLand,handleGetLand}
+
+module.exports = {handleAddLand,handleGetLand,handleLandFeedback}

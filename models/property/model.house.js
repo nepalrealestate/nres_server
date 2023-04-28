@@ -3,7 +3,7 @@ const { isTableExists } = require("../commonModels");
 const {createPropertyTable,insertProperty} = require("../property/models.property");
 const propertyTableName = 'Property'
 const houseTableName = 'House';
-
+const houseFeedbackTableName = 'HouseFeedback';
 
 // Create House Table
 
@@ -19,7 +19,7 @@ async function createHouseTable(){
         parking BOOL,
         road_access_ft FLOAT,
         facilities VARCHAR(1000),
-        FOREIGN KEY (property_ID) references Property(property_ID)
+        FOREIGN KEY (property_ID) references ${propertyTableName}(property_ID)
     
     )`;
 
@@ -30,6 +30,28 @@ async function createHouseTable(){
     } catch (error) {
         console.log(error);
     }
+
+}
+
+async function createHouseFeedbackTable(){
+
+    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${houseFeedbackTableName} (
+
+        property_ID INT NOT NULL PRIMARY KEY UNIQUE,
+        feedback TINYTEXT,
+        FOREIGN KEY (property_ID) references ${houseTableName}(property_ID)
+    )`;
+
+    try {
+        const [row,field] = await pool.query(sqlQuery);
+        console.log(row);
+       
+    } catch (error) {
+        console.log(error);
+      
+    }
+
+    
 
 }
 
@@ -102,8 +124,25 @@ async function getHouseProperty(condition,limit,offSet){
 }
 
 
+async function insertHouseFeedback(property_ID,feedback){
+
+   
+
+    const insertQuery = `INSERT INTO ${houseFeedbackTableName} VALUES (?,?)`;
+
+    try {
+        await createHouseFeedbackTable();
+        const[result,field] = await pool.query(insertQuery,[property_ID,feedback]);
+        console.log(result);
+    } catch (error) {
+        console.log(error);
+    }
 
 
-module.exports = {insertHouseProperty,getHouseProperty}
+}
+
+
+
+module.exports = {insertHouseProperty,getHouseProperty,insertHouseFeedback}
 
 

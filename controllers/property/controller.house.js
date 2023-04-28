@@ -1,5 +1,5 @@
 
-const {insertHouseProperty, getHouseProperty}   = require("../../models/property/model.house")
+const {insertHouseProperty, getHouseProperty, insertHouseFeedback}   = require("../../models/property/model.house")
 
 // only for test purpose
 
@@ -56,6 +56,22 @@ const handleGetHouse = async (req,res)=>{
 
 
 
+const handleHouseFeedback = async (req,res)=>{
+
+   const {property_ID,feedback} = req.body;
+   
+   try {
+      const result = await insertHouseFeedback(property_ID,feedback);
+      return res.status(200).json({message:"Feedback Submit"});
+   } catch (error) {
+      console.log(error);
+      return res.status(500).json({message:"Internal Serval Error"})
+   }
+
+}
 
 
-module.exports = {handleAddHouse,handleGetHouse}
+
+
+
+module.exports = {handleAddHouse,handleGetHouse,handleHouseFeedback}

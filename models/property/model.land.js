@@ -6,7 +6,7 @@ const houseTableName = 'House';
 const landTableName = 'Land';
 const apartmentTableName = 'Apartment';
 
-
+const landFeedbackTableName = 'LandFeedback';
 
 
 // Create Land Table
@@ -32,6 +32,29 @@ async function createLandTable(){
       console.log(error);
   }
 }
+
+async function createLandFeedbackTable(){
+
+    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${landFeedbackTableName} (
+
+        property_ID INT NOT NULL PRIMARY KEY UNIQUE,
+        feedback TINYTEXT,
+        FOREIGN KEY (property_ID) references ${landTableName}(property_ID)
+    )`;
+
+    try {
+        const [row,field] = await pool.query(sqlQuery);
+        console.log(row);
+       
+    } catch (error) {
+        console.log(error);
+      
+    }
+
+    
+
+}
+
 
 
 async function insertLandProperty(property,houseProperty){
@@ -99,5 +122,24 @@ async function getLandProperty(condition,limit,offSet){
 
 
 
+async function insertLandFeedback(property_ID,feedback){
 
-module.exports = {insertLandProperty,getLandProperty};
+    await createLandFeedbackTable();
+
+    const insertQuery = `INSERT INTO ${landFeedbackTableName} VALUES (?,?)`;
+
+    try {
+        
+        const[result,field] = await pool.query(insertQuery,[property_ID,feedback]);
+        console.log(result);
+    } catch (error) {
+        console.log(error);
+    }
+
+
+}
+
+
+
+
+module.exports = {insertLandProperty,getLandProperty,insertLandFeedback};
