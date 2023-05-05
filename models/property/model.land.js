@@ -7,14 +7,14 @@ const landTableName = 'Land';
 const apartmentTableName = 'Apartment';
 
 const landFeedbackTableName = 'LandFeedback';
-
+const schemaName = 'nres_property';
 
 // Create Land Table
 
 async function createLandTable(){
     // create property table before apartment table
     await createPropertyTable();
-  const sqlQuery = `CREATE TABLE  IF NOT EXISTS ${landTableName} 
+  const sqlQuery = `CREATE TABLE  IF NOT EXISTS ${schemaName}.${landTableName} 
   (
       property_ID INT,
       land_type VARCHAR(255),
@@ -35,11 +35,11 @@ async function createLandTable(){
 
 async function createLandFeedbackTable(){
 
-    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${landFeedbackTableName} (
+    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${schemaName}.${landFeedbackTableName} (
 
         property_ID INT NOT NULL PRIMARY KEY UNIQUE,
         feedback TINYTEXT,
-        FOREIGN KEY (property_ID) references ${landTableName}(property_ID)
+        FOREIGN KEY (property_ID) references ${schemaName}.${landTableName}(property_ID)
     )`;
 
     try {
@@ -68,7 +68,7 @@ async function insertLandProperty(property,houseProperty){
 
     const {property_ID,land_type,soil,road_access_ft} = houseProperty;
 
-    const insertQuery = `INSERT INTO ${landTableName} VALUES (?,?,?,?)`;
+    const insertQuery = `INSERT INTO ${schemaName}.${landTableName} VALUES (?,?,?,?)`;
 
     try {
         const [result,field] = await pool.query(insertQuery,[property_ID,land_type,soil,road_access_ft])
@@ -85,7 +85,7 @@ async function insertLandProperty(property,houseProperty){
 async function getLandProperty(condition,limit,offSet){
 
 
-    let sqlQuery = `SELECT p.*,l.* FROM ${propertyTableName} AS p INNER JOIN ${landTableName} AS l ON p.property_ID=l.property_ID WHERE 1=1 `;
+    let sqlQuery = `SELECT p.*,l.* FROM ${schemaName}.${propertyTableName} AS p INNER JOIN ${schemaName}.${landTableName} AS l ON p.property_ID=l.property_ID WHERE 1=1 `;
 
     const params = [];
     //adding search conditon on query
@@ -126,7 +126,7 @@ async function insertLandFeedback(property_ID,feedback){
 
     await createLandFeedbackTable();
 
-    const insertQuery = `INSERT INTO ${landFeedbackTableName} VALUES (?,?)`;
+    const insertQuery = `INSERT INTO ${schemaName}.${landFeedbackTableName} VALUES (?,?)`;
 
     try {
         

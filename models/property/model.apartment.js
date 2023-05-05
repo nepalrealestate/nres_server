@@ -6,6 +6,7 @@ const houseTableName = 'House';
 const landTableName = 'Land';
 const apartmentTableName = 'Apartment';
 const apartmentFeedbackTableName = 'ApartmentFeedback';
+const schemaName = 'nres_property';
 
 
 // Create Apartment Table
@@ -15,7 +16,7 @@ async function createApartmentTable (){
     // create property table before apartment table
     await createPropertyTable();
 
-    const sqlQuery = `CREATE TABLE  IF NOT EXISTS ${apartmentTableName} 
+    const sqlQuery = `CREATE TABLE  IF NOT EXISTS ${schemaName}.${apartmentTableName} 
     (
         property_ID INT,
         bhk INT,
@@ -38,11 +39,11 @@ async function createApartmentTable (){
 
 async function createApartmentFeedbackTable(){
 
-    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${apartmentFeedbackTableName} (
+    const sqlQuery = `CREATE TABLE IF NOT EXISTS  ${schemaName}.${apartmentFeedbackTableName} (
 
         property_ID INT NOT NULL PRIMARY KEY UNIQUE,
         feedback TINYTEXT,
-        FOREIGN KEY (property_ID) references ${apartmentTableName}(property_ID)
+        FOREIGN KEY (property_ID) references  ${schemaName}.${apartmentTableName} (property_ID)
     )`;
 
     try {
@@ -71,7 +72,7 @@ async function insertApartmentProperty(property,apartmentProperty){
 
     const {property_ID,bhk,situated_floor,furnish_status,parking,facilities} = apartmentProperty;
 
-    const insertQuery = `INSERT INTO ${apartmentTableName} VALUES (?,?,?,?)`;
+    const insertQuery = `INSERT INTO  ${schemaName}.${apartmentTableName}  VALUES (?,?,?,?)`;
 
     try {
         
@@ -92,7 +93,7 @@ async function insertApartmentProperty(property,apartmentProperty){
 async function getApartmentProperty(condition,limit,offSet){
 
 
-    let sqlQuery = `SELECT p.*,a.* FROM ${propertyTableName} AS p INNER JOIN ${apartmentTableName} AS a ON p.property_ID=a.property_ID WHERE 1=1 `;
+    let sqlQuery = `SELECT p.*,a.* FROM  ${schemaName}.${propertyTableName} AS p INNER JOIN  ${schemaName}.${apartmentTableName}  AS a ON p.property_ID=a.property_ID WHERE 1=1 `;
 
     const params = [];
     //adding search conditon on query
@@ -131,7 +132,7 @@ async function insertApartmentFeedback(property_ID,feedback){
 
     await createApartmentFeedbackTable();
 
-    const insertQuery = `INSERT INTO ${apartmentFeedbackTableName} VALUES (?,?)`;
+    const insertQuery = `INSERT INTO ${schemaName}.${apartmentFeedbackTableName} VALUES (?,?)`;
 
     try {
         

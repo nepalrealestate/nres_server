@@ -2,7 +2,8 @@
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
 
-const propertyTableName = 'Property'
+const propertyTableName = 'Property';
+const schemaName = 'nres_property';
 
 
 
@@ -13,7 +14,7 @@ const propertyTableName = 'Property'
 
 async function createPropertyTable(){
 
-    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${propertyTableName} 
+    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${schemaName}.${propertyTableName} 
     (
         property_ID INT NOT NULL PRIMARY KEY,
         property_type varchar(255) NOT NULL,
@@ -48,12 +49,12 @@ async function createPropertyTable(){
 
 async function insertProperty(property){
 
-    const isTablePresent = await isTableExists(propertyTableName);
+    
 
 
     const {property_ID,property_type,listed_for,price,area_aana,area_sq_ft,facing_direction,state,district,city,ward_number,tole_name} = property;
 
-    const insertQuery = `INSERT INTO ${propertyTableName} VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`;
+    const insertQuery = `INSERT INTO ${schemaName}.${propertyTableName}  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`;
 
     try {
         const [result,field] = await pool.query(insertQuery,[property_ID,property_type,listed_for,price,area_aana,area_sq_ft,facing_direction,state,district,city,ward_number,tole_name])
