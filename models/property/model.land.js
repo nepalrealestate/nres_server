@@ -20,7 +20,7 @@ async function createLandTable(){
       land_type VARCHAR(255),
       soil VARCHAR(255),
       road_access_ft FLOAT,
-      FOREIGN KEY (property_ID) references Property(property_ID)
+      FOREIGN KEY (property_ID) REFERENCES ${schemaName}.${propertyTableName}Property(property_ID) ON DELETE CASCADE
   
   )`;
 
@@ -39,7 +39,7 @@ async function createLandFeedbackTable(){
 
         property_ID INT NOT NULL PRIMARY KEY UNIQUE,
         feedback TINYTEXT,
-        FOREIGN KEY (property_ID) references ${schemaName}.${landTableName}(property_ID)
+        FOREIGN KEY (property_ID) REFERENCES ${schemaName}.${landTableName}(property_ID) ON DELETE CASCADE
     )`;
 
     try {
@@ -124,6 +124,7 @@ async function getLandProperty(condition,limit,offSet){
 
 async function insertLandFeedback(property_ID,feedback){
 
+    // if table is not create then create table
     await createLandFeedbackTable();
 
     const insertQuery = `INSERT INTO ${schemaName}.${landFeedbackTableName} VALUES (?,?)`;
@@ -138,6 +139,10 @@ async function insertLandFeedback(property_ID,feedback){
 
 
 }
+
+
+
+ 
 
 
 

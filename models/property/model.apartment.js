@@ -24,7 +24,7 @@ async function createApartmentTable (){
         furnish_status BOOL,
         parking BOOL,
         facilities VARCHAR(1000),
-        FOREIGN KEY (property_ID) references Property(property_ID)
+        FOREIGN KEY (property_ID) REFERENCES Property(property_ID) ON DELETE CASCADE
     
     )`;
 
@@ -34,6 +34,7 @@ async function createApartmentTable (){
         console.log(row);
     } catch (error) {
         console.log(error);
+        throw error;
     }
 }
 
@@ -43,7 +44,7 @@ async function createApartmentFeedbackTable(){
 
         property_ID INT NOT NULL PRIMARY KEY UNIQUE,
         feedback TINYTEXT,
-        FOREIGN KEY (property_ID) references  ${schemaName}.${apartmentTableName} (property_ID)
+        FOREIGN KEY (property_ID) REFERENCES  ${schemaName}.${apartmentTableName} (property_ID) ON DELETE CASCADE
     )`;
 
     try {
@@ -82,6 +83,7 @@ async function insertApartmentProperty(property,apartmentProperty){
     } catch (error) {
         
         console.log(error);
+        throw error;
 
     }
 
@@ -130,6 +132,7 @@ async function getApartmentProperty(condition,limit,offSet){
 
 async function insertApartmentFeedback(property_ID,feedback){
 
+    //if table is not created then create table
     await createApartmentFeedbackTable();
 
     const insertQuery = `INSERT INTO ${schemaName}.${apartmentFeedbackTableName} VALUES (?,?)`;

@@ -20,7 +20,7 @@ async function createHouseTable(){
         parking BOOL,
         road_access_ft FLOAT,
         facilities VARCHAR(1000),
-        FOREIGN KEY (property_ID) references ${schemaName}.${propertyTableName}(property_ID)
+        FOREIGN KEY (property_ID) REFERENCES ${schemaName}.${propertyTableName}(property_ID) ON DELETE CASCADE
     
     )`;
 
@@ -40,7 +40,7 @@ async function createHouseFeedbackTable(){
 
         property_ID INT NOT NULL PRIMARY KEY UNIQUE,
         feedback TINYTEXT,
-        FOREIGN KEY (property_ID) references ${schemaName}.${houseTableName}(property_ID)
+        FOREIGN KEY (property_ID) REFERENCES ${schemaName}.${houseTableName}(property_ID) ON DELETE CASCADE
     )`;
 
     try {
@@ -79,6 +79,7 @@ async function insertHouseProperty(property,houseProperty){
    } catch (error) {
 
        console.log(error);
+       throw error;
        
    }
 
@@ -127,12 +128,13 @@ async function getHouseProperty(condition,limit,offSet){
 
 async function insertHouseFeedback(property_ID,feedback){
 
-   
+    //if table is not create then create table
+    await createHouseFeedbackTable();
 
     const insertQuery = `INSERT INTO ${schemaName}.${houseFeedbackTableName} VALUES (?,?)`;
 
     try {
-        await createHouseFeedbackTable();
+        
         const[result,field] = await pool.query(insertQuery,[property_ID,feedback]);
         console.log(result);
     } catch (error) {
