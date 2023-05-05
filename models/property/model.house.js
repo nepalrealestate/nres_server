@@ -4,13 +4,14 @@ const {createPropertyTable,insertProperty} = require("../property/models.propert
 const propertyTableName = 'Property'
 const houseTableName = 'House';
 const houseFeedbackTableName = 'HouseFeedback';
+const schemaName = 'nres_property';
 
 // Create House Table
 
 async function createHouseTable(){
     //if not exists then create property table
     await createPropertyTable();
-    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${houseTableName} 
+    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${schemaName}.${houseTableName} 
     (
         property_ID INT NOT NULL PRIMARY KEY UNIQUE,
         room INT,
@@ -19,7 +20,7 @@ async function createHouseTable(){
         parking BOOL,
         road_access_ft FLOAT,
         facilities VARCHAR(1000),
-        FOREIGN KEY (property_ID) references ${propertyTableName}(property_ID)
+        FOREIGN KEY (property_ID) REFERENCES ${schemaName}.${propertyTableName}(property_ID) ON DELETE CASCADE
     
     )`;
 
@@ -35,11 +36,11 @@ async function createHouseTable(){
 
 async function createHouseFeedbackTable(){
 
-    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${houseFeedbackTableName} (
+    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${schemaName}.${houseFeedbackTableName} (
 
         property_ID INT NOT NULL PRIMARY KEY UNIQUE,
         feedback TINYTEXT,
-        FOREIGN KEY (property_ID) references ${houseTableName}(property_ID)
+        FOREIGN KEY (property_ID) REFERENCES ${schemaName}.${houseTableName}(property_ID) ON DELETE CASCADE
     )`;
 
     try {
@@ -70,7 +71,7 @@ async function insertHouseProperty(property,houseProperty){
 
    const { property_ID,room,floor,furnish_status,parking,road_access_ft,facilities } = houseProperty;
 
-   const insertQuery = `INSERT INTO ${houseTableName} VALUES (?,?,?,?,?,?,?)`;
+   const insertQuery = `INSERT INTO ${schemaName}.${houseTableName} VALUES (?,?,?,?,?,?,?)`;
 
    try {
        const [result,field] = await pool.query(insertQuery,[property_ID,room,floor,furnish_status,parking,road_access_ft,facilities])
@@ -78,6 +79,7 @@ async function insertHouseProperty(property,houseProperty){
    } catch (error) {
 
        console.log(error);
+       throw error;
        
    }
 
@@ -88,7 +90,7 @@ async function insertHouseProperty(property,houseProperty){
 async function getHouseProperty(condition,limit,offSet){
 
 
-    let sqlQuery = `SELECT p.*,h.* FROM ${propertyTableName} AS p INNER JOIN ${houseTableName} AS h ON p.property_ID=h.property_ID WHERE 1=1 `;
+    let sqlQuery = `SELECT p.*,h.* FROM ${schemaName}.${propertyTableName} AS p INNER JOIN ${schemaName}.${houseTableName} AS h ON p.property_ID=h.property_ID WHERE 1=1 `;
 
     const params = [];
     //adding search conditon on query
@@ -126,12 +128,13 @@ async function getHouseProperty(condition,limit,offSet){
 
 async function insertHouseFeedback(property_ID,feedback){
 
-   
+    //if table is not create then create table
+    await createHouseFeedbackTable();
 
-    const insertQuery = `INSERT INTO ${houseFeedbackTableName} VALUES (?,?)`;
+    const insertQuery = `INSERT INTO ${schemaName}.${houseFeedbackTableName} VALUES (?,?)`;
 
     try {
-        await createHouseFeedbackTable();
+        
         const[result,field] = await pool.query(insertQuery,[property_ID,feedback]);
         console.log(result);
     } catch (error) {

@@ -6,6 +6,7 @@ const houseTableName = 'House';
 const landTableName = 'Land';
 const apartmentTableName = 'Apartment';
 const apartmentFeedbackTableName = 'ApartmentFeedback';
+const schemaName = 'nres_property';
 
 
 // Create Apartment Table
@@ -15,7 +16,7 @@ async function createApartmentTable (){
     // create property table before apartment table
     await createPropertyTable();
 
-    const sqlQuery = `CREATE TABLE  IF NOT EXISTS ${apartmentTableName} 
+    const sqlQuery = `CREATE TABLE  IF NOT EXISTS ${schemaName}.${apartmentTableName} 
     (
         property_ID INT,
         bhk INT,
@@ -23,7 +24,7 @@ async function createApartmentTable (){
         furnish_status BOOL,
         parking BOOL,
         facilities VARCHAR(1000),
-        FOREIGN KEY (property_ID) references Property(property_ID)
+        FOREIGN KEY (property_ID) REFERENCES Property(property_ID) ON DELETE CASCADE
     
     )`;
 
@@ -33,16 +34,17 @@ async function createApartmentTable (){
         console.log(row);
     } catch (error) {
         console.log(error);
+        throw error;
     }
 }
 
 async function createApartmentFeedbackTable(){
 
-    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${apartmentFeedbackTableName} (
+    const sqlQuery = `CREATE TABLE IF NOT EXISTS  ${schemaName}.${apartmentFeedbackTableName} (
 
         property_ID INT NOT NULL PRIMARY KEY UNIQUE,
         feedback TINYTEXT,
-        FOREIGN KEY (property_ID) references ${apartmentTableName}(property_ID)
+        FOREIGN KEY (property_ID) REFERENCES  ${schemaName}.${apartmentTableName} (property_ID) ON DELETE CASCADE
     )`;
 
     try {
@@ -71,7 +73,7 @@ async function insertApartmentProperty(property,apartmentProperty){
 
     const {property_ID,bhk,situated_floor,furnish_status,parking,facilities} = apartmentProperty;
 
-    const insertQuery = `INSERT INTO ${apartmentTableName} VALUES (?,?,?,?)`;
+    const insertQuery = `INSERT INTO  ${schemaName}.${apartmentTableName}  VALUES (?,?,?,?)`;
 
     try {
         
@@ -81,6 +83,7 @@ async function insertApartmentProperty(property,apartmentProperty){
     } catch (error) {
         
         console.log(error);
+        throw error;
 
     }
 
@@ -92,7 +95,7 @@ async function insertApartmentProperty(property,apartmentProperty){
 async function getApartmentProperty(condition,limit,offSet){
 
 
-    let sqlQuery = `SELECT p.*,a.* FROM ${propertyTableName} AS p INNER JOIN ${apartmentTableName} AS a ON p.property_ID=a.property_ID WHERE 1=1 `;
+    let sqlQuery = `SELECT p.*,a.* FROM  ${schemaName}.${propertyTableName} AS p INNER JOIN  ${schemaName}.${apartmentTableName}  AS a ON p.property_ID=a.property_ID WHERE 1=1 `;
 
     const params = [];
     //adding search conditon on query
@@ -129,9 +132,10 @@ async function getApartmentProperty(condition,limit,offSet){
 
 async function insertApartmentFeedback(property_ID,feedback){
 
+    //if table is not created then create table
     await createApartmentFeedbackTable();
 
-    const insertQuery = `INSERT INTO ${apartmentFeedbackTableName} VALUES (?,?)`;
+    const insertQuery = `INSERT INTO ${schemaName}.${apartmentFeedbackTableName} VALUES (?,?)`;
 
     try {
         

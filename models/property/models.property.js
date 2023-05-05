@@ -2,7 +2,8 @@
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
 
-const propertyTableName = 'Property'
+const propertyTableName = 'Property';
+const schemaName = 'nres_property';
 
 
 
@@ -13,7 +14,7 @@ const propertyTableName = 'Property'
 
 async function createPropertyTable(){
 
-    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${propertyTableName} 
+    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${schemaName}.${propertyTableName} 
     (
         property_ID INT NOT NULL PRIMARY KEY,
         property_type varchar(255) NOT NULL,
@@ -22,6 +23,7 @@ async function createPropertyTable(){
         area_aana FLOAT,
         area_sq_ft FLOAT,
         facing_direction varchar(255),
+        views INT DEFAULT 0,
         state varchar(255),
         district varchar(255),
         city varchar(255),
@@ -46,21 +48,39 @@ async function createPropertyTable(){
 
 //-------------------------------Insert Data------------------------------------
 
+//insert value in property table 
 async function insertProperty(property){
 
-    const isTablePresent = await isTableExists(propertyTableName);
-
+    
+    
 
     const {property_ID,property_type,listed_for,price,area_aana,area_sq_ft,facing_direction,state,district,city,ward_number,tole_name} = property;
+    const views = 0;
 
-    const insertQuery = `INSERT INTO ${propertyTableName} VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`;
+    const insertQuery = `INSERT INTO ${schemaName}.${propertyTableName}  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+    
 
     try {
-        const [result,field] = await pool.query(insertQuery,[property_ID,property_type,listed_for,price,area_aana,area_sq_ft,facing_direction,state,district,city,ward_number,tole_name])
+        const [result,field] = await pool.query(insertQuery,[property_ID,property_type,listed_for,price,area_aana,area_sq_ft,facing_direction,views,state,district,city,ward_number,tole_name])
         console.log(result);
 
     } catch (error) {
         console.log(error);
+    }
+
+}
+
+async function updatePropertyViews(property_ID){
+
+    // update views by vaule   1
+
+    const updateQuery = `UPDATE ${schemaName}.${propertyTableName} SET views=views+1 WHERE property_ID='${property_ID}'`;
+
+    try {
+        const [result,field] = await pool.query(updateQuery);
+
+    } catch (error) {
+        throw error;
     }
 
 }
@@ -73,4 +93,7 @@ async function insertProperty(property){
 
 
 
-module.exports = {createPropertyTable,insertProperty}
+
+
+
+module.exports = {createPropertyTable,insertProperty,updatePropertyViews}

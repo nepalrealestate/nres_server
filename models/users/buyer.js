@@ -1,16 +1,13 @@
 const {pool} = require("../../connection");
 
 const buyerTableName = 'buyer';
+const schemaName = 'nres_users';
 
 async function createBuyer(name,email,password){
 
-    //if table is not exists - create table
-   
-    const isTablePresent = await isTableExists(buyerTableName);
-     console.log(isTablePresent);
-
-    if(!isTablePresent){
-        const query  = `CREATE TABLE ${buyerTableName} (name VARCHAR(255), email VARCHAR(255), password VARCHAR(255),UNIQUE(email) ) `;
+    
+    
+        const query  = `CREATE TABLE IF NOT EXISTS ${schemaName}.${buyerTableName} (name VARCHAR(255), email VARCHAR(255), password VARCHAR(255),UNIQUE(email) ) `;
         try {
             const [row,field] = await pool.query(query)
             console.log("Table Created");
@@ -19,10 +16,10 @@ async function createBuyer(name,email,password){
             console.log(error);
         }
         
-    }
+    
 
     //insert into table sql
-    const insertQuery =  `INSERT INTO ${buyerTableName} (name,email,password) VALUES (?,?,?)`;
+    const insertQuery =  `INSERT INTO ${schemaName}.${buyerTableName}  (name,email,password) VALUES (?,?,?)`;
     try {
         const [result,field] = await pool.query(insertQuery,[name,email,password]);
         return result;
@@ -39,7 +36,7 @@ async function createBuyer(name,email,password){
 
 
 async function findBuyer(email){
-    const findQuery = ` SELECT  * FROM ${buyerTableName} WHERE email=? `;
+    const findQuery = ` SELECT  * FROM ${schemaName}.${buyerTableName} } WHERE email=? `;
     try {
         const [row,field] =  await pool.query(findQuery,[email]);
         return row[0];//this return only object no object inside array

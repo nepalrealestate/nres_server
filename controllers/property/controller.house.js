@@ -1,5 +1,6 @@
 
 const {insertHouseProperty, getHouseProperty, insertHouseFeedback}   = require("../../models/property/model.house")
+const {updatePropertyViews}  = require("../../models/property/models.property");
 
 // only for test purpose
 
@@ -70,8 +71,24 @@ const handleHouseFeedback = async (req,res)=>{
 
 }
 
+const handleUpdateHouseViews = async (req,res)=>{
+
+   const {property_ID} = req.params;
+   console.log(req.params);
+
+   try {
+      const result = await updatePropertyViews(property_ID);//update property views common function to update views in parent table property
+      return res.status(200).json({message:"Views update successfully"});
+   } catch (error) {
+      return res.status(500).json({message:"views update error occurs"})
+      
+   }
+
+}
 
 
 
 
-module.exports = {handleAddHouse,handleGetHouse,handleHouseFeedback}
+
+
+module.exports = {handleAddHouse,handleGetHouse,handleHouseFeedback,handleUpdateHouseViews}
