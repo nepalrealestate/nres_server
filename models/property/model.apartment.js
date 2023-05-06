@@ -24,7 +24,7 @@ async function createApartmentTable (){
         furnish_status BOOL,
         parking BOOL,
         facilities VARCHAR(1000),
-        FOREIGN KEY (property_ID) REFERENCES Property(property_ID) ON DELETE CASCADE
+        FOREIGN KEY (property_ID) REFERENCES ${schemaName}.${propertyTableName}(property_ID) ON DELETE CASCADE
     
     )`;
 
@@ -49,7 +49,7 @@ async function createApartmentFeedbackTable(){
 
     try {
         const [row,field] = await pool.query(sqlQuery);
-        console.log(row);
+        //console.log(row);
         
     } catch (error) {
         console.log(error);
@@ -67,22 +67,29 @@ async function insertApartmentProperty(property,apartmentProperty){
     await createApartmentTable();
 
     // insert property object data in property
-    await insertProperty(property);
-
+    try {
+        await insertProperty(property);
+    } catch (error) {
+        
+        throw error;
+    }
+   
+   
    
 
     const {property_ID,bhk,situated_floor,furnish_status,parking,facilities} = apartmentProperty;
 
-    const insertQuery = `INSERT INTO  ${schemaName}.${apartmentTableName}  VALUES (?,?,?,?)`;
+    const insertQuery = `INSERT INTO  ${schemaName}.${apartmentTableName}  VALUES (?,?,?,?,?,?)`;
 
     try {
         
         const [result,field] = await pool.query(insertQuery,[property_ID,bhk,situated_floor,furnish_status,parking,facilities]);
-        console.log(result);
+       
+        return result;
 
     } catch (error) {
         
-        console.log(error);
+      
         throw error;
 
     }
@@ -124,6 +131,7 @@ async function getApartmentProperty(condition,limit,offSet){
         return result;
     } catch (error) {
         console.log(error);
+        throw error;
     }
 
 
@@ -149,7 +157,26 @@ async function insertApartmentFeedback(property_ID,feedback){
 
 }
 
+async function getApartmentByID(property_ID){
+
+    const getQuery = `SELECT p.*,a.* FROM  ${schemaName}.${propertyTableName} AS p INNER JOIN  ${schemaName}.${apartmentTableName} AS a ON p.property_ID=${property_ID} `;
+
+    try {
+        const [result,field] = await pool.query(getQuery);
+       
+        return result[0];// return object not array
+    } catch (error) {
+
+       
+        throw error;
+        
+    }
+
+}
 
 
 
-module.exports = {insertApartmentProperty,getApartmentProperty,insertApartmentFeedback}
+
+
+
+module.exports = {insertApartmentProperty,getApartmentProperty,insertApartmentFeedback,getApartmentByID}

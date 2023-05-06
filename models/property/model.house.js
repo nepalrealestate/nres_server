@@ -27,9 +27,9 @@ async function createHouseTable(){
     try {
         const[row,field] = await pool.query(sqlQuery);
         console.log("Table Created");
-        console.log(row);
+        return row;
     } catch (error) {
-        console.log(error);
+       throw error;
     }
 
 }
@@ -45,10 +45,10 @@ async function createHouseFeedbackTable(){
 
     try {
         const [row,field] = await pool.query(sqlQuery);
-        console.log(row);
+        return row;
        
     } catch (error) {
-        console.log(error);
+        throw error;
       
     }
 
@@ -60,7 +60,7 @@ async function createHouseFeedbackTable(){
 
 async function insertHouseProperty(property,houseProperty){
 
-    console.log(property,houseProperty)
+   
 
    await createHouseTable();
 
@@ -75,10 +75,10 @@ async function insertHouseProperty(property,houseProperty){
 
    try {
        const [result,field] = await pool.query(insertQuery,[property_ID,room,floor,furnish_status,parking,road_access_ft,facilities])
-       console.log(result);
+       return result;
    } catch (error) {
 
-       console.log(error);
+      
        throw error;
        
    }
@@ -110,7 +110,7 @@ async function getHouseProperty(condition,limit,offSet){
 
     sqlQuery += `LIMIT ${limit} OFFSET ${offSet}`
 
-    console.log(sqlQuery);
+    
     
 
     try {
@@ -118,7 +118,7 @@ async function getHouseProperty(condition,limit,offSet){
       
         return result;
     } catch (error) {
-        console.log(error);
+        throw error;
     }
 
 
@@ -136,16 +136,29 @@ async function insertHouseFeedback(property_ID,feedback){
     try {
         
         const[result,field] = await pool.query(insertQuery,[property_ID,feedback]);
-        console.log(result);
+        return result;
     } catch (error) {
-        console.log(error);
+        throw error;
     }
 
 
 }
 
+async function getHouseByID(property_ID){
+
+    const getQuery = `SELECT p.*,h.* FROM ${schemaName}.${propertyTableName} AS p INNER JOIN ${schemaName}.${houseTableName} AS h ON p.property_ID=${property_ID} `;
+
+    try {
+        const [result,field] = await pool.query(getQuery);
+        return result[0];// return object not array
+        } catch (error) {
+        throw error;
+    }
+
+}
 
 
-module.exports = {insertHouseProperty,getHouseProperty,insertHouseFeedback}
+
+module.exports = {insertHouseProperty,getHouseProperty,insertHouseFeedback,getHouseByID}
 
 

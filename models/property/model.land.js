@@ -1,6 +1,8 @@
+const { throws } = require("assert");
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
 const {createPropertyTable,insertProperty} = require("../property/models.property");
+const { error } = require("console");
 const propertyTableName = 'Property'
 const houseTableName = 'House';
 const landTableName = 'Land';
@@ -20,16 +22,16 @@ async function createLandTable(){
       land_type VARCHAR(255),
       soil VARCHAR(255),
       road_access_ft FLOAT,
-      FOREIGN KEY (property_ID) REFERENCES ${schemaName}.${propertyTableName}Property(property_ID) ON DELETE CASCADE
+      FOREIGN KEY (property_ID) REFERENCES ${schemaName}.${propertyTableName}(property_ID) ON DELETE CASCADE
   
   )`;
 
   try {
       const[row,field] = await pool.query(sqlQuery);
       console.log("Table Created");
-      console.log(row);
+      return row;
   } catch (error) {
-      console.log(error);
+      throw error;
   }
 }
 
@@ -44,10 +46,10 @@ async function createLandFeedbackTable(){
 
     try {
         const [row,field] = await pool.query(sqlQuery);
-        console.log(row);
+        return row;
        
     } catch (error) {
-        console.log(error);
+        throw error;
       
     }
 
@@ -57,7 +59,7 @@ async function createLandFeedbackTable(){
 
 
 
-async function insertLandProperty(property,houseProperty){
+async function insertLandProperty(property,landProperty){
 
     // if table is not create then create table
     await createLandTable();
@@ -66,15 +68,15 @@ async function insertLandProperty(property,houseProperty){
     await insertProperty(property);
 
 
-    const {property_ID,land_type,soil,road_access_ft} = houseProperty;
+    const {property_ID,land_type,soil,road_access_ft} = landProperty;
 
     const insertQuery = `INSERT INTO ${schemaName}.${landTableName} VALUES (?,?,?,?)`;
 
     try {
         const [result,field] = await pool.query(insertQuery,[property_ID,land_type,soil,road_access_ft])
-        console.log(result);
+        return result;
     } catch (error) {
-        console.log(error);
+       throw error;
     }
 
 
@@ -105,7 +107,7 @@ async function getLandProperty(condition,limit,offSet){
 
     sqlQuery += `LIMIT ${limit} OFFSET ${offSet}`
 
-    console.log(sqlQuery);
+  
     
 
     try {
@@ -113,7 +115,7 @@ async function getLandProperty(condition,limit,offSet){
       
         return result;
     } catch (error) {
-        console.log(error);
+       throw error;
     }
 
 
@@ -132,11 +134,25 @@ async function insertLandFeedback(property_ID,feedback){
     try {
         
         const[result,field] = await pool.query(insertQuery,[property_ID,feedback]);
-        console.log(result);
+        return result;
     } catch (error) {
-        console.log(error);
+       throw error;
     }
 
+
+}
+
+
+async function getLandByID(property_ID){
+
+    const getQuery = `SELECT p.*,l.* FROM ${schemaName}.${propertyTableName} AS p INNER JOIN ${schemaName}.${landTableName} AS l ON p.property_ID=${property_ID}`;
+
+    try {
+        const [result,field] = await pool.query(getQuery);
+        return result[0];//return object not array
+    } catch (error) {
+        throw error;
+    }
 
 }
 
@@ -147,4 +163,4 @@ async function insertLandFeedback(property_ID,feedback){
 
 
 
-module.exports = {insertLandProperty,getLandProperty,insertLandFeedback};
+module.exports = {insertLandProperty,getLandProperty,insertLandFeedback,getLandByID};

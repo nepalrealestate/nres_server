@@ -1,5 +1,5 @@
 
-const {insertHouseProperty, getHouseProperty, insertHouseFeedback}   = require("../../models/property/model.house")
+const {insertHouseProperty, getHouseProperty, insertHouseFeedback, getHouseByID}   = require("../../models/property/model.house")
 const {updatePropertyViews}  = require("../../models/property/models.property");
 
 // only for test purpose
@@ -14,7 +14,7 @@ const handleAddHouse = async (req,res)=>{
         await insertHouseProperty(property,houseProperty);
         return res.status(200).json({message:"Insert into table"});
      } catch (error) {
-        return res.status(400).json({message:"Error occur"})
+        return res.status(400).json({message:error.sqlMessage})
      }
 
 }
@@ -50,7 +50,7 @@ const handleGetHouse = async (req,res)=>{
    
       return res.status(200).json(houseData);
    } catch (error) {
-      return res.status(500).json({message:"Internal Server Error"});
+      return res.status(500).json({message:error.sqlMessage});
    }
 
 }
@@ -66,7 +66,7 @@ const handleHouseFeedback = async (req,res)=>{
       return res.status(200).json({message:"Feedback Submit"});
    } catch (error) {
       console.log(error);
-      return res.status(500).json({message:"Internal Serval Error"})
+      return res.status(500).json({message:error.sqlMessage})
    }
 
 }
@@ -80,10 +80,26 @@ const handleUpdateHouseViews = async (req,res)=>{
       const result = await updatePropertyViews(property_ID);//update property views common function to update views in parent table property
       return res.status(200).json({message:"Views update successfully"});
    } catch (error) {
-      return res.status(500).json({message:"views update error occurs"})
+      return res.status(500).json({message:error.sqlMessage})
       
    }
 
+}
+
+const handleGetHouseByID = async (req,res)=>{
+   const {property_ID}  = req.params;
+   console.log(property_ID);
+
+   try {
+      const result  = await getHouseByID(property_ID);//get single house
+      // if there is house present then also update views
+      if(result){
+         await updatePropertyViews(property_ID);
+      }
+      return res.status(200).json({result});
+   } catch (error) {
+      return res.status(500).json({message:error.sqlMessage});
+   }
 }
 
 
@@ -91,4 +107,4 @@ const handleUpdateHouseViews = async (req,res)=>{
 
 
 
-module.exports = {handleAddHouse,handleGetHouse,handleHouseFeedback,handleUpdateHouseViews}
+module.exports = {handleAddHouse,handleGetHouse,handleHouseFeedback,handleUpdateHouseViews,handleGetHouseByID}
