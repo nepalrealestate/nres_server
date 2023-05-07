@@ -1,19 +1,21 @@
-const {insertApartmentProperty, getApartmentProperty, insertApartmentFeedback}   = require("../../models/property/model.apartment");
+const {insertApartmentProperty, getApartmentProperty, insertApartmentFeedback, getApartmentByID}   = require("../../models/property/model.apartment");
 const { updatePropertyViews } = require("../../models/property/models.property");
 
 
 
 const handleAddApartment = async (req,res)=>{
 
-   const {property,landProperty} = req.body;
-   console.log(req.body)
+   const {property,apartmentProperty} = req.body;
+   console.log(property);
+   console.log(apartmentProperty);
 
      console.log("Add Apartment API HITTTTT !!!!!!");
      try {
-        await insertApartmentProperty(property,landProperty);
+        await insertApartmentProperty(property,apartmentProperty);
         return res.status(200).json({message:"Insert into table"});
      } catch (error) {
-        return res.status(400).json({message:"Error occur"})
+      console.log("Why this error",error.sqlMessage);
+        return res.status(400).json({message:error.sqlMessage})
      }
 
 }
@@ -48,7 +50,7 @@ const handleGetApartment = async (req,res)=>{
    
       return res.status(200).json(apartmentData);
    } catch (error) {
-      return res.status(500).json({message:"Internal Server Error"});
+      return res.status(500).json({message:error.sqlMessage});
    }
 
 }
@@ -64,7 +66,7 @@ const handleApartmentFeedback = async (req,res)=>{
       return res.status(200).json({message:"Feedback Submit"});
    } catch (error) {
       console.log(error);
-      return res.status(500).json({message:"Internal Serval Error"})
+      return res.status(500).json({message:error.sqlMessage})
    }
 
 }
@@ -78,8 +80,27 @@ const handleUpdateApartmentViews = async (req,res)=>{
       const result = await updatePropertyViews(property_ID); // update property views common function to update views in parent table property
       return res.status(200).json({message:"Views update successfully"});
    } catch (error) {
-      return res.status(500).json({message:"views update error occurs"})
+      return res.status(500).json({message:error.sqlMessage})
       
+   }
+
+}
+
+const handleGetApartmentByID = async (req,res)=>{
+
+   const {property_ID}  = req.params;
+   console.log(property_ID);
+
+   try {
+      const result = await getApartmentByID(property_ID);// get single  apartment by property 
+      // if there is apartment then also update views
+      if(result){
+         await updatePropertyViews(property_ID);
+      }
+      console.log(result);
+      return res.status(200).json({result});
+   } catch (error) {
+      return res.status(500).json({message:error.sqlMessage})
    }
 
 }
@@ -88,5 +109,4 @@ const handleUpdateApartmentViews = async (req,res)=>{
 
 
 
-
-module.exports = {handleAddApartment,handleGetApartment,handleApartmentFeedback,handleUpdateApartmentViews}
+module.exports = {handleAddApartment,handleGetApartment,handleApartmentFeedback,handleUpdateApartmentViews,handleGetApartmentByID}

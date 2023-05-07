@@ -34,7 +34,7 @@ async function createPropertyTable(){
 
     try {
         const[row,field] = await pool.query(sqlQuery);
-        console.log("Table Created");
+        console.log(" Property Table Created");
         console.log(row);
     } catch (error) {
         console.log(error);
@@ -65,7 +65,8 @@ async function insertProperty(property){
         console.log(result);
 
     } catch (error) {
-        console.log(error);
+        
+        throw error;
     }
 
 }
