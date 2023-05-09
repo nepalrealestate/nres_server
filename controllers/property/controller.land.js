@@ -1,28 +1,27 @@
-
-const {insertHouseProperty, getHouseProperty, insertHouseFeedback, getHouseByID}   = require("../../models/property/model.house")
-const {updatePropertyViews}  = require("../../models/property/models.property");
+const {insertLandProperty, getLandProperty, insertLandFeedback, getLandByID}   = require("../../models/property/model.land");
+const { updatePropertyViews } = require("../../models/property/models.property");
 
 // only for test purpose
 
-const handleAddHouse = async (req,res)=>{
+const handleAddLand = async (req,res)=>{
 
-   const {property,houseProperty} = req.body;
+   const {property,landProperty} = req.body;
    console.log(req.body)
 
-     console.log("Add House API HITTTTT !!!!!!");
+     console.log("Add Land API HITTTTT !!!!!!");
      try {
-        await insertHouseProperty(property,houseProperty);
+        await insertLandProperty(property,landProperty);
         return res.status(200).json({message:"Insert into table"});
      } catch (error) {
+         console.log(error);
         return res.status(400).json({message:error.sqlMessage})
      }
 
 }
 
 
-const handleGetHouse = async (req,res)=>{
+const handleGetLand = async (req,res)=>{
 
- 
 
 
   let page, limit ,offSet;
@@ -45,39 +44,34 @@ const handleGetHouse = async (req,res)=>{
 
 
    try {
-      const houseData = await getHouseProperty(req.query,limit,offSet);
-      console.log(houseData)
+      const landData = await getLandProperty(req.query,limit,offSet);
+      console.log(landData)
    
-      return res.status(200).json(houseData);
+      return res.status(200).json(landData);
    } catch (error) {
       return res.status(500).json({message:error.sqlMessage});
    }
 
 }
 
-
-
-const handleHouseFeedback = async (req,res)=>{
-
+const handleLandFeedback = async(req,res)=>{
    const {property_ID,feedback} = req.body;
    
    try {
-      const result = await insertHouseFeedback(property_ID,feedback);
+      const result = await insertLandFeedback(property_ID,feedback);
       return res.status(200).json({message:"Feedback Submit"});
    } catch (error) {
       console.log(error);
       return res.status(500).json({message:error.sqlMessage})
    }
-
 }
-
-const handleUpdateHouseViews = async (req,res)=>{
+const handleUpdateLandViews = async (req,res)=>{
 
    const {property_ID} = req.params;
    console.log(req.params);
 
    try {
-      const result = await updatePropertyViews(property_ID);//update property views common function to update views in parent table property
+      const result = await updatePropertyViews(property_ID);// update property views common function to update views in parent table property;
       return res.status(200).json({message:"Views update successfully"});
    } catch (error) {
       return res.status(500).json({message:error.sqlMessage})
@@ -86,25 +80,23 @@ const handleUpdateHouseViews = async (req,res)=>{
 
 }
 
-const handleGetHouseByID = async (req,res)=>{
-   const {property_ID}  = req.params;
-   console.log(property_ID);
+const handleGetLandByID = async (req,res)=>{
+   const {property_ID} = req.params;
 
    try {
-      const result  = await getHouseByID(property_ID);//get single house
-      // if there is house present then also update views
+      const result  = await getLandByID(property_ID);//get single land
+      //if there is land present then update views also;
       if(result){
          await updatePropertyViews(property_ID);
       }
+      console.log(result);
       return res.status(200).json({result});
    } catch (error) {
-      return res.status(500).json({message:error.sqlMessage});
+      return res.status(500).json({message:error.sqlMessage})
    }
 }
 
 
 
 
-
-
-module.exports = {handleAddHouse,handleGetHouse,handleHouseFeedback,handleUpdateHouseViews,handleGetHouseByID}
+module.exports = {handleAddLand,handleGetLand,handleLandFeedback,handleUpdateLandViews,handleGetLandByID}

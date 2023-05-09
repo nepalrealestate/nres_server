@@ -2,14 +2,11 @@ const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
 
 const agentTableName = 'agent';
+const schemaName = 'nres_users';
 
 async function registerAgent(name,email,password){
 
-    //if table is not exists - create table
-    const isTablePresent = await isTableExists(agentTableName);
-    console.log(isTablePresent);
-    if(!isTablePresent){
-        const query  = `CREATE TABLE ${agentTableName} (name VARCHAR(255), email VARCHAR(255), password VARCHAR(255),UNIQUE(email) ) `;
+    const query  = `CREATE TABLE IF NOT EXISTS ${schemaName}.${agentTableName} (name VARCHAR(255), email VARCHAR(255), password VARCHAR(255),UNIQUE(email) ) `;
         try {
             const [row,field] = await pool.query(query)
             console.log("Table Created");
@@ -18,9 +15,9 @@ async function registerAgent(name,email,password){
             console.log(error);
         }
         
-    }
 
-    const insertQuery =  `INSERT INTO ${agentTableName} (name,email,password) VALUES (?,?,?)`;
+
+    const insertQuery =  `INSERT INTO ${schemaName}.${agentTableName} (name,email,password) VALUES (?,?,?)`;
     try {
         const [result,field] = await pool.query(insertQuery,[name,email,password]);
         return result;
@@ -40,7 +37,7 @@ async function registerAgent(name,email,password){
 
 
 async function findAgent(email){
-    const findQuery = ` SELECT  * FROM ${agentTableName} WHERE email=? `;
+    const findQuery = ` SELECT  * FROM ${schemaName}.${agentTableName} WHERE email=? `;
     try {
         const [row,field] =  await pool.query(findQuery,[email]);
         return row[0];//this return only object no object inside array

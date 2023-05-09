@@ -5,7 +5,10 @@ const rentalRouter = require("./routes/users/rental");
 const sellerRouter = require("./routes/users/seller");
 const staffRouter = require("./routes/users/staff");
 const superAdminRouter = require("./routes/users/superAdmin")
-const houseRouter = require("./routes/property/routes.house");
+const houseRouter = require("./routes/property/route.house");
+const landRouter = require("./routes/property/route.land");
+const apartmentRouter = require("./routes/property/route.apartment");
+const propertyRouter = require("./routes/property/route.property");
 const app  = express();
 const cors = require("cors")
 const bodyParser = require('body-parser')
@@ -29,6 +32,11 @@ app.use("/seller",sellerRouter);
 app.use("/staff",staffRouter);
 app.use("/superAdmin",superAdminRouter);
 app.use("/house",houseRouter);
+app.use("/land",landRouter)
+app.use ("/apartment",apartmentRouter);
+app.use("/property",propertyRouter);
+
+
 
 //connectMysql();
 
