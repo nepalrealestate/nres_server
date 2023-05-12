@@ -52,11 +52,14 @@ async function updateAgentPassword(id,hashPassword){
     const updateQuery = `UPDATE ${schemaName}.${agentTableName} SET password='${hashPassword}' WHERE id=${id}`;
     try {
         await pool.query(updateQuery);
+        
+        
 
     } catch (error) {
        throw error; 
     }
 }
+
 
 
 

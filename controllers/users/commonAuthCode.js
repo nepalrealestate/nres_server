@@ -156,7 +156,7 @@ const passwordReset = async (req, res, user) => {
   const randomToken = getRandomNumber();
 
   try {
-    await insertIntoPasswordResetToken(user.id, randomToken, schemaName);
+    await insertIntoPasswordResetToken(user.id, randomToken);
     await sendTokenToUserByEmail(user.email, randomToken);
     return res
       .status(200)
@@ -166,7 +166,7 @@ const passwordReset = async (req, res, user) => {
 
     // if already token generate then update the token ;
     if (error.code === "ER_DUP_ENTRY") {
-      await updatePasswordResetTokenValue(user.id, randomToken, schemaName);
+      await updatePasswordResetTokenValue(user.id, randomToken);
       await sendTokenToUserByEmail(user.email, randomToken);
       return res
         .status(200)

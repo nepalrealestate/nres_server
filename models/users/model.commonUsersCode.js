@@ -1,13 +1,16 @@
 const { pool } = require("../../connection");
 
 
+const passwordResetTokenTable ="passwordResetToken";
+const schemaName = "nres_users";
 
-async function createPasswordResetTable(schemaName){
+
+async function createPasswordResetTable(){
 
     // createdTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     // expirationTime DATETIME ,
     // ipAddress VARCHAR(45),
-    const createQuery = `CREATE TABLE  IF NOT EXISTS ${schemaName}.passwordResetToken (
+    const createQuery = `CREATE TABLE  IF NOT EXISTS ${schemaName}.${passwordResetTokenTable} (
         
         id INT NOT NULL,
         token VARCHAR(255) NOT NULL,
@@ -31,18 +34,18 @@ async function createPasswordResetTable(schemaName){
 
 
 
-async function insertIntoPasswordResetToken(id,token,schemaName){
+async function insertIntoPasswordResetToken(id,token){
 
      // if table is not created then create
 
-   await createPasswordResetTable(schemaName);
+   await createPasswordResetTable();
 
    // insert into table 
    const date = new Date();
 
 
 
-   const insertQuery =  `INSERT INTO ${schemaName}.passwordResetToken (id,token,isUsed) VALUES(?,?,?)`;
+   const insertQuery =  `INSERT INTO ${schemaName}.${passwordResetTokenTable} (id,token,isUsed) VALUES(?,?,?)`;
 
    try {
         await pool.query(insertQuery,[id,token,0]);
@@ -57,10 +60,10 @@ async function insertIntoPasswordResetToken(id,token,schemaName){
 
 }
 
-async function updatePasswordResetTokenValue(id,token,schemaName){
+async function updatePasswordResetTokenValue(id,token){
 
     
-        const updateTokenQuery = `UPDATE ${schemaName}.passwordResetToken SET token=${token} WHERE id=${id}`;
+        const updateTokenQuery = `UPDATE ${schemaName}.${passwordResetTokenTable} SET token=${token} WHERE id=${id}`;
         try {
             const[result,field] = await pool.query(updateTokenQuery);
            
@@ -71,9 +74,9 @@ async function updatePasswordResetTokenValue(id,token,schemaName){
 
 }
 
-async function findPasswordResetTokenValue(id,schemaName){
+async function findPasswordResetTokenValue(id){
 
-    const findQuery = `SELECT * FROM ${schemaName}.passwordResetToken WHERE id=${id}`;
+    const findQuery = `SELECT * FROM ${schemaName}.${passwordResetTokenTable} WHERE id=${id}`;
 
     try {
         const [result,field] = await pool.query(findQuery);
@@ -87,6 +90,18 @@ async function findPasswordResetTokenValue(id,schemaName){
 
 }
 
+async function deleteToken(id){
+    const deleteQuery = `DELETE FROM ${schemaName}.${passwordResetTokenTable} WHERE id=${id} `;
+    try {
+        await pool.query(deleteQuery);
+    } catch (error) {
+        throw error;
+    }
+}
 
-module.exports = {createPasswordResetTable,insertIntoPasswordResetToken,updatePasswordResetTokenValue,findPasswordResetTokenValue};
+
+
+
+
+module.exports = {createPasswordResetTable,insertIntoPasswordResetToken,updatePasswordResetTokenValue,findPasswordResetTokenValue,deleteToken};
 

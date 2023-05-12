@@ -7,6 +7,7 @@ const {
 const jwt = require("jsonwebtoken");
 const { login, verifyToken, passwordReset } = require("./commonAuthCode");
 const { getRandomNumber } = require("./controller.commonFunction");
+const { deleteToken, findPasswordResetTokenValue } = require("../../models/users/model.commonUsersCode");
 
 const saltRound = 10;
 
@@ -72,10 +73,17 @@ const handleAgentVerifyToken = async (req, res, next) => {
 
 const handleAgentPasswordReset = async (req, res, next) => {
   // recive email in parameter
+
+  // if we recieve only email then reset password
+  // if we recieve token email and password (in body)
+  // after update password - delete token in database
+
   const { email, token } = req.query;
   const agent = await findAgent(email);
   if (token) {
-    console.log("Update password comming soon !!!!");
+    
+    
+
     const { password, confirmPassword } = req.body;
 
     if (password !== confirmPassword) {
@@ -83,9 +91,18 @@ const handleAgentPasswordReset = async (req, res, next) => {
       return res.status(403).json({ message: "Password  not match" });
     }
 
+    // check token 
+    const storeToken = await findPasswordResetTokenValue(agent.id);
+    if(token!==storeToken.token){
+      console.log("Token Doesnot Match!!");
+      return res.status(400).json({message:"Token Doesnot Match"});
+    }
+
+
     try {
       const hashPassword = await bcrypt.hash(password, saltRound);
-      await updateAgentPassword(agent.id,hashPassword);
+      await updateAgentPassword(agent.id,hashPassword);//update password
+      await deleteToken(agent.id);// delete token
       return res.status(200).json({message:"Password Update succesfuly"});
     } catch (error) {
       console.log(error)
@@ -94,9 +111,7 @@ const handleAgentPasswordReset = async (req, res, next) => {
 
     }
 
-    return res
-      .status(200)
-      .json({ message: "Update password function work soon!!!" });
+ 
   }
   return await passwordReset(req, res, agent);
 };
