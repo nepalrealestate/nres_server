@@ -1,54 +1,55 @@
-const bcrypt = require('bcrypt');
-
+const bcrypt = require("bcrypt");
 
 const jwt = require("jsonwebtoken");
+const {
+  insertIntoPasswordResetToken,
+  findPasswordResetTokenValue,
+  updatePasswordResetTokenValue,
+} = require("../../models/users/model.commonUsersCode");
+const {
+  getRandomNumber,
+  sendTokenToUserByEmail,
+} = require("./controller.commonFunction");
 
-const saltRound  = 10;
+const saltRound = 10;
 
-const tokenExpireTime = '1hr';
+const tokenExpireTime = "1hr";
+const schemaName = "nres_users";
 
+const login = async (req, res, user) => {
+  const { password } = req.body;
 
+  if (!user) {
+    console.log("No User Found");
+    return res.status(404).send("User Not Found");
+  }
 
+  //compare bcrypt password;
 
+  const match = await bcrypt.compare(password, user.password);
 
-const login = async (req,res,user)=>{
+  if (!match) {
+    return res.status(401).json({ message: "Password doesnot match" });
+  }
 
-    const {password} = req.body;
+  //create jwt token
 
-
-    if (!user) {
-        console.log("No User Found");
-        return res.status(404).send("User Not Found");
-      }
-
-    //compare bcrypt password;
-
-    const match = await bcrypt.compare(password,user.password);
-
-    if(!match){
-        return res.status(401).json({message:"Password doesnot match"});
-    }
-
-
-    //create jwt token
-
-     
   const token = jwt.sign({ id: user.email }, process.env.JWT_KEY, {
     expiresIn: tokenExpireTime,
   });
 
-  //In Browser Remove Cookiess - 
+  //In Browser Remove Cookiess -
 
   //------------------This code works only for browser cookie---------------------------
 
- //if cookie already present then remove;
+  //if cookie already present then remove;
   // let checkCookie = req.headers.cookie;
   // //console.log("Checking Cookie.......", checkCookie);
   // console.log(req.cookies)
   // if (req.cookies[`${user.email}`]) {
   //   req.cookies[`${user.email}`] = "";
   // }
-   
+
   // //if there are two or more than different users login cookies then remove it from loop
 
   // if (checkCookie) {
@@ -66,22 +67,16 @@ const login = async (req,res,user)=>{
   //   });
   // }
 
-
-
-
-     //set cookies to response
+  //set cookies to response
   res.cookie(String(user.email), token, {
     path: "/",
     expires: new Date(Date.now() + 1000 * 1000 * 60),
     httpOnly: true,
     sameSite: "lax",
   });
-    //return success message
-    return res.status(200).json({ message: "Successfully Logged In", token });
-
-}
-
-
+  //return success message
+  return res.status(200).json({ message: "Successfully Logged In", token });
+};
 
 const verifyToken = (req, res, next) => {
   //geeting cookies from frontEnd
@@ -153,12 +148,38 @@ const refreshToken = async (req, res, next) => {
   });
 };
 
+const passwordReset = async (req, res, user) => {
+  if (!user) {
+    return res.status(401).json({ message: "User Not Found!" });
+  }
+
+  const randomToken = getRandomNumber();
+
+  try {
+    await insertIntoPasswordResetToken(user.id, randomToken, schemaName);
+    await sendTokenToUserByEmail(user.email, randomToken);
+    return res
+      .status(200)
+      .json({ message: "Token generate succesfully! Check Your Email" });
+  } catch (error) {
+    console.log(error);
+
+    // if already token generate then update the token ;
+    if (error.code === "ER_DUP_ENTRY") {
+      await updatePasswordResetTokenValue(user.id, randomToken, schemaName);
+      await sendTokenToUserByEmail(user.email, randomToken);
+      return res
+        .status(200)
+        .json({ message: "Token re-generate sucessfully Check Your Email " });
+    }
+    if (error.sqlMessage) {
+      return res.status(500).json({ message: error.sqlMessage });
+    }
+  }
+};
 
 
 
 
 
-
-
-
-module.exports = {login,verifyToken,refreshToken};
+module.exports = { login, verifyToken, refreshToken, passwordReset };
