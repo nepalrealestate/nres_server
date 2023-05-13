@@ -2,12 +2,21 @@ const bcrypt = require("bcrypt");
 const {
   registerAgent,
   findAgent,
- updateAgentPassword
+  updateAgentPassword,
 } = require("../../models/users/model.agent");
 const jwt = require("jsonwebtoken");
-const { login, verifyToken, passwordReset } = require("./commonAuthCode");
+const {
+  login,
+  verifyToken,
+  passwordReset,
+  passwordUpdate,
+} = require("./commonAuthCode");
 const { getRandomNumber } = require("./controller.commonFunction");
-const { deleteToken, findPasswordResetTokenValue } = require("../../models/users/model.commonUsersCode");
+const {
+  deleteToken,
+  findPasswordResetTokenValue,
+} = require("../../models/users/model.commonUsersCode");
+const { wrapAwait } = require("../../errorHandling");
 
 const saltRound = 10;
 
@@ -79,40 +88,21 @@ const handleAgentPasswordReset = async (req, res, next) => {
   // after update password - delete token in database
 
   const { email, token } = req.query;
-  const agent = await findAgent(email);
-  if (token) {
-    
-    
 
-    const { password, confirmPassword } = req.body;
-
-    if (password !== confirmPassword) {
-      console.log("Password not match  ");
-      return res.status(403).json({ message: "Password  not match" });
-    }
-
-    // check token 
-    const storeToken = await findPasswordResetTokenValue(agent.id);
-    if(token!==storeToken.token){
-      console.log("Token Doesnot Match!!");
-      return res.status(400).json({message:"Token Doesnot Match"});
-    }
-
-
-    try {
-      const hashPassword = await bcrypt.hash(password, saltRound);
-      await updateAgentPassword(agent.id,hashPassword);//update password
-      await deleteToken(agent.id);// delete token
-      return res.status(200).json({message:"Password Update succesfuly"});
-    } catch (error) {
-      console.log(error)
-      return res.status(500).json({message:"Password doesnot update"});
-
-
-    }
-
- 
+  // if email field empty
+  if (!email) {
+    return res.status(401).json({ message: "Please Enter Email" });
   }
+
+  const [agent, agentError] = await wrapAwait(findAgent(email));
+  if (email && token && agent) {
+    async function updatePassword(id, hashPassword) {
+      return await wrapAwait(updateAgentPassword(id, hashPassword));
+    }
+    // pass update Password function as parameters;
+    return await passwordUpdate(req, res, agent, updatePassword);
+  }
+  // if there is no token - then get token for reset password
   return await passwordReset(req, res, agent);
 };
 

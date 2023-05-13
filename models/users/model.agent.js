@@ -4,7 +4,7 @@ const { createPasswordResetTable,insertIntoPasswordResetToken } = require("./mod
 
 const agentTableName = 'agent';
 const schemaName = 'nres_users';
-const agentResetTokenTable = 'agentPasswordResetTokens'
+
 
 async function registerAgent(name,email,password){
 
@@ -51,7 +51,7 @@ async function findAgent(email){
 async function updateAgentPassword(id,hashPassword){
     const updateQuery = `UPDATE ${schemaName}.${agentTableName} SET password='${hashPassword}' WHERE id=${id}`;
     try {
-        await pool.query(updateQuery);
+        return await pool.query(updateQuery);
         
         
 
