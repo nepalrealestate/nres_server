@@ -1,6 +1,6 @@
 const express = require("express");
 const buyerRouter = require('./routes/users/buyer')
-const agentRouter = require("./routes/users/agent")
+const agentRouter = require("./routes/users/route.agent")
 const rentalRouter = require("./routes/users/rental");
 const sellerRouter = require("./routes/users/seller");
 const staffRouter = require("./routes/users/staff");
