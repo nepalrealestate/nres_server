@@ -21,16 +21,29 @@ let transporter = nodemailer.createTransport({
   // send password reset token to user
 
   async function sendPasswordResetTokenMail(userEmail,token){
-   const info =  await transporter.sendMail({
 
+    return new Promise((resolve, reject) => {
+      transporter.sendMail({
         from: 'test@nres.com', // sender address
         to: userEmail, // list of receivers
         subject: "Reset Password Token  ✔", // Subject line
         text: `Your Reset Password Token is : ${token} please use before it expires .`, // plain text body
+      }).then(function(data){
+        console.log(data);
+        resolve(data);
+      }).catch(function(error){
+        console.log(error);
+        reject(error);
+      })
+    })
 
-    }).catch((error)=>console.log(error))
+  //  const info =  await transporter.sendMail({
 
-    console.log(info);
+       
+
+  //   }).catch((error)=>console.log(error))
+
+  //   console.log(info);
   }
 
 

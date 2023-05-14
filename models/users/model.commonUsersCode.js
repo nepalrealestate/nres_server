@@ -14,10 +14,10 @@ async function createPasswordResetTable(){
         
         id INT NOT NULL,
         token VARCHAR(255) NOT NULL,
+        createdTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
        
-        isUsed BOOLEAN  DEFAULT 0,
-       
-       
+        expirationTime DATETIME,
+        ipAddress VARCHAR(45),
         PRIMARY KEY (id)
         
     );`
@@ -41,14 +41,26 @@ async function insertIntoPasswordResetToken(id,token){
    await createPasswordResetTable();
 
    // insert into table 
-   const date = new Date();
+   
+
+    
+   
+   const currentDate = new Date();
+const year = currentDate.getFullYear();
+const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+const day = String(currentDate.getDate()+1).padStart(2, '0');
+const hours = String(currentDate.getHours()).padStart(2, '0');
+const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+const expireTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+console.log(expireTime);
 
 
-
-   const insertQuery =  `INSERT INTO ${schemaName}.${passwordResetTokenTable} (id,token,isUsed) VALUES(?,?,?)`;
+   const insertQuery =  `INSERT INTO ${schemaName}.${passwordResetTokenTable} (id,token,createdTime,expirationTime,ipAddress) VALUES(?,?,NOW(),?,?)`;
 
    try {
-        await pool.query(insertQuery,[id,token,0]);
+       return await pool.query(insertQuery,[id,token,expireTime,null]);
        
         
    } catch (error) {
@@ -65,7 +77,8 @@ async function updatePasswordResetTokenValue(id,token){
     
         const updateTokenQuery = `UPDATE ${schemaName}.${passwordResetTokenTable} SET token=${token} WHERE id=${id}`;
         try {
-            const[result,field] = await pool.query(updateTokenQuery);
+            return await pool.query(updateTokenQuery);
+
            
         } catch (error) {
             throw error;
