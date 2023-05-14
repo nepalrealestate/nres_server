@@ -18,7 +18,7 @@ async function createLandTable(){
     await createPropertyTable();
   const sqlQuery = `CREATE TABLE  IF NOT EXISTS ${schemaName}.${landTableName} 
   (
-      property_ID INT,
+    property_ID INT NOT NULL PRIMARY KEY UNIQUE,
       land_type VARCHAR(255),
       soil VARCHAR(255),
       road_access_ft FLOAT,

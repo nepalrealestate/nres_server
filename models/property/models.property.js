@@ -4,7 +4,7 @@ const { isTableExists } = require("../commonModels");
 
 const propertyTableName = 'Property';
 const schemaName = 'nres_property';
-
+const videoTableName = 'videoLink'
 
 
 
@@ -38,6 +38,30 @@ async function createPropertyTable(){
         console.log(row);
     } catch (error) {
         console.log(error);
+        throw error;
+    }
+
+}
+
+
+// create table for store youtube vide link
+async function createVideoLinkTable(){
+
+    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${schemaName}.${videoTableName} (
+
+        video_ID varchar(255) NOT NULL UNIQUE,
+        property_type varchar(255) NOT NULL,
+        video nvarchar(4000) NOT NULL ,
+        PRIMARY KEY(video_ID)
+
+
+    )`;
+    try {
+        const [row,field] = await pool.query(sqlQuery);
+        console.log("video Link Table created");
+        return row;
+    } catch (error) {
+        throw error;
     }
 
 }
@@ -87,6 +111,22 @@ async function updatePropertyViews(property_ID){
 }
 
 
+// insert video link
+
+async function insertVideoLink(video_ID,property_type,videoLink){
+
+    await createVideoLinkTable();
+
+    const insertQuery  = `INSERT INTO ${schemaName}.${videoTableName} VALUES (?,?,?)`;
+
+    try {
+        await pool.query(insertQuery,[video_ID,property_type,videoLink]);
+        
+    } catch (error) {
+        throw error;
+    }
+
+}
 
 
 
@@ -97,4 +137,6 @@ async function updatePropertyViews(property_ID){
 
 
 
-module.exports = {createPropertyTable,insertProperty,updatePropertyViews}
+
+
+module.exports = {createPropertyTable,insertProperty,updatePropertyViews,createVideoLinkTable,insertVideoLink}

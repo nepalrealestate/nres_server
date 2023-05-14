@@ -18,7 +18,7 @@ async function createApartmentTable (){
 
     const sqlQuery = `CREATE TABLE  IF NOT EXISTS ${schemaName}.${apartmentTableName} 
     (
-        property_ID INT,
+        property_ID INT NOT NULL PRIMARY KEY UNIQUE,
         bhk INT,
         situated_floor INT,
         furnish_status BOOL,

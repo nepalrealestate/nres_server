@@ -2,6 +2,7 @@
 const bcrypt = require('bcrypt');
 const {registerStaff,findStaff} = require("../../models/users/staff");
 const {login} = require("./commonAuthCode");
+const { insertVideoLink } = require('../../models/property/models.property');
 
 const saltRound = 10;
 
@@ -72,4 +73,28 @@ const handleStaffLogin  = async(req,res)=>{
 }
 
 
-module.exports={handleGetStaff,handleStaffRegistration,handleStaffLogin}
+const handleAddVideoLink = async (req,res)=>{
+    const {property_type,videoLink} = req.body;
+
+    
+
+    
+
+    if(!property_type || ! videoLink){
+        return res.status(400).json({message:"Input field cannot be empty"});
+    }
+
+    const link = videoLink.split("=");
+    const video_ID = link[1];
+    try {
+         await insertVideoLink(video_ID,property_type,videoLink);
+         console.log("Video Upload succesfully")
+        return res.status(200).json({message:"video link upload sucessfull"});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message:error.sqlMessage});
+    }
+}
+
+
+module.exports={handleGetStaff,handleStaffRegistration,handleStaffLogin,handleAddVideoLink}
