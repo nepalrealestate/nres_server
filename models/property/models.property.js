@@ -2,7 +2,7 @@
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
 
-const propertyTableName = 'Property';
+const propertyTableName = 'property';
 const schemaName = 'nres_property';
 const videoTableName = 'videoLink'
 
@@ -19,6 +19,7 @@ async function createPropertyTable(){
         property_ID INT NOT NULL PRIMARY KEY,
         property_type varchar(255) NOT NULL,
         listed_for varchar(255) NOT NULL,
+        status varchar(255),
         price FLOAT,
         area_aana FLOAT,
         area_sq_ft FLOAT,
@@ -70,6 +71,7 @@ async function createVideoLinkTable(){
 
 
 
+
 //-------------------------------Insert Data------------------------------------
 
 //insert value in property table 
@@ -78,14 +80,15 @@ async function insertProperty(property){
     
     
 
-    const {property_ID,property_type,listed_for,price,area_aana,area_sq_ft,facing_direction,state,district,city,ward_number,tole_name} = property;
+    const {property_ID,property_name,property_type,listed_for,price,area_aana,area_sq_ft,facing_direction,state,district,city,ward_number,tole_name} = property;
     const views = 0;
+    const status  = "On Sale";
 
-    const insertQuery = `INSERT INTO ${schemaName}.${propertyTableName}  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+    const insertQuery = `INSERT INTO ${schemaName}.${propertyTableName}  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
     
 
     try {
-        const [result,field] = await pool.query(insertQuery,[property_ID,property_type,listed_for,price,area_aana,area_sq_ft,facing_direction,views,state,district,city,ward_number,tole_name])
+        const [result,field] = await pool.query(insertQuery,[property_ID,property_type,property_name,listed_for,status,price,area_aana,area_sq_ft,facing_direction,views,state,district,city,ward_number,tole_name])
         console.log(result);
 
     } catch (error) {
