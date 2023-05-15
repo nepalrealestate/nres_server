@@ -2,9 +2,9 @@
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
 
-const propertyTableName = 'Property';
+const propertyTableName = 'property';
 const schemaName = 'nres_property';
-
+const videoTableName = 'videoLink'
 
 
 
@@ -19,6 +19,7 @@ async function createPropertyTable(){
         property_ID INT NOT NULL PRIMARY KEY,
         property_type varchar(255) NOT NULL,
         listed_for varchar(255) NOT NULL,
+        status varchar(255),
         price FLOAT,
         area_aana FLOAT,
         area_sq_ft FLOAT,
@@ -38,9 +39,34 @@ async function createPropertyTable(){
         console.log(row);
     } catch (error) {
         console.log(error);
+        throw error;
     }
 
 }
+
+
+// create table for store youtube vide link
+async function createVideoLinkTable(){
+
+    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${schemaName}.${videoTableName} (
+
+        video_ID varchar(255) NOT NULL UNIQUE,
+        property_type varchar(255) NOT NULL,
+        video nvarchar(4000) NOT NULL ,
+        PRIMARY KEY(video_ID)
+
+
+    )`;
+    try {
+        const [row,field] = await pool.query(sqlQuery);
+        console.log("video Link Table created");
+        return row;
+    } catch (error) {
+        throw error;
+    }
+
+}
+
 
 
 
@@ -54,14 +80,15 @@ async function insertProperty(property){
     
     
 
-    const {property_ID,property_type,listed_for,price,area_aana,area_sq_ft,facing_direction,state,district,city,ward_number,tole_name} = property;
+    const {property_ID,property_name,property_type,listed_for,price,area_aana,area_sq_ft,facing_direction,state,district,city,ward_number,tole_name} = property;
     const views = 0;
+    const status  = "On Sale";
 
-    const insertQuery = `INSERT INTO ${schemaName}.${propertyTableName}  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+    const insertQuery = `INSERT INTO ${schemaName}.${propertyTableName}  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
     
 
     try {
-        const [result,field] = await pool.query(insertQuery,[property_ID,property_type,listed_for,price,area_aana,area_sq_ft,facing_direction,views,state,district,city,ward_number,tole_name])
+        const [result,field] = await pool.query(insertQuery,[property_ID,property_type,property_name,listed_for,status,price,area_aana,area_sq_ft,facing_direction,views,state,district,city,ward_number,tole_name])
         console.log(result);
 
     } catch (error) {
@@ -87,6 +114,22 @@ async function updatePropertyViews(property_ID){
 }
 
 
+// insert video link
+
+async function insertVideoLink(video_ID,property_type,videoLink){
+
+    await createVideoLinkTable();
+
+    const insertQuery  = `INSERT INTO ${schemaName}.${videoTableName} VALUES (?,?,?)`;
+
+    try {
+        await pool.query(insertQuery,[video_ID,property_type,videoLink]);
+        
+    } catch (error) {
+        throw error;
+    }
+
+}
 
 
 
@@ -97,4 +140,6 @@ async function updatePropertyViews(property_ID){
 
 
 
-module.exports = {createPropertyTable,insertProperty,updatePropertyViews}
+
+
+module.exports = {createPropertyTable,insertProperty,updatePropertyViews,createVideoLinkTable,insertVideoLink}

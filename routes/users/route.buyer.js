@@ -1,7 +1,7 @@
 
 const express = require("express");
 const router  = express.Router();
-const {handleBuyers, handleBuyerRegistration, handleBuyerLogin}  = require('../../controllers/users/buyer')
+const {handleBuyers, handleBuyerRegistration, handleBuyerLogin, handleBuyerFavouriteProperty}  = require('../../controllers/users/controller.buyer')
 
 //specific router middleware for buyer
 
@@ -11,8 +11,9 @@ router.get("/",(req,res,next)=>{
 })
 
 router.get("/",handleBuyers);
-router.post("/registration",handleBuyerRegistration);
+router.post("/register",handleBuyerRegistration);
 router.post("/login",handleBuyerLogin);
+router.post("/addFavouriteProperty",handleBuyerFavouriteProperty);
 
 
 module.exports  = router;

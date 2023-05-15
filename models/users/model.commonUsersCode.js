@@ -2,7 +2,13 @@ const { pool } = require("../../connection");
 
 
 const passwordResetTokenTable ="passwordResetToken";
+
 const schemaName = "nres_users";
+
+
+//--------------------------------Create table--------------------------------------------------
+
+
 
 
 async function createPasswordResetTable(){
