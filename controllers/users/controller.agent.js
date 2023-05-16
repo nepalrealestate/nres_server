@@ -17,6 +17,7 @@ const {
   findPasswordResetTokenValue,
 } = require("../../models/users/model.commonUsersCode");
 const { wrapAwait } = require("../../errorHandling");
+const validator = require("email-validator");
 
 const saltRound = 10;
 
@@ -28,35 +29,36 @@ const handleGetAgent = async (req, res) => {
 };
 
 const handleAgentRegistration = async (req, res) => {
-  const {
-    name: name,
-    email: email,
-    password: password,
-    confirmPassword: confirmPassword,
-  } = req.body;
+  const agentData = { ...req.body };
+
+  //validate email and phone number
+  const numberRegex = /(\+977)?[9][6-9]\d{8}/;
+  if (!validator.validate(agentData.email) || ! agentData.phone_number.match(numberRegex)) {
+    return res.status(400).json({ message: "Invalid Email Address Or phone Number" });
+  }
 
   //validate  password
-
-  if (password !== confirmPassword) {
+  if (agentData.password !== agentData.confirmPassword) {
     console.log("Password not match  ");
     return res.status(403).json({ message: "Password  not match" });
   }
-  try {
-    const hashPassword = await bcrypt.hash(password, saltRound);
-    //store details in DB
-    const result = await registerAgent(name, email, hashPassword);
-    if (result === undefined) {
-      return res.status(403).json({ message: "Duplicate Email" });
-    }
-    console.log(result);
 
-    return res.status(200).json({ message: "Registration Succesfull" });
-  } catch (error) {
-    //handle hashing error\
-    console.log(error);
-
-    return res.status(404).json({ message: error.sqlMessage });
+  const [hashPassword, hashPasswordError] = await wrapAwait(
+    bcrypt.hash(agentData.password, saltRound)
+  );
+  if (hashPasswordError) {
+    console.log(hashPasswordError);
+    return res.status(400).json({ message: "Something happen" });
   }
+  delete agentData.confirmPassword;
+  agentData.password = hashPassword;
+
+  const [response, responseError] = await wrapAwait(registerAgent(agentData));
+
+  if (responseError) {
+    return res.status(400).json({ message: responseError });
+  }
+  return res.status(200).json({ message: "Registration successfully" });
 };
 
 const handleAgentLogin = async (req, res) => {
