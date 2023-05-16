@@ -28,8 +28,27 @@ const handleGetAgent = async (req, res) => {
   return res.status(200).json({ message: "Successfully getting data....." });
 };
 
+
+
+
+
+
+
+
+
+
+
 const handleAgentRegistration = async (req, res) => {
   const agentData = { ...req.body };
+
+  console.log("After Image Upload",req.files);
+
+  agentData.identification_image = {
+    //change single quote to double quote for store in json format in db
+    "front":'"' + req.files[0].path+ '"',
+    "back":'"' + req.files[1].path+ '"',
+  }
+  console.log(agentData);
 
   //validate email and phone number
   const numberRegex = /(\+977)?[9][6-9]\d{8}/;
@@ -75,6 +94,16 @@ const handleAgentLogin = async (req, res) => {
 };
 
 // Verify Token
+
+
+
+
+
+
+
+
+
+
 
 const handleAgentVerifyToken = async (req, res, next) => {
   return verifyToken(req, res, next);
