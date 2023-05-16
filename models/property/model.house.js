@@ -1,6 +1,6 @@
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
-const {createPropertyTable,insertProperty} = require("../property/models.property");
+const {createPropertyTable,insertProperty} = require("./model.property");
 const propertyTableName = 'Property'
 const houseTableName = 'House';
 const houseFeedbackTableName = 'HouseFeedback';

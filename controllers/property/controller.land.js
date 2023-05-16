@@ -1,5 +1,5 @@
 const {insertLandProperty, getLandProperty, insertLandFeedback, getLandByID}   = require("../../models/property/model.land");
-const { updatePropertyViews } = require("../../models/property/models.property");
+const { updatePropertyViews } = require("../../models/property/model.property");
 
 // only for test purpose
 

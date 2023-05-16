@@ -1,7 +1,7 @@
 const { throws } = require("assert");
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
-const {createPropertyTable,insertProperty} = require("../property/models.property");
+const {createPropertyTable,insertProperty} = require("../property/model.property");
 const { error } = require("console");
 const propertyTableName = 'Property'
 const houseTableName = 'House';
