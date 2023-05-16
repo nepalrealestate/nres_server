@@ -1,5 +1,5 @@
 const {insertApartmentProperty, getApartmentProperty, insertApartmentFeedback, getApartmentByID}   = require("../../models/property/model.apartment");
-const { updatePropertyViews } = require("../../models/property/models.property");
+const { updatePropertyViews } = require("../../models/property/model.property");
 
 
 

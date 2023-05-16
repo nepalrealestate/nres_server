@@ -12,13 +12,13 @@ async function registerAgent(agentData) {
   const query = `CREATE TABLE IF NOT EXISTS ${schemaName}.${agentTableName} 
     
     (
-        id varchar(36) UNIQUE PRIMARY KEY,
+      id varchar(36) UNIQUE PRIMARY KEY,
     name VARCHAR(255),
     email VARCHAR(255), 
     phone_number VARCHAR(10), 
     identification_type VARCHAR(20),
     identification_number VARCHAR(20),
-    identification_image VARCHAR(255),
+    identification_image JSON,
     password VARCHAR(255),
     UNIQUE(email)
     
@@ -30,6 +30,7 @@ async function registerAgent(agentData) {
   } catch (error) {
     console.log(error);
   }
+  console.log(agentData.identification_image)
 
   const insertQuery = `INSERT INTO ${schemaName}.${agentTableName} (id,name,email,phone_number,identification_type,identification_number,identification_image,password) VALUES (uuid(),?,?,?,?,?,?,?)`;
   try {
@@ -39,7 +40,7 @@ async function registerAgent(agentData) {
       agentData.phone_number,
       agentData.identification_type,
       agentData.identification_number,
-      agentData.identification_image,
+      `{"front":${agentData.identification_image.front},"back":${agentData.identification_image.back}}`,
       agentData.password,
     ]);
     return result;

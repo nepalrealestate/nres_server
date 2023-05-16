@@ -5,10 +5,12 @@ const router  = express.Router();
 
 const {UploadImage} = require("../../middlewares/middleware.uploadFile");
 const path  = 'uploads/users/agent/'  //path from source 
-const uploadAgentImage = new UploadImage(path);
+const maxImageSize = 2 * 1024 * 1024
+const uploadImage = new UploadImage(path,maxImageSize);
+
 
 router.get("/",handleGetAgent);
-router.post("/register",uploadAgentImage.upload.array('image',2),handleAgentRegistration);
+router.post("/register",uploadImage.upload.array('image',2),handleAgentRegistration);
 router.post("/login",handleAgentLogin);
 router.put("/password",handleAgentPasswordReset);
 

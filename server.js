@@ -23,6 +23,19 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
 //form-urlencoded
 app.use(cors({credentials:true,origin:"*"}));
+
+
+// Error handling middleware for Multer
+app.use((err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+      // A Multer error occurred during file upload
+      res.status(400).json({ error: 'Multer Error: ' + err.message });
+    } else {
+      // Handle other errors
+      next(err);
+    }
+  });
+
 //Routes
 app.use(express.json())
 app.use("/buyer",buyerRouter);
@@ -35,6 +48,8 @@ app.use("/house",houseRouter);
 app.use("/land",landRouter)
 app.use ("/apartment",apartmentRouter);
 app.use("/property",propertyRouter);
+
+
 
 
 

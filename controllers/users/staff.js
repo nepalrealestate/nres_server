@@ -2,7 +2,7 @@
 const bcrypt = require('bcrypt');
 const {registerStaff,findStaff} = require("../../models/users/staff");
 const {login} = require("./commonAuthCode");
-const { insertVideoLink } = require('../../models/property/models.property');
+const { insertVideoLink } = require('../../models/property/model.property');
 
 const saltRound = 10;
 

@@ -1,6 +1,6 @@
 
 const {insertHouseProperty, getHouseProperty, insertHouseFeedback, getHouseByID}   = require("../../models/property/model.house")
-const {updatePropertyViews}  = require("../../models/property/models.property");
+const {updatePropertyViews}  = require("../../models/property/model.property");
 
 // only for test purpose
 

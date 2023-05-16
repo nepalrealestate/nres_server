@@ -5,7 +5,7 @@ const { isTableExists } = require("../commonModels");
 const propertyTableName = 'property';
 const schemaName = 'nres_property';
 const videoTableName = 'videoLink'
-
+const requestedPropertyTableName = 'requested_property';
 
 
 //--------------Create Table------------------------------------
@@ -53,7 +53,7 @@ async function createVideoLinkTable(){
         video_ID varchar(255) NOT NULL UNIQUE,
         property_type varchar(255) NOT NULL,
         video nvarchar(4000) NOT NULL ,
-        PRIMARY KEY(video_ID)
+        PRIMARY KEY(video_ID),
 
 
     )`;
@@ -67,6 +67,39 @@ async function createVideoLinkTable(){
 
 }
 
+
+// create table for store requested property by users
+
+async function createRequestedPropertyTable(){
+    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${schemaName}.${requestedPropertyTableName} 
+    (
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        name varchar (50) NOT NULL,
+        email varchar(50) ,
+        phone_number varchar(20) NOT NULL,
+        requested_for varchar(20) NOT NULL,
+        property_type varchar(20) NOT NULL,
+        urgency varchar(20) NOT NULL,
+        price_range JSON,
+        description varchar(500),
+        province varchar(20) NOT NULL,
+        district varchar(20) NOT NULL,
+        municipality varchar(20) NOT NULL,
+        ward_number INT
+        
+        
+    )`
+
+    try {
+        const [result,field] = await pool.query(sqlQuery);
+        return result;
+
+    
+    } catch (error) {
+        console.log(error)
+        throw error;
+    }
+}
 
 
 
@@ -132,6 +165,31 @@ async function insertVideoLink(video_ID,property_type,videoLink){
 }
 
 
+async function insertIntoRequestedProperty(property){
+
+    await createRequestedPropertyTable();
+
+   
+
+    const insertQuery = `INSERT INTO ${schemaName}.${requestedPropertyTableName} (
+        id,name,email,phone_number,requested_for,property_type,urgency,price_range,description,province,district,municipality,ward_number
+    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+   
+    const insertValue =  Object.values(property);// return value of array;
+    insertValue.unshift(0)
+    
+    console.log(insertValue);
+
+
+    try {
+        const [result,field]  = await pool.query(insertQuery,insertValue);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+
+
+}
 
 
 
@@ -142,4 +200,6 @@ async function insertVideoLink(video_ID,property_type,videoLink){
 
 
 
-module.exports = {createPropertyTable,insertProperty,updatePropertyViews,createVideoLinkTable,insertVideoLink}
+
+
+module.exports = {createPropertyTable,insertProperty,updatePropertyViews,createVideoLinkTable,insertVideoLink,insertIntoRequestedProperty}
