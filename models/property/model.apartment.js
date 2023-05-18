@@ -24,6 +24,7 @@ async function createApartmentTable (){
         furnish_status BOOL,
         parking BOOL,
         facilities VARCHAR(1000),
+        apartment_image JSON
         FOREIGN KEY (property_ID) REFERENCES ${schemaName}.${propertyTableName}(property_ID) ON DELETE CASCADE
     
     )`;

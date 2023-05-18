@@ -36,11 +36,11 @@ function UploadImage(folderPath,maxImageSize) {
     },
   });
 
-
-  
-
- 
-
 }
+
+
+
+
+
 
 module.exports = { UploadImage };

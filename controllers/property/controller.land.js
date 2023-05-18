@@ -5,17 +5,33 @@ const { updatePropertyViews } = require("../../models/property/model.property");
 
 const handleAddLand = async (req,res)=>{
 
-   const {property,landProperty} = req.body;
-   console.log(req.body)
 
-     console.log("Add Land API HITTTTT !!!!!!");
-     try {
-        await insertLandProperty(property,landProperty);
-        return res.status(200).json({message:"Insert into table"});
-     } catch (error) {
-         console.log(error);
-        return res.status(400).json({message:error.sqlMessage})
-     }
+   upload(req, res, async function (err) {
+      if (err instanceof multer.MulterError) {
+        // A Multer error occurred when uploading.
+        return res.status(400).json({message:err});
+      } else if (err) {
+        // An unknown error occurred when uploading.
+        return res.status(400).json({message:err});
+      }
+  
+      // Everything went fine.
+
+      const {property,landProperty} = req.body;
+      console.log(req.body)
+   
+        console.log("Add Land API HITTTTT !!!!!!");
+        try {
+           await insertLandProperty(property,landProperty);
+           return res.status(200).json({message:"Insert into table"});
+        } catch (error) {
+            console.log(error);
+           return res.status(400).json({message:error.sqlMessage})
+        }
+
+    })
+
+  
 
 }
 

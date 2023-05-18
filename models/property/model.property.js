@@ -6,6 +6,7 @@ const propertyTableName = 'property';
 const schemaName = 'nres_property';
 const videoTableName = 'videoLink'
 const requestedPropertyTableName = 'requested_property';
+const applyForListingTableName = 'applyListing';
 
 
 //--------------Create Table------------------------------------
@@ -17,8 +18,8 @@ async function createPropertyTable(){
     const sqlQuery = `CREATE TABLE IF NOT EXISTS ${schemaName}.${propertyTableName} 
     (
         property_ID INT NOT NULL PRIMARY KEY,
-        property_type varchar(255) NOT NULL,
-        listed_for varchar(255) NOT NULL,
+        property_type varchar(10) NOT NULL,
+        listed_for varchar(10) NOT NULL,
         status varchar(255),
         price FLOAT,
         area_aana FLOAT,
@@ -101,6 +102,30 @@ async function createRequestedPropertyTable(){
     }
 }
 
+
+async function createAppliedForPropertyListing(){
+
+    const createQuery = `CREATE TABLE IF NOT EXISTS ${schemaName}.${applyForListingTableName} 
+    
+    (
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        property_type varchar(10) NOT NULL,
+        listed_for varchar(10) NOT NULL,
+        isApproved bool default false
+
+
+
+    )`
+
+    try {
+        return await pool.query(createQuery);
+    } catch (error) {
+        throw error;
+        
+    }
+
+
+}
 
 
 
@@ -192,6 +217,22 @@ async function insertIntoRequestedProperty(property){
 }
 
 
+async function insertIntoApplyForPropertyListing(property){
+
+      
+
+
+        const insertQuery =   `INSERT INTO ${schemaName}.${applyForListingTableName} (id,property_type,listed_for,isApproved)   VALUES  (?,?,?,?)`
+        const insertValue = Object.values(property);
+        try {
+            const [result,field]   = await pool.query(insertQuery,insertValue);
+            return result;
+        } catch (error) {
+            throw error;
+        }
+
+
+}
 
 
 
@@ -202,4 +243,15 @@ async function insertIntoRequestedProperty(property){
 
 
 
-module.exports = {createPropertyTable,insertProperty,updatePropertyViews,createVideoLinkTable,insertVideoLink,insertIntoRequestedProperty}
+
+
+module.exports = {createPropertyTable,
+    insertProperty,
+    updatePropertyViews,
+    createVideoLinkTable,
+    insertVideoLink,
+    insertIntoRequestedProperty,
+    createAppliedForPropertyListing,
+    insertIntoApplyForPropertyListing
+
+    }

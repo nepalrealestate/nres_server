@@ -1,10 +1,11 @@
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
-const {createPropertyTable,insertProperty} = require("./model.property");
+const {createPropertyTable,insertProperty, insertIntoRequestedProperty, insertIntoApplyForPropertyListing} = require("./model.property");
 const propertyTableName = 'Property'
 const houseTableName = 'House';
 const houseFeedbackTableName = 'HouseFeedback';
 const schemaName = 'nres_property';
+const applyForHouseListingTable = 'applyHouseListing'; 
 
 // Create House Table
 
@@ -31,6 +32,36 @@ async function createHouseTable(){
     } catch (error) {
        throw error;
     }
+
+}
+
+async function createApplyForHouseListing(){
+
+    // create property table first  -if not created
+    await createAppliedForPropertyListing()
+
+    const createQuery =   `CREATE TABLE IF NOT EXISTS ${schemaName}.${applyForHouseListingTable}(
+
+        property_ID INT NOT NULL PRIMARY KEY UNIQUE,
+        room INT,
+        floor FLOAT,
+        furnish_status BOOL,
+        parking BOOL,
+        road_access_ft FLOAT,
+        facilities VARCHAR(1000),
+        FOREIGN KEY (property_ID) REFERENCES ${schemaName}.${propertyTableName}(property_ID) ON DELETE CASCADE
+
+    )`;
+
+    try {
+        const[row,field] = await pool.query(createQuery);
+        console.log("Table Created");
+        return row;
+    } catch (error) {
+       throw error;
+    }
+
+
 
 }
 
@@ -143,6 +174,15 @@ async function insertHouseFeedback(property_ID,feedback){
 
 
 }
+
+async function insertIntoApplyHouseLisiting(property,houseProperty){
+
+    
+
+}
+
+
+
 
 async function getHouseByID(property_ID){
 

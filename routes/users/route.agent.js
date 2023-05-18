@@ -1,17 +1,15 @@
 const express = require("express");
-const { handleAgentRegistration,handleGetAgent,handleAgentLogin, handleAgentPasswordReset } = require("../../controllers/users/controller.agent");
+const { handleAgentRegistration,handleGetAgent,handleAgentLogin, handleAgentPasswordReset, handleAgentRating } = require("../../controllers/users/controller.agent");
+const { verifyToken } = require("../../controllers/users/commonAuthCode");
 
 const router  = express.Router();
 
-const {UploadImage} = require("../../middlewares/middleware.uploadFile");
-const path  = 'uploads/users/agent/'  //path from source 
-const maxImageSize = 2 * 1024 * 1024
-const uploadImage = new UploadImage(path,maxImageSize);
 
 
-router.get("/",handleGetAgent);
-router.post("/register",uploadImage.upload.array('image',2),handleAgentRegistration);
+router.get("/",verifyToken,handleGetAgent);
+router.post("/register",handleAgentRegistration);
 router.post("/login",handleAgentLogin);
 router.put("/password",handleAgentPasswordReset);
+router.post("/rating",handleAgentRating)
 
 module.exports = router;

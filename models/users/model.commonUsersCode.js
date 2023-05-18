@@ -2,7 +2,7 @@ const { pool } = require("../../connection");
 
 
 const passwordResetTokenTable ="passwordResetToken";
-
+const usersRatingTable = 'usersRating'
 const schemaName = "nres_users";
 
 
@@ -36,6 +36,49 @@ async function createPasswordResetTable(){
         
     }
 
+}
+
+
+ // create table for store users rating
+
+ async function createUsersRatingTable(){
+
+
+    const createQuery  = `CREATE TABLE IF NOT EXISTS ${schemaName}.${usersRatingTable} 
+    (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        user_id  VARCHAR(36),
+        rating FLOAT
+        
+    )`;
+    
+    try {
+        return await pool.query(createQuery);
+    } catch (error) {
+        console.log(error)
+        throw error;
+    }
+
+ }
+
+
+// -----------------------------Insert values---------------------------------
+
+
+async function insertUsersRating(user_id,rating){
+
+    // table create if not created;
+
+    await  createUsersRatingTable();
+
+    const insertQuery = `INSERT INTO ${schemaName}.${usersRatingTable} (id,user_id,rating) VALUES (?,?,?)`;
+    try {
+        const [result,field] = await pool.query(insertQuery,[0,user_id,rating]);
+        return result;
+    } catch (error) {
+         console.log(error);
+        throw error;
+    }
 }
 
 
@@ -78,6 +121,8 @@ console.log(expireTime);
 
 }
 
+// -  -------------------------Update Data------------------------------
+
 async function updatePasswordResetTokenValue(id,token){
 
     
@@ -92,6 +137,9 @@ async function updatePasswordResetTokenValue(id,token){
         }
 
 }
+
+
+// ---------------------------Find Data -----------------------------------------
 
 async function findPasswordResetTokenValue(id){
 
@@ -122,5 +170,11 @@ async function deleteToken(id){
 
 
 
-module.exports = {createPasswordResetTable,insertIntoPasswordResetToken,updatePasswordResetTokenValue,findPasswordResetTokenValue,deleteToken};
+module.exports = {createPasswordResetTable,
+    insertIntoPasswordResetToken,
+    updatePasswordResetTokenValue,
+    findPasswordResetTokenValue,
+    deleteToken,
+    insertUsersRating,
+};
 
