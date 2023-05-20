@@ -2,8 +2,9 @@
 
 {
     "property":{
-        "property_ID":1019,
-        "property_type":"Land",
+        "property_id":1019,
+        "property_type":"land",
+        "property_name":"bhat khane "
         "listed_for":"Sale",
         "price":8000000,
         "area_aana":8,

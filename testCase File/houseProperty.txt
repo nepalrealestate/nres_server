@@ -1,9 +1,11 @@
 // Test case
 
+
 {
     "property":{
-        "property_ID":1018,
-        "property_type":"House",
+        "property_id":1018,
+        "property_type":"house",
+        "property_name":"lavish house",
         "listed_for":"Sale",
         "price":12000000,
         "area_aana":10,

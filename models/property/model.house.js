@@ -1,5 +1,6 @@
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
+const { propertyTable } = require("../tableName");
 const {createPropertyTable,insertProperty, insertIntoRequestedProperty, insertIntoApplyForPropertyListing} = require("./model.property");
 const propertyTableName = 'Property'
 const houseTableName = 'House';
@@ -12,7 +13,7 @@ const applyForHouseListingTable = 'applyHouseListing';
 async function createHouseTable(){
     //if not exists then create property table
     await createPropertyTable();
-    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${schemaName}.${houseTableName} 
+    const sqlQuery = `CREATE TABLE IF NOT EXISTS ${propertyTable.house}
     (
         property_ID INT NOT NULL PRIMARY KEY UNIQUE,
         room INT,
@@ -21,7 +22,7 @@ async function createHouseTable(){
         parking BOOL,
         road_access_ft FLOAT,
         facilities VARCHAR(1000),
-        FOREIGN KEY (property_ID) REFERENCES ${schemaName}.${propertyTableName}(property_ID) ON DELETE CASCADE
+        FOREIGN KEY (property_ID) REFERENCES ${propertyTable.property}(property_ID) ON DELETE CASCADE
     
     )`;
 
@@ -89,20 +90,20 @@ async function createHouseFeedbackTable(){
 
 
 
-async function insertHouseProperty(property,houseProperty){
+async function insertHouseProperty(property,houseProperty,user_id,user_type){
 
    
 
    await createHouseTable();
 
    //two different object recieve for store data 
-   await insertProperty(property);
+   await insertProperty(property,user_id,user_type);
 
    
 
    const { property_ID,room,floor,furnish_status,parking,road_access_ft,facilities } = houseProperty;
 
-   const insertQuery = `INSERT INTO ${schemaName}.${houseTableName} VALUES (?,?,?,?,?,?,?)`;
+   const insertQuery = `INSERT INTO ${propertyTable.house} VALUES (?,?,?,?,?,?,?)`;
 
    try {
        const [result,field] = await pool.query(insertQuery,[property_ID,room,floor,furnish_status,parking,road_access_ft,facilities])

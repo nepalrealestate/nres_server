@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const {handleAddApartment, handleGetApartment, handleApartmentFeedback, handleUpdateApartmentViews, handleGetApartmentByID} = require("../../controllers/property/controller.apartment");
+const { verifyToken } = require("../../controllers/users/commonAuthCode");
 
 
 router.post("/",handleAddApartment);// insert apartment property
@@ -10,6 +11,9 @@ router.put("/updateViews/:property_ID",handleUpdateApartmentViews); // update ap
 router.get("/:property_ID",handleGetApartmentByID);// get single apartment and update views also
 
 
+
+
+// testing code 
 
 
 

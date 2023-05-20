@@ -23,6 +23,8 @@ const schemaName = "nres_users";
 const login = async (req, res, user) => {
   const { password } = req.body;
 
+  
+
   if (!user) {
     console.log("No User Found");
     return res.status(404).send("User Not Found");
@@ -89,6 +91,7 @@ const login = async (req, res, user) => {
 
 const verifyToken = (req, res, next) => {
   //geeting cookies from frontEnd
+ 
   const cookies = req.headers.cookie;
   // console.log("THIS IS COOKIES",req.headers.cookie);
   if (!cookies) {

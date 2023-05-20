@@ -8,6 +8,9 @@ const {
 const agentTableName = "agent";
 const schemaName = "nres_users";
 const userRatingTable = "usersRating"
+const {propertyTable,userTable}= require("../tableName")
+
+// --------inserting 
 
 async function registerAgent(agentData) {
   const query = `CREATE TABLE IF NOT EXISTS ${schemaName}.${agentTableName} 
@@ -50,6 +53,17 @@ async function registerAgent(agentData) {
     throw error;
   }
 }
+
+
+
+
+
+
+
+// -------insert data ----------------
+
+
+
 
 //---------------------------Get Data---------------------
 
