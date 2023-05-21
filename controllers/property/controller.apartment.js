@@ -67,6 +67,8 @@ const handleAddApartment = async (req,res)=>{
 
 }
 
+
+
 const handleGetApartment = async (req,res)=>{
 
  
@@ -101,6 +103,8 @@ const handleGetApartment = async (req,res)=>{
    }
 
 }
+
+
 
 
 

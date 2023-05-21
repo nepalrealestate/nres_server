@@ -3,7 +3,7 @@ const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
 const {createPropertyTable,insertProperty} = require("../property/model.property");
 const { error } = require("console");
-const { propertyTable } = require("../tableName");
+const { propertyTable, views } = require("../tableName");
 const propertyTableName = 'Property'
 const houseTableName = 'House';
 const landTableName = 'Land';
@@ -19,7 +19,7 @@ async function createLandTable(){
     await createPropertyTable();
   const sqlQuery = `CREATE TABLE  IF NOT EXISTS ${propertyTable.land}
   (
-    property_ID INT NOT NULL PRIMARY KEY UNIQUE,
+      property_id INT NOT NULL PRIMARY KEY UNIQUE,
       land_type VARCHAR(255),
       soil VARCHAR(255),
       road_access_ft FLOAT,
@@ -88,8 +88,7 @@ async function insertLandProperty(property,landProperty,user_id,user_type){
 async function getLandProperty(condition,limit,offSet){
 
 
-    let sqlQuery = `SELECT p.*,l.* FROM ${schemaName}.${propertyTableName} AS p INNER JOIN ${schemaName}.${landTableName} AS l ON p.property_ID=l.property_ID WHERE 1=1 `;
-
+    let sqlQuery = `SELECT property_id,property_name,listed_for,status,price,views,city,ward_number,tole_name FROM ${views.fullLandView} WHERE 1=1 `;
     const params = [];
     //adding search conditon on query
     for(let key of Object.keys(condition)){
@@ -144,12 +143,12 @@ async function insertLandFeedback(property_ID,feedback){
 }
 
 
-async function getLandByID(property_ID){
+async function getLandByID(property_id){
 
-    const getQuery = `SELECT p.*,l.* FROM ${schemaName}.${propertyTableName} AS p INNER JOIN ${schemaName}.${landTableName} AS l ON p.property_ID=${property_ID}`;
+    const getQuery =   `SELECT * FROM ${views.fullLandView} WHERE property_id = ?`
 
     try {
-        const [result,field] = await pool.query(getQuery);
+        const [result,field] = await pool.query(getQuery,property_id);
         return result[0];//return object not array
     } catch (error) {
         throw error;

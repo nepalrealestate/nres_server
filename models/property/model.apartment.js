@@ -1,7 +1,7 @@
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
 const {createPropertyTable,insertProperty} = require("../property/model.property");
-const { propertyTable } = require("../tableName");
+const { propertyTable, views } = require("../tableName");
 const propertyTableName = 'Property'
 const houseTableName = 'House';
 const landTableName = 'Land';
@@ -104,7 +104,7 @@ async function insertApartmentProperty(property,apartmentProperty,user_id,user_t
 async function getApartmentProperty(condition,limit,offSet){
 
 
-    let sqlQuery = `SELECT p.*,a.* FROM  ${schemaName}.${propertyTableName} AS p INNER JOIN  ${schemaName}.${apartmentTableName}  AS a ON p.property_ID=a.property_ID WHERE 1=1 `;
+    let sqlQuery =   `SELECT property_id,property_name,listed_for,status,price,views,city,ward_number,tole_name,apartment_image FROM ${views.fullHouseView} WHERE 1=1 `;
 
     const params = [];
     //adding search conditon on query
@@ -122,7 +122,7 @@ async function getApartmentProperty(condition,limit,offSet){
 
     //after adding search condition query
 
-    sqlQuery += `LIMIT ${limit} OFFSET ${offSet}`
+    sqlQuery += ` LIMIT ${limit} OFFSET ${offSet}`
 
     console.log(sqlQuery);
     
@@ -155,16 +155,16 @@ async function insertApartmentFeedback(property_ID,feedback){
         console.log(error);
         throw error;
     }
-
+  
 
 }
 
-async function getApartmentByID(property_ID){
+async function getApartmentByID(property_id){
 
-    const getQuery = `SELECT p.*,a.* FROM  ${schemaName}.${propertyTableName} AS p INNER JOIN  ${schemaName}.${apartmentTableName} AS a ON p.property_ID=${property_ID} `;
+    const getQuery =`SELECT * FROM ${views.fullApartmentView} WHERE property_id = ?`
 
     try {
-        const [result,field] = await pool.query(getQuery);
+        const [result,field] = await pool.query(getQuery,[property_id]);
        
         return result[0];// return object not array
     } catch (error) {
