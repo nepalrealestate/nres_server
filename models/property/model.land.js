@@ -3,6 +3,7 @@ const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
 const {createPropertyTable,insertProperty} = require("../property/model.property");
 const { error } = require("console");
+const { propertyTable } = require("../tableName");
 const propertyTableName = 'Property'
 const houseTableName = 'House';
 const landTableName = 'Land';
@@ -16,13 +17,13 @@ const schemaName = 'nres_property';
 async function createLandTable(){
     // create property table before apartment table
     await createPropertyTable();
-  const sqlQuery = `CREATE TABLE  IF NOT EXISTS ${schemaName}.${landTableName} 
+  const sqlQuery = `CREATE TABLE  IF NOT EXISTS ${propertyTable.land}
   (
     property_ID INT NOT NULL PRIMARY KEY UNIQUE,
       land_type VARCHAR(255),
       soil VARCHAR(255),
       road_access_ft FLOAT,
-      FOREIGN KEY (property_ID) REFERENCES ${schemaName}.${propertyTableName}(property_ID) ON DELETE CASCADE
+      FOREIGN KEY (property_ID) REFERENCES ${propertyTable.property}(property_ID) ON DELETE CASCADE
   
   )`;
 
@@ -59,18 +60,18 @@ async function createLandFeedbackTable(){
 
 
 
-async function insertLandProperty(property,landProperty){
+async function insertLandProperty(property,landProperty,user_id,user_type){
 
     // if table is not create then create table
     await createLandTable();
 
     // insert property object data in property
-    await insertProperty(property);
+    await insertProperty(property,user_id,user_type);
 
 
     const {property_ID,land_type,soil,road_access_ft} = landProperty;
 
-    const insertQuery = `INSERT INTO ${schemaName}.${landTableName} VALUES (?,?,?,?)`;
+    const insertQuery = `INSERT INTO ${propertyTable.land} VALUES (?,?,?,?)`;
 
     try {
         const [result,field] = await pool.query(insertQuery,[property_ID,land_type,soil,road_access_ft])

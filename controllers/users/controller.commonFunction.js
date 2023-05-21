@@ -1,4 +1,6 @@
+const { json } = require("body-parser");
 const { sendPasswordResetTokenMail } = require("../../middlewares/property/middleware.sendEmail");
+const { insertUsersRating } = require("../../models/users/model.commonUsersCode");
 
 
 
@@ -14,6 +16,10 @@ async function sendTokenToUserByEmail(email,token){
   return await sendPasswordResetTokenMail(email,token);
 
 }
+
+
+
+
 
 
 

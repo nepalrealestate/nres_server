@@ -23,10 +23,13 @@ const schemaName = "nres_users";
 const login = async (req, res, user) => {
   const { password } = req.body;
 
+  
+
   if (!user) {
     console.log("No User Found");
     return res.status(404).send("User Not Found");
   }
+  console.log(user)
 
   //compare bcrypt password;
 
@@ -38,7 +41,7 @@ const login = async (req, res, user) => {
 
   //create jwt token
 
-  const token = jwt.sign({ id: user.email }, process.env.JWT_KEY, {
+  const token = jwt.sign({ id: user.id }, process.env.JWT_KEY, {
     expiresIn: tokenExpireTime,
   });
 
@@ -72,7 +75,7 @@ const login = async (req, res, user) => {
   // }
 
   //set cookies to response
-  res.cookie(String(user.email), token, {
+  res.cookie(String(user.id), token, {
     path: "/",
     expires: new Date(Date.now() + 1000 * 1000 * 60),
     httpOnly: true,
@@ -82,8 +85,13 @@ const login = async (req, res, user) => {
   return res.status(200).json({ message: "Successfully Logged In", token });
 };
 
+
+
+
+
 const verifyToken = (req, res, next) => {
   //geeting cookies from frontEnd
+ 
   const cookies = req.headers.cookie;
   // console.log("THIS IS COOKIES",req.headers.cookie);
   if (!cookies) {
@@ -98,12 +106,13 @@ const verifyToken = (req, res, next) => {
   }
   jwt.verify(String(token), process.env.JWT_KEY, (err, user) => {
     if (err) {
+      console.log(err)
       return res.status(400).json({ message: "Invalid Token" });
     }
 
-    console.log(user.email);
+    console.log(user.id);
     //set request id
-    req.id = user.email;
+    req.id = user?.id;
   });
   console.log("Token Verify  !!!");
   //go to next function in router

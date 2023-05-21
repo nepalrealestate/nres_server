@@ -1,6 +1,7 @@
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
 const {createPropertyTable,insertProperty} = require("../property/model.property");
+const { propertyTable } = require("../tableName");
 const propertyTableName = 'Property'
 const houseTableName = 'House';
 const landTableName = 'Land';
@@ -16,15 +17,16 @@ async function createApartmentTable (){
     // create property table before apartment table
     await createPropertyTable();
 
-    const sqlQuery = `CREATE TABLE  IF NOT EXISTS ${schemaName}.${apartmentTableName} 
+    const sqlQuery = `CREATE TABLE  IF NOT EXISTS ${propertyTable.apartment}
     (
-        property_ID INT NOT NULL PRIMARY KEY UNIQUE,
+        property_id INT NOT NULL PRIMARY KEY UNIQUE,
         bhk INT,
         situated_floor INT,
         furnish_status BOOL,
         parking BOOL,
         facilities VARCHAR(1000),
-        FOREIGN KEY (property_ID) REFERENCES ${schemaName}.${propertyTableName}(property_ID) ON DELETE CASCADE
+        apartment_image JSON,
+        FOREIGN KEY (property_id) REFERENCES ${propertyTable.property}(property_id) ON DELETE CASCADE
     
     )`;
 
@@ -61,29 +63,29 @@ async function createApartmentFeedbackTable(){
 }
 
 
-async function insertApartmentProperty(property,apartmentProperty){
+async function insertApartmentProperty(property,apartmentProperty,user_id,user_type){
 
     // if table is not create then create table
     await createApartmentTable();
 
     // insert property object data in property
     try {
-        await insertProperty(property);
+        await insertProperty(property,user_id,user_type);
     } catch (error) {
         
         throw error;
     }
    
    
-   
+   console.log("property added successs")
 
-    const {property_ID,bhk,situated_floor,furnish_status,parking,facilities} = apartmentProperty;
+    const {property_id,bhk,situated_floor,furnish_status,parking,facilities} = apartmentProperty;
 
-    const insertQuery = `INSERT INTO  ${schemaName}.${apartmentTableName}  VALUES (?,?,?,?,?,?)`;
+    const insertQuery = `INSERT INTO  ${propertyTable.apartment}  VALUES (?,?,?,?,?,?,?) `;
 
     try {
         
-        const [result,field] = await pool.query(insertQuery,[property_ID,bhk,situated_floor,furnish_status,parking,facilities]);
+        const [result,field] = await pool.query(insertQuery,[property_id,bhk,situated_floor,furnish_status,parking,facilities,null]);
        
         return result;
 
