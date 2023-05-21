@@ -37,9 +37,18 @@ const propertyTable = {
 
 }
 
+const views = {
+
+    fullApartmentView : `${propertySchemaName}.full_apartment_property`,
+    fullHouseView     : `${propertySchemaName}.full_apartment_property`,
+    fullLandView      : `${propertySchemaName}.full_apartment_property`
+    
+
+}
+
 
 
 // property 
 
 
-module.exports = {userTable,propertyTable}
+module.exports = {userTable,propertyTable,views}

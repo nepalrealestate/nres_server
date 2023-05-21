@@ -3,7 +3,7 @@ const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
 const {createPropertyTable,insertProperty} = require("../property/model.property");
 const { error } = require("console");
-const { propertyTable } = require("../tableName");
+const { propertyTable, views } = require("../tableName");
 const propertyTableName = 'Property'
 const houseTableName = 'House';
 const landTableName = 'Land';
@@ -88,7 +88,7 @@ async function insertLandProperty(property,landProperty,user_id,user_type){
 async function getLandProperty(condition,limit,offSet){
 
 
-    let sqlQuery = `SELECT p.*,l.* FROM ${schemaName}.${propertyTableName} AS p INNER JOIN ${schemaName}.${landTableName} AS l ON p.property_ID=l.property_ID WHERE 1=1 `;
+    let sqlQuery = `SELECT * FROM ${views.fullLandView} WHERE 1=1 `;
 
     const params = [];
     //adding search conditon on query

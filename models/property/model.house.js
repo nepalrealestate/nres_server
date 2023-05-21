@@ -1,6 +1,6 @@
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
-const { propertyTable } = require("../tableName");
+const { propertyTable, views } = require("../tableName");
 const {createPropertyTable,insertProperty, insertIntoRequestedProperty, insertIntoApplyForPropertyListing} = require("./model.property");
 const propertyTableName = 'Property'
 const houseTableName = 'House';
@@ -122,7 +122,7 @@ async function insertHouseProperty(property,houseProperty,user_id,user_type){
 async function getHouseProperty(condition,limit,offSet){
 
 
-    let sqlQuery = `SELECT p.*,h.* FROM ${schemaName}.${propertyTableName} AS p INNER JOIN ${schemaName}.${houseTableName} AS h ON p.property_ID=h.property_ID WHERE 1=1 `;
+    let sqlQuery = `SELECT * FROM ${views.fullHouseView} WHERE 1=1 `;
 
     const params = [];
     //adding search conditon on query
@@ -132,7 +132,7 @@ async function getHouseProperty(condition,limit,offSet){
 
         if(condition[key]){
             // adding search conditon and  push value in params array;
-            sqlQuery += `AND ${key} = ?`
+            sqlQuery += ` AND ${key} = ?`
             params.push(condition[key]);
         }
 
@@ -140,7 +140,7 @@ async function getHouseProperty(condition,limit,offSet){
 
     //after adding search condition query
 
-    sqlQuery += `LIMIT ${limit} OFFSET ${offSet}`
+    sqlQuery += ` LIMIT ${limit} OFFSET ${offSet}`
 
     
     
