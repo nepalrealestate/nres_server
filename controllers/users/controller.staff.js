@@ -1,6 +1,6 @@
 
 const bcrypt = require('bcrypt');
-const {registerStaff,findStaff} = require("../../models/users/staff");
+const {registerStaff,findStaff, getStaffByID} = require("../../models/users/model.staff");
 const {login} = require("./commonAuthCode");
 const { insertVideoLink } = require('../../models/property/model.property');
 
@@ -8,8 +8,17 @@ const saltRound = 10;
 
 const handleGetStaff = async function (req,res){
     console.log("Handling Staff");
+
+    console.log(req.id);
+
+    try {
+        const result = await getStaffByID(req.id);
+        return res.status(200).json({result});
+    } catch (error) {
+        return res.status(400).json({message:error});
+    }
     
-    return res.status(200).json({message:"Getting Staff Data Soon!!"});
+ 
 }
 
 const handleStaffRegistration = async(req,res)=>{

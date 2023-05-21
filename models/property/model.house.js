@@ -15,7 +15,7 @@ async function createHouseTable(){
     await createPropertyTable();
     const sqlQuery = `CREATE TABLE IF NOT EXISTS ${propertyTable.house}
     (
-        property_ID INT NOT NULL PRIMARY KEY UNIQUE,
+        property_id INT NOT NULL PRIMARY KEY UNIQUE,
         room INT,
         floor FLOAT,
         furnish_status BOOL,
