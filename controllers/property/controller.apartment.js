@@ -1,5 +1,5 @@
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
-const {insertApartmentProperty, getApartmentProperty, insertApartmentFeedback, getApartmentByID}   = require("../../models/property/model.apartment");
+const {insertApartmentProperty, getApartmentProperty, insertApartmentFeedback, getApartmentByID, insertApplyApartmentProperty, getApplyApartmentProperty, approveApartment}   = require("../../models/property/model.apartment");
 const { updatePropertyViews, insertPropertyOwnership } = require("../../models/property/model.property");
 
 const path  = 'uploads/property/apartment/images'  //path from source 
@@ -8,9 +8,11 @@ const maxImageSize = 2 * 1024 * 1024
 const upload = new UploadImage(path,maxImageSize).upload.array('image',10);
 const multer = require("multer");
 
-const handleAddApartment = async (req,res)=>{
 
-   
+// ------------------------------------------INSERT DATA RELATED ---------------------------------
+
+
+const handleAddApartment = async (req,res)=>{
 
 
    upload(req, res,async function (err) {
@@ -55,7 +57,10 @@ const handleAddApartment = async (req,res)=>{
    
         console.log("Add Apartment API HITTTTT !!!!!!");
         try {
-           await insertApartmentProperty(property,apartmentProperty,user_id,user_type);
+           //await insertApartmentProperty(property,apartmentProperty,user_id,user_type);
+
+            await insertApplyApartmentProperty(property,apartmentProperty,user_id,user_type);
+
            return res.status(200).json({message:"Insert into table"});
         } catch (error) {
          console.log("Why this error",error);
@@ -67,6 +72,22 @@ const handleAddApartment = async (req,res)=>{
 
 }
 
+
+const handleApartmentFeedback = async (req,res)=>{
+
+   const {property_ID,feedback} = req.body;
+   
+   try {
+      const result = await insertApartmentFeedback(property_ID,feedback);
+      return res.status(200).json({message:"Feedback Submit"});
+   } catch (error) {
+      console.log(error);
+      return res.status(500).json({message:error.sqlMessage})
+   }
+
+}
+
+// ---------------------------------------------------------GET DATA RELATED-------------------------------------------------------
 
 
 const handleGetApartment = async (req,res)=>{
@@ -105,37 +126,38 @@ const handleGetApartment = async (req,res)=>{
 }
 
 
+const handleGetApplyApartment = async (req,res)=>{
+   let page, limit ,offSet;
 
-
-
-const handleApartmentFeedback = async (req,res)=>{
-
-   const {property_ID,feedback} = req.body;
+  // if page and limit not set then defualt is 1 and 20 .
+   page = req.query.page || 1;
    
-   try {
-      const result = await insertApartmentFeedback(property_ID,feedback);
-      return res.status(200).json({message:"Feedback Submit"});
-   } catch (error) {
-      console.log(error);
-      return res.status(500).json({message:error.sqlMessage})
-   }
+   limit = (req.query.limit < 20 )? req.query.limit : 20 || 20;
+   // if page and limit present in query then delete it 
+   if(req.query.page)  delete  req.query.page;
+   
+   if(req.query.limit) delete req.query.limit;
+     
+  
 
+   offSet = (page-1) * limit;
+
+
+
+
+
+   try {
+      const apartmentData = await getApplyApartmentProperty(req.query,limit,offSet);
+      console.log(apartmentData)
+   
+      return res.status(200).json(apartmentData);
+   } catch (error) {
+      return res.status(500).json({message:error.sqlMessage});
+   }
 }
 
-const handleUpdateApartmentViews = async (req,res)=>{
 
-   const {property_ID} = req.params;
-   console.log(req.params);
 
-   try {
-      const result = await updatePropertyViews(property_ID); // update property views common function to update views in parent table property
-      return res.status(200).json({message:"Views update successfully"});
-   } catch (error) {
-      return res.status(500).json({message:error.sqlMessage})
-      
-   }
-
-}
 
 const handleGetApartmentByID = async (req,res)=>{
 
@@ -157,7 +179,48 @@ const handleGetApartmentByID = async (req,res)=>{
 }
 
 
+//-----------------------------------------------UPDATE RELATED--------------------------------------------------------------
+
+
+const handleUpdateApartmentViews = async (req,res)=>{
+
+   const {property_ID} = req.params;
+   console.log(req.params);
+
+   try {
+      const result = await updatePropertyViews(property_ID); // update property views common function to update views in parent table property
+      return res.status(200).json({message:"Views update successfully"});
+   } catch (error) {
+      return res.status(500).json({message:error.sqlMessage})
+      
+   }
+
+}
+
+const handleApproveApartment = async (req,res)=>{
+
+   const {property_id} = req.params;
+   console.log(property_id);
+   const staff_id  = req.id;
+
+   try {
+      await approveApartment(staff_id,property_id);
+      return res.status(200).json({message:"approve successfully"});
+   } catch (error) {
+      return res.status(500).json({message:"approved denied ! please try later"});
+   }
+
+}
 
 
 
-module.exports = {handleAddApartment,handleGetApartment,handleApartmentFeedback,handleUpdateApartmentViews,handleGetApartmentByID}
+
+
+module.exports = {handleAddApartment,
+   handleGetApartment,
+   handleApartmentFeedback,
+   handleUpdateApartmentViews,
+   handleGetApartmentByID,
+   handleGetApplyApartment,
+   handleApproveApartment
+}

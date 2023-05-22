@@ -9,6 +9,7 @@ const pool = mysql.createPool({
         user:'root',
         password:process.env.DB_PASSWORD,
         database:'nres',
+        multipleStatements: true,
 }).promise()//the promise() allow to use promises version
 
 
