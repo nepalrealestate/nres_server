@@ -19,6 +19,9 @@ router.post("/rating",handleAgentRating)
 
 router.post("/addApartment",verifyToken,handleAddApartment);
 router.post("/addHouse",verifyToken,handleAddHouse);
-router.post("/addLand",verifyToken,handleAddLand)
+router.post("/addLand",verifyToken,handleAddLand);
+
+
+
 
 module.exports = router;

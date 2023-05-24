@@ -47,8 +47,8 @@ const views = {
     fullHouseView     : `${propertySchemaName}.full_house_property`,
     fullLandView      : `${propertySchemaName}.full_land_property`,
 
-    applyApartmentView : `${propertySchemaName}.apply_apartment_property`
-    
+    applyApartmentView : `${propertySchemaName}.apply_apartment_property`,
+    applyHouseView    : `${propertySchemaName}.apply_house_property`,
 
 }
 

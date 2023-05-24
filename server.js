@@ -13,9 +13,11 @@ const app  = express();
 const cors = require("cors")
 const bodyParser = require('body-parser')
 const {connectMysql}  = require("./connection")
-
+const cookieParser = require('cookie-parser');
 
 const port = 8000;
+app.use(cookieParser());
+
 // for parsing application/json
 app.use(bodyParser.json()); 
 

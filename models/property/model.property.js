@@ -163,6 +163,7 @@ async function insertProperty(property, user_id, user_type) {
     ]);
     console.log(result);
   } catch (error) {
+    console.log(error)
     console.log("error from property insert");
     throw error;
   }

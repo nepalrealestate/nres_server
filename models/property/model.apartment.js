@@ -105,13 +105,13 @@ async function insertApartmentProperty(property,apartmentProperty,user_id,user_t
    
    console.log("property added successs")
 
-    const {property_id,bhk,situated_floor,furnish_status,parking,facilities} = apartmentProperty;
+    const {property_id,bhk,situated_floor,furnish_status,parking,facilities,apartment_image} = apartmentProperty;
 
-    const insertQuery = `INSERT INTO  ${propertyTable.apartment}  VALUES (?,?,?,?,?,?,?) `;
+    const insertQuery = `INSERT INTO  ${propertyTable.apartment}  VALUES (?,?,?,?,?,?,?,?) `;
 
     try {
         
-        const [result,field] = await pool.query(insertQuery,[property_id,bhk,situated_floor,furnish_status,parking,facilities,null]);
+        const [result,field] = await pool.query(insertQuery,[property_id,bhk,situated_floor,furnish_status,parking,facilities,apartment_image]);
        
         return result;
 
@@ -139,13 +139,13 @@ async function insertApplyApartmentProperty(property,apartmentProperty,user_id,u
     }
 
 
-    const {property_id,bhk,situated_floor,furnish_status,parking,facilities} = apartmentProperty;
+    const {property_id,bhk,situated_floor,furnish_status,parking,facilities,apartment_image} = apartmentProperty;
 
     const insertQuery = `INSERT INTO  ${propertyTable.apply_apartment}  VALUES (?,?,?,?,?,?,?) `;
 
     try {
         
-        const [result,field] = await pool.query(insertQuery,[property_id,bhk,situated_floor,furnish_status,parking,facilities,null]);
+        const [result,field] = await pool.query(insertQuery,[property_id,bhk,situated_floor,furnish_status,parking,facilities,apartment_image]);
        
         return result;
 

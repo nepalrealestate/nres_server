@@ -94,7 +94,6 @@ const handleGetApartment = async (req,res)=>{
 
  
 
-
   let page, limit ,offSet;
 
   // if page and limit not set then defualt is 1 and 20 .

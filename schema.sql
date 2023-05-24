@@ -50,6 +50,21 @@ CREATE TABLE  IF NOT EXISTS nres_property.apartment
     
     );
 
+--- create table for store house
+
+CREATE TABLE IF NOT EXISTS nres_property.house
+    (
+        property_id INT NOT NULL PRIMARY KEY UNIQUE,
+        room INT,
+        floor FLOAT,
+        furnish_status BOOL,
+        parking BOOL,
+        road_access_ft FLOAT,
+        facilities VARCHAR(1000),
+        house_image JSON,
+        FOREIGN KEY (property_id) REFERENCES nres_property.property(property_id) ON DELETE CASCADE
+    
+    );
 
 
 
@@ -69,9 +84,12 @@ CREATE TABLE IF NOT EXISTS nres_property.apply_apartment LIKE nres_property.apar
     ADD FOREIGN KEY (property_id) REFERENCES nres_property.apply_property(property_id);
 
 
+--  create house for listing property
 
 
-
+CREATE TABLE IF NOT EXISTS nres_property.apply_house LIKE nres_property.house;
+    ALTER TABLE nres_property.apply_house
+    ADD FOREIGN KEY (property_id) REFERENCES nres_property.apply_property(property_id);
 
 
 
@@ -96,7 +114,7 @@ CREATE VIEW nres_property.full_house_property AS SELECT p.user_id,p.user_type,p.
 p.property_name,p.listed_for,p.price,p.area_aana,
 p.area_sq_ft,p.facing_direction,p.views,p.state,p.district,
 p.city,p.ward_number,p.tole_name,h.room,h.floor,
-h.furnish_status,h.parking,h.road_access_ft,h.facilities
+h.furnish_status,h.parking,h.road_access_ft,h.facilities,h.house_image
  FROM nres_property.property AS p inner join nres_property.house as h on p.property_id = h.property_id;
 
 
@@ -112,10 +130,24 @@ l.road_access_ft
 FROM nres_property.property AS p inner join nres_property.land as l on p.property_id = l.property_id;
  
 
+
+-- view for all apply for listing property
+
 --create view for apply for listing apartment property
 CREATE VIEW nres_property.apply_apartment_property AS SELECT p.user_id,p.user_type,p.property_id,p.property_type,
 p.property_name,p.listed_for,p.price,p.area_aana,
 p.area_sq_ft,p.facing_direction,p.views,p.state,p.district,
 p.city,p.ward_number,p.tole_name,p.approved_by_id,p.status,a.bhk,a.situated_floor,
 a.furnish_status,a.parking,a.facilities,a.apartment_image
- FROM nres_property.apply_property AS p inner join nres_property.apply_apartment as a on p.property_id = a.property_id;
+FROM nres_property.apply_property AS p inner join nres_property.apply_apartment as a on p.property_id = a.property_id;
+
+
+ -- create view for apply for listing house property
+
+CREATE VIEW nres_property.apply_house_property AS SELECT p.user_id,p.user_type,p.property_id,p.property_type,
+p.property_name,p.listed_for,p.price,p.area_aana,
+p.area_sq_ft,p.facing_direction,p.views,p.state,p.district,
+p.city,p.ward_number,p.tole_name,p.approved_by_id,p.status,
+h.room,h.floor,h.furnish_status,h.parking,h.road_access_ft,h.facilities,h.house_image
+FROM nres_property.apply_property 
+AS p inner join nres_property.apply_house AS h ON p.property_id = h.property_id
