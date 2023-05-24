@@ -14,6 +14,7 @@ const cors = require("cors")
 const bodyParser = require('body-parser')
 const {connectMysql}  = require("./connection")
 const cookieParser = require('cookie-parser');
+const {excuteSQLFile}  = require("./connection");
 
 const port = 8000;
 app.use(cookieParser());
@@ -25,6 +26,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
 //form-urlencoded
 app.use(cors({credentials:true,origin:"*"}));
+
+// excute all sql file for create db , schema and tables;
+excuteSQLFile();
 
 
 // Error handling middleware for Multer

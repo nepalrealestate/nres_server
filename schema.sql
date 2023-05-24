@@ -1,4 +1,4 @@
-CREATE DATABASE nres;
+--CREATE DATABASE nres;
 CREATE SCHEMA nres_users;
 
 CREATE SCHEMA nres_property;
@@ -7,7 +7,7 @@ CREATE SCHEMA nres_property;
 
 
 
---- create table for store property
+--- create table for store property;
 
 
     
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS nres_property.property
     );
 
 
---- create table for store apartment
+--- create table for store apartment;
 
 CREATE TABLE  IF NOT EXISTS nres_property.apartment
     (
@@ -50,7 +50,7 @@ CREATE TABLE  IF NOT EXISTS nres_property.apartment
     
     );
 
---- create table for store house
+--- create table for store house;
 
 CREATE TABLE IF NOT EXISTS nres_property.house
     (
@@ -72,20 +72,19 @@ CREATE TABLE IF NOT EXISTS nres_property.house
 
 
 --- create table for listing property before aproved;
---create property table
+--create property table;
 CREATE TABLE nres_property.apply_property LIKE nres_property.property;
 			ALTER TABLE  nres_property.apply_property 
              MODIFY COLUMN status ENUM('pending','approved','rejected') DEFAULT 'pending';
 
 
--- create apartment for listing property
+-- create apartment for listing property;
 CREATE TABLE IF NOT EXISTS nres_property.apply_apartment LIKE nres_property.apartment;
     ALTER TABLE nres_property.apply_apartment
     ADD FOREIGN KEY (property_id) REFERENCES nres_property.apply_property(property_id);
 
 
---  create house for listing property
-
+--  create house for listing property;
 
 CREATE TABLE IF NOT EXISTS nres_property.apply_house LIKE nres_property.house;
     ALTER TABLE nres_property.apply_house
@@ -96,7 +95,7 @@ CREATE TABLE IF NOT EXISTS nres_property.apply_house LIKE nres_property.house;
 
 
 
---create view for full apartment property
+--create view for full apartment property;
 
 CREATE VIEW nres_property.full_apartment_property AS SELECT p.user_id,p.user_type,p.property_id,p.property_type,
 p.property_name,p.listed_for,p.price,p.area_aana,
@@ -108,7 +107,7 @@ a.furnish_status,a.parking,a.facilities,a.apartment_image
  
 
 
- --create view for full house property
+ --create view for full house property;
 
 CREATE VIEW nres_property.full_house_property AS SELECT p.user_id,p.user_type,p.property_id,p.property_type,
 p.property_name,p.listed_for,p.price,p.area_aana,
@@ -120,7 +119,7 @@ h.furnish_status,h.parking,h.road_access_ft,h.facilities,h.house_image
 
 
 
- --create view for full land property
+ --create view for full land property;
 
  CREATE VIEW nres_property.full_land_property AS SELECT p.user_id,p.user_type,p.property_id,p.property_type,
 p.property_name,p.listed_for,p.price,p.area_aana,
@@ -131,9 +130,9 @@ FROM nres_property.property AS p inner join nres_property.land as l on p.propert
  
 
 
--- view for all apply for listing property
+-- view for all apply for listing property;
 
---create view for apply for listing apartment property
+--create view for apply for listing apartment property;
 CREATE VIEW nres_property.apply_apartment_property AS SELECT p.user_id,p.user_type,p.property_id,p.property_type,
 p.property_name,p.listed_for,p.price,p.area_aana,
 p.area_sq_ft,p.facing_direction,p.views,p.state,p.district,
@@ -142,7 +141,7 @@ a.furnish_status,a.parking,a.facilities,a.apartment_image
 FROM nres_property.apply_property AS p inner join nres_property.apply_apartment as a on p.property_id = a.property_id;
 
 
- -- create view for apply for listing house property
+ -- create view for apply for listing house property;
 
 CREATE VIEW nres_property.apply_house_property AS SELECT p.user_id,p.user_type,p.property_id,p.property_type,
 p.property_name,p.listed_for,p.price,p.area_aana,
