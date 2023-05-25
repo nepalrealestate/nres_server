@@ -1,0 +1,29 @@
+// Test case
+
+
+{
+    "property":{
+        "property_id":1018,
+        "property_type":"house",
+        "property_name":"lavish house",
+        "listed_for":"Sale",
+        "price":12000000,
+        "area_aana":10,
+        "area_sq_ft":15,
+        "facing_direction":"east",
+        "state":"Karnali",
+        "district":"Surkhet",
+        "city":"Birendranagar",
+        "ward_number":"08",
+        "tole_name":"Khajura"
+    },
+    "houseProperty":{
+        "property_ID":1018,
+        "room":8,
+        "floor":3,
+        "furnish_status":false,
+        "parking":true,
+        "road_access_ft":13,
+        "facilities":"24 hour water, a lot of parking area , good chhimeki , peace enviroment"
+    }
+}

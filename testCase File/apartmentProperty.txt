@@ -1,0 +1,26 @@
+// Test case JSON FORMAT
+
+{
+    "property":{
+        "property_id":1020,
+        "property_type":"apartment",
+        "listed_for":"Rent",
+        "price":30000,
+        "area_aana":0,
+        "area_sq_ft":20,
+        "facing_direction":"east",
+        "state":"Bagmati",
+        "district":"kathmandu",
+        "city":"kathmandu",
+        "ward_number":"32",
+        "tole_name":"koteshower"
+    },
+    "apartmentProperty":{
+        "property_id":1020,
+        "bhk":3,
+        "situated_floor":3,
+        "furnish_status":false,
+        "parking":true,
+        "facilities":"24 hour water, a lot of parking area , good chhimeki , peace enviroment , No LandLord so you can enjoy !!!!!!"
+    }
+}

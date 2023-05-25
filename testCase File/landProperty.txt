@@ -1,0 +1,27 @@
+// Test case
+
+{
+    "property":{
+        "property_id":1019,
+        "property_type":"land",
+        "property_name":"bhat khane "
+        "listed_for":"Sale",
+        "price":8000000,
+        "area_aana":8,
+        "area_sq_ft":2738,
+        "facing_direction":"north",
+        "state":"Karnali",
+        "district":"Surkhet",
+        "city":"Birendranagar",
+        "ward_number":"05",
+        "tole_name":"Chisapani"
+    },
+    
+    "landProperty":{
+        "property_ID":1019,
+        "land_type":"Agriculter",
+        "soil":"loamy",
+        "road_access_ft":500
+        
+    }
+}
