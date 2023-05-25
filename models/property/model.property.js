@@ -26,7 +26,6 @@ async function createPropertyTable() {
         property_type ENUM('house','apartment','land') NOT NULL,   
         property_name varchar(50),
         listed_for varchar(10) NOT NULL,
-        status varchar(255),
         price FLOAT,
         area_aana FLOAT,
         area_sq_ft FLOAT,
@@ -36,7 +35,10 @@ async function createPropertyTable() {
         district varchar(255),
         city varchar(255),
         ward_number INT,
-        tole_name varchar(255)
+        tole_name varchar(255),
+        approved_by_id varchar(36),
+        status ENUM('approved'),
+        FOREIGN KEY (approved_by_id) REFERENCES ${userTable.staff}(id)
     
     )`;
 
@@ -49,7 +51,6 @@ async function createPropertyTable() {
     throw error;
   }
 }
-
 
 // create table for store youtube vide link
 async function createVideoLinkTable() {
@@ -102,21 +103,15 @@ async function createRequestedPropertyTable() {
   }
 }
 
-async function createAppliedForPropertyListing() {
-  const createQuery = `CREATE TABLE IF NOT EXISTS ${schemaName}.${applyForListingTableName} 
-    
-    (
-        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        property_type varchar(10) NOT NULL,
-        listed_for varchar(10) NOT NULL,
-        isApproved bool default false
 
+async function createApplyPropertyTable() {
 
-
-    )`;
+  const createQuery = `CREATE TABLE IF NOT EXISTS ${propertyTable.apply_property} LIKE ${propertyTable.property};
+                       ALTER TABLE ${propertyTable.apply_property}
+                       ADD COLUMN IF NOT EXISTS status  ENUM('pending','approved','rejected') DEFAULT 'pending'`;
 
   try {
-    return await pool.query(createQuery);
+     await pool.query(createQuery);
   } catch (error) {
     throw error;
   }
@@ -125,9 +120,8 @@ async function createAppliedForPropertyListing() {
 //-------------------------------Insert Data------------------------------------
 
 //insert value in property table
-async function insertProperty(property,user_id,user_type) {
+async function insertProperty(property, user_id, user_type) {
   const {
-
     property_id,
     property_type,
     property_name,
@@ -141,7 +135,7 @@ async function insertProperty(property,user_id,user_type) {
     city,
     ward_number,
     tole_name,
-  } = {...property};
+  } = { ...property };
   const views = 0;
   const status = "On Sale";
 
@@ -169,12 +163,11 @@ async function insertProperty(property,user_id,user_type) {
     ]);
     console.log(result);
   } catch (error) {
-    console.log("error from property insert")
+    console.log(error)
+    console.log("error from property insert");
     throw error;
   }
 }
-
-
 
 async function updatePropertyViews(property_ID) {
   // update views by vaule   1
@@ -222,9 +215,18 @@ async function insertIntoRequestedProperty(property) {
   }
 }
 
-async function insertIntoApplyForPropertyListing(property) {
-  const insertQuery = `INSERT INTO ${schemaName}.${applyForListingTableName} (id,property_type,listed_for,isApproved)   VALUES  (?,?,?,?)`;
-  const insertValue = Object.values(property);
+async function insertApplyProperty(property,user_id,user_type) {
+
+
+  //createApplyPropertyTable();
+
+  const insertQuery = `INSERT INTO ${propertyTable.apply_property} VALUES  (?,?,?,?,?,?,?,?,?,?,0,?,?,?,?,?,?,?)`;// 0 IS  VIEWS
+  const insertValue = Object.values(property);//
+  
+  insertValue.unshift(user_type);
+  insertValue.unshift(user_id);// first position user_id
+  insertValue.push(null)// no one approve when insert property
+  insertValue.push('pending')
   try {
     const [result, field] = await pool.query(insertQuery, insertValue);
     return result;
@@ -240,7 +242,6 @@ module.exports = {
   createVideoLinkTable,
   insertVideoLink,
   insertIntoRequestedProperty,
-  createAppliedForPropertyListing,
-  insertIntoApplyForPropertyListing,
-
+  createApplyPropertyTable,
+  insertApplyProperty,
 };

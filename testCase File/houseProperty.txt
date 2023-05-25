@@ -18,7 +18,7 @@
         "tole_name":"Khajura"
     },
     "houseProperty":{
-        "property_ID":1018,
+        "property_id":1018,
         "room":8,
         "floor":3,
         "furnish_status":false,

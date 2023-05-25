@@ -33,7 +33,7 @@ const tokenExpireTime = "1hr";
 
 const imagePath  = "uploads/users/agent/images";
 const maxSixe = 2*1024*1024;
-const upload = new UploadImage(imagePath,maxSixe).upload.array('image',2);
+const upload = new UploadImage(imagePath,maxSixe).upload.array('identificationImage',2);
 
 
 
@@ -66,6 +66,7 @@ const handleAgentRegistration = async (req, res) => {
   upload(req, res,async function (err) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
+      console.log(err)
       return res.status(400).json({message:"Error while uploading",err})
     } else if (err) {
       // An unknown error occurred when uploading.
