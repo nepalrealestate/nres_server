@@ -68,6 +68,19 @@ CREATE TABLE IF NOT EXISTS nres_property.house
     );
 
 
+-- create table for store land;
+
+CREATE TABLE IF NOT EXISTS nres_property.land (
+
+      property_id INT NOT NULL PRIMARY KEY UNIQUE,
+      land_type VARCHAR(255),
+      soil VARCHAR(255),
+      road_access_ft FLOAT,
+      land_image JSON,
+      FOREIGN KEY (property_id) REFERENCES nres_property.property (property_id) ON DELETE CASCADE
+
+);
+
 
 
 
@@ -92,8 +105,11 @@ CREATE TABLE IF NOT EXISTS nres_property.apply_house LIKE nres_property.house;
     ADD FOREIGN KEY (property_id) REFERENCES nres_property.apply_property(property_id);
 
 
+-- create land for listing property;
 
-
+CREATE TABLE IF NOT EXISTS nres_property.apply_land LIKE nres_property.land;
+    ALTER TABLE nres_property.apply_land
+    ADD FOREIGN KEY (property_id) REFERENCES nres_property.apply_property(property_id);
 
 
 --create view for full apartment property;
@@ -129,9 +145,7 @@ p.city,p.ward_number,p.tole_name,l.land_type,l.soil,
 l.road_access_ft
 FROM nres_property.property AS p inner join nres_property.land as l on p.property_id = l.property_id;
  
-<<<<<<< HEAD
->>>>>>> 729af75cee4ba65a727d5f26144ee0cee5cfcdee
-=======
+
 
 
 -- view for all apply for listing property;
@@ -153,5 +167,16 @@ p.area_sq_ft,p.facing_direction,p.views,p.state,p.district,
 p.city,p.ward_number,p.tole_name,p.approved_by_id,p.status,
 h.room,h.floor,h.furnish_status,h.parking,h.road_access_ft,h.facilities,h.house_image
 FROM nres_property.apply_property 
-AS p inner join nres_property.apply_house AS h ON p.property_id = h.property_id
->>>>>>> property
+AS p inner join nres_property.apply_house AS h ON p.property_id = h.property_id;
+
+
+
+-- create view for apply for listing land property;
+
+CREATE VIEW nres_property.apply_land_property AS SELECT p.user_id,p.user_type,p.property_id,p.property_type,
+p.property_name,p.listed_for,p.price,p.area_aana,
+p.area_sq_ft,p.facing_direction,p.views,p.state,p.district,
+p.city,p.ward_number,p.tole_name,p.approved_by_id,p.status,
+l.land_type,l.soil,l.road_access_ft,l.land_image
+FROM nres_property.apply_property
+AS p inner join nres_property.apply_land AS l ON p.property_id = l.property_id;

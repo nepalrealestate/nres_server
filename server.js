@@ -55,13 +55,6 @@ app.use("/land",landRouter)
 app.use ("/apartment",apartmentRouter);
 app.use("/property",propertyRouter);
 
-<<<<<<< HEAD
-=======
-
-
-
-
->>>>>>> 729af75cee4ba65a727d5f26144ee0cee5cfcdee
 //connectMysql();
 app.listen(port,()=>{
     console.log(` port ${port} is listening.......`)

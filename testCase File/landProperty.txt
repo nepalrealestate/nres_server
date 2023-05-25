@@ -18,7 +18,7 @@
     },
     
     "landProperty":{
-        "property_ID":1019,
+        "property_id":1019,
         "land_type":"Agriculter",
         "soil":"loamy",
         "road_access_ft":500

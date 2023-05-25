@@ -1,6 +1,6 @@
 
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
-const {insertHouseProperty, getHouseProperty, insertHouseFeedback, getHouseByID, insertApplyHouseProperty, getApplyHouseProperty, approveHouse}   = require("../../models/property/model.house")
+const {insertHouseProperty, getHouseProperty, insertHouseFeedback, getHouseByID, insertApplyHouseProperty, getApplyHouseProperty, approveHouse, getApplyHouseByID}   = require("../../models/property/model.house")
 const {updatePropertyViews}  = require("../../models/property/model.property");
 
 
@@ -190,8 +190,12 @@ const handleApproveHouse = async(req,res)=>{
    const {property_id} = req.params;
    console.log(property_id);
    const staff_id = req.id;
-
+   let house;
    try {
+      house = await getApplyHouseByID(property_id);
+      if(house===undefined || house===null){
+         return res.status(400).json({message:"No House"})
+      }
       await approveHouse(staff_id,property_id);
       return res.status(200).json({message:"approve successfully"});
    } catch (error) {

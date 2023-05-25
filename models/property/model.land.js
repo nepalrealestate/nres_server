@@ -1,7 +1,7 @@
 const { throws } = require("assert");
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
-const {createPropertyTable,insertProperty} = require("../property/model.property");
+const {createPropertyTable,insertProperty, insertApplyProperty} = require("../property/model.property");
 const { error } = require("console");
 const { propertyTable, views } = require("../tableName");
 const propertyTableName = 'Property'
@@ -85,6 +85,35 @@ async function insertLandProperty(property,landProperty,user_id,user_type){
 
 
 
+async function insertApplyLandProperty(property,landProperty,user_id,user_type){
+
+    // create land table - shift to schema.sql
+
+    try {
+        await insertApplyProperty(property,user_id,user_type);
+    } catch (error) {
+        throw error;
+    }
+
+    const insertQuery = `INSERT INTO ${propertyTable.apply_land} VALUES (?,?,?,?,?)`;
+    const insertValues = Object.values(landProperty);
+    console.log(insertValues);
+
+    try {
+        const [result,field] = await pool.query(insertQuery,insertValues);
+        return result;
+    } catch (error) {
+        
+    }
+
+    
+
+
+}
+
+
+
+
 async function getLandProperty(condition,limit,offSet){
 
 
@@ -123,6 +152,45 @@ async function getLandProperty(condition,limit,offSet){
 }
 
 
+async function getApplyLandProperty(condition,limit,offSet){
+
+
+    let sqlQuery = `SELECT * FROM ${views.applyLandView} WHERE 1=1 `;
+    const params = [];
+    //adding search conditon on query
+    for(let key of Object.keys(condition)){
+
+       
+
+        if(condition[key]){
+            // adding search conditon and  push value in params array;
+            sqlQuery += `AND ${key} = ?`
+            params.push(condition[key]);
+        }
+
+    }
+
+    //after adding search condition query
+
+    sqlQuery += `LIMIT ${limit} OFFSET ${offSet}`
+
+  
+    
+
+    try {
+        const [result,field] = await pool.query(sqlQuery,params);
+      
+        return result;
+    } catch (error) {
+       throw error;
+    }
+
+
+
+}
+
+
+
 
 async function insertLandFeedback(property_ID,feedback){
 
@@ -156,6 +224,61 @@ async function getLandByID(property_id){
 
 }
 
+async function getApplyLandByID(property_id){
+    const getQuery =   `SELECT * FROM ${views.applyLandView} WHERE property_id = ?`
+
+    try {
+        const [result,field] = await pool.query(getQuery,property_id);
+      
+        return result[0];//return object not array
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+
+async function approveLand(staff_id,property_id){
+
+    const updateQuery = `UPDATE ${propertyTable.apply_property} SET status='approved',approved_by_id=? WHERE property_id=?`;
+    const shiftPropertyQuery = `INSERT INTO ${propertyTable.property} SELECT * FROM ${propertyTable.apply_property} WHERE property_id=?`;
+    const shiftLandQuery = `INSERT INTO ${propertyTable.land} SELECT * FROM ${propertyTable.apply_land} WHERE property_id=?`;
+    const deletePropertyQuery = ` DELETE FROM ${propertyTable.apply_property}  WHERE property_id = ? `;
+    const deleteLandQuery = ` DELETE FROM ${propertyTable.apply_land} WHERE property_id = ? `;
+   
+
+    let connection ;
+
+    try {
+        connection = await pool.getConnection();
+        await connection.beginTransaction();
+        console.log("Transaction Started");
+
+        await connection.query(updateQuery,[staff_id,property_id]);
+        
+        await connection.query(shiftPropertyQuery,[property_id]);
+        await connection.query(shiftLandQuery,[property_id]);
+        await connection.query(deleteLandQuery,[property_id]);// first delete Land and then property
+        await connection.query(deletePropertyQuery,[property_id]);
+        
+
+        await connection.commit();
+
+        console.log('Transaction committed successfully');
+
+
+    } catch (error) {
+        console.log("error occur , rollback")
+        await connection.rollback();
+        console.log(error);
+        throw error;
+    }finally{
+        if(connection){
+            connection.release();
+        }
+    }
+    
+}
 
 
  
@@ -163,4 +286,5 @@ async function getLandByID(property_id){
 
 
 
-module.exports = {insertLandProperty,getLandProperty,insertLandFeedback,getLandByID};
+module.exports = {insertLandProperty,getLandProperty,insertLandFeedback,getLandByID,
+    insertApplyLandProperty,getApplyLandProperty,approveLand,getApplyLandByID};

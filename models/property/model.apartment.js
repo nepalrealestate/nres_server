@@ -275,6 +275,23 @@ async function getApartmentByID(property_id){
 
 }
 
+async function getApplyApartmentByID(property_id){
+
+    const getQuery =`SELECT * FROM ${views.applyApartmentView} WHERE property_id = ?`
+
+    try {
+        const [result,field] = await pool.query(getQuery,[property_id]);
+       
+        return result[0];// return object not array
+    } catch (error) {
+
+       
+        throw error;
+        
+    }
+
+}
+
 
 // update
 
@@ -287,12 +304,13 @@ async function approveApartment(staff_id,property_id){
     const shiftApartmentQuery = `INSERT INTO ${propertyTable.apartment} SELECT * FROM ${propertyTable.apply_apartment} WHERE property_id=?`;
     const deletePropertyQuery = ` DELETE FROM ${propertyTable.apply_property}  WHERE property_id = ? `;
     const deleteApartmentQuery = ` DELETE FROM ${propertyTable.apply_apartment} WHERE property_id = ? `;
+    
 
     let connection ;
 
     try {
         connection = await pool.getConnection();
-
+        await connection.beginTransaction();
         console.log("Transaction Started");
 
         await connection.query(updateQuery,[staff_id,property_id]);
@@ -330,5 +348,6 @@ module.exports = {insertApartmentProperty,
     getApartmentByID,
     insertApplyApartmentProperty,
     getApplyApartmentProperty,
-    approveApartment
+    approveApartment,
+    getApplyApartmentByID,
 };

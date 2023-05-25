@@ -1,10 +1,13 @@
-const {insertLandProperty, getLandProperty, insertLandFeedback, getLandByID}   = require("../../models/property/model.land");
+const {insertLandProperty, getLandProperty, insertLandFeedback, getLandByID, insertApplyLandProperty, getApplyLandProperty, approveLand, getApplyLandByID}   = require("../../models/property/model.land");
 const { updatePropertyViews } = require("../../models/property/model.property");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
 const path  = 'uploads/property/land/images'  //path from source 
 const maxImageSize = 2 * 1024 * 1024
 const upload = new UploadImage(path,maxImageSize).upload.array('image',10);
 const multer = require("multer");
+const {checkProperties}=  require("../requiredObjectProperties");
+
+
 
 const handleAddLand = async (req,res)=>{
 
@@ -34,7 +37,17 @@ const handleAddLand = async (req,res)=>{
         return res.status(400).json({message:"missing property "});
      }
      
+
+
      const {property,landProperty} = JSON.parse(req.body.property)
+     //check if desire property filed present or not
+      if(!checkProperties.isPropertiesPresent(property,'property') ||
+      !checkProperties.isPropertiesPresent(landProperty,'land')){
+            return res.status(400).json({message:"missing field"});
+      }
+     
+
+
      console.log(property,landProperty)
 
 
@@ -42,12 +55,12 @@ const handleAddLand = async (req,res)=>{
      landProperty.land_image = JSON.stringify(landProperty.land_image);
 
 
-
+      
 
    
         console.log("Add Land API HITTTTT !!!!!!");
         try {
-           await insertLandProperty(property,landProperty,user_id,user_type);
+           await insertApplyLandProperty(property,landProperty,user_id,user_type);
            return res.status(200).json({message:"Insert into table"});
         } catch (error) {
             console.log(error);
@@ -95,6 +108,42 @@ const handleGetLand = async (req,res)=>{
 
 }
 
+
+const handleGetApplyLand = async (req,res)=>{
+
+
+  let page, limit ,offSet;
+
+  // if page and limit not set then defualt is 1 and 20 .
+   page = req.query.page || 1;
+   
+   limit = (req.query.limit < 20 )? req.query.limit : 20 || 20;
+   // if page and limit present in query then delete it 
+   if(req.query.page)  delete  req.query.page;
+   
+   if(req.query.limit) delete req.query.limit;
+     
+  
+
+   offSet = (page-1) * limit;
+
+
+
+
+
+   try {
+      const landData = await getApplyLandProperty(req.query,limit,offSet);
+      console.log(landData)
+   
+      return res.status(200).json(landData);
+   } catch (error) {
+      console.log(error);
+      return res.status(500).json({message:error.sqlMessage});
+   }
+
+}
+
+
 const handleLandFeedback = async(req,res)=>{
    const {property_ID,feedback} = req.body;
    
@@ -138,6 +187,31 @@ const handleGetLandByID = async (req,res)=>{
 }
 
 
+const handleApproveLand = async (req,res)=>{
+
+   const {property_id} = req.params;
+   console.log(property_id);
+   const staff_id  = req.id;
+    
+   let land;
+  
+   
+
+   try {
+
+      land = await getApplyLandByID(property_id);
+      if(land===undefined || land===null){
+         return res.status(400).json({message:"No Land"})
+      }
+      await approveLand(staff_id,property_id);
+      return res.status(200).json({message:"approve successfully"});
+   } catch (error) {
+      return res.status(500).json({message:"approved denied ! please try later"});
+   }
 
 
-module.exports = {handleAddLand,handleGetLand,handleLandFeedback,handleUpdateLandViews,handleGetLandByID}
+}
+
+
+
+module.exports = {handleAddLand,handleGetLand,handleLandFeedback,handleUpdateLandViews,handleGetLandByID,handleGetApplyLand,handleApproveLand}

@@ -49,6 +49,7 @@ const views = {
 
     applyApartmentView : `${propertySchemaName}.apply_apartment_property`,
     applyHouseView    : `${propertySchemaName}.apply_house_property`,
+    applyLandView     : `${propertySchemaName}.apply_land_property`,
 
 }
 
