@@ -5,11 +5,15 @@ const {
   insertIntoPasswordResetToken,
   findPasswordResetTokenValue,
   updatePasswordResetTokenValue,
+  deleteToken,
 } = require("../../models/users/model.commonUsersCode");
 const {
   getRandomNumber,
   sendTokenToUserByEmail,
 } = require("./controller.commonFunction");
+
+const { wrapAwait } = require("../../errorHandling");
+const { error } = require("console");
 
 const saltRound = 10;
 
@@ -19,10 +23,13 @@ const schemaName = "nres_users";
 const login = async (req, res, user) => {
   const { password } = req.body;
 
+  
+
   if (!user) {
     console.log("No User Found");
     return res.status(404).send("User Not Found");
   }
+  console.log(user)
 
   //compare bcrypt password;
 
@@ -34,7 +41,7 @@ const login = async (req, res, user) => {
 
   //create jwt token
 
-  const token = jwt.sign({ id: user.email }, process.env.JWT_KEY, {
+  const token = jwt.sign({ id: user.id }, process.env.JWT_KEY, {
     expiresIn: tokenExpireTime,
   });
 
@@ -68,7 +75,7 @@ const login = async (req, res, user) => {
   // }
 
   //set cookies to response
-  res.cookie(String(user.email), token, {
+  res.cookie(String(user.id), token, {
     path: "/",
     expires: new Date(Date.now() + 1000 * 1000 * 60),
     httpOnly: true,
@@ -78,8 +85,13 @@ const login = async (req, res, user) => {
   return res.status(200).json({ message: "Successfully Logged In", token });
 };
 
+
+
+
+
 const verifyToken = (req, res, next) => {
   //geeting cookies from frontEnd
+ 
   const cookies = req.headers.cookie;
   // console.log("THIS IS COOKIES",req.headers.cookie);
   if (!cookies) {
@@ -94,12 +106,13 @@ const verifyToken = (req, res, next) => {
   }
   jwt.verify(String(token), process.env.JWT_KEY, (err, user) => {
     if (err) {
+      console.log(err)
       return res.status(400).json({ message: "Invalid Token" });
     }
 
-    console.log(user.email);
+    console.log(user.id);
     //set request id
-    req.id = user.email;
+    req.id = user?.id;
   });
   console.log("Token Verify  !!!");
   //go to next function in router
@@ -155,31 +168,121 @@ const passwordReset = async (req, res, user) => {
 
   const randomToken = getRandomNumber();
 
-  try {
-    await insertIntoPasswordResetToken(user.id, randomToken);
-    await sendTokenToUserByEmail(user.email, randomToken);
-    return res
-      .status(200)
-      .json({ message: "Token generate succesfully! Check Your Email" });
-  } catch (error) {
-    console.log(error);
+  const [resultToken, errorToken] = await wrapAwait(
+    insertIntoPasswordResetToken(user.id, randomToken)
+  );
+  // if we get error of duplicate entry then update token value
 
-    // if already token generate then update the token ;
-    if (error.code === "ER_DUP_ENTRY") {
-      await updatePasswordResetTokenValue(user.id, randomToken);
-      await sendTokenToUserByEmail(user.email, randomToken);
+  let isTokenUpdate = false;
+
+  if (errorToken) {
+    console.log(errorToken);
+    if (errorToken.code === "ER_DUP_ENTRY") {// if duplicate entry the udpate token value
+      const [resultUpdateToken, errorUpdateToken] = await wrapAwait(
+        updatePasswordResetTokenValue(user.id, randomToken)
+      );
+      if (errorUpdateToken) {
+        return res.status(500).json({ message: error.sqlMessage });
+      }
+      isTokenUpdate = true;
+      console.log(isTokenUpdate);
+    } else {
+      console.log(errorToken);
+      return res.status(500).json({ message: "server Error " });
+    }
+  }
+  // if token insert in db or updated in db then send mail
+  if (resultToken || isTokenUpdate) {
+    sendTokenToUserByEmail(user.email, randomToken)
+      .then(function (data) {
+        console.log(data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+
+  return res
+    .status(200)
+    .json({ message: "Token re-generate sucessfully Check Your Email " });
+};
+
+const passwordUpdate = async (req, res, user, updateUserPassword) => {
+  if (!user) {
+    return res.status(401).json({ message: "User Not Found!" });
+  }
+
+  const { email, token } = req.query;
+
+  // if email field empty
+  if (!email) {
+    return res.status(401).json({ message: "Please Enter Email" });
+  }
+
+  if (email && token && user) {
+    // logic for update password
+    const { password, confirmPassword } = req.body;
+    // if password doesnot match
+    if (password !== confirmPassword) {
+      console.log(" New Password not match  ");
+      return res.status(403).json({ message: " New Password  not match" });
+    }
+
+    const [storeToken, storeTokenError] = await wrapAwait(
+      findPasswordResetTokenValue(user.id)
+    );
+
+    console.log(storeToken);
+
+    // check expire date
+
+    const expireDate = new Date(storeToken.expirationTime);
+    const currentDate = new Date();
+    const expireDay = expireDate.getUTCDate();
+    const currentDay = currentDate.getUTCDate();
+
+    if (storeToken.token !== token || storeTokenError) {
+      return res.status(401).json({ message: "No Token Match" });
+    }
+
+    //if token expire
+    if (Number(currentDay) >= Number(expireDay)) {
       return res
-        .status(200)
-        .json({ message: "Token re-generate sucessfully Check Your Email " });
+        .status(401)
+        .json({ message: "Token Expire ! please generate New Token" });
     }
-    if (error.sqlMessage) {
-      return res.status(500).json({ message: error.sqlMessage });
+
+    const [hashPassword, hashPasswordError] = await wrapAwait(
+      bcrypt.hash(password, saltRound)
+    );
+
+    if (hashPassword) {
+      // this updateUser password return result in array in form of resolve and reject
+      const [passwordUpdate, passwordUpdateError] = await updateUserPassword(
+        user.id,
+        hashPassword
+      );
+      if (passwordUpdate) {
+        deleteToken(user.id).then(function () {
+          console.log("token delete Successfully");
+        });
+        return res.status(200).json({ message: "Password Update succesfuly" });
+      }
+
+      if (passwordUpdateError) {
+        console.log("password Update Error");
+        return res.status(500).json({ message: "Password doesnot update" });
+      }
     }
+
+    return res.status(500).json({ message: "couldn't update password" });
   }
 };
 
-
-
-
-
-module.exports = { login, verifyToken, refreshToken, passwordReset };
+module.exports = {
+  login,
+  verifyToken,
+  refreshToken,
+  passwordReset,
+  passwordUpdate,
+};

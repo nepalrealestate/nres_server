@@ -2,8 +2,8 @@
 
 {
     "property":{
-        "property_ID":1020,
-        "property_type":"Apartment",
+        "property_id":1020,
+        "property_type":"apartment",
         "listed_for":"Rent",
         "price":30000,
         "area_aana":0,
@@ -16,7 +16,7 @@
         "tole_name":"koteshower"
     },
     "apartmentProperty":{
-        "property_ID":1020,
+        "property_id":1020,
         "bhk":3,
         "situated_floor":3,
         "furnish_status":false,

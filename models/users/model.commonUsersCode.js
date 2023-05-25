@@ -2,7 +2,13 @@ const { pool } = require("../../connection");
 
 
 const passwordResetTokenTable ="passwordResetToken";
+const usersRatingTable = 'usersRating'
 const schemaName = "nres_users";
+
+
+//--------------------------------Create table--------------------------------------------------
+
+
 
 
 async function createPasswordResetTable(){
@@ -14,10 +20,10 @@ async function createPasswordResetTable(){
         
         id INT NOT NULL,
         token VARCHAR(255) NOT NULL,
+        createdTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
        
-        isUsed BOOLEAN  DEFAULT 0,
-       
-       
+        expirationTime DATETIME,
+        ipAddress VARCHAR(45),
         PRIMARY KEY (id)
         
     );`
@@ -33,6 +39,49 @@ async function createPasswordResetTable(){
 }
 
 
+ // create table for store users rating
+
+ async function createUsersRatingTable(){
+
+
+    const createQuery  = `CREATE TABLE IF NOT EXISTS ${schemaName}.${usersRatingTable} 
+    (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        user_id  VARCHAR(36),
+        rating FLOAT
+        
+    )`;
+    
+    try {
+        return await pool.query(createQuery);
+    } catch (error) {
+        console.log(error)
+        throw error;
+    }
+
+ }
+
+
+// -----------------------------Insert values---------------------------------
+
+
+async function insertUsersRating(user_id,rating){
+
+    // table create if not created;
+
+    await  createUsersRatingTable();
+
+    const insertQuery = `INSERT INTO ${schemaName}.${usersRatingTable} (id,user_id,rating) VALUES (?,?,?)`;
+    try {
+        const [result,field] = await pool.query(insertQuery,[0,user_id,rating]);
+        return result;
+    } catch (error) {
+         console.log(error);
+        throw error;
+    }
+}
+
+
 
 async function insertIntoPasswordResetToken(id,token){
 
@@ -41,14 +90,26 @@ async function insertIntoPasswordResetToken(id,token){
    await createPasswordResetTable();
 
    // insert into table 
-   const date = new Date();
+   
+
+    
+   
+   const currentDate = new Date();
+const year = currentDate.getFullYear();
+const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+const day = String(currentDate.getDate()+1).padStart(2, '0');
+const hours = String(currentDate.getHours()).padStart(2, '0');
+const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+const expireTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+console.log(expireTime);
 
 
-
-   const insertQuery =  `INSERT INTO ${schemaName}.${passwordResetTokenTable} (id,token,isUsed) VALUES(?,?,?)`;
+   const insertQuery =  `INSERT INTO ${schemaName}.${passwordResetTokenTable} (id,token,createdTime,expirationTime,ipAddress) VALUES(?,?,NOW(),?,?)`;
 
    try {
-        await pool.query(insertQuery,[id,token,0]);
+       return await pool.query(insertQuery,[id,token,expireTime,null]);
        
         
    } catch (error) {
@@ -60,12 +121,15 @@ async function insertIntoPasswordResetToken(id,token){
 
 }
 
+// -  -------------------------Update Data------------------------------
+
 async function updatePasswordResetTokenValue(id,token){
 
     
         const updateTokenQuery = `UPDATE ${schemaName}.${passwordResetTokenTable} SET token=${token} WHERE id=${id}`;
         try {
-            const[result,field] = await pool.query(updateTokenQuery);
+            return await pool.query(updateTokenQuery);
+
            
         } catch (error) {
             throw error;
@@ -73,6 +137,9 @@ async function updatePasswordResetTokenValue(id,token){
         }
 
 }
+
+
+// ---------------------------Find Data -----------------------------------------
 
 async function findPasswordResetTokenValue(id){
 
@@ -103,5 +170,11 @@ async function deleteToken(id){
 
 
 
-module.exports = {createPasswordResetTable,insertIntoPasswordResetToken,updatePasswordResetTokenValue,findPasswordResetTokenValue,deleteToken};
+module.exports = {createPasswordResetTable,
+    insertIntoPasswordResetToken,
+    updatePasswordResetTokenValue,
+    findPasswordResetTokenValue,
+    deleteToken,
+    insertUsersRating,
+};
 

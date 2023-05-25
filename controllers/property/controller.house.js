@@ -1,21 +1,67 @@
 
+const { UploadImage } = require("../../middlewares/middleware.uploadFile");
 const {insertHouseProperty, getHouseProperty, insertHouseFeedback, getHouseByID}   = require("../../models/property/model.house")
-const {updatePropertyViews}  = require("../../models/property/models.property");
+const {updatePropertyViews}  = require("../../models/property/model.property");
+
+
+const path  = 'uploads/property/house/images'  //path from source 
+const maxImageSize = 2 * 1024 * 1024
+const upload = new UploadImage(path,maxImageSize).upload.array('image',10);
+const multer = require("multer");
 
 // only for test purpose
 
 const handleAddHouse = async (req,res)=>{
 
-   const {property,houseProperty} = req.body;
-   console.log(req.body)
+   
+   upload(req, res, async function (err) {
+      if (err instanceof multer.MulterError) {
+        // A Multer error occurred when uploading.
+        return res.status(400).json({message:err});
+      } else if (err) {
+        // An unknown error occurred when uploading.
+        return res.status(400).json({message:err});
+      }
+  
+      // Everything went fine.
+      const images = req.files ;
 
-     console.log("Add House API HITTTTT !!!!!!");
-     try {
-        await insertHouseProperty(property,houseProperty);
-        return res.status(200).json({message:"Insert into table"});
-     } catch (error) {
-        return res.status(400).json({message:error.sqlMessage})
-     }
+      if(!req.files){
+          return res.status(400).json({message:"missing images of your property"})
+      }
+      
+      // get user id from req.id i.e we set req.id when verify token
+      const user_id = req.id;
+      // baseUrl provide us from where request coming from ex. /agnet,/staff,/seller
+      const user_type = req.baseUrl.substring(1);
+      
+      if(!req.body.property){
+         return res.status(400).json({message:"missing property "});
+      }
+      
+      const {property,houseProperty} = JSON.parse(req.body.property)
+      console.log(property,houseProperty)
+
+
+      houseProperty.house_image = images.reduce((acc, value, index) => ({ ...acc, [index]: value.path }), {});
+      houseProperty.house_image = JSON.stringify(houseProperty.house_image);
+
+      console.log(houseProperty)
+
+      
+   
+        console.log("Add House API HITTTTT !!!!!!");
+        try {
+           await insertHouseProperty(property,houseProperty,user_id,user_type);
+           return res.status(200).json({message:"Insert into table"});
+        } catch (error) {
+           return res.status(400).json({message:error.sqlMessage})
+        }
+
+    })
+
+
+  
 
 }
 
