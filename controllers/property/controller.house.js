@@ -1,6 +1,6 @@
 
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
-const {insertHouseProperty, getHouseProperty, insertHouseFeedback, getHouseByID}   = require("../../models/property/model.house")
+const {insertHouseProperty, getHouseProperty, insertHouseFeedback, getHouseByID, insertApplyHouseProperty, getApplyHouseProperty, approveHouse}   = require("../../models/property/model.house")
 const {updatePropertyViews}  = require("../../models/property/model.property");
 
 
@@ -52,7 +52,7 @@ const handleAddHouse = async (req,res)=>{
    
         console.log("Add House API HITTTTT !!!!!!");
         try {
-           await insertHouseProperty(property,houseProperty,user_id,user_type);
+           await insertApplyHouseProperty(property,houseProperty,user_id,user_type);
            return res.status(200).json({message:"Insert into table"});
         } catch (error) {
            return res.status(400).json({message:error.sqlMessage})
@@ -102,6 +102,40 @@ const handleGetHouse = async (req,res)=>{
 }
 
 
+const handleGetApplyHouse = async (req,res)=>{
+   let page, limit ,offSet;
+
+  // if page and limit not set then defualt is 1 and 20 .
+   page = req.query.page || 1;
+   
+   limit = (req.query.limit < 20 )? req.query.limit : 20 || 20;
+   // if page and limit present in query then delete it 
+   if(req.query.page)  delete  req.query.page;
+   
+   if(req.query.limit) delete req.query.limit;
+     
+  
+
+   offSet = (page-1) * limit;
+
+
+
+
+
+   try {
+      const houseData = await getApplyHouseProperty(req.query,limit,offSet);
+      console.log(houseData)
+   
+      return res.status(200).json(houseData);
+   } catch (error) {
+      return res.status(500).json({message:error.sqlMessage});
+   }
+}
+
+
+
+
+
 
 const handleHouseFeedback = async (req,res)=>{
 
@@ -149,8 +183,32 @@ const handleGetHouseByID = async (req,res)=>{
 }
 
 
+// approve apply house
+
+const handleApproveHouse = async(req,res)=>{
+
+   const {property_id} = req.params;
+   console.log(property_id);
+   const staff_id = req.id;
+
+   try {
+      await approveHouse(staff_id,property_id);
+      return res.status(200).json({message:"approve successfully"});
+   } catch (error) {
+      return res.status(500).json({message:"approved denied ! please try later"});
+   }
+
+}
 
 
 
 
-module.exports = {handleAddHouse,handleGetHouse,handleHouseFeedback,handleUpdateHouseViews,handleGetHouseByID}
+
+module.exports = {handleAddHouse,
+   handleGetHouse,
+   handleHouseFeedback,
+   handleUpdateHouseViews,
+   handleGetHouseByID,
+   handleGetApplyHouse,
+   handleApproveHouse,
+}

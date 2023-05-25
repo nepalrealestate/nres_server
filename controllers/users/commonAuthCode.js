@@ -50,29 +50,34 @@ const login = async (req, res, user) => {
   //------------------This code works only for browser cookie---------------------------
 
   //if cookie already present then remove;
-  // let checkCookie = req.headers.cookie;
-  // //console.log("Checking Cookie.......", checkCookie);
-  // console.log(req.cookies)
-  // if (req.cookies[`${user.email}`]) {
-  //   req.cookies[`${user.email}`] = "";
-  // }
+  //console.log(req.headers.cookie);
+  let checkCookie = req.headers.cookie;
+  //console.log("Checking Cookie.......", checkCookie);
+  
+  if (req.cookies[`${user.id}`]) {
+    console.log("THe cookies from insdie")
+    console.log(req.cookies[`${user.id}`])
+    req.cookies[`${user.id}`] = ""; // set null if already present 
+    //res.clearCookie(`${user.id}`,{path: "/"});// if already set on response 
+   
+  }
 
   // //if there are two or more than different users login cookies then remove it from loop
-
-  // if (checkCookie) {
-  //   let cookieArray = req.headers.cookie.split(";");
-  //   console.log(cookieArray);
-  //   cookieArray.forEach((cookie) => {
-  //     let key = cookie.trim().split("=")[0];
-  //     if (req.cookies[`${key}`]) {
-  //       //if user cookie already present then remove it
-  //       console.log("This cookie already present", key);
-  //       //req.cookies[`${key}`]="";
-  //       res.clearCookie(`${key}`, { path: "/" });
-  //       return;
-  //     }
-  //   });
-  // }
+// not fully optimized solution
+  if (checkCookie) {
+    let cookieArray = req.headers.cookie.split(";");
+    console.log(cookieArray);
+    cookieArray.forEach((cookie) => {
+      let key = cookie.trim().split("=")[0];
+      if (req.cookies[`${key}`]) {
+        //if user cookie already present then remove it
+        console.log("This cookie already present", key);
+        //req.cookies[`${key}`]="";
+        res.clearCookie(`${key}`, { path: "/" });
+        return;
+      }
+    });
+  }
 
   //set cookies to response
   res.cookie(String(user.id), token, {
@@ -93,7 +98,8 @@ const verifyToken = (req, res, next) => {
   //geeting cookies from frontEnd
  
   const cookies = req.headers.cookie;
-  // console.log("THIS IS COOKIES",req.headers.cookie);
+
+  console.log("THIS IS COOKIES",req.headers.cookie);
   if (!cookies) {
     console.log("No cookies Bro !!!!!!!");
     return res.status(404).json({ message: "Cannot get information" });
@@ -113,10 +119,12 @@ const verifyToken = (req, res, next) => {
     console.log(user.id);
     //set request id
     req.id = user?.id;
-  });
-  console.log("Token Verify  !!!");
+    console.log("Token Verify  !!!");
   //go to next function in router
-  next();
+   next();
+  });
+
+  
 };
 
 const refreshToken = async (req, res, next) => {
