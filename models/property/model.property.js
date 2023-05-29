@@ -235,6 +235,45 @@ async function insertApplyProperty(property,user_id,user_type) {
   }
 }
 
+
+// ------------Getting data -------------------------
+
+async function getProperty(condition,limit,offSet){
+
+  let sqlQuery =  ``;
+
+  const params = [];
+  //adding search conditon on query
+  for(let key of Object.keys(condition)){
+
+     
+
+      if(condition[key]){
+          // adding search conditon and  push value in params array;
+          sqlQuery += ` AND ${key} = ?`
+          params.push(condition[key]);
+      }
+
+  }
+
+  //after adding search condition query
+
+  sqlQuery += ` LIMIT ${limit} OFFSET ${offSet}`
+
+  
+  
+
+  try {
+      const [result,field] = await pool.query(sqlQuery,params);
+    
+      return result;
+  } catch (error) {
+    
+      throw error;
+  }
+
+}
+
 module.exports = {
   createPropertyTable,
   insertProperty,

@@ -206,7 +206,7 @@ async function getApplyHouseProperty(condition,limit,offSet){
     try {
         const [result,field] = await pool.query(sqlQuery,params);
       
-        return result[0];
+        return result;
     } catch (error) {
         console.log(error);
         throw error;
