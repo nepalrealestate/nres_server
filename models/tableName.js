@@ -2,7 +2,7 @@
 
 const userSchemaName = 'nres_users';
 const propertySchemaName = 'nres_property';
-
+const unapprovedPropertySchemaName = 'nres_unapproved_property';
 
 //table name 
 // users 
@@ -33,12 +33,19 @@ const propertyTable = {
     ownership : `${propertySchemaName}.property_ownership`,
 
 
-    apply_property :`${propertySchemaName}.apply_property` ,
-    apply_house :`${propertySchemaName}.apply_house` ,
-    apply_land : `${propertySchemaName}.apply_land`,
-    apply_apartment: `${propertySchemaName}.apply_apartment`,
+
+    unapproved_property :`${unapprovedPropertySchemaName}.unapproved_property` ,
+    unapproved_house :`${unapprovedPropertySchemaName}.unapproved_house` ,
+    unapproved_land : `${unapprovedPropertySchemaName}.unapproved_land`,
+    unapproved_apartment: `${unapprovedPropertySchemaName}.unapproved_apartment`,
+    unapproved_property_location: `${unapprovedPropertySchemaName}.unapproved_property_location`,
+    unapproved_property_area: `${unapprovedPropertySchemaName}.unapproved_property_area`
 
 
+}
+
+const unapprovedPropertyTable = {
+    
 }
 
 const views = {
@@ -49,6 +56,7 @@ const views = {
 
     applyApartmentView : `${propertySchemaName}.apply_apartment_property`,
     applyHouseView    : `${propertySchemaName}.apply_house_property`,
+    applyLandView     : `${propertySchemaName}.apply_land_property`,
 
 }
 

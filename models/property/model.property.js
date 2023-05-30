@@ -11,7 +11,7 @@ const applyForListingTableName = "apply_listing";
 const propertyTransactionsTable = "property_transactions";
 const agentTableName = "agent";
 
-const { propertyTable, userTable } = require("../tableName");
+const { propertyTable, userTable, unapprovedPropertyTable } = require("../tableName");
 //--------------Create Table------------------------------------
 
 // Create Property Table
@@ -215,24 +215,90 @@ async function insertIntoRequestedProperty(property) {
   }
 }
 
-async function insertApplyProperty(property,user_id,user_type) {
+
+
+async function insertApplyProperty(property,area,location,user_id,user_type) {
 
 
   //createApplyPropertyTable();
 
-  const insertQuery = `INSERT INTO ${propertyTable.apply_property} VALUES  (?,?,?,?,?,?,?,?,?,?,0,?,?,?,?,?,?,?)`;// 0 IS  VIEWS
-  const insertValue = Object.values(property);//
+  // insert into property , location and area;
+  //insert into property
+  const insertProperty = `INSERT INTO ${propertyTable.unapproved_property} VALUES (?,?,?,?,?,0,?,?,?,?,?,?,?)`;//0 IS  VIEWS
+  const insertLocation = `INSERT INTO ${propertyTable.unapproved_property_location} VALUES (0,?,?,?,?,?,?,?,?)`;// 0 is AUTO INCREAMENT ID;
+  const insertArea = `INSERT INTO ${propertyTable.unapproved_property_area} VALUES (0,?,?,?,?)`; // 0 id
   
-  insertValue.unshift(user_type);
-  insertValue.unshift(user_id);// first position user_id
-  insertValue.push(null)// no one approve when insert property
-  insertValue.push('pending')
+  const propertyValue = Object.values(property);//
+  const locationValue = Object.values(location);
+  const areaValue = Object.values(area);
+  propertyValue.push(user_id);// position user_id
+  propertyValue.push(user_type);
+  propertyValue.push(null)// no one approve when insertproperty
+  propertyValue.push('pending');
+
+  let connection;
   try {
-    const [result, field] = await pool.query(insertQuery, insertValue);
-    return result;
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    console.log("Transaction Started");
+
+    await connection.query(insertProperty,propertyValue);
+    await connection.query(insertLocation,locationValue);
+    await connection.query(insertArea,areaValue);
+    await connection.commit();
+
+        console.log('Transaction committed successfully');
+
   } catch (error) {
+    console.log("error occur , rollback")
+    await connection.rollback();
+    console.log(error);
     throw error;
+  }finally{
+    if(connection){
+      connection.release();
   }
+  }
+ 
+}
+
+
+// ------------Getting data -------------------------
+
+async function getProperty(condition,limit,offSet){
+
+  let sqlQuery =  ``;
+
+  const params = [];
+  //adding search conditon on query
+  for(let key of Object.keys(condition)){
+
+     
+
+      if(condition[key]){
+          // adding search conditon and  push value in params array;
+          sqlQuery += ` AND ${key} = ?`
+          params.push(condition[key]);
+      }
+
+  }
+
+  //after adding search condition query
+
+  sqlQuery += ` LIMIT ${limit} OFFSET ${offSet}`
+
+  
+  
+
+  try {
+      const [result,field] = await pool.query(sqlQuery,params);
+    
+      return result;
+  } catch (error) {
+    
+      throw error;
+  }
+
 }
 
 module.exports = {

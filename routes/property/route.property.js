@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/requestProperty",handleRequestProperty);
 
 
-
+//router.get("/",)
 
 
 module.exports = router;

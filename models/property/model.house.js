@@ -206,7 +206,7 @@ async function getApplyHouseProperty(condition,limit,offSet){
     try {
         const [result,field] = await pool.query(sqlQuery,params);
       
-        return result[0];
+        return result;
     } catch (error) {
         console.log(error);
         throw error;
@@ -253,6 +253,23 @@ async function getHouseByID(property_id){
 }
 
 
+async function getApplyHouseByID(property_id){
+
+    const getQuery = `SELECT * FROM ${views.applyHouseView} WHERE property_id = ?`
+    console.log(getQuery)
+
+    try {
+        const [result,field] = await pool.query(getQuery,[property_id]);
+        return result[0];// return object not array
+        } catch (error) {
+        throw error;
+    }
+
+}
+
+
+
+
 // update
 
 // approve apply property and shift to property table
@@ -261,21 +278,22 @@ async function approveHouse(staff_id,property_id){
 
     const updateQuery = `UPDATE ${propertyTable.apply_property} SET status='approved',approved_by_id=? WHERE property_id=?`;
     const shiftPropertyQuery = `INSERT INTO ${propertyTable.property} SELECT * FROM ${propertyTable.apply_property} WHERE property_id=?`;
-    const shiftApartmentQuery = `INSERT INTO ${propertyTable.house} SELECT * FROM ${propertyTable.apply_house} WHERE property_id=?`;
+    const shiftHouseQuery = `INSERT INTO ${propertyTable.house} SELECT * FROM ${propertyTable.apply_house} WHERE property_id=?`;
+    const deleteHouseQuery = ` DELETE FROM ${propertyTable.apply_house} WHERE property_id = ? `;
     const deletePropertyQuery = ` DELETE FROM ${propertyTable.apply_property}  WHERE property_id = ? `;
-    const deleteApartmentQuery = ` DELETE FROM ${propertyTable.apply_house} WHERE property_id = ? `;
+   
 
     let connection ;
 
     try {
         connection = await pool.getConnection();
-
+        await connection.beginTransaction();
         console.log("Transaction Started");
 
         await connection.query(updateQuery,[staff_id,property_id]);
         await connection.query(shiftPropertyQuery,[property_id]);
-        await connection.query(shiftApartmentQuery,[property_id]);
-        await connection.query(deleteApartmentQuery,[property_id]);// first delete apartment and then property
+        await connection.query(shiftHouseQuery,[property_id]);
+        await connection.query(deleteHouseQuery,[property_id]);// first delete apartment and then property
         await connection.query(deletePropertyQuery,[property_id]);
         
 
@@ -301,6 +319,7 @@ async function approveHouse(staff_id,property_id){
 
 
 
-module.exports = {insertHouseProperty,getHouseProperty,insertHouseFeedback,getHouseByID,insertApplyHouseProperty,getApplyHouseProperty,approveHouse}
+module.exports = {insertHouseProperty,getHouseProperty,insertHouseFeedback,getHouseByID,getApplyHouseByID,
+    insertApplyHouseProperty,getApplyHouseProperty,approveHouse}
 
 

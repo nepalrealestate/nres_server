@@ -30,10 +30,10 @@ function excuteSQLFile() {
     validateQuery.forEach(async (query)=>{
         try {
                 await pool.query(query);
-                console.log("excute query ",query);
+                console.log("excute query ");
         } catch (error) {
-                console.log("error while excute",query);
-                console.log(error);
+                console.log("error while excute",error.sqlMessage);
+                
                 
         }
     })
