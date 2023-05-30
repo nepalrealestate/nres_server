@@ -9,6 +9,4 @@ router.post("/feedback",handleHouseFeedback); // insert house feedback
 router.put("/updateViews/:property_ID",handleUpdateHouseViews); // update house views
 router.get("/:property_ID",handleGetHouseByID); // get single house and update views also 
 
-
-
 module.exports = router;

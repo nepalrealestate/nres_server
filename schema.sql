@@ -1,17 +1,9 @@
 --CREATE DATABASE nres;
 CREATE SCHEMA nres_users;
-
-
 CREATE SCHEMA nres_property;
-
-
-
-
 
 --- create table for store property;
 
-
-    
 CREATE TABLE IF NOT EXISTS nres_property.property
     (   user_id VARCHAR(36) NOT NULL,
         user_type ENUM('agent','seller','staff'),
@@ -91,11 +83,6 @@ CREATE TABLE IF NOT EXISTS nres_property.apply_house LIKE nres_property.house;
     ALTER TABLE nres_property.apply_house
     ADD FOREIGN KEY (property_id) REFERENCES nres_property.apply_property(property_id);
 
-
-
-
-
-
 --create view for full apartment property;
 
 CREATE VIEW nres_property.full_apartment_property AS SELECT p.user_id,p.user_type,p.property_id,p.property_type,
@@ -129,10 +116,6 @@ p.city,p.ward_number,p.tole_name,l.land_type,l.soil,
 l.road_access_ft
 FROM nres_property.property AS p inner join nres_property.land as l on p.property_id = l.property_id;
  
-<<<<<<< HEAD
->>>>>>> 729af75cee4ba65a727d5f26144ee0cee5cfcdee
-=======
-
 
 -- view for all apply for listing property;
 
@@ -154,4 +137,3 @@ p.city,p.ward_number,p.tole_name,p.approved_by_id,p.status,
 h.room,h.floor,h.furnish_status,h.parking,h.road_access_ft,h.facilities,h.house_image
 FROM nres_property.apply_property 
 AS p inner join nres_property.apply_house AS h ON p.property_id = h.property_id
->>>>>>> property
