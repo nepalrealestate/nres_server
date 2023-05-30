@@ -1,6 +1,6 @@
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
-const {createPropertyTable,insertProperty, createApplyPropertyTable, insertApplyProperty} = require("../property/model.property");
+const {createPropertyTable,insertProperty, createApplyPropertyTable, insertApplyProperty, insertUnapprovedProperty} = require("../property/model.property");
 const { propertyTable, views } = require("../tableName");
 const propertyTableName = 'Property'
 const houseTableName = 'House';
@@ -126,35 +126,36 @@ async function insertApartmentProperty(property,apartmentProperty,user_id,user_t
 }
 
 
-async function insertApplyApartmentProperty(property,apartmentProperty,location,area,user_id,user_type){
+async function insertUnapprovedApartmentProperty(property,apartmentProperty,location,area){
 
 
     //await createApplyApartmentTable();
+    const insertValue = Object.values(apartmentProperty);
+    const insertQuery = `INSERT INTO  ${propertyTable.unapproved_apartment}  VALUES (?,?,?,?,?,?) `;
+    let connection;
 
     try {
-        await insertApplyProperty(property,location,area,user_id,user_type);
-    } catch (error) {
-        
+        connection = await pool.getConnection();
+        await connection.beginTransaction();
+        console.log("Transaction Started");
+    
+        await insertUnapprovedProperty(property,location,area);
+        await pool.query(insertQuery,insertValue);
+
+        await connection.commit();
+    
+        console.log('Transaction committed successfully');
+    
+      } catch (error) {
+        console.log("error occur , rollback")
+        await connection.rollback();
+        console.log(error);
         throw error;
-    }
-
-
-    const {property_id,bhk,situated_floor,furnish_status,parking,facilities,apartment_image} = apartmentProperty;
-
-    const insertQuery = `INSERT INTO  ${propertyTable.apply_apartment}  VALUES (?,?,?,?,?,?,?) `;
-
-    try {
-        
-        const [result,field] = await pool.query(insertQuery,[property_id,bhk,situated_floor,furnish_status,parking,facilities,apartment_image]);
-       
-        return result;
-
-    } catch (error) {
-        
-      
-        throw error;
-
-    }
+      }finally{
+        if(connection){
+          connection.release();
+      }
+      }
 
 }
 
@@ -219,9 +220,9 @@ async function getApartmentProperty(condition,limit,offSet){
 
 }
 
-async function getApplyApartmentProperty(condition,limit,offSet){
+async function getUnapprovedApartmentProperty(condition,limit,offSet){
 
-    let sqlQuery  = `SELECT * FROM ${views.applyApartmentView} WHERE 1=1 `;
+    let sqlQuery  = `SELECT * FROM ${views.unapprovedApartmentView} WHERE 1=1 `;
 
     const params = [];
     //adding search conditon on query
@@ -346,8 +347,8 @@ module.exports = {insertApartmentProperty,
     getApartmentProperty,
     insertApartmentFeedback,
     getApartmentByID,
-    insertApplyApartmentProperty,
-    getApplyApartmentProperty,
+    insertUnapprovedApartmentProperty,
+    getUnapprovedApartmentProperty,
     approveApartment,
     getApplyApartmentByID,
 };
