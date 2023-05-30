@@ -126,13 +126,13 @@ async function insertApartmentProperty(property,apartmentProperty,user_id,user_t
 }
 
 
-async function insertApplyApartmentProperty(property,apartmentProperty,user_id,user_type){
+async function insertApplyApartmentProperty(property,apartmentProperty,location,area,user_id,user_type){
 
 
     //await createApplyApartmentTable();
 
     try {
-        await insertApplyProperty(property,user_id,user_type);
+        await insertApplyProperty(property,location,area,user_id,user_type);
     } catch (error) {
         
         throw error;

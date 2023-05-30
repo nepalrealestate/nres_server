@@ -44,7 +44,7 @@ const handleAddApartment = async (req,res)=>{
          return res.status(400).json({message:"missing property "});
       }
       
-      const {property,apartmentProperty} = JSON.parse(req.body.property)
+      const {property,apartmentProperty,location,area} = JSON.parse(req.body.property)
       console.log(property,apartmentProperty)
 
 

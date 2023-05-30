@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS nres_users.agent
     name VARCHAR(50),
     email VARCHAR(50), 
     phone_number VARCHAR(10), 
-    identification_type VARCHAR(20),
+    identification_type ENUM('citizenship','lisense','nationalID','voterID'),
     identification_number VARCHAR(20),
     identification_image JSON,
     password VARCHAR(255),

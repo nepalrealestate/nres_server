@@ -28,7 +28,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({credentials:true,origin:"*"}));
 
 // excute all sql file for create db , schema and tables;
-excuteSQLFile();
+//excuteSQLFile();
 
 
 // Error handling middleware for Multer
