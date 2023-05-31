@@ -4,7 +4,7 @@ const {handleGetStaff, handleStaffRegistration, handleStaffLogin, handleAddVideo
 const { verifyToken } = require("../../controllers/users/commonAuthCode");
 const { handleAddApartment, handleApproveApartment, handleGetUnapprovedApartment } = require("../../controllers/property/controller.apartment");
 const { handleAddHouse, handleApproveHouse, handleGetUnapprovedHouse } = require("../../controllers/property/controller.house");
-const { handleAddLand, handleGetApplyLand, handleApproveLand } = require("../../controllers/property/controller.land");
+const { handleAddLand, handleApproveLand, handleGetUnapprovedLand } = require("../../controllers/property/controller.land");
 const { route } = require("./route.agent");
 
 
@@ -27,7 +27,7 @@ router.post("/addLand",verifyToken,handleAddLand);
 
 router.get("/unapprovedApartment",verifyToken,handleGetUnapprovedApartment);
 router.get("/unapprovedHouse",verifyToken,handleGetUnapprovedHouse)
-router.get("/unapprovedLand",verifyToken,handleGetApplyLand)
+router.get("/unapprovedLand",verifyToken,handleGetUnapprovedLand)
 //approved apply for listing apartment
 
 router.put("/approvedApartment/:property_id",verifyToken,handleApproveApartment);

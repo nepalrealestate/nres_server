@@ -247,7 +247,7 @@ async function insertUnapprovedProperty(property,location,area) {
     await connection.query(insertArea,areaValue);
     await connection.commit();
 
-        console.log('Transaction committed successfully');
+    console.log('Transaction committed successfully');
 
   } catch (error) {
     console.log("error occur , rollback")
