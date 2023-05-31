@@ -1,5 +1,5 @@
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
-const {insertApartmentProperty, getApartmentProperty, insertApartmentFeedback, getApartmentByID, insertApplyApartmentProperty, getApplyApartmentProperty, approveApartment, getApplyApartmentByID, insertUnapprovedApartmentProperty, getUnapprovedApartmentProperty}   = require("../../models/property/model.apartment");
+const {insertApartmentProperty, getApartmentProperty, insertApartmentFeedback, getApartmentByID, approveApartment, getApplyApartmentByID, insertUnapprovedApartmentProperty, getUnapprovedApartmentProperty}   = require("../../models/property/model.apartment");
 const { updatePropertyViews, insertPropertyOwnership } = require("../../models/property/model.property");
 
 const path  = 'uploads/property/apartment/images'  //path from source 

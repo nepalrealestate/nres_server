@@ -142,9 +142,7 @@ async function insertUnapprovedApartmentProperty(property,apartmentProperty,loca
         await insertUnapprovedProperty(property,location,area);
         await pool.query(insertQuery,insertValue);
 
-        await connection.commit();
-    
-        console.log('Transaction committed successfully');
+        
     
       } catch (error) {
         console.log("error occur , rollback")
