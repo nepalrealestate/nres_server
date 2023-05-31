@@ -142,7 +142,7 @@ async function getLandProperty(condition, limit, offSet) {
   }
 }
 
-async function getUnapprovedLandProperty(condition, limit, offSet) {
+async function getUnapprovedLandProperty(condition, limit=20, offSet=0) {
   let sqlQuery = `SELECT * FROM ${views.unapprovedLandView} WHERE 1=1 `;
   const params = [];
   //adding search conditon on query
@@ -195,8 +195,8 @@ async function getLandByID(property_id) {
   }
 }
 
-async function getApplyLandByID(property_id) {
-  const getQuery = `SELECT * FROM ${views.applyLandView} WHERE property_id = ?`;
+async function getUnapprovedLandByID(property_id) {
+  const getQuery = `SELECT * FROM ${views.unapprovedLandView} WHERE property_id = ?`;
 
   try {
     const [result, field] = await pool.query(getQuery, property_id);
@@ -208,11 +208,25 @@ async function getApplyLandByID(property_id) {
 }
 
 async function approveLand(staff_id, property_id) {
-  const updateQuery = `UPDATE ${propertyTable.apply_property} SET status='approved',approved_by_id=? WHERE property_id=?`;
-  const shiftPropertyQuery = `INSERT INTO ${propertyTable.property} SELECT * FROM ${propertyTable.apply_property} WHERE property_id=?`;
-  const shiftLandQuery = `INSERT INTO ${propertyTable.land} SELECT * FROM ${propertyTable.apply_land} WHERE property_id=?`;
-  const deletePropertyQuery = ` DELETE FROM ${propertyTable.apply_property}  WHERE property_id = ? `;
-  const deleteLandQuery = ` DELETE FROM ${propertyTable.apply_land} WHERE property_id = ? `;
+  
+  const updateQuery = `UPDATE ${propertyTable.unapproved_property} SET status='approved',approved_by_id=? WHERE property_id=?`;
+
+  const shiftPropertyQuery = `INSERT INTO ${propertyTable.property} SELECT * FROM ${propertyTable.unapproved_property} WHERE property_id=?`;
+  
+  const shiftLocationQuery = `INSERT INTO ${propertyTable.property_location} SELECT * FROM ${propertyTable.unapproved_property_location} 
+                              WHERE property_id=?`;
+                              
+  const shiftAreaQuery = `INSERT INTO ${propertyTable.property_area} SELECT * FROM ${propertyTable.unapproved_property_area}
+                          WHERE property_id=?`;
+                          
+  const shiftLandQuery = `INSERT INTO ${propertyTable.land} SELECT * FROM ${propertyTable.unapproved_land} WHERE property_id=?`;
+
+
+  const deleteAreaQuery = `DELETE FROM ${propertyTable.unapproved_property_area} WHERE property_id= ?`;
+  const deleteLocationQuery = `DELETE FROM ${propertyTable.unapproved_property_location} WHERE property_id = ?`;
+  const deleteLandQuery = ` DELETE FROM ${propertyTable.unapproved_land} WHERE property_id = ? `;
+  const deletePropertyQuery = ` DELETE FROM ${propertyTable.unapproved_property}  WHERE property_id = ? `;
+  
 
   let connection;
 
@@ -225,6 +239,10 @@ async function approveLand(staff_id, property_id) {
 
     await connection.query(shiftPropertyQuery, [property_id]);
     await connection.query(shiftLandQuery, [property_id]);
+    await connection.query(shiftLocationQuery,[property_id]);//shift location
+    await connection.query(shiftAreaQuery,[property_id]);// shift area
+    await connection.query(deleteAreaQuery,[property_id]);// delete area
+    await connection.query(deleteLocationQuery,[property_id]);// delete location
     await connection.query(deleteLandQuery, [property_id]); // first delete Land and then property
     await connection.query(deletePropertyQuery, [property_id]);
 
@@ -251,5 +269,5 @@ module.exports = {
   insertUnapprovedLandProperty,
   getUnapprovedLandProperty,
   approveLand,
-  getApplyLandByID,
+  getUnapprovedLandByID,
 };

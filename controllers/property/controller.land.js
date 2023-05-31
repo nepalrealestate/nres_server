@@ -3,12 +3,12 @@ const {
   getLandProperty,
   insertLandFeedback,
   getLandByID,
-  insertApplyLandProperty,
-  getApplyLandProperty,
+  
   approveLand,
-  getApplyLandByID,
+  
   insertUnapprovedLandProperty,
   getUnapprovedLandProperty,
+  getUnapprovedLandByID,
 } = require("../../models/property/model.land");
 const { updatePropertyViews } = require("../../models/property/model.property");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
@@ -189,13 +189,15 @@ const handleApproveLand = async (req, res) => {
   let land;
 
   try {
-    land = await getApplyLandByID(property_id);
+    land = await getUnapprovedLandByID(property_id);
     if (land === undefined || land === null) {
       return res.status(400).json({ message: "No Land" });
     }
+    
     await approveLand(staff_id, property_id);
     return res.status(200).json({ message: "approve successfully" });
   } catch (error) {
+    console.log(error)
     return res
       .status(500)
       .json({ message: "approved denied ! please try later" });
