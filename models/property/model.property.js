@@ -217,24 +217,24 @@ async function insertIntoRequestedProperty(property) {
 
 
 
-async function insertApplyProperty(property,area,location,user_id,user_type) {
+async function insertUnapprovedProperty(property,location,area) {
 
 
   //createApplyPropertyTable();
 
   // insert into property , location and area;
   //insert into property
-  const insertProperty = `INSERT INTO ${propertyTable.unapproved_property} VALUES (?,?,?,?,?,0,?,?,?,?,?,?,?)`;//0 IS  VIEWS
+  const insertProperty = `INSERT INTO ${propertyTable.unapproved_property} VALUES (?,?,?,?,?,0,?,null,CURRENT_DATE(),?,?,?,?)`;//0 IS  VIEWS - null video link
   const insertLocation = `INSERT INTO ${propertyTable.unapproved_property_location} VALUES (0,?,?,?,?,?,?,?,?)`;// 0 is AUTO INCREAMENT ID;
   const insertArea = `INSERT INTO ${propertyTable.unapproved_property_area} VALUES (0,?,?,?,?)`; // 0 id
   
   const propertyValue = Object.values(property);//
   const locationValue = Object.values(location);
+  console.log(locationValue);
   const areaValue = Object.values(area);
-  propertyValue.push(user_id);// position user_id
-  propertyValue.push(user_type);
+ 
   propertyValue.push(null)// no one approve when insertproperty
-  propertyValue.push('pending');
+  propertyValue.push('pending');// status is pending when insert unapproved property
 
   let connection;
   try {
@@ -247,7 +247,7 @@ async function insertApplyProperty(property,area,location,user_id,user_type) {
     await connection.query(insertArea,areaValue);
     await connection.commit();
 
-        console.log('Transaction committed successfully');
+    console.log('Transaction committed successfully');
 
   } catch (error) {
     console.log("error occur , rollback")
@@ -309,5 +309,5 @@ module.exports = {
   insertVideoLink,
   insertIntoRequestedProperty,
   createApplyPropertyTable,
-  insertApplyProperty,
+  insertUnapprovedProperty,
 };

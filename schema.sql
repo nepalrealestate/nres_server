@@ -103,7 +103,6 @@ CREATE TABLE IF NOT EXISTS nres_property.land (
       property_id INT NOT NULL PRIMARY KEY UNIQUE,
       land_type VARCHAR(255),
       soil VARCHAR(255),   
-      land_image JSON,
       FOREIGN KEY (property_id) REFERENCES nres_property.property (property_id) ON DELETE CASCADE
 
 );
@@ -226,7 +225,7 @@ INNER JOIN nres_property.property_location AS location ON p.property_id = locati
 
 --create view for apply for listing apartment property;
 CREATE VIEW nres_unapproved_property.unapproved_apartment_property AS SELECT p.property_id,p.property_type,
-p.property_name,p.listed_for,p.price, p.user_id,p.user_type,p.approved_by_id,p.status,
+p.property_name,p.listed_for,p.price, p.user_id,p.user_type,p.approved_by_id,p.status,p.property_image,p.posted_date,
 a.bhk,a.situated_floor,a.furnish_status,a.parking,a.facilities,
 area.area_aana,area.area_sq_ft,area.road_access_ft,
 location.state,location.district,location.city,location.ward_number,
@@ -240,7 +239,7 @@ INNER JOIN nres_unapproved_property.unapproved_property_location AS location ON 
  -- create view for apply for listing house property;
 
 CREATE VIEW nres_unapproved_property.unapproved_house_property AS SELECT p.property_id,p.property_type,
-p.property_name,p.listed_for,p.price, p.user_id,p.user_type,p.approved_by_id,p.status,
+p.property_name,p.listed_for,p.price, p.user_id,p.user_type,p.approved_by_id,p.status,p.property_image,p.posted_date,
 h.room,h.floor,h.furnish_status,h.parking,h.facing_direction,h.facilities,
 area.area_aana,area.area_sq_ft,area.road_access_ft,
 location.state,location.district,location.city,location.ward_number,
@@ -255,7 +254,7 @@ INNER JOIN nres_unapproved_property.unapproved_property_location AS location ON 
 -- create view for apply for listing land property;
 
 CREATE VIEW nres_unapproved_property.unapproved_land_property AS SELECT p.property_id,p.property_type,
-p.property_name,p.listed_for,p.price, p.user_id,p.user_type,p.approved_by_id,p.status,
+p.property_name,p.listed_for,p.price, p.user_id,p.user_type,p.approved_by_id,p.status,p.property_image,p.posted_date,
 l.land_type,l.soil,
 area.area_aana,area.area_sq_ft,area.road_access_ft,
 location.state,location.district,location.city,location.ward_number,
