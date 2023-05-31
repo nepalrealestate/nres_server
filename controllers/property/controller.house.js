@@ -1,6 +1,6 @@
 
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
-const {insertHouseProperty, getHouseProperty, insertHouseFeedback, getHouseByID, insertApplyHouseProperty, getApplyHouseProperty, approveHouse, getApplyHouseByID}   = require("../../models/property/model.house")
+const {insertHouseProperty, getHouseProperty, insertHouseFeedback, getHouseByID, insertUnapprovedHouseProperty, getApplyHouseProperty, approveHouse, getApplyHouseByID, getUnapprovedHouseProperty}   = require("../../models/property/model.house")
 const {updatePropertyViews}  = require("../../models/property/model.property");
 
 
@@ -39,29 +39,30 @@ const handleAddHouse = async (req,res)=>{
          return res.status(400).json({message:"missing property "});
       }
       
-      const {property,houseProperty} = JSON.parse(req.body.property)
-      console.log(property,houseProperty)
-
-
-      houseProperty.house_image = images.reduce((acc, value, index) => ({ ...acc, [index]: value.path }), {});
-      houseProperty.house_image = JSON.stringify(houseProperty.house_image);
-
-      console.log(houseProperty)
-
+      let {property,houseProperty,location,area} = JSON.parse(req.body.property)
       
+      const imageObject = JSON.stringify(images.reduce((acc, value, index) => ({ ...acc, [index]: value.path }), {}));
+
+      const property_id = property.property_id;
+      property  = {...property,"property_image":imageObject,"user_id":user_id,"user_type":user_type};
+      houseProperty = {"property_id":property_id,...houseProperty}
+      location  = {"property_id":property_id,...location};
+      area = {"property_id":property_id,...area};
+      try {
+         await insertUnapprovedHouseProperty(property,houseProperty,location,area);
+         return res.status(200).json({message:"Insert into table"});
    
-        console.log("Add House API HITTTTT !!!!!!");
-        try {
-           await insertApplyHouseProperty(property,houseProperty,user_id,user_type);
-           return res.status(200).json({message:"Insert into table"});
-        } catch (error) {
-           return res.status(400).json({message:error.sqlMessage})
-        }
+      } catch (error) {
+         return res.status(400).json({message:error.sqlMessage})
+      }
+     
+     
+      
+       
+          
+        
 
     })
-
-
-  
 
 }
 
@@ -102,7 +103,7 @@ const handleGetHouse = async (req,res)=>{
 }
 
 
-const handleGetApplyHouse = async (req,res)=>{
+const handleGetUnapprovedHouse = async (req,res)=>{
    let page, limit ,offSet;
 
   // if page and limit not set then defualt is 1 and 20 .
@@ -123,7 +124,7 @@ const handleGetApplyHouse = async (req,res)=>{
 
 
    try {
-      const houseData = await getApplyHouseProperty(req.query,limit,offSet);
+      const houseData = await getUnapprovedHouseProperty(req.query,limit,offSet);
       console.log(houseData)
    
       return res.status(200).json(houseData);
@@ -213,6 +214,6 @@ module.exports = {handleAddHouse,
    handleHouseFeedback,
    handleUpdateHouseViews,
    handleGetHouseByID,
-   handleGetApplyHouse,
+   handleGetUnapprovedHouse,
    handleApproveHouse,
 }

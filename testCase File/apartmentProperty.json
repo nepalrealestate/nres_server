@@ -1,0 +1,33 @@
+
+
+{
+    "property":{
+        "property_id":1020,
+        "property_type":"apartment",
+        "property_name":"Lavish Aparment",
+        "listed_for":"Rent",
+        "price":30000
+
+    },
+    "apartmentProperty":{
+        "bhk":3,
+        "situated_floor":3,
+        "furnish_status":false,
+        "parking":true,
+        "facilities":"24 hour water, a lot of parking area , good chhimeki , peace enviroment , No LandLord so you can enjoy !!!!!!"
+    },
+    "location":{
+        "state":"Bagmati",
+        "district":"kathmandu",
+        "city":"kathmandu",
+        "ward_number":"32",
+        "tole_name":"mahadev",
+        "latitude": 27.680475, 
+        "longitude": 85.305186
+    },
+    "area":{
+        "area_aana":0,
+        "area_sq_ft":20,
+        "road_access_ft":100
+    }
+}

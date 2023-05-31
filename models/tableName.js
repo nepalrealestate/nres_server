@@ -44,19 +44,17 @@ const propertyTable = {
 
 }
 
-const unapprovedPropertyTable = {
-    
-}
+
 
 const views = {
 
-    fullApartmentView : `${propertySchemaName}.full_apartment_property`,
-    fullHouseView     : `${propertySchemaName}.full_house_property`,
-    fullLandView      : `${propertySchemaName}.full_land_property`,
+    fullApartmentView : `${propertySchemaName}.apartment_property`,
+    fullHouseView     : `${propertySchemaName}.house_property`,
+    fullLandView      : `${propertySchemaName}.land_property`,
 
-    applyApartmentView : `${propertySchemaName}.apply_apartment_property`,
-    applyHouseView    : `${propertySchemaName}.apply_house_property`,
-    applyLandView     : `${propertySchemaName}.apply_land_property`,
+    unapprovedApartmentView : `${unapprovedPropertySchemaName}.unapproved_apartment_property`,
+    unapprovedHouseView    : `${unapprovedPropertySchemaName}.unapproved_house_property`,
+    unapprovedLandView     : `${unapprovedPropertySchemaName}.unapproved_land_property`,
 
 }
 

@@ -1,5 +1,5 @@
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
-const {insertApartmentProperty, getApartmentProperty, insertApartmentFeedback, getApartmentByID, insertApplyApartmentProperty, getApplyApartmentProperty, approveApartment, getApplyApartmentByID}   = require("../../models/property/model.apartment");
+const {insertApartmentProperty, getApartmentProperty, insertApartmentFeedback, getApartmentByID, approveApartment, getApplyApartmentByID, insertUnapprovedApartmentProperty, getUnapprovedApartmentProperty}   = require("../../models/property/model.apartment");
 const { updatePropertyViews, insertPropertyOwnership } = require("../../models/property/model.property");
 
 const path  = 'uploads/property/apartment/images'  //path from source 
@@ -37,29 +37,34 @@ const handleAddApartment = async (req,res)=>{
       
       // get user id from req.id i.e we set req.id when verify token
       const user_id = req.id;
-      // baseUrl provide us from where request coming from ex. /agnet,/staff,/seller
+      // baseUrl provide us from where request coming from ex. /agent,/staff,/seller
       const user_type = req.baseUrl.substring(1);
       
       if(!req.body.property){
          return res.status(400).json({message:"missing property "});
       }
       
-      const {property,apartmentProperty,location,area} = JSON.parse(req.body.property)
-      console.log(property,apartmentProperty)
-
-
-      apartmentProperty.apartment_image = images.reduce((acc, value, index) => ({ ...acc, [index]: value.path }), {});
-      apartmentProperty.apartment_image = JSON.stringify(apartmentProperty.apartment_image);
-
-      console.log(apartmentProperty)
-      
+      let {property,apartmentProperty,location,area} = JSON.parse(req.body.property)
      
-   
+
+      const imageObject = JSON.stringify(images.reduce((acc, value, index) => ({ ...acc, [index]: value.path }), {}));
+
+
+      
+      // update object - store some value
+      const property_id = property.property_id;
+      property  = {...property,"property_image":imageObject,"user_id":user_id,"user_type":user_type};
+      apartmentProperty = {"property_id":property_id,...apartmentProperty};
+      location  = {"property_id":property_id,...location};
+      area = {"property_id":property_id,...area};
+     
+      console.log(location);
+ 
         console.log("Add Apartment API HITTTTT !!!!!!");
         try {
            //await insertApartmentProperty(property,apartmentProperty,user_id,user_type);
 
-            await insertApplyApartmentProperty(property,apartmentProperty,user_id,user_type);
+            await insertUnapprovedApartmentProperty(property,apartmentProperty,location,area);
 
            return res.status(200).json({message:"Insert into table"});
         } catch (error) {
@@ -125,7 +130,7 @@ const handleGetApartment = async (req,res)=>{
 }
 
 
-const handleGetApplyApartment = async (req,res)=>{
+const handleGetUnapprovedApartment = async (req,res)=>{
    let page, limit ,offSet;
 
   // if page and limit not set then defualt is 1 and 20 .
@@ -146,7 +151,7 @@ const handleGetApplyApartment = async (req,res)=>{
 
 
    try {
-      const apartmentData = await getApplyApartmentProperty(req.query,limit,offSet);
+      const apartmentData = await getUnapprovedApartmentProperty(req.query,limit,offSet);
       console.log(apartmentData)
    
       return res.status(200).json(apartmentData);
@@ -224,6 +229,6 @@ module.exports = {handleAddApartment,
    handleApartmentFeedback,
    handleUpdateApartmentViews,
    handleGetApartmentByID,
-   handleGetApplyApartment,
+   handleGetUnapprovedApartment,
    handleApproveApartment
 }
