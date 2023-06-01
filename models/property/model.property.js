@@ -11,7 +11,7 @@ const applyForListingTableName = "apply_listing";
 const propertyTransactionsTable = "property_transactions";
 const agentTableName = "agent";
 
-const { propertyTable, userTable, unapprovedPropertyTable } = require("../tableName");
+const { propertyTable, userTable, unapprovedPropertyTable, views } = require("../tableName");
 //--------------Create Table------------------------------------
 
 // Create Property Table
@@ -265,9 +265,21 @@ async function insertUnapprovedProperty(property,location,area) {
 
 // ------------Getting data -------------------------
 
-async function getProperty(condition,limit,offSet){
+async function getProperty(condition,limit=20,offSet=0){
+  
+  // there must be better ways to get data - i'm exploring
 
-  let sqlQuery =  ``;
+  // let getPropertyType =  `SELECT property_type from ${propertyTable.property}`;
+
+  // const [resultType,fieldType] = await pool.query(getPropertyType);
+  // console.log(resultType)
+  // let property_type = resultType[0];
+  // const viewName = `${property_type}_property`;
+  // console.log(viewName)
+  let sqlQuery = `SELECT p.property_id,p.property_type,p.property_name,p.listed_for,p.views,p.posted_date,p.property_image,l.state,l.city,l.ward_number from ${propertyTable.property} as p 
+ inner join ${propertyTable.property_location}  as l on p.property_id=l.property_id 
+
+`;
 
   const params = [];
   //adding search conditon on query
@@ -310,4 +322,5 @@ module.exports = {
   insertIntoRequestedProperty,
   createApplyPropertyTable,
   insertUnapprovedProperty,
+  getProperty
 };

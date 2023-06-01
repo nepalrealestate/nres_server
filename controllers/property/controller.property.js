@@ -1,5 +1,7 @@
 
-const {insertIntoRequestedProperty}  = require("../../models/property/model.property")
+
+const { wrapAwait } = require("../../errorHandling");
+const {insertIntoRequestedProperty, getProperty}  = require("../../models/property/model.property")
 
 const handleRequestProperty = async (req,res)=>{
 
@@ -43,23 +45,38 @@ const hanldeGetProperty = async (req,res)=>{
   
 
    offSet = (page-1) * limit;
-
-
-
-
-
-   try {
-      const houseData = await getHouseProperty(req.query,limit,offSet);
-      console.log(houseData)
    
-      return res.status(200).json(houseData);
-   } catch (error) {
-      return res.status(500).json({message:error.sqlMessage});
-   }
+
+   // write code in wrapAeait function
+  //  try {
+  //     const result = await ;
+  //     return res.status(200).json({result});
+  //  } catch (error) {
+  //     return res
+  //  }
+
+  const [result,error]   =  await wrapAwait(getProperty(req.query,limit,offSet));
+  
+  if(result){
+    return res.status(200).json({result});
+  }
+  console.log(error)
+  return res.status(400).json({message:"No property"});
+
+
+
+  //  try {
+  //     const houseData = await getHouseProperty(req.query,limit,offSet);
+  //     console.log(houseData)
+   
+  //     return res.status(200).json(houseData);
+  //  } catch (error) {
+  //     return res.status(500).json({message:error.sqlMessage});
+  //  }
 
 
 }
 
 
 
-module.exports = {handleRequestProperty}
+module.exports = {handleRequestProperty,hanldeGetProperty}
