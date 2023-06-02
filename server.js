@@ -15,6 +15,7 @@ const bodyParser = require('body-parser')
 const {connectMysql}  = require("./connection")
 const cookieParser = require('cookie-parser');
 const {excuteSQLFile}  = require("./connection");
+const {logger} = require("./errorLogging/logging")
 
 const port = 8000;
 app.use(cookieParser());
@@ -57,4 +58,5 @@ app.use("/property",propertyRouter);
 //connectMysql();
 app.listen(port,()=>{
     console.log(` port ${port} is listening.......`)
+    logger.info("port is running in 8000: devs")
 })

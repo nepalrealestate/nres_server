@@ -27,6 +27,8 @@ const userTable = {
 const propertyTable = {
 
     property : `${propertySchemaName}.property`,
+    property_location : `${propertySchemaName}.property_location`,
+    property_area     : `${propertySchemaName}.property_area`,
     house: `${propertySchemaName}.house`,
     land :`${propertySchemaName}.land`,
     apartment :`${propertySchemaName}.apartment`,
@@ -35,11 +37,12 @@ const propertyTable = {
 
 
     unapproved_property :`${unapprovedPropertySchemaName}.unapproved_property` ,
+    unapproved_property_location : `${unapprovedPropertySchemaName}.unapproved_property_location`,
+    unapproved_property_area     : `${unapprovedPropertySchemaName}.unapproved_property_area`,
     unapproved_house :`${unapprovedPropertySchemaName}.unapproved_house` ,
     unapproved_land : `${unapprovedPropertySchemaName}.unapproved_land`,
     unapproved_apartment: `${unapprovedPropertySchemaName}.unapproved_apartment`,
-    unapproved_property_location: `${unapprovedPropertySchemaName}.unapproved_property_location`,
-    unapproved_property_area: `${unapprovedPropertySchemaName}.unapproved_property_area`
+
 
 
 }

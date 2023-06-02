@@ -1,6 +1,6 @@
 const express = require("express");
 
-const { handleRequestProperty } = require("../../controllers/property/controller.property");
+const { handleRequestProperty, hanldeGetProperty } = require("../../controllers/property/controller.property");
 
 const router = express.Router();
 
@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/requestProperty",handleRequestProperty);
 
 
-//router.get("/",)
+router.get("/",hanldeGetProperty)
 
 
 module.exports = router;
