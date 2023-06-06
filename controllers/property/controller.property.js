@@ -32,6 +32,7 @@ const handleRequestProperty = async (req,res)=>{
 const hanldeGetProperty = async (req,res)=>{
 
   let page, limit ,offSet;
+  console.log(req.query)
 
   // if page and limit not set then defualt is 1 and 20 .
    page = req.query.page || 1;
@@ -45,7 +46,7 @@ const hanldeGetProperty = async (req,res)=>{
   
 
    offSet = (page-1) * limit;
-   
+
 
    // write code in wrapAeait function
   //  try {
@@ -55,10 +56,12 @@ const hanldeGetProperty = async (req,res)=>{
   //     return res
   //  }
 
-  const [result,error]   =  await wrapAwait(getProperty(req.query,limit,offSet));
-  
-  if(result){
-    return res.status(200).json({result});
+  const [data,error]   =  await wrapAwait(getProperty(req.query,limit,offSet));
+ console.log(typeof data)
+  console.log(data);
+
+  if(data){
+    return res.status(200).json({data});
   }
   console.log(error)
   return res.status(400).json({message:"No property"});

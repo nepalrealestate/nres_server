@@ -78,28 +78,28 @@ const handleAgentRegistration = async (req, res) => {
     const agentData = { ...req.body };
     console.log(agentData);
   
-    console.log("After Image Upload", req.files);
+  //  console.log("After Image Upload", req.files);
   
-    const images = req.files;
+    //const images = req.files;
   
-    agentData.identificationImage = images.reduce(
-      (acc, value, index) => ({ ...acc, [index]: value.path }),
-      {}
-    );
-    agentData.identificationImage = JSON.stringify(
-      agentData.identificationImage
-    );
+    // agentData.identificationImage = images.reduce(
+    //   (acc, value, index) => ({ ...acc, [index]: value.path }),
+    //   {}
+    // );
+    // agentData.identificationImage = JSON.stringify(
+    //   agentData.identificationImage
+    // );
   
     console.log(agentData);
   
-    if (
-      !agentData?.fullName ||
-      !agentData?.identificationNumber ||
-      !agentData?.termsAndCondition ||
-      !agentData?.identificationType
-    ) {
-      return res.status(400).json({ message: "field missing" });
-    }
+    // if (
+    //   !agentData?.fullName ||
+    //   !agentData?.identificationNumber ||
+    //   !agentData?.termsAndCondition ||
+    //   !agentData?.identificationType
+    // ) {
+    //   return res.status(400).json({ message: "field missing" });
+    // }
   
     //validate email and phone number
     const numberRegex = /(\+977)?[9][6-9]\d{8}/;
