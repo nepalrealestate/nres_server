@@ -196,6 +196,7 @@ const handleApproveApartment = async (req, res) => {
   // handle approved apartment and shift unapproved apartmnet to approved apartment table
 
   const { property_id } = req.params;
+
   console.log(property_id);
   const staff_id = req.id;
   let apartment;
