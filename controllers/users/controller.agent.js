@@ -49,9 +49,9 @@ const handleGetAgent = async (req, res) => {
   }
 
   try {
-    const result = await getAgent(agent_ID);
-
-    return res.status(200).json({ message: result});
+    const data = await getAgent(agent_ID);
+    console.log(data);
+    return res.status(200).json({data});
   } catch (error) {
     return res.status(400).json({message:error});
   }

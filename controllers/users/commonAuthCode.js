@@ -86,6 +86,7 @@ const login = async (req, res, user) => {
     httpOnly: true,
     sameSite: "lax",
   });
+  console.log(res.cookie)
   //return success message
   return res.status(200).json({ message: "Successfully Logged In", token });
 };
@@ -98,7 +99,7 @@ const verifyToken = (req, res, next) => {
   //geeting cookies from frontEnd
  
   const cookies = req.headers.cookie;
-
+  console.log(req.cookies);
   console.log("THIS IS COOKIES",req.headers.cookie);
   if (!cookies) {
     console.log("No cookies Bro !!!!!!!");
