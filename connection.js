@@ -44,10 +44,10 @@ function excuteSQLFile() {
 
 const pool = mysql
   .createPool({
-    host: "localhost",
-    user: "root",
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: "nres",
+    database: process.env.DB_NAME,
     multipleStatements: true,
   })
   .promise(); //the promise() allow to use promises version

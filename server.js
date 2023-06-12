@@ -15,9 +15,14 @@ const bodyParser = require('body-parser')
 const {connectMysql}  = require("./connection")
 const cookieParser = require('cookie-parser');
 const {excuteSQLFile}  = require("./connection");
-const {logger} = require("./errorLogging/logging")
+const {logger} = require("./utils/errorLogging/logging")
+const {Chat} = require("./chat/chatConnection");
 
 const port = 8000;
+
+app.use(cors({credentials:true,origin:"http://localhost:3000"}));
+
+
 app.use(cookieParser());
 
 // for parsing application/json
@@ -26,7 +31,8 @@ app.use(bodyParser.json());
 // for parsing application/xwww-
 app.use(bodyParser.urlencoded({ extended: true })); 
 //form-urlencoded
-app.use(cors({credentials:true,origin:"*"}));
+
+app.use('/uploads', express.static('uploads'));
 
 // excute all sql file for create db , schema and tables;
  //excuteSQLFile();
@@ -56,6 +62,14 @@ app.use("/land",landRouter)
 app.use ("/apartment",apartmentRouter);
 app.use("/property",propertyRouter);
 //connectMysql();
+
+
+// chat running
+const chatServer = new Chat();
+chatServer.chatServer();
+
+
+
 app.listen(port,()=>{
     console.log(` port ${port} is listening.......`)
     logger.info("port is running in 8000: devs")

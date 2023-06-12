@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon server.js"
   },
-  "author": "Amir Poudel",
+  "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.0",
