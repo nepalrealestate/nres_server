@@ -1,12 +1,14 @@
 --CREATE DATABASE nres;
 CREATE SCHEMA nres_users;
 CREATE SCHEMA nres_property;
-
-
---- create table for store property;
-
-
 CREATE SCHEMA nres_unapproved_property;
+CREATE SCHEMA nres_services;
+CREATE SCHEMA nres_unapproved_services;
+CREATE SCHEMA nres_sold_property;
+
+
+
+
 
 
 
@@ -20,7 +22,7 @@ CREATE TABLE IF NOT EXISTS nres_users.agent
     id varchar(36) UNIQUE PRIMARY KEY,
     name VARCHAR(50),
     email VARCHAR(50), 
-    phone_number VARCHAR(10), 
+    phone_number VARCHAR(15), 
     identification_type ENUM('citizenship','lisense','nationalID','voterID'),
     identification_number VARCHAR(20),
     identification_image JSON,
@@ -40,6 +42,18 @@ CREATE TABLE  IF NOT EXISTS nres_users.staff
  UNIQUE(email) ) ;
 
 
+-- create customer;
+CREATE TABLE IF NOT EXISTS nres_users.customer
+ (id varchar(36) PRIMARY KEY,
+  first_name VARCHAR (20) NOT NULL,
+  middle_name VARCHAR (20),
+  last_name VARCHAR (20) NOT NULL,
+  email VARCHAR (20),
+  phone_number VARCHAR(15)
+ )
+
+
+
 
 --- create table for store property;
 
@@ -51,7 +65,7 @@ CREATE TABLE IF NOT EXISTS nres_property.property
 		property_type ENUM('house','apartment','land') NOT NULL,
 		property_name varchar(50),
         listed_for varchar(10) NOT NULL,
-        price FLOAT,
+        price  DECIMAL(12, 2),
         views INT DEFAULT 0,
         property_image JSON,
         property_video JSON,
@@ -139,7 +153,7 @@ CREATE TABLE IF NOT EXISTS nres_property.property_area (
 
 --- create table for listing property before aproved;
 --create property table;
-CREATE TABLE nres_unapproved_property.unapproved_property LIKE nres_property.property;
+CREATE TABLE IF NOT EXISTS nres_unapproved_property.unapproved_property LIKE nres_property.property;
 			ALTER TABLE  nres_unapproved_property.unapproved_property 
              MODIFY COLUMN status ENUM('pending','approved','rejected') DEFAULT 'pending';
 
@@ -173,6 +187,26 @@ CREATE TABLE IF NOT EXISTS nres_unapproved_property.unapproved_property_location
 CREATE TABLE IF NOT EXISTS nres_unapproved_property.unapproved_property_area LIKE nres_property.property_area;
     ALTER TABLE nres_unapproved_property.unapproved_property_area 
     ADD FOREIGN KEY (property_id) REFERENCES nres_unapproved_property.unapproved_property(property_id);
+
+
+
+-- Create table for sold property table;
+
+--create property table;
+CREATE TABLE IF NOT EXISTS nres_sold_property.sold_property LIKE nres_property.property;
+            ALTER TABLE nres_sold_property.sold_property
+            ADD COLUMN buyer_id VARCHAR(36) REFERENCES nres_users.customer(id),
+            ADD COLUMN seller_id VARCHAR(36) REFERENCES nres_users.customer(id),
+            ADD COLUMN buyer_agent_id VARCHAR(36) REFERENCES nres_users.agent(id),
+            ADD COLUMN seller_agent_id VARCHAR(36) REFERENCES nres_users.agent(id),
+            ADD COLUMN sold_approved_id VARCHAR(36) REFERENCES nres_users.staff(id),
+            ADD COLUMN sold_price DECIMAL(12, 2),
+            ADD COLUMN sold_date DATE,
+            MODIFY COLUMN status ENUM('sold') DEFAULT 'sold';
+
+
+
+-------------------------------------------------------------VIEWS------------------------------------------------------;
 
 --create view for full apartment property;
 
