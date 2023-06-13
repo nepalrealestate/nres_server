@@ -12,7 +12,16 @@ async function registerStaff(name,email,password){
 
     
     
-        const query  = `CREATE TABLE  IF NOT EXISTS ${userTable.staff} (id varchar(36) UNIQUE PRIMARY KEY,name VARCHAR(255), email VARCHAR(255), password VARCHAR(255),UNIQUE(email) ) `;
+        const query  = `CREATE TABLE  IF NOT EXISTS ${userTable.staff}
+        (id varchar(36)  PRIMARY KEY,
+        name VARCHAR(255),
+        email VARCHAR(255),
+        password VARCHAR(255),
+        UNIQUE(email) ) ;
+       `;
+
+       
+
         try {
             const [row,field] = await pool.query(query)
             console.log("Table Created");

@@ -20,7 +20,7 @@ const {Chat} = require("./chat/chatConnection");
 
 const port = 8000;
 
-app.use(cors({credentials:true,origin:"http://localhost:3000"}));
+app.use(cors({credentials:true,origin:"*"}));
 
 
 app.use(cookieParser());
@@ -35,7 +35,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
 // excute all sql file for create db , schema and tables;
- //excuteSQLFile();
+ excuteSQLFile();
 
 
 // Error handling middleware for Multer
@@ -69,8 +69,13 @@ const chatServer = new Chat();
 chatServer.chatServer();
 
 
-
-app.listen(port,()=>{
+if(process.env.NODE_ENV=='production'){
+  app.listen();
+}else{
+  app.listen(port,()=>{
     console.log(` port ${port} is listening.......`)
     logger.info("port is running in 8000: devs")
 })
+}
+
+

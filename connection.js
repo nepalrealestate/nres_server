@@ -17,9 +17,11 @@ function excuteSQLFile() {
     }
    
     
+    const modifiedData = data.replace(/nres_/g, `${process.env.DB_PREFIX}_nres_`);
+
     // after read file - split text 
 
-    sqlQuery = data.split(";");
+    sqlQuery = modifiedData.split(";");
     //remove spaces and comments
     const validateQuery = sqlQuery.filter((query) => {
       const trimmedQuery = query.trim();
@@ -31,8 +33,10 @@ function excuteSQLFile() {
         try {
                 await pool.query(query);
                 console.log("excute query ");
+
         } catch (error) {
-                console.log("error while excute",error.sqlMessage);
+               // console.log("error while excute",error.sqlMessage);
+               console.log(query);
                 
                 
         }

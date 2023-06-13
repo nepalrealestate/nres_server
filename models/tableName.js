@@ -1,8 +1,10 @@
+require("dotenv").config();
+const db_prefix = process.env.DB_PREFIX;
 
+let userSchemaName = process.env.NODE_ENV=='production'?`${db_prefix}_nres_users`:'nres_users';
+let propertySchemaName = process.env.NODE_ENV=='production'?`${db_prefix}_nres_property`:'nres_property';
+let unapprovedPropertySchemaName =  process.env.NODE_ENV=='production'?`${db_prefix}_nres_unapproved_property`:'nres_unapproved_property';
 
-const userSchemaName = 'nres_users';
-const propertySchemaName = 'nres_property';
-const unapprovedPropertySchemaName = 'nres_unapproved_property';
 
 //table name 
 // users 

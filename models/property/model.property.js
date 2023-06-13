@@ -1,7 +1,7 @@
 const { resourceLimits } = require("worker_threads");
 const { pool } = require("../../connection");
 const { isTableExists } = require("../commonModels");
-
+ const {logger} = require("../../utils/errorLogging/logging");
 const propertyTableName = "property";
 const schemaName = "nres_property";
 const userSchemaName = "nres_property";
@@ -11,46 +11,91 @@ const applyForListingTableName = "apply_listing";
 const propertyTransactionsTable = "property_transactions";
 const agentTableName = "agent";
 
+
 const { propertyTable, userTable, unapprovedPropertyTable, views } = require("../tableName");
+
 //--------------Create Table------------------------------------
 
 // Create Property Table
 
 async function createPropertyTable() {
-  const sqlQuery = `CREATE TABLE IF NOT EXISTS ${propertyTable.property} 
-    ( 
-
-        user_id VARCHAR(36) NOT NULL,
-        user_type ENUM('agent','seller','staff'),
-        property_id INT NOT NULL PRIMARY KEY,
-        property_type ENUM('house','apartment','land') NOT NULL,   
-        property_name varchar(50),
-        listed_for varchar(10) NOT NULL,
-        price FLOAT,
-        area_aana FLOAT,
-        area_sq_ft FLOAT,
-        facing_direction varchar(255),
-        views INT DEFAULT 0,
-        state varchar(255),
-        district varchar(255),
-        city varchar(255),
-        ward_number INT,
-        tole_name varchar(255),
-        approved_by_id varchar(36),
-        status ENUM('approved'),
-        FOREIGN KEY (approved_by_id) REFERENCES ${userTable.staff}(id)
-    
-    )`;
+  const sqlQuery = `CREATE TABLE IF NOT EXISTS${propertyTable.property}
+  (   
+  property_id INT NOT NULL PRIMARY KEY,
+  property_type ENUM('house','apartment','land') NOT NULL,
+  property_name varchar(50),
+  listed_for varchar(10) NOT NULL,
+  price  DECIMAL(12, 2),
+  views INT DEFAULT 0,
+  property_image JSON,
+  property_video JSON,
+  posted_date DATE,
+  user_id VARCHAR(36) NOT NULL,
+  user_type ENUM('agent','seller','staff'),
+  approved_by_id varchar(36),
+  status ENUM('approved'),
+  FOREIGN KEY (approved_by_id) REFERENCES nres_users.staff(id)
+  
+  );`;
 
   try {
     const [row, field] = await pool.query(sqlQuery);
-    console.log(" Property Table Created");
-    console.log(row);
+    
   } catch (error) {
-    console.log(error);
+    
     throw error;
   }
 }
+
+
+async function createPropertyLocationTable(){
+
+
+ 
+  const sqlQuery = `CREATE TABLE IF NOT EXISTS ${propertyTable.property_location} (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    property_id INT NOT NULL,
+    state varchar(20),
+    district varchar(20),
+    city varchar(25),
+    ward_number INT,
+    tole_name varchar(20),
+    latitude DECIMAL(9,6),
+    longitude DECIMAL(9,6),
+    FOREIGN KEY (property_id) REFERENCES nres_property.property(property_id)
+    );`;
+
+
+    try {
+      const [row, field] = await pool.query(sqlQuery);
+      
+  } catch (error) {
+    
+    throw error;
+  }                 
+  
+}
+
+async function createPropertyAreaTable(){
+
+    const sqlQuery  = `CREATE TABLE IF NOT EXISTS ${propertyTable.property_area}(
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      property_id INT NOT NULL,
+      area_aana FLOAT,
+      area_sq_ft FLOAT,
+      road_access_ft FLOAT,
+      FOREIGN KEY (property_id) REFERENCES nres_property.property(property_id)
+      );`;
+
+  try {
+      const [row, field] = await pool.query(sqlQuery);
+      
+  } catch (error) {
+    
+    throw error;
+  }                  
+}
+
 
 // create table for store youtube vide link
 async function createVideoLinkTable() {
@@ -111,7 +156,7 @@ async function createApplyPropertyTable() {
                        ADD COLUMN IF NOT EXISTS status  ENUM('pending','approved','rejected') DEFAULT 'pending'`;
 
   try {
-     await pool.query(createQuery);
+    await pool.query(createQuery);
   } catch (error) {
     throw error;
   }
@@ -121,6 +166,7 @@ async function createApplyPropertyTable() {
 
 //insert value in property table
 async function insertProperty(property, user_id, user_type) {
+
   const {
     property_id,
     property_type,
@@ -217,7 +263,7 @@ async function insertIntoRequestedProperty(property) {
 
 
 
-async function insertUnapprovedProperty(property,location,area) {
+async function insertUnapprovedProperty(property, location, area) {
 
 
   //createApplyPropertyTable();
@@ -227,12 +273,12 @@ async function insertUnapprovedProperty(property,location,area) {
   const insertProperty = `INSERT INTO ${propertyTable.unapproved_property} VALUES (?,?,?,?,?,0,?,null,CURRENT_DATE(),?,?,?,?)`;//0 IS  VIEWS - null video link
   const insertLocation = `INSERT INTO ${propertyTable.unapproved_property_location} VALUES (0,?,?,?,?,?,?,?,?)`;// 0 is AUTO INCREAMENT ID;
   const insertArea = `INSERT INTO ${propertyTable.unapproved_property_area} VALUES (0,?,?,?,?)`; // 0 id
-  
+
   const propertyValue = Object.values(property);//
   const locationValue = Object.values(location);
   console.log(locationValue);
   const areaValue = Object.values(area);
- 
+
   propertyValue.push(null)// no one approve when insertproperty
   propertyValue.push('pending');// status is pending when insert unapproved property
 
@@ -242,9 +288,9 @@ async function insertUnapprovedProperty(property,location,area) {
     await connection.beginTransaction();
     console.log("Transaction Started");
 
-    await connection.query(insertProperty,propertyValue);
-    await connection.query(insertLocation,locationValue);
-    await connection.query(insertArea,areaValue);
+    await connection.query(insertProperty, propertyValue);
+    await connection.query(insertLocation, locationValue);
+    await connection.query(insertArea, areaValue);
     await connection.commit();
 
     console.log('Transaction committed successfully');
@@ -254,19 +300,19 @@ async function insertUnapprovedProperty(property,location,area) {
     await connection.rollback();
     console.log(error);
     throw error;
-  }finally{
-    if(connection){
+  } finally {
+    if (connection) {
       connection.release();
+    }
   }
-  }
- 
+
 }
 
 
 // ------------Getting data -------------------------
 
-async function getProperty(condition,limit=20,offSet=0){
-  
+async function getProperty(condition, limit = 20, offSet = 0) {
+
   // there must be better ways to get data - i'm exploring
 
   // let getPropertyType =  `SELECT property_type from ${propertyTable.property}`;
@@ -283,15 +329,15 @@ async function getProperty(condition,limit=20,offSet=0){
 
   const params = [];
   //adding search conditon on query
-  for(let key of Object.keys(condition)){
+  for (let key of Object.keys(condition)) {
 
-     
 
-      if(condition[key]){
-          // adding search conditon and  push value in params array;
-          sqlQuery += ` AND ${key} = ?`
-          params.push(condition[key]);
-      }
+
+    if (condition[key]) {
+      // adding search conditon and  push value in params array;
+      sqlQuery += ` AND ${key} = ?`
+      params.push(condition[key]);
+    }
 
   }
 
@@ -299,16 +345,16 @@ async function getProperty(condition,limit=20,offSet=0){
 
   sqlQuery += ` LIMIT ${limit} OFFSET ${offSet}`
 
-  
-  
+
+
 
   try {
-      const [result,field] = await pool.query(sqlQuery,params);
-      
-      return result;
+    const [result, field] = await pool.query(sqlQuery, params);
+
+    return result;
   } catch (error) {
-    
-      throw error;
+
+    throw error;
   }
 
 }
