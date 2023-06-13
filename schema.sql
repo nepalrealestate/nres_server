@@ -1,10 +1,10 @@
 --CREATE DATABASE nres;
-CREATE SCHEMA nres_users;
-CREATE SCHEMA nres_property;
-CREATE SCHEMA nres_unapproved_property;
-CREATE SCHEMA nres_services;
-CREATE SCHEMA nres_unapproved_services;
-CREATE SCHEMA nres_sold_property;
+-- CREATE SCHEMA nres_users;
+-- CREATE SCHEMA nres_property;
+-- CREATE SCHEMA nres_unapproved_property;
+-- CREATE SCHEMA nres_services;
+-- CREATE SCHEMA nres_unapproved_services;
+-- CREATE SCHEMA nres_sold_property;
 
 
 
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS nres_users.agent
 
 -- create staff;
 CREATE TABLE  IF NOT EXISTS nres_users.staff
- (id varchar(36) UNIQUE PRIMARY KEY,
+ (id varchar(36)  PRIMARY KEY,
  name VARCHAR(255),
  email VARCHAR(255),
  password VARCHAR(255),
