@@ -66,8 +66,8 @@ app.use("/property",propertyRouter);
 
 
 // chat running
-const chatServer = new Chat();
-//chatServer.chatServer();
+// const chatServer = new Chat();
+// chatServer.chatServer();
 
 
 if(process.env.NODE_ENV=='Production'){
