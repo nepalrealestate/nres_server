@@ -16,8 +16,14 @@ function excuteSQLFile() {
       return;
     }
    
+    let replaceString;
+    if(process.env.NODE_ENV=='Production'){
+      replaceString = `${process.env.DB_PREFIX}_nres_`;
+    } else{
+      replaceString = 'nres_';
+    }
     
-    const modifiedData = data.replace(/nres_/g, `${process.env.DB_PREFIX}_nres_`);
+    const modifiedData = data.replace(/nres_/g, replaceString);
 
     // after read file - split text 
 

@@ -18,6 +18,7 @@ const {excuteSQLFile}  = require("./connection");
 const {logger} = require("./utils/errorLogging/logging")
 const {Chat} = require("./chat/chatConnection");
 
+require("dotenv").config();
 const port = 8000;
 
 app.use(cors({credentials:true,origin:"*"}));
@@ -69,8 +70,9 @@ const chatServer = new Chat();
 chatServer.chatServer();
 
 
-if(process.env.NODE_ENV=='production'){
-  app.listen();
+if(process.env.NODE_ENV=='Production'){
+  app.listen(()=>logger.info("Server is running"));
+  
 }else{
   app.listen(port,()=>{
     console.log(` port ${port} is listening.......`)
