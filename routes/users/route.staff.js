@@ -5,7 +5,7 @@ const { verifyToken } = require("../../controllers/users/commonAuthCode");
 const { handleAddApartment, handleApproveApartment, handleGetUnapprovedApartment } = require("../../controllers/property/controller.apartment");
 const { handleAddHouse, handleApproveHouse, handleGetUnapprovedHouse } = require("../../controllers/property/controller.house");
 const { handleAddLand, handleApproveLand, handleGetUnapprovedLand } = require("../../controllers/property/controller.land");
-const { route } = require("./route.agent");
+
 
 
 

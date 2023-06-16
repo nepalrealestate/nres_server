@@ -1,10 +1,10 @@
 --CREATE DATABASE nres;
--- CREATE SCHEMA nres_users;
--- CREATE SCHEMA nres_property;
--- CREATE SCHEMA nres_unapproved_property;
--- CREATE SCHEMA nres_services;
--- CREATE SCHEMA nres_unapproved_services;
--- CREATE SCHEMA nres_sold_property;
+CREATE SCHEMA nres_users;
+CREATE SCHEMA nres_property;
+CREATE SCHEMA nres_unapproved_property;
+CREATE SCHEMA nres_services;
+CREATE SCHEMA nres_unapproved_services;
+CREATE SCHEMA nres_sold_property;
 
 
 
@@ -203,6 +203,24 @@ CREATE TABLE IF NOT EXISTS nres_sold_property.sold_property LIKE nres_property.p
             ADD COLUMN sold_price DECIMAL(12, 2),
             ADD COLUMN sold_date DATE,
             MODIFY COLUMN status ENUM('sold') DEFAULT 'sold';
+
+
+
+
+-- Create table for service Providers 
+
+CREATE TABLE IF NOT EXISTS nres_service_provider (
+    id BINARY(16) PRIMARY KEY,
+    first_name VARCHAR (20) NOT NULL,
+    middle_name VARCHAR (20) ,
+    last_name VARCHAR (20) NOT NULL,
+    phone_number VARCHAR(10) NOT NULL,
+    state      VARCHAR (10),
+    district   VARCHAR (20),
+    city        VARCHAR (20),
+    ward_number INT,
+    profile_image VARCHAR (255)
+);
 
 
 

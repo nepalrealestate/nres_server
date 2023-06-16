@@ -9,6 +9,8 @@ const houseRouter = require("./routes/property/route.house");
 const landRouter = require("./routes/property/route.land");
 const apartmentRouter = require("./routes/property/route.apartment");
 const propertyRouter = require("./routes/property/route.property");
+const serviceRouter = require("./routes/services/route.service");
+const serviceProviderRouter = require("./routes/services/route.serviceProvider")
 const app  = express();
 const cors = require("cors")
 const bodyParser = require('body-parser')
@@ -21,7 +23,7 @@ const {Chat} = require("./chat/chatConnection");
 require("dotenv").config();
 const port = 8000;
 
-app.use(cors({credentials:true,origin:"*"}));
+app.use(cors({credentials:true,origin:['http://localhost:3000', 'postman://app'] }));
 
 
 app.use(cookieParser());
@@ -62,6 +64,8 @@ app.use("/house",houseRouter);
 app.use("/land",landRouter)
 app.use ("/apartment",apartmentRouter);
 app.use("/property",propertyRouter);
+app.use("/services",serviceRouter);
+app.use("/serviceProviders",serviceProviderRouter)
 //connectMysql();
 
 
