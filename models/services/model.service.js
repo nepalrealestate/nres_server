@@ -1,6 +1,6 @@
 
 const {pool}  = require("../../connection");
-const { serviceTable } = require("../tableName");
+const { serviceTable, propertyTable } = require("../tableName");
 
 
 
@@ -19,4 +19,40 @@ async function registerServiceProvider(providerData){
 }
 
 
-module.exports = {registerServiceProvider}
+
+async function getServiceProvider(condition,limit,offSet){
+
+    let sqlQuery = `SELECT name,phone_number,service_type,profile_image FROM ${serviceTable.service_provider} WHERE 1=1 ` ;
+
+    
+  const params = [];
+  //adding search conditon on query
+  for (let key of Object.keys(condition)) {
+    if (condition[key]) {
+      // adding search conditon and  push value in params array;
+      sqlQuery += ` AND ${key} = ?`;
+      params.push(condition[key]);
+    }
+  }
+
+  //after adding search condition query
+
+  sqlQuery += ` LIMIT ${limit} OFFSET ${offSet}`;
+  console.log(sqlQuery)
+
+  try {
+    const [result, field] = await pool.query(sqlQuery, params);
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+
+
+
+
+
+module.exports = {registerServiceProvider,getServiceProvider}
