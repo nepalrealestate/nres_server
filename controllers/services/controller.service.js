@@ -4,7 +4,7 @@
 //id,name,phone_number,email,service_type,state,district,city,ward_number,profile_image,status
 
 const { wrapAwait } = require("../../errorHandling")
-const { registerServiceProvider, getServiceProvider } = require("../../models/services/model.service")
+const { registerServiceProvider, getServiceProvider, verifyServiceProvider } = require("../../models/services/model.service")
 const multer = require('multer')
 const validator = require("email-validator");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
@@ -101,4 +101,18 @@ const handleGetServieProvider  = async function (req,res){
 
 }
 
-module.exports = {handleRegisterServiceProvider,handleGetServieProvider}
+const handleVerifyServiceProvider = async function(req,res){
+    let {provider_id} = req.params;
+
+    try {
+        const data = await verifyServiceProvider(provider_id);
+        if(data.affectedRows===0){
+            return res.status(404).json({message:"No Data To Update"});
+        }
+        return res.status(200).json({message:"Update Successfully"});
+    } catch (error) {
+        return res.status(500).json({message:"unable to update"});
+    }
+}
+
+module.exports = {handleRegisterServiceProvider,handleGetServieProvider,handleVerifyServiceProvider}

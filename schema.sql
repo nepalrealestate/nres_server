@@ -236,6 +236,14 @@ CREATE TABLE IF NOT EXISTS nres_services.service(
 );
 
 
+--create table for service providers rating;
+
+CREATE TABLE IF NOT EXISTS nres_services.service_provider_rating(
+    service_provider_id INT PRIMARY KEY,
+    rating INT ,
+    FOREIGN KEY (provider_id) REFERENCES nres_services.service_provider(provider_id)
+)
+
 
 
 -------------------------------------------------------------VIEWS------------------------------------------------------;

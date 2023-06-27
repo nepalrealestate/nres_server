@@ -22,10 +22,10 @@ async function registerServiceProvider(providerData){
 
 async function getServiceProvider(condition,limit,offSet){
 
-    let sqlQuery = `SELECT name,phone_number,service_type,profile_image FROM ${serviceTable.service_provider} WHERE 1=1 ` ;
+    let sqlQuery = `SELECT name,phone_number,service_type,profile_image FROM ${serviceTable.service_provider} WHERE status=? ` ;
 
     
-  const params = [];
+  const params = ['approved'];
   //adding search conditon on query
   for (let key of Object.keys(condition)) {
     if (condition[key]) {
@@ -50,9 +50,30 @@ async function getServiceProvider(condition,limit,offSet){
 }
 
 
+async function serviceProviderRating(rating,service_provider_id){
+
+
+    let sqlQuery = ``
+
+}
+
+
+
+
+async function verifyServiceProvider(service_provider_id){
+    let sqlQuery = `UPDATE ${serviceTable.service_provider} SET status=? WHERE provider_id = ? `;
+
+    try {
+        const [response,field] = await pool.query(sqlQuery,['approved',service_provider_id])
+        return response;
+
+    } catch (error) {
+        throw error;
+    }
+}
 
 
 
 
 
-module.exports = {registerServiceProvider,getServiceProvider}
+module.exports = {registerServiceProvider,getServiceProvider,verifyServiceProvider}
