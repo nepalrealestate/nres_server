@@ -102,10 +102,13 @@ const handleGetServieProvider  = async function (req,res){
 }
 
 const handleVerifyServiceProvider = async function(req,res){
-    let {provider_id} = req.params;
+    let {status,provider_id} = req.params;
+    if(status!=='approved' && status!=='rejected'){
+        return res.status(400).json({message:"Status only contain approved or reject"})
+    }
 
     try {
-        const data = await verifyServiceProvider(provider_id);
+        const data = await verifyServiceProvider(status,provider_id);
         if(data.affectedRows===0){
             return res.status(404).json({message:"No Data To Update"});
         }

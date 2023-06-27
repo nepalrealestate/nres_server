@@ -60,11 +60,11 @@ async function serviceProviderRating(rating,service_provider_id){
 
 
 
-async function verifyServiceProvider(service_provider_id){
+async function verifyServiceProvider(status,service_provider_id){
     let sqlQuery = `UPDATE ${serviceTable.service_provider} SET status=? WHERE provider_id = ? `;
 
     try {
-        const [response,field] = await pool.query(sqlQuery,['approved',service_provider_id])
+        const [response,field] = await pool.query(sqlQuery,[status,service_provider_id])
         return response;
 
     } catch (error) {

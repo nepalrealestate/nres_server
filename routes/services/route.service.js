@@ -9,6 +9,6 @@ router.post("/registerProvider",handleRegisterServiceProvider);
 
 router.get("/getProvider",handleGetServieProvider);
 
-router.put("/verifyProvider/:provider_id",handleVerifyServiceProvider);
+router.put("/provider/:status/:provider_id",handleVerifyServiceProvider);
 
 module.exports = router;
