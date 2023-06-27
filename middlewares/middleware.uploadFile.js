@@ -3,6 +3,8 @@
 const multer = require("multer");
 
 
+
+
 function UploadImage(folderPath,maxImageSize) {
   let path = `${folderPath}`;
 
@@ -37,6 +39,25 @@ function UploadImage(folderPath,maxImageSize) {
   });
 
 }
+
+
+// const multerErrorHandler = (req, res, next) => {
+
+
+
+//   upload(req, res, (err) => {
+//     if (err instanceof multer.MulterError) {
+//       // A Multer error occurred when uploading.
+//       console.log(err);
+//       return res.status(400).json({ message: "Error while uploading", err });
+//     } else if (err) {
+//       // An unknown error occurred when uploading.
+//       return res.status(400).json({ message: "Error while uploading", err });
+//     }
+
+//     next();
+//   });
+// };
 
 
 

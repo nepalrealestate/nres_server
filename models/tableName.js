@@ -1,9 +1,11 @@
 require("dotenv").config();
 const db_prefix = process.env.DB_PREFIX;
+const node_env = process.env.NODE_ENV;
 
-let userSchemaName = process.env.NODE_ENV=='production'?`${db_prefix}_nres_users`:'nres_users';
-let propertySchemaName = process.env.NODE_ENV=='production'?`${db_prefix}_nres_property`:'nres_property';
-let unapprovedPropertySchemaName =  process.env.NODE_ENV=='production'?`${db_prefix}_nres_unapproved_property`:'nres_unapproved_property';
+let userSchemaName =  node_env=='Production'?`${db_prefix}_nres_users`:'nres_users';
+let propertySchemaName = node_env=='Production'?`${db_prefix}_nres_property`:'nres_property';
+let unapprovedPropertySchemaName =  node_env=='Production'?`${db_prefix}_nres_unapproved_property`:'nres_unapproved_property';
+let serviceSchemaName = node_env=='Production'?`${db_prefix}_nres_services`:'nres_services';
 
 
 //table name 
@@ -50,6 +52,14 @@ const propertyTable = {
 }
 
 
+const serviceTable = {
+    service : `${serviceSchemaName}.service`,
+
+    service_provider: `${serviceSchemaName}.service_provider`
+}
+
+
+
 
 const views = {
 
@@ -68,4 +78,4 @@ const views = {
 // property 
 
 
-module.exports = {userTable,propertyTable,views}
+module.exports = {userTable,propertyTable,serviceTable,views}
