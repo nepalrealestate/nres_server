@@ -4,7 +4,7 @@
 //id,name,phone_number,email,service_type,state,district,city,ward_number,profile_image,status
 
 const { wrapAwait } = require("../../errorHandling")
-const { registerServiceProvider } = require("../../models/services/model.service")
+const { registerServiceProvider, getServiceProvider, verifyServiceProvider } = require("../../models/services/model.service")
 const multer = require('multer')
 const validator = require("email-validator");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
@@ -73,4 +73,49 @@ const handleRegisterServiceProvider = async function (req, res) {
 
 }
 
-module.exports = {handleRegisterServiceProvider}
+
+const handleGetServieProvider  = async function (req,res){
+
+    let page, limit, offSet;
+
+    // if page and limit not set then defualt is 1 and 20 .
+    page = req.query.page || 1;
+  
+    limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
+    // if page and limit present in query then delete it
+    if (req.query.page) delete req.query.page;
+  
+    if (req.query.limit) delete req.query.limit;
+  
+    offSet = (page - 1) * limit;
+  
+    try {
+      const data = await getServiceProvider(req.query, limit, offSet);
+      console.log(data);
+  
+      return res.status(200).json(data);
+    } catch (error) {
+      return res.status(500).json({ message: error.sqlMessage });
+    }
+   
+
+}
+
+const handleVerifyServiceProvider = async function(req,res){
+    let {status,provider_id} = req.params;
+    if(status!=='approved' && status!=='rejected'){
+        return res.status(400).json({message:"Status only contain approved or reject"})
+    }
+
+    try {
+        const data = await verifyServiceProvider(status,provider_id);
+        if(data.affectedRows===0){
+            return res.status(404).json({message:"No Data To Update"});
+        }
+        return res.status(200).json({message:"Update Successfully"});
+    } catch (error) {
+        return res.status(500).json({message:"unable to update"});
+    }
+}
+
+module.exports = {handleRegisterServiceProvider,handleGetServieProvider,handleVerifyServiceProvider}
