@@ -9,6 +9,7 @@ const houseRouter = require("./routes/property/route.house");
 const landRouter = require("./routes/property/route.land");
 const apartmentRouter = require("./routes/property/route.apartment");
 const propertyRouter = require("./routes/property/route.property");
+const serviceRouter = require("./routes/services/route.service")
 const app  = express();
 const cors = require("cors")
 const bodyParser = require('body-parser')
@@ -35,7 +36,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
 // excute all sql file for create db , schema and tables;
- excuteSQLFile();
+// excuteSQLFile();
 
 
 // Error handling middleware for Multer
@@ -61,6 +62,8 @@ app.use("/house",houseRouter);
 app.use("/land",landRouter)
 app.use ("/apartment",apartmentRouter);
 app.use("/property",propertyRouter);
+app.use("/service",serviceRouter)
+
 //connectMysql();
 
 

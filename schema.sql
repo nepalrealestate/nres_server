@@ -207,20 +207,34 @@ CREATE TABLE IF NOT EXISTS nres_sold_property.sold_property LIKE nres_property.p
 
 
 
--- Create table for service Providers 
+-- Create table for service Providers ;
 
-CREATE TABLE IF NOT EXISTS nres_service_provider (
-    id BINARY(16) PRIMARY KEY,
-    first_name VARCHAR (20) NOT NULL,
-    middle_name VARCHAR (20) ,
-    last_name VARCHAR (20) NOT NULL,
-    phone_number VARCHAR(10) NOT NULL,
-    state      VARCHAR (10),
-    district   VARCHAR (20),
-    city        VARCHAR (20),
+CREATE TABLE IF NOT EXISTS nres_services.service_provider (
+    provider_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    phone_number VARCHAR(10) NOT NULL UNIQUE,
+    email VARCHAR(20) UNIQUE,
+    service_type VARCHAR(20) NOT NULL,
+    state VARCHAR(10),
+    district VARCHAR(20),
+    city VARCHAR(20),
     ward_number INT,
-    profile_image VARCHAR (255)
+    profile_image VARCHAR(255),
+    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending'
 );
+
+
+-- Create table for servies;
+
+CREATE TABLE IF NOT EXISTS nres_services.service(
+     service_id INT AUTO_INCREMENT ,
+     provider_id INT ,
+     service_type VARCHAR (20),
+     PRIMARY KEY (service_id),
+     FOREIGN KEY (provider_id) REFERENCES nres_services.service_provider(provider_id)
+     
+);
+
 
 
 
