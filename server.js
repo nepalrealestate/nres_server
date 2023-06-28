@@ -38,17 +38,21 @@ app.use('/uploads', express.static('uploads'));
 // excute all sql file for create db , schema and tables;
 // excuteSQLFile();
 
+function handleMulterError(err, req, res, next) {
+  if (err instanceof multer.MulterError ) {
+    // Handle Multer error
+    console.log('Multer error:', err);
+    return res.status(400).json({ error: 'Multer error occurred' });
+  } else if (err) {
+    // Handle other errors
+    console.log('Other error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+  next();
+}
 
-// Error handling middleware for Multer
-app.use((err, req, res, next) => {
-    if (err instanceof multer.MulterError) {
-      // A Multer error occurred during file upload
-      res.status(400).json({ error: 'Multer Error: ' + err.message });
-    } else {
-      // Handle other errors
-      next(err);
-    }
-  });
+app.use(handleMulterError);
+
 
 //Routes
 app.use(express.json())
