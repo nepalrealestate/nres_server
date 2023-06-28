@@ -1,5 +1,6 @@
 
 const {pool}  = require("../../connection");
+const { param } = require("../../routes/services/route.service");
 const { serviceTable, propertyTable } = require("../tableName");
 
 
@@ -49,6 +50,34 @@ async function getServiceProvider(condition,limit,offSet){
   }
 }
 
+async function getPendingServiceProvider(condition,limit,offSet){
+  let sqlQuery = `SELECT * FROM ${serviceTable.service_provider} WHERE status=? ` ;
+
+    
+  const params = ['pending'];
+  //adding search conditon on query
+  for (let key of Object.keys(condition)) {
+    if (condition[key]) {
+      // adding search conditon and  push value in params array;
+      sqlQuery += ` AND ${key} = ?`;
+      params.push(condition[key]);
+    }
+  }
+
+  //after adding search condition query
+
+  sqlQuery += ` LIMIT ${limit} OFFSET ${offSet}`;
+  console.log(sqlQuery)
+
+  try {
+    const [result, field] = await pool.query(sqlQuery, params);
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+}
+
 
 async function serviceProviderRating(rating,service_provider_id){
 
@@ -61,10 +90,19 @@ async function serviceProviderRating(rating,service_provider_id){
 
 
 async function verifyServiceProvider(status,service_provider_id){
-    let sqlQuery = `UPDATE ${serviceTable.service_provider} SET status=? WHERE provider_id = ? `;
+    let sqlQuery ;
+    const params = [];
+    if(status==='approved'){
+      sqlQuery=`UPDATE ${serviceTable.service_provider} SET status=? WHERE provider_id = ? `;
+      params.push(status,service_provider_id);
+    }else if(status ==='rejected'){
+      sqlQuery = `DELETE FROM ${serviceTable.service_provider} WHERE provider_id = ?`;
+      params.push(service_provider_id)
+    }
+    
 
     try {
-        const [response,field] = await pool.query(sqlQuery,[status,service_provider_id])
+        const [response,field] = await pool.query(sqlQuery,params)
         return response;
 
     } catch (error) {
@@ -76,4 +114,4 @@ async function verifyServiceProvider(status,service_provider_id){
 
 
 
-module.exports = {registerServiceProvider,getServiceProvider,verifyServiceProvider}
+module.exports = {registerServiceProvider,getServiceProvider,verifyServiceProvider,getPendingServiceProvider}
