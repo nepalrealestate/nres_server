@@ -38,6 +38,20 @@ function UploadImage(folderPath,maxImageSize) {
     },
   });
 
+  this.multerError = async function (req,res,next,uploadConfigFunction){
+    uploadConfigFunction(req,res,async function(err){
+      if (err instanceof multer.MulterError) {
+        // A Multer error occurred when uploading.
+        console.log(err)
+        return res.status(400).json({ message: "Error while uploading", err })
+    } else if (err) {
+        // An unknown error occurred when uploading.
+        return res.status(400).json({ message: "Error while uploading", err })
+    }
+    next();
+    })
+  } 
+
 }
 
 

@@ -209,11 +209,12 @@ CREATE TABLE IF NOT EXISTS nres_sold_property.sold_property LIKE nres_property.p
 
 -- Create table for service Providers ;
 
+
 CREATE TABLE IF NOT EXISTS nres_services.service_provider (
     provider_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     phone_number VARCHAR(10) NOT NULL UNIQUE,
-    email VARCHAR(20) UNIQUE,
+    email VARCHAR(50) UNIQUE,
     service_type VARCHAR(20) NOT NULL,
     state VARCHAR(10),
     district VARCHAR(20),
@@ -221,7 +222,7 @@ CREATE TABLE IF NOT EXISTS nres_services.service_provider (
     ward_number INT,
     profile_image VARCHAR(255),
     status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending'
-);
+) AUTO_INCREMENT = 1;
 
 
 -- Create table for servies;
