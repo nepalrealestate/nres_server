@@ -1,4 +1,5 @@
 const express = require("express");
+const customerRouter = require("./routes/users/route.customer")
 const buyerRouter = require('./routes/users/route.buyer')
 const agentRouter = require("./routes/users/route.agent")
 const rentalRouter = require("./routes/users/route.rental");
@@ -56,6 +57,7 @@ app.use(handleMulterError);
 
 //Routes
 app.use(express.json())
+app.use("/customer",customerRouter);
 app.use("/buyer",buyerRouter);
 app.use("/agent",agentRouter);
 app.use("/rental",rentalRouter);

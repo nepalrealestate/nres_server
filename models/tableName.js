@@ -20,7 +20,10 @@ const userTable = {
 
 
     // user - releated table
-    agentProperty : `${userSchemaName}.agent_property`
+    agentProperty : `${userSchemaName}.agent_property`,
+
+
+    passwordResetToken : `${userSchemaName}.passwordResetToken`
 
 }
 

@@ -146,17 +146,17 @@ const refreshToken = async (req, res, next) => {
     }
 
     //clear cookies from response
-    res.clearCookie(`${decode.email}`);
+    res.clearCookie(`${decode.id}`);
     //clear cookies from headers
-    req.cookies[`${decode.email}`] = "";
+    req.cookies[`${decode.id}`] = "";
 
     //generate new token
-    const newToken = jwt.sign({ id: decode.email }, process.env.JWT_KEY, {
+    const newToken = jwt.sign({ id: decode.id }, process.env.JWT_KEY, {
       expiresIn: tokenExpireTime,
     });
 
     //set new Token to cookie
-    res.cookie(String(decode.email), newToken, {
+    res.cookie(String(decode.id), newToken, {
       path: "/",
       expires: new Date(Date.now() + 1000 * 1000 * 60),
       httpOnly: true,
@@ -164,7 +164,7 @@ const refreshToken = async (req, res, next) => {
     });
 
     //set request id to user id
-    req.id = decode.email;
+    req.id = decode.id;
     console.log("Refresh TOken Successfull  ");
     next();
   });
