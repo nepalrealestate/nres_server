@@ -4,7 +4,11 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const ModelUtility = require('../models/model.utils');
 const { sendPasswordResetTokenMail } = require('../middlewares/middleware.sendEmail');
-const { wrapAwait } = require("../../errorHandling");
+const {wrapAwait} = require("../errorHandling")
+
+
+const saltRound = 10;
+
 const modelUtils = new ModelUtility();
 
 function Utility(){
@@ -13,7 +17,39 @@ function Utility(){
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
     
+    this.handleMulterError = async function(req,res,err,afterUploadCallback,isImageRequired=false){
+      if (err instanceof multer.MulterError) {
 
+        return res.status(400).json( err )
+      } else if (err) {
+
+        return res.status(400).json( err )
+      }
+
+      if(isImageRequired){
+        if(!req?.file?.path){
+          return res.status(400).json({message:"Please Upload Your Image"});
+      }
+      }
+
+      afterUploadCallback();
+     
+    }
+
+
+    this.handleRegistration = async function (res,insertCallback,values){
+      const [response,responseError] = await wrapAwait(insertCallback(values))
+    
+      if(responseError){
+        if (responseError.errno === 1062) {
+          return res.status(409).json({ message: "Already Register" });
+        }
+          console.log(responseError)
+          return res.status(500).json({message:"Register Error"});
+      }
+
+      return res.status(200).json({message:"Registration successfully"});
+    }
 
 
    this.getSearchData = async function (req,res,getDataFunction){
@@ -45,14 +81,22 @@ function Utility(){
    this.isValid={
    
     phoneNumber:async function (phoneNumber){
-        return phoneNumber.match(numberRegex);
+
+        return phoneNumber?.match(numberRegex)
+      
     },
 
     email:async function (email){
-            return email.match(emailRegex);
-    }
 
-   }
+        return email?.match(emailRegex); 
+    },
+
+    password:async function(password,confirm_password){
+        return password===confirm_password;
+    } ,
+
+
+   },
 
    this.getRandomNumber = function (minValue,maxValue){
     return Math.floor(Math.random()*(maxValue-minValue)+minValue);
@@ -205,7 +249,7 @@ function Auth(){
 
   this.passwordReset = async function (req,res,user){
     if (!user) {
-      return res.status(401).json({ message: "User Not Found!" });
+      return res.status(404).json({ message: "User Not Found!" });
     }
   
     const randomToken = getRandomNumber(1000,9999);
@@ -255,14 +299,14 @@ function Auth(){
   this.passwordUpdate = async function (req,res,user,updateUserPassword){
 
     if (!user) {
-      return res.status(401).json({ message: "User Not Found!" });
+      return res.status(404).json({ message: "User Not Found!" });
     }
   
     const { email, token } = req.query;
   
     // if email field empty
     if (!email) {
-      return res.status(401).json({ message: "Please Enter Email" });
+      return res.status(400).json({ message: "Please Enter Email" });
     }
   
     if (email && token && user) {
@@ -304,10 +348,10 @@ function Auth(){
   
       if (hashPassword) {
         // this updateUser password return result in array in form of resolve and reject
-        const [passwordUpdate, passwordUpdateError] = await updateUserPassword(
+        const [passwordUpdate, passwordUpdateError] = await wrapAwait(updateUserPassword(
           user.id,
           hashPassword
-        );
+        ));
         if (passwordUpdate) {
           modelUtils.deleteToken(user.id).then(function () {
             console.log("token delete Successfully");

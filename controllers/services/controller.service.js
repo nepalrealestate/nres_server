@@ -7,52 +7,38 @@ const { wrapAwait } = require("../../errorHandling")
 const { registerServiceProvider, getServiceProvider, verifyServiceProvider, getPendingServiceProvider } = require("../../models/services/model.service")
 
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
-const Utility = require("../controller.utils");
+const {Utility} = require('../controller.utils')
 const imagePath = "uploads/users/agent/images";
 const maxSixe = 2 * 1024 * 1024;
 const upload = new UploadImage(imagePath, maxSixe).upload.single('image');
+
 
 const utility = new Utility();
 
 
 const handleRegisterServiceProvider = async function (req, res,next) {
 
-       // utility.imageUpload(req,res,next,upload,true);
-        const { name, phone_number, email, service_type, state, district, city, ward_number } = req.body;
-        console.log(req.body)
-        const imagePath = req?.file?.path ? req?.file?.path:null 
-        if(!imagePath){
-            return res.status(400).json({message:"Please Upload Your Image"});
-        }
-        
 
-        let isEmailValid = email?utility.isValid.email(email):false;
-        let isPhoneNumberValid =phone_number? utility.isValid.phoneNumber(phone_number):false;
-
-        if(email){
-            if(!isEmailValid){
-                return res.status(400).json({message:"Invalid Email"});
-            }
-        }
-
-        if(!isPhoneNumberValid){
-            return res.status(400).json({message:"Invalid Phone Number"});   
-            }
-
+     upload(req,res,async function(err){
+        utility.handleMulterError(req,res,err,registration,true)
+       
+      })
      
-
-        const values =[name,phone_number,email,service_type,state,district,city,ward_number,imagePath];
+       async function registration(){
+            const { name, phone_number, email, service_type, state, district, city, ward_number } = req.body;
+            console.log(req.body)
+            const imagePath = req?.file?.path 
+            utility.isValid.email(res,email);
+            utility.isValid.phoneNumber(res,phone_number)
     
+            const values =[name,phone_number,email,service_type,state,district,city,ward_number,imagePath];
         
-        
-        const [response,responseError] = await wrapAwait(registerServiceProvider(values))
-
-        if(responseError){
-            console.log(responseError)
-            return res.status(500).json({message:"Register Error"});
+            utility.handleRegistration(res,registerServiceProvider,values);
+            
+           
         }
 
-        return res.status(200).json({message:"Registration successfully"});
+       
 
 
 

@@ -12,7 +12,7 @@ const router  = express.Router();
 router.get("/",verifyToken,handleGetAgent);
 router.post("/register",handleAgentRegistration);
 router.post("/login",handleAgentLogin);
-router.put("/password",handleAgentPasswordReset);
+router.put("/resetPassword",handleAgentPasswordReset);
 router.post("/rating",handleAgentRating)
 
 // testing code

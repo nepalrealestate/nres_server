@@ -12,41 +12,12 @@ const {propertyTable,userTable}= require("../tableName")
 
 // --------inserting 
 
-async function registerAgent(agentData) {
-  const query = `CREATE TABLE IF NOT EXISTS ${schemaName}.${agentTableName} 
-    
-    (
-    id varchar(36) UNIQUE PRIMARY KEY,
-    name VARCHAR(50),
-    email VARCHAR(50), 
-    phone_number VARCHAR(10), 
-    identification_type VARCHAR(20),
-    identification_number VARCHAR(20),
-    identification_image JSON,
-    password VARCHAR(255),
-    UNIQUE(email)
-    
-    ) `;
-  try {
-    const [row, field] = await pool.query(query);
-    console.log("Table Created");
-    console.log(row);
-  } catch (error) {
-    console.log(error);
-  }
-  console.log(agentData.identification_image)
+async function registerAgent(values) {
+  
 
-  const insertQuery = `INSERT INTO ${schemaName}.${agentTableName} (id,name,email,phone_number,identification_type,identification_number,identification_image,password) VALUES (uuid(),?,?,?,?,?,?,?)`;
+  const insertQuery = `INSERT INTO ${userTable.agent} (name,email,phone_number,identification_type,identification_number,identification_image,password) VALUES (?,?,?,?,?,?,?)`;
   try {
-    const [result, field] = await pool.query(insertQuery, [
-      agentData.fullName,
-      agentData.email,
-      agentData.phoneNumber,
-      agentData.identificationType,
-      agentData.identificationNumber,
-      agentData.identificationImage,      //`{"front":${agentData.identification_image.front},"back":${agentData.identification_image.back}}`,
-      agentData.password,
-    ]);
+    const [result, field] = await pool.query(insertQuery,values);
     return result;
   } catch (error) {
     console.log(error);
