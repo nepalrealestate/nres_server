@@ -39,7 +39,7 @@ async function registerAgent(values) {
 //---------------------------Get Data---------------------
 
 async function findAgent(email) {
-  const findQuery = ` SELECT  * FROM ${schemaName}.${agentTableName} WHERE email=? `;
+  const findQuery = ` SELECT  * FROM ${userTable.agent} WHERE email=? `;
   try {
     const [row, field] = await pool.query(findQuery, [email]);
     return row[0]; //this return only object no object inside array
@@ -53,12 +53,14 @@ async function getAgent(id){
 
   const getQuery  = `SELECT a.name, a.email, a.phone_number,  ROUND(AVG(r.rating), 1) AS rating,
   COUNT(r.rating) AS ratingCount
-  FROM ${schemaName}.${agentTableName} AS a 
-  INNER JOIN ${schemaName}.${userRatingTable} AS r 
-  ON a.id = r.user_id 
+  FROM ${userTable.agent} AS a 
+  LEFT JOIN ${userTable.agentRating} AS r 
+  ON a.id = r.agent_id 
   WHERE a.id = ? 
   GROUP BY a.name, a.email, a.phone_number
  `;
+
+ 
 
   try {
     const [result,field] = await pool.query(getQuery,[id]);
@@ -74,9 +76,9 @@ async function getAgent(id){
 
 // ---------------------------Update Data--------------------------
 async function updateAgentPassword(id, hashPassword) {
-  const updateQuery = `UPDATE ${schemaName}.${agentTableName} SET password='${hashPassword}' WHERE id=${id}`;
+  const updateQuery = `UPDATE ${userTable.agent} SET password='${hashPassword}' WHERE id=${id}`;
   try {
-    return await pool.query(updateQuery);
+    return await pool.query(updateQuery,[hashPassword,id]);
   } catch (error) {
     throw error;
   }

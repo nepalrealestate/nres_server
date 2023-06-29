@@ -23,7 +23,9 @@ const userTable = {
     agentProperty : `${userSchemaName}.agent_property`,
 
 
-    passwordResetToken : `${userSchemaName}.passwordResetToken`
+    passwordResetToken : `${userSchemaName}.passwordResetToken`,
+
+    agentRating : `${userSchemaName}.agentRating`
 
 }
 

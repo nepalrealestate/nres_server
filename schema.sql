@@ -60,7 +60,17 @@ CREATE TABLE IF NOT EXISTS nres_users.passwordResetToken (
     );
 
 
-
+-- create Agent rating table;
+CREATE TABLE IF NOT EXISTS nres_users.agentRating
+    (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        agent_id INT NOT NULL,
+        customer_id INT NOT NULL,
+        rating FLOAT NOT NULL,
+        FOREIGN KEY (agent_id) REFERENCES nres_users.agent(id),
+        FOREIGN KEY ( customer_id) REFERENCES nres_users.customer(id)
+        
+    );
 
 
 --- create table for store property;
