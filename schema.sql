@@ -44,13 +44,23 @@ CREATE TABLE  IF NOT EXISTS nres_users.staff
 
 -- create customer;
 CREATE TABLE IF NOT EXISTS nres_users.customer
- (id varchar(36) PRIMARY KEY,
-  first_name VARCHAR (20) NOT NULL,
-  middle_name VARCHAR (20),
-  last_name VARCHAR (20) NOT NULL,
-  email VARCHAR (20),
-  phone_number VARCHAR(15)
- )
+ (id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR (50) NOT NULL,
+  email VARCHAR (50) UNIQUE,
+  phone_number VARCHAR(15) NOT NULL UNIQUE,
+  password VARCHAR (255) NOT NULL
+ )AUTO_INCREMENT=1;
+
+
+-- create password reset table;
+CREATE TABLE IF NOT EXISTS nres_users.passwordResetToken (
+        user_id INT  PRIMARY KEY,
+        token INT NOT NULL,
+        createdTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        expirationTime DATETIME,
+        ipAddress VARCHAR(45)
+    );
+
 
 
 

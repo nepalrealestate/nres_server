@@ -1,5 +1,5 @@
 const { json } = require("body-parser");
-const { sendPasswordResetTokenMail } = require("../../middlewares/property/middleware.sendEmail");
+const { sendPasswordResetTokenMail } = require("../../middlewares/middleware.sendEmail");
 const { insertUsersRating } = require("../../models/users/model.commonUsersCode");
 
 
