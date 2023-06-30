@@ -18,30 +18,20 @@ const maxImageSize = 2 * 1024 * 1024;
 
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
+const {Utility} = require("../controller.utils");
+const utils = new Utility();
 
 
 // ------------------------------------------INSERT DATA RELATED ---------------------------------
 
 const handleAddApartment = async (req, res) => {
+
   upload(req, res, async function (err) {
-    if (err instanceof multer.MulterError) {
-      // A Multer error occurred when uploading.
-      return res.status(400).json({ message: "Error while uploading", err });
-    } else if (err) {
-      // An unknown error occurred when uploading.
-      return res.status(400).json({ message: "Error while uploading", err });
-    }
+    utils.handleMulterError(req,res,err,addApartment,true);
+  });
 
-    // Everything went fine.
-
-    const images = req.files;
-
-    if (!req.files) {
-      return res
-        .status(400)
-        .json({ message: "missing images of your property" });
-    }
-
+  
+  async function addApartment (){
     // get user id from req.id i.e we set req.id when verify token
     const user_id = req.id;
     // baseUrl provide us from where request coming from ex. /agent,/staff,/seller
@@ -74,9 +64,8 @@ const handleAddApartment = async (req, res) => {
     location = { property_id: property_id, ...location };
     area = { property_id: property_id, ...area };
 
-    console.log(location);
+    
 
-    console.log("Add Apartment API HITTTTT !!!!!!");
     try {
       //await insertApartmentProperty(property,apartmentProperty,user_id,user_type);
 
@@ -92,7 +81,8 @@ const handleAddApartment = async (req, res) => {
       console.log("Why this error", error);
       return res.status(400).json({ message: error });
     }
-  });
+  }
+
 };
 
 const handleApartmentFeedback = async (req, res) => {

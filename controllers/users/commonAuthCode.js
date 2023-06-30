@@ -20,6 +20,7 @@ const saltRound = 10;
 const tokenExpireTime = "1hr";
 const schemaName = "nres_users";
 
+
 const login = async (req, res, user) => {
   const { password } = req.body;
 

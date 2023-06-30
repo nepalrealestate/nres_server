@@ -19,17 +19,15 @@ CREATE SCHEMA nres_sold_property;
 CREATE TABLE IF NOT EXISTS nres_users.agent 
     
     (
-    id varchar(36) UNIQUE PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50),
-    email VARCHAR(50), 
-    phone_number VARCHAR(15), 
-    identification_type ENUM('citizenship','lisense','nationalID','voterID'),
-    identification_number VARCHAR(20),
+    email VARCHAR(50) UNIQUE , 
+    phone_number VARCHAR(15) UNIQUE NOT NULL, 
+    identification_type VARCHAR(50) NOT NULL,
+    identification_number VARCHAR(30) NOT NULL,
     identification_image JSON,
-    password VARCHAR(255),
-    UNIQUE(email)
-    
-    ) ;
+    password VARCHAR(255)
+    )AUTO_INCREMENT=1 ;
 
 
 
@@ -62,7 +60,17 @@ CREATE TABLE IF NOT EXISTS nres_users.passwordResetToken (
     );
 
 
-
+-- create Agent rating table;
+CREATE TABLE IF NOT EXISTS nres_users.agentRating
+    (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        agent_id INT NOT NULL,
+        customer_id INT NOT NULL,
+        rating FLOAT NOT NULL,
+        FOREIGN KEY (agent_id) REFERENCES nres_users.agent(id),
+        FOREIGN KEY ( customer_id) REFERENCES nres_users.customer(id)
+        
+    );
 
 
 --- create table for store property;
