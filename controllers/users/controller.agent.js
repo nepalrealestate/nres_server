@@ -29,6 +29,7 @@ const validator = require("email-validator");
 const multer = require("multer");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
 const { Utility,Auth } = require("../controller.utils");
+const { query } = require("express");
 
 const utility = new Utility();
 const auth = new Auth();
@@ -40,7 +41,7 @@ const tokenExpireTime = "1hr";
 
 const imagePath = "uploads/users/agent/images";
 const maxSixe = 2 * 1024 * 1024;
-const upload = new UploadImage(imagePath, maxSixe).upload.single('identification_image');
+const {upload} = new UploadImage(imagePath, maxSixe);
 
 
 
@@ -71,7 +72,7 @@ const handleGetAgent = async (req, res) => {
 const handleAgentRegistration = async (req, res) => {
 
 
-  upload(req,res,async function(err){
+  upload.single('identification_image')(req,res,async function(err){
     utility.handleMulterError(req,res,err,registration,true)
    
   })
@@ -80,7 +81,7 @@ const handleAgentRegistration = async (req, res) => {
   
 
     const {name,email,phone_number,identification_type,identification_number,password,confirm_password} = req.body;
-    const identification_image = JSON.stringify({"0":req.file.path});
+    const image = JSON.stringify({"identification":req.file.path});
 
     const isEmailValid = await  utility.isValid.email(email);
     const isPhoneNumberValid =await  utility.isValid.phoneNumber(phone_number);
@@ -109,7 +110,7 @@ const handleAgentRegistration = async (req, res) => {
     }
   
   
-   const values = [name,email,phone_number,identification_type,identification_number,identification_image,hashPassword];
+   const values = [name,email,phone_number,identification_type,identification_number,image,hashPassword];
 
    utility.handleRegistration(res,registerAgent,values);
 
@@ -188,10 +189,18 @@ const handleAgentRating = async (req, res) => {
 
 
 const handleUpdateAgentProfile  = async (req,res)=>{
-  const agent_id = req.id;
+
+
+  upload.single('profile_image')(req,res,(err)=>utility.handleMulterError(req,res,err,updateProfile))
+
+ async function updateProfile(){
+    const agent_id = req.id;
 
   const validField = ['name','email','phone_number'];
- 
+
+  let profileImage =req?.file?req?.file?.path:null;
+  
+
   if(!req.query){
     return res.status(400).json({message:"Empty Input"})
   }
@@ -201,8 +210,14 @@ const handleUpdateAgentProfile  = async (req,res)=>{
     }
   }
 
+  //add image in req.query
+  const updateData = {
+    ...req.query,
+    profile: profileImage
+  };
+  console.log(updateData);
   try {
-    const [response,field] = await updateAgentProfile(agent_id,req.query);
+    const [response,field] = await updateAgentProfile(agent_id,updateData);
     return res.status(200).json({message:"Succesfully Update"})
   } catch (error) {
     console.log(error)
@@ -210,6 +225,8 @@ const handleUpdateAgentProfile  = async (req,res)=>{
   }
 
 
+  }
+  
 
 }
 

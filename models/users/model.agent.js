@@ -15,7 +15,7 @@ const {propertyTable,userTable}= require("../tableName")
 async function registerAgent(values) {
   
 
-  const insertQuery = `INSERT INTO ${userTable.agent} (name,email,phone_number,identification_type,identification_number,identification_image,password) VALUES (?,?,?,?,?,?,?)`;
+  const insertQuery = `INSERT INTO ${userTable.agent} (name,email,phone_number,identification_type,identification_number,image,password) VALUES (?,?,?,?,?,?,?)`;
   try {
     const [result, field] = await pool.query(insertQuery,values);
     return result;
@@ -102,8 +102,17 @@ async function updateAgentProfile(id,updateData){
   const params = [];
 
   
+
+  //update image
+  if(updateData['profile']){
+    sqlQuery += ` image= JSON_SET (image,'$.profile','${updateData['profile']}' )`
+    delete updateData.profile;
+  }
+
+
   //adding upate data
   for(let key of Object.keys(updateData)){
+   
     if(updateData[key]){
       sqlQuery += ` ${key}=?,`
       params.push(updateData[key]);

@@ -25,8 +25,9 @@ CREATE TABLE IF NOT EXISTS nres_users.agent
     phone_number VARCHAR(15) UNIQUE NOT NULL, 
     identification_type VARCHAR(50) NOT NULL,
     identification_number VARCHAR(30) NOT NULL,
-    identification_image JSON,
-    password VARCHAR(255)
+    image JSON,
+    password VARCHAR(255),
+    status ENUM ('pending','approved','rejected') DEFAULT 'pending'
     )AUTO_INCREMENT=1 ;
 
 
