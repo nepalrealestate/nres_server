@@ -44,7 +44,17 @@ async function findAgent(email) {
     const [row, field] = await pool.query(findQuery, [email]);
     return row[0]; //this return only object no object inside array
   } catch (error) {
-    console.log(error);
+    throw error;
+  }
+}
+
+async function findAgentPassword(id){
+  const findQuery = ` SELECT  password FROM ${userTable.agent} WHERE id=? `;
+  try {
+    const [row, field] = await pool.query(findQuery, [id]);
+    return row[0]; 
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -52,7 +62,7 @@ async function findAgent(email) {
 async function getAgent(id){
 
   const getQuery  = `SELECT a.name, a.email, a.phone_number,  ROUND(AVG(r.rating), 1) AS rating,
-  COUNT(r.rating) AS ratingCount
+  COUNT(r.rating) AS rating_count
   FROM ${userTable.agent} AS a 
   LEFT JOIN ${userTable.agentRating} AS r 
   ON a.id = r.agent_id 
@@ -84,4 +94,34 @@ async function updateAgentPassword(id, hashPassword) {
   }
 }
 
-module.exports = { registerAgent, findAgent, updateAgentPassword ,getAgent };
+
+async function updateAgentProfile(id,updateData){
+
+  let sqlQuery = `UPDATE ${userTable.agent} SET `
+
+  const params = [];
+
+  
+  //adding upate data
+  for(let key of Object.keys(updateData)){
+    if(updateData[key]){
+      sqlQuery += ` ${key}=?,`
+      params.push(updateData[key]);
+    }
+  }
+  // after update remove comma if present
+  sqlQuery = sqlQuery.endsWith(",") ? sqlQuery.slice(0, -1) : sqlQuery;
+  sqlQuery += ` WHERE id = ?`;
+  params.push(id);
+
+  try {
+    console.log(sqlQuery)
+    return await pool.query(sqlQuery,params);
+  } catch (error) {
+    throw error;
+  }
+
+
+}
+
+module.exports = { registerAgent, findAgent, updateAgentPassword ,getAgent , updateAgentProfile,findAgentPassword };

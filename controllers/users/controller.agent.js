@@ -4,6 +4,9 @@ const {
   findAgent,
   updateAgentPassword,
   getAgent,
+  updateProfile,
+  updateAgentProfile,
+  findAgentPassword,
 } = require("../../models/users/model.agent");
 const jwt = require("jsonwebtoken");
 const {
@@ -165,7 +168,7 @@ const handleAgentPasswordReset = async (req, res, next) => {
   return await auth.passwordReset(req, res, agent);
 };
 
-
+//this function will shift to user routing
 const handleAgentRating = async (req, res) => {
 
   const { agent_id, rating } = req.body;
@@ -183,6 +186,57 @@ const handleAgentRating = async (req, res) => {
 
 }
 
+
+const handleUpdateAgentProfile  = async (req,res)=>{
+  const agent_id = req.id;
+
+  const validField = ['name','email','phone_number'];
+ 
+  if(!req.query){
+    return res.status(400).json({message:"Empty Input"})
+  }
+  for (const key in req.query){
+    if(!validField.includes(key)){
+      return res.status(400).json({message:`${key} cannot update`})
+    }
+  }
+
+  try {
+    const [response,field] = await updateAgentProfile(agent_id,req.query);
+    return res.status(200).json({message:"Succesfully Update"})
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({message:"Unable to update"});
+  }
+
+
+
+}
+
+
+const handleUpdateAgentPassword = async(req,res)=>{
+  const agent_id = req.id;
+  const oldPassword = req.body.old_password;
+
+ const [{password},passwordError] = await wrapAwait(findAgentPassword(agent_id));
+
+ if(passwordError){
+  return res.status(404).json({message:"No User Found"})
+ }
+  console.log( password)
+ const isPasswordMatch = await bcrypt.compare(oldPassword,password);
+ if(!isPasswordMatch){
+  return res.status(400).json({message:"Password does not match"})
+ }
+
+ return auth.updateProfilePassword(req,res,updateAgentPassword);
+
+ 
+ 
+
+
+}
+
 module.exports = {
   handleAgentRegistration,
   handleGetAgent,
@@ -190,4 +244,6 @@ module.exports = {
   handleAgentVerifyToken,
   handleAgentPasswordReset,
   handleAgentRating,
+  handleUpdateAgentProfile,
+  handleUpdateAgentPassword
 };

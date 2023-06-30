@@ -372,6 +372,33 @@ function Auth(){
 
 }
 
+this.updateProfilePassword = async function (req,res,userPasswordUpdate){
+
+  
+  const newPassword = req.body.new_password;
+  const confirmPassword =req.body.confirm_password;
+
+  if(newPassword!==confirmPassword){
+    return res.status(400).json({message:"Password doesnot match "});
+  }
+
+
+
+  const [hashPassword, hashPasswordError] = await wrapAwait(
+    bcrypt.hash(newPassword, saltRound)
+  );
+
+  try {
+    const response = await userPasswordUpdate(req.id,hashPassword);
+    return res.status(200).json({message:"Password Update "})
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({message:"Unable to update password"})
+  }
+
+
+}
+
 }
 
 
