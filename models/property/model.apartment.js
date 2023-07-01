@@ -138,7 +138,7 @@ async function insertPendingApartmentProperty(property,apartmentProperty,locatio
     await insertPendingProperty(property,location,insertPendingApartment)
     
     async function insertPendingApartment(connection){
-        console.log(insertQuery, insertValue)
+        
        await connection.query(insertQuery,insertValue);
 
     }

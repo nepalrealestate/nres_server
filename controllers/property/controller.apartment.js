@@ -33,66 +33,7 @@ const handleAddApartment = async (req, res) => {
 
   
   async function addApartment (){
-    // get user id from req.id i.e we set req.id when verify token
-    let customer_id = null;
-    let agent_id = null;
-    // baseUrl provide us from where request coming from ex. /agent,/staff,/customer
-    const user_type = req.baseUrl.substring(1);
-    if(user_type === 'customer'){
-      customer_id = req.id;
-    }else if(user_type === 'agent'){
-      agent_id  = req.id;
-    }else{
-      return res.status(400).json({message:"bad request"})
-    }
-
-    if (!req.body.property) {
-      return res.status(400).json({ message: "missing property " });
-    }
-
-    console.log(req.body.property)
-
-    let { property, apartmentProperty, location } = JSON.parse(
-      req.body.property
-    );
-    const images = req.files;
-
-    const imageObject = JSON.stringify(
-      images.reduce(
-        (acc, value, index) => ({ ...acc, [index]: value.path }),
-        {}
-      )
-    );
-
-    // update object - store some value
-    const property_id = property.property_id;
-    property = {
-      ...property,
-      property_image: imageObject,
-      customer_id: customer_id,
-      agent_id : agent_id,
-    };
-
-    apartmentProperty = { property_id: property_id, ...apartmentProperty };
-    location = { property_id: property_id, ...location };
- 
-
-    console.log(property,apartmentProperty,location);
-
-    try {
-      //await insertApartmentProperty(property,apartmentProperty,user_id,user_type);
-
-      await insertPendingApartmentProperty(
-        property,
-        apartmentProperty,
-        location
-      );
-
-      return res.status(200).json({ message: "Insert into table" });
-    } catch (error) {
-      console.log("Why this error", error);
-      return res.status(400).json({ message: error });
-    }
+    utils.handleAddProperty(req,res,insertPendingApartmentProperty);
   }
 
 };

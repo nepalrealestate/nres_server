@@ -9,6 +9,7 @@ const {
   insertUnapprovedLandProperty,
   getUnapprovedLandProperty,
   getUnapprovedLandByID,
+  insertPendingLandProperty,
 } = require("../../models/property/model.land");
 const { updatePropertyViews } = require("../../models/property/model.property");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
@@ -17,80 +18,23 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const { checkProperties } = require("../requiredObjectProperties");
+const {Utility} = require("../controller.utils");
+const utils = new Utility();
+
 
 const handleAddLand = async (req, res) => {
+  
   upload(req, res, async function (err) {
-    if (err instanceof multer.MulterError) {
-      // A Multer error occurred when uploading.
-      return res.status(400).json({ message: err });
-    } else if (err) {
-      // An unknown error occurred when uploading.
-      return res.status(400).json({ message: err });
-    }
-
-    // Everything went fine.
-
-    if (!req.files) {
-      return res
-        .status(400)
-        .json({ message: "missing images of your property" });
-    }
-    const images = req.files;
-
-    // get user id from req.id i.e we set req.id when verify token
-    const user_id = req.id;
-    // baseUrl provide us from where request coming from ex. /agnet,/staff,/seller
-    const user_type = req.baseUrl.substring(1);
-    
-    if (!req.body.property) {
-    
-      return res.status(400).json({ message: "missing property " });
-    }
-
-    let { property, landProperty, location, area } = JSON.parse(
-      req.body.property
-    );
-    //check if desire property filed present or not
-   //  if (
-   //    !checkProperties.isPropertiesPresent(property, "property") ||
-   //    !checkProperties.isPropertiesPresent(landProperty, "land")
-   //  ) {
-   //    return res.status(400).json({ message: "missing field" });
-   //  }
-
-    const imageObject = JSON.stringify(
-      images.reduce(
-        (acc, value, index) => ({ ...acc, [index]: value.path }),
-        {}
-      )
-    );
-
-    // update object - store some value
-    const property_id = property.property_id;
-    property = {
-      ...property,
-      property_image: imageObject,
-      user_id: user_id,
-      user_type: user_type,
-    };
-    landProperty = { property_id: property_id, ...landProperty };
-    location = { property_id: property_id, ...location };
-    area = { property_id: property_id, ...area };
-
-    console.log("Add Land API HITTTTT !!!!!!");
-    try {
-      await insertUnapprovedLandProperty(
-        property,
-        landProperty,
-        location,
-        area
-      );
-      return res.status(200).json({ message: "Insert into table" });
-    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: error.sqlMessage });
-    }
+   
+    utils.handleMulterError(req,res,err,addLand,true);
   });
+  
+  async function addLand(){
+
+   utils.handleAddProperty( req,res,insertPendingLandProperty);
+  }
+      
+    
 };
 
 const handleGetLand = async (req, res) => {

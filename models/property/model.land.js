@@ -6,6 +6,7 @@ const {
   insertProperty,
   insertApplyProperty,
   insertUnapprovedProperty,
+  insertPendingProperty,
 } = require("../property/model.property");
 const { error } = require("console");
 const { propertyTable, views } = require("../tableName");
@@ -81,40 +82,24 @@ async function insertLandProperty(property, landProperty, user_id, user_type) {
   }
 }
 
-async function insertUnapprovedLandProperty(
+async function insertPendingLandProperty(
   property,
   landProperty,
-  location,
-  area
+  location
+
 ) {
   // create land table - shift to schema.sql
 
-  const insertQuery = `INSERT INTO ${propertyTable.unapproved_land} VALUES (?,?,?)`;
-  const insertValues = Object.values(landProperty);
+  const insertQuery = `INSERT INTO ${propertyTable.pending_land} VALUES (?,?,?)`;
+  const insertValue = Object.values(landProperty);
   
 
-  let connection;
+  await insertPendingProperty(property,location,insertPendingLand)
 
-  try {
-    connection = await pool.getConnection();
-    await connection.beginTransaction();
-    console.log("Transaction Started");
-    await insertUnapprovedProperty(property, location, area);
-    await pool.query(insertQuery, insertValues);
-
-    await connection.commit();
-
-    console.log("Transaction committed successfully");
-  } catch (error) {
-    console.log("error occur , rollback");
-    await connection.rollback();
-    console.log(error);
-    throw error;
-  } finally {
-    if (connection) {
-      connection.release();
-    }
+  async function insertPendingLand(connection){
+    await connection.query(insertQuery,insertValue);
   }
+
 }
 
 async function getLandProperty(condition, limit, offSet) {
@@ -266,7 +251,7 @@ module.exports = {
   getLandProperty,
   insertLandFeedback,
   getLandByID,
-  insertUnapprovedLandProperty,
+  insertPendingLandProperty,
   getUnapprovedLandProperty,
   approveLand,
   getUnapprovedLandByID,

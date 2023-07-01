@@ -4,10 +4,10 @@ const {
   getHouseProperty,
   insertHouseFeedback,
   getHouseByID,
-  insertUnapprovedHouseProperty,
   approveHouse,
   getUnapprovedHouseProperty,
   getUnapprovedHouseByID,
+  insertPendingHouseProperty,
 } = require("../../models/property/model.house");
 const { updatePropertyViews } = require("../../models/property/model.property");
 
@@ -16,69 +16,23 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 
-// only for test purpose
+const {Utility} = require("../controller.utils");
+const utils = new Utility();
+
+
 
 const handleAddHouse = async (req, res) => {
+  
   upload(req, res, async function (err) {
-    if (err instanceof multer.MulterError) {
-      // A Multer error occurred when uploading.
-      return res.status(400).json({ message: err });
-    } else if (err) {
-      // An unknown error occurred when uploading.
-      return res.status(400).json({ message: err });
-    }
-
-    // Everything went fine.
-    const images = req.files;
-
-    if (!req.files) {
-      return res
-        .status(400)
-        .json({ message: "missing images of your property" });
-    }
-
-    // get user id from req.id i.e we set req.id when verify token
-    const user_id = req.id;
-    // baseUrl provide us from where request coming from ex. /agnet,/staff,/seller
-    const user_type = req.baseUrl.substring(1);
-
-    if (!req.body.property) {
-      return res.status(400).json({ message: "missing property " });
-    }
-
-    let { property, houseProperty, location, area } = JSON.parse(
-      req.body.property
-    );
-
-    const imageObject = JSON.stringify(
-      images.reduce(
-        (acc, value, index) => ({ ...acc, [index]: value.path }),
-        {}
-      )
-    );
-
-    const property_id = property.property_id;
-    property = {
-      ...property,
-      property_image: imageObject,
-      user_id: user_id,
-      user_type: user_type,
-    };
-    houseProperty = { property_id: property_id, ...houseProperty };
-    location = { property_id: property_id, ...location };
-    area = { property_id: property_id, ...area };
-    try {
-      await insertUnapprovedHouseProperty(
-        property,
-        houseProperty,
-        location,
-        area
-      );
-      return res.status(200).json({ message: "Insert into table" });
-    } catch (error) {
-      return res.status(400).json({ message: error.sqlMessage });
-    }
+    utils.handleMulterError(req,res,err,addHouse,true);
   });
+  
+  async function addHouse (){
+    utils.handleAddProperty(req,res,insertPendingHouseProperty);
+  }
+  
+
+
 };
 
 const handleGetHouse = async (req, res) => {

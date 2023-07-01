@@ -5,6 +5,7 @@ const {
   createPropertyTable,
   insertProperty,
   insertUnapprovedProperty,
+  insertPendingProperty,
 } = require("./model.property");
 const propertyTableName = "Property";
 const houseTableName = "House";
@@ -42,22 +43,7 @@ async function createHouseTable() {
   }
 }
 
-// async function createApplyHouse(){
 
-//     // create property table first  -if not created
-//     await createApplyPropertyTable();
-
-//     const createQuery =   `CREATE TABLE IF NOT EXISTS ${propertyTable.apply_house} LIKE ${propertyTable.house}`;
-
-//     try {
-//         const[row,field] = await pool.query(createQuery);
-//         console.log("Table Created");
-//         return row;
-//     } catch (error) {
-//        throw error;
-//     }
-
-// }
 
 async function createHouseFeedbackTable() {
   const sqlQuery = `CREATE TABLE IF NOT EXISTS ${schemaName}.${houseFeedbackTableName} (
@@ -120,35 +106,20 @@ async function insertHouseProperty(
 
 // insert into apply house for listing request
 
-async function insertUnapprovedHouseProperty(
-  property,
-  houseProperty,
-  location,
-  area
-) {
+async function insertPendingHouseProperty(property,houseProperty,location) {
   // insert house property query
-  const insertQuery = `INSERT INTO ${propertyTable.unapproved_house} VALUES (?,?,?,?,?,?,?)`;
+  const insertQuery = `INSERT INTO ${propertyTable.pending_house} VALUES (?,?,?,?,?,?,?)`;
   const insertValue = Object.values(houseProperty);
-  let connection;
-  try {
-    connection = await pool.getConnection();
-    await connection.beginTransaction();
-    console.log("Transaction Started");
-    await insertUnapprovedProperty(property, location, area);
-    await pool.query(insertQuery, insertValue);
-    await connection.commit();
 
-    console.log("Transaction committed successfully");
-  } catch (error) {
-    console.log("error occur , rollback");
-    await connection.rollback();
-    console.log(error);
-    throw error;
-  } finally {
-    if (connection) {
-      connection.release();
-    }
+
+  await insertPendingProperty(property,location,insertPendingHouse);
+
+  
+  async function insertPendingHouse(connection){
+    await connection.query(insertQuery,insertValue);
   }
+
+ 
 }
 
 async function getHouseProperty(condition, limit, offSet) {
@@ -303,7 +274,7 @@ module.exports = {
   insertHouseFeedback,
   getHouseByID,
   getUnapprovedHouseByID,
-  insertUnapprovedHouseProperty,
+  insertPendingHouseProperty,
   getUnapprovedHouseProperty,
   approveHouse,
 };

@@ -1,13 +1,16 @@
 
 
-
 {
     "property":{
-        "property_id":1018,
-        "property_type":"house",
-        "property_name":"lavish house",
-        "listed_for":"Sale",
-        "price":12000000   
+        "property_id":1024,
+        "property_type":"House",
+        "property_name":"My House",
+        "listed_for":"Sell",
+        "price":70000,
+        "area_aana":0,
+        "area_sq_ft":20,
+        "road_access_ft":100
+
     },
     "houseProperty":{
         "room":8,
@@ -17,22 +20,13 @@
         "facing_direction":"east",
         "facilities":"24 hour water, a lot of parking area , good chhimeki , peace enviroment"
     },
-
     "location":{
-        "state":"Karnali",
-        "district":"Surkhet",
-        "city":"Birendranagar",
-        "ward_number":"08",
-        "tole_name":"Khajura",
+        "state":"Bagmati",
+        "district":"kathmandu",
+        "city":"kathmandu",
+        "ward_number":"32",
+        "tole_name":"mahadev",
         "latitude": 27.680475, 
         "longitude": 85.305186
-    },
-    "area":{
-        "area_aana":0,
-        "area_sq_ft":20,
-        "road_access_ft":100
     }
 }
-
-
-
