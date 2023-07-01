@@ -1,6 +1,6 @@
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
-const {createPropertyTable,insertProperty, createApplyPropertyTable, insertApplyProperty, insertUnapprovedProperty} = require("../property/model.property");
+const {createPropertyTable,insertProperty, createApplyPropertyTable, insertApplyProperty, insertUnapprovedProperty, insertPendingProperty} = require("../property/model.property");
 const { propertyTable, views } = require("../tableName");
 const propertyTableName = 'Property'
 const houseTableName = 'House';
@@ -126,36 +126,47 @@ async function insertApartmentProperty(property,apartmentProperty,user_id,user_t
 }
 
 
-async function insertUnapprovedApartmentProperty(property,apartmentProperty,location,area){
+async function insertPendingApartmentProperty(property,apartmentProperty,location){
 
 
     //await createApplyApartmentTable();
     const insertValue = Object.values(apartmentProperty);
-    const insertQuery = `INSERT INTO  ${propertyTable.unapproved_apartment}  VALUES (?,?,?,?,?,?) `;
-    let connection;
+    const insertQuery = `INSERT INTO  ${propertyTable.pending_apartment}  VALUES (?,?,?,?,?,?) `;
 
-    try {
-        connection = await pool.getConnection();
-        await connection.beginTransaction();
-        console.log("Transaction Started");
+
+
+    await insertPendingProperty(property,location,insertPendingApartment)
     
-        await insertUnapprovedProperty(property,location,area);
-        await pool.query(insertQuery,insertValue);
+    async function insertPendingApartment(connection){
+        console.log(insertQuery, insertValue)
+       await connection.query(insertQuery,insertValue);
 
-        await connection.commit();
+    }
 
-        console.log("Transaction committed successfully");
+    // let connection;
+
+    // try {
+    //     connection = await pool.getConnection();
+    //     await connection.beginTransaction();
+    //     console.log("Transaction Started");
     
-      } catch (error) {
-        console.log("error occur , rollback")
-        await connection.rollback();
-        console.log(error);
-        throw error;
-      }finally{
-        if(connection){
-          connection.release();
-      }
-      }
+    //     await insertUnapprovedProperty(property,location);
+    //     await pool.query(insertQuery,insertValue);
+
+    //     await connection.commit();
+
+    //     console.log("Transaction committed successfully");
+    
+    //   } catch (error) {
+    //     console.log("error occur , rollback")
+    //     await connection.rollback();
+    //     console.log(error);
+    //     throw error;
+    //   }finally{
+    //     if(connection){
+    //       connection.release();
+    //   }
+    //   }
 
 }
 
@@ -361,7 +372,7 @@ module.exports = {insertApartmentProperty,
     getApartmentProperty,
     insertApartmentFeedback,
     getApartmentByID,
-    insertUnapprovedApartmentProperty,
+    insertPendingApartmentProperty,
     getUnapprovedApartmentProperty,
     approveApartment,
     getUnapprovedApartmentByID

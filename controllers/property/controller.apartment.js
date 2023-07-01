@@ -8,6 +8,7 @@ const {
   insertUnapprovedApartmentProperty,
   getUnapprovedApartmentProperty,
   getUnapprovedApartmentByID,
+  insertPendingApartmentProperty,
 } = require("../../models/property/model.apartment");
 const {
   updatePropertyViews,
@@ -33,17 +34,28 @@ const handleAddApartment = async (req, res) => {
   
   async function addApartment (){
     // get user id from req.id i.e we set req.id when verify token
-    const user_id = req.id;
-    // baseUrl provide us from where request coming from ex. /agent,/staff,/seller
+    let customer_id = null;
+    let agent_id = null;
+    // baseUrl provide us from where request coming from ex. /agent,/staff,/customer
     const user_type = req.baseUrl.substring(1);
+    if(user_type === 'customer'){
+      customer_id = req.id;
+    }else if(user_type === 'agent'){
+      agent_id  = req.id;
+    }else{
+      return res.status(400).json({message:"bad request"})
+    }
 
     if (!req.body.property) {
       return res.status(400).json({ message: "missing property " });
     }
 
-    let { property, apartmentProperty, location, area } = JSON.parse(
+    console.log(req.body.property)
+
+    let { property, apartmentProperty, location } = JSON.parse(
       req.body.property
     );
+    const images = req.files;
 
     const imageObject = JSON.stringify(
       images.reduce(
@@ -57,23 +69,23 @@ const handleAddApartment = async (req, res) => {
     property = {
       ...property,
       property_image: imageObject,
-      user_id: user_id,
-      user_type: user_type,
+      customer_id: customer_id,
+      agent_id : agent_id,
     };
+
     apartmentProperty = { property_id: property_id, ...apartmentProperty };
     location = { property_id: property_id, ...location };
-    area = { property_id: property_id, ...area };
+ 
 
-    
+    console.log(property,apartmentProperty,location);
 
     try {
       //await insertApartmentProperty(property,apartmentProperty,user_id,user_type);
 
-      await insertUnapprovedApartmentProperty(
+      await insertPendingApartmentProperty(
         property,
         apartmentProperty,
-        location,
-        area
+        location
       );
 
       return res.status(200).json({ message: "Insert into table" });
@@ -84,6 +96,8 @@ const handleAddApartment = async (req, res) => {
   }
 
 };
+
+
 
 const handleApartmentFeedback = async (req, res) => {
   const { property_ID, feedback } = req.body;

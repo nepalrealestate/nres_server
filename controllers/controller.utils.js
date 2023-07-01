@@ -26,8 +26,13 @@ function Utility(){
         return res.status(400).json( err )
       }
 
+
+      console.log(req.file);
+      console.log(req.files);
+      console.log(req?.files[0]?.path)
+
       if(isImageRequired){
-        if(!req?.file?.path){
+        if(!req?.file?.path && !req?.files[0]?.path){
           return res.status(400).json({message:"Please Upload Your Image"});
       }
       }

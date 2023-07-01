@@ -2,11 +2,14 @@
 
 {
     "property":{
-        "property_id":1020,
+        "property_id":1022,
         "property_type":"apartment",
-        "property_name":"Lavish Aparment",
-        "listed_for":"Rent",
-        "price":30000
+        "property_name":"Super Aparment",
+        "listed_for":"Sell",
+        "price":30000,
+        "area_aana":0,
+        "area_sq_ft":20,
+        "road_access_ft":100
 
     },
     "apartmentProperty":{
@@ -24,10 +27,5 @@
         "tole_name":"mahadev",
         "latitude": 27.680475, 
         "longitude": 85.305186
-    },
-    "area":{
-        "area_aana":0,
-        "area_sq_ft":20,
-        "road_access_ft":100
     }
 }
