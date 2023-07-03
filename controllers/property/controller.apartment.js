@@ -8,6 +8,9 @@ const {
   insertUnapprovedApartmentProperty,
   getUnapprovedApartmentProperty,
   getUnapprovedApartmentByID,
+  insertPendingApartmentProperty,
+  getPendingApartmentProperty,
+  getPendingApartmentByID,
 } = require("../../models/property/model.apartment");
 const {
   updatePropertyViews,
@@ -32,58 +35,12 @@ const handleAddApartment = async (req, res) => {
 
   
   async function addApartment (){
-    // get user id from req.id i.e we set req.id when verify token
-    const user_id = req.id;
-    // baseUrl provide us from where request coming from ex. /agent,/staff,/seller
-    const user_type = req.baseUrl.substring(1);
-
-    if (!req.body.property) {
-      return res.status(400).json({ message: "missing property " });
-    }
-
-    let { property, apartmentProperty, location, area } = JSON.parse(
-      req.body.property
-    );
-
-    const imageObject = JSON.stringify(
-      images.reduce(
-        (acc, value, index) => ({ ...acc, [index]: value.path }),
-        {}
-      )
-    );
-
-    // update object - store some value
-    const property_id = property.property_id;
-    property = {
-      ...property,
-      property_image: imageObject,
-      user_id: user_id,
-      user_type: user_type,
-    };
-    apartmentProperty = { property_id: property_id, ...apartmentProperty };
-    location = { property_id: property_id, ...location };
-    area = { property_id: property_id, ...area };
-
-    
-
-    try {
-      //await insertApartmentProperty(property,apartmentProperty,user_id,user_type);
-
-      await insertUnapprovedApartmentProperty(
-        property,
-        apartmentProperty,
-        location,
-        area
-      );
-
-      return res.status(200).json({ message: "Insert into table" });
-    } catch (error) {
-      console.log("Why this error", error);
-      return res.status(400).json({ message: error });
-    }
+    utils.handleAddProperty(req,res,insertPendingApartmentProperty);
   }
 
 };
+
+
 
 const handleApartmentFeedback = async (req, res) => {
   const { property_ID, feedback } = req.body;
@@ -100,55 +57,19 @@ const handleApartmentFeedback = async (req, res) => {
 // ---------------------------------------------------------GET DATA RELATED-------------------------------------------------------
 
 const handleGetApartment = async (req, res) => {
-  let page, limit, offSet;
 
-  // if page and limit not set then defualt is 1 and 20 .
-  page = req.query.page || 1;
 
-  limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
-  // if page and limit present in query then delete it
-  if (req.query.page) delete req.query.page;
+  utils.getSearchData(req,res,getApartmentProperty);
 
-  if (req.query.limit) delete req.query.limit;
-
-  offSet = (page - 1) * limit;
-
-  try {
-    const apartmentData = await getApartmentProperty(req.query, limit, offSet);
-    console.log(apartmentData);
-
-    return res.status(200).json(apartmentData);
-  } catch (error) {
-    return res.status(500).json({ message: error.sqlMessage });
-  }
+  
 };
 
-const handleGetUnapprovedApartment = async (req, res) => {
-  let page, limit, offSet;
+const handleGetPendingApartment = async (req, res) => {
+ 
 
-  // if page and limit not set then defualt is 1 and 20 .
-  page = req.query.page || 1;
+ 
+    utils.getSearchData(req,res,getPendingApartmentProperty)
 
-  limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
-  // if page and limit present in query then delete it
-  if (req.query.page) delete req.query.page;
-
-  if (req.query.limit) delete req.query.limit;
-
-  offSet = (page - 1) * limit;
-
-  try {
-    const apartmentData = await getUnapprovedApartmentProperty(
-      req.query,
-      limit,
-      offSet
-    );
-    console.log(apartmentData);
-
-    return res.status(200).json(apartmentData);
-  } catch (error) {
-    return res.status(500).json({ message: error.sqlMessage });
-  }
 };
 
 const handleGetApartmentByID = async (req, res) => {
@@ -191,13 +112,14 @@ const handleApproveApartment = async (req, res) => {
   const staff_id = req.id;
   let apartment;
   try {
-    apartment = await getUnapprovedApartmentByID(property_id); //testing this function needed or not
+    apartment = await getPendingApartmentByID(property_id); //testing this function needed or not
     if (apartment === undefined || apartment === null) {
       return res.status(400).json({ message: "No Apartment" });
     }
     await approveApartment(staff_id, property_id);
     return res.status(200).json({ message: "approve successfully" });
   } catch (error) {
+    console.log(error)
     return res
       .status(500)
       .json({ message: "approved denied ! please try later" });
@@ -210,6 +132,6 @@ module.exports = {
   handleApartmentFeedback,
   handleUpdateApartmentViews,
   handleGetApartmentByID,
-  handleGetUnapprovedApartment,
+  handleGetPendingApartment,
   handleApproveApartment,
 };

@@ -4,7 +4,7 @@ const node_env = process.env.NODE_ENV;
 
 let userSchemaName =  node_env=='Production'?`${db_prefix}_nres_users`:'nres_users';
 let propertySchemaName = node_env=='Production'?`${db_prefix}_nres_property`:'nres_property';
-let unapprovedPropertySchemaName =  node_env=='Production'?`${db_prefix}_nres_unapproved_property`:'nres_unapproved_property';
+let pendingPropertySchemaName =  node_env=='Production'?`${db_prefix}_nres_pending_property`:'nres_pending_property';
 let serviceSchemaName = node_env=='Production'?`${db_prefix}_nres_services`:'nres_services';
 
 
@@ -37,20 +37,20 @@ const propertyTable = {
 
     property : `${propertySchemaName}.property`,
     property_location : `${propertySchemaName}.property_location`,
-    property_area     : `${propertySchemaName}.property_area`,
+  
     house: `${propertySchemaName}.house`,
     land :`${propertySchemaName}.land`,
     apartment :`${propertySchemaName}.apartment`,
-    ownership : `${propertySchemaName}.property_ownership`,
+    property_id_tracker: `${propertySchemaName}.property_id_tracker`,
 
 
 
-    unapproved_property :`${unapprovedPropertySchemaName}.unapproved_property` ,
-    unapproved_property_location : `${unapprovedPropertySchemaName}.unapproved_property_location`,
-    unapproved_property_area     : `${unapprovedPropertySchemaName}.unapproved_property_area`,
-    unapproved_house :`${unapprovedPropertySchemaName}.unapproved_house` ,
-    unapproved_land : `${unapprovedPropertySchemaName}.unapproved_land`,
-    unapproved_apartment: `${unapprovedPropertySchemaName}.unapproved_apartment`,
+    pending_property :`${pendingPropertySchemaName}.pending_property` ,
+    pending_property_location : `${pendingPropertySchemaName}.pending_property_location`,
+   
+    pending_house :`${pendingPropertySchemaName}.pending_house` ,
+    pending_land : `${pendingPropertySchemaName}.pending_land`,
+    pending_apartment: `${pendingPropertySchemaName}.pending_apartment`,
 
 
 
@@ -72,9 +72,9 @@ const views = {
     fullHouseView     : `${propertySchemaName}.house_property`,
     fullLandView      : `${propertySchemaName}.land_property`,
 
-    unapprovedApartmentView : `${unapprovedPropertySchemaName}.unapproved_apartment_property`,
-    unapprovedHouseView    : `${unapprovedPropertySchemaName}.unapproved_house_property`,
-    unapprovedLandView     : `${unapprovedPropertySchemaName}.unapproved_land_property`,
+    unapprovedApartmentView : `${pendingPropertySchemaName}.pending_apartment_property`,
+    unapprovedHouseView    : `${pendingPropertySchemaName}.pending_house_property`,
+    unapprovedLandView     : `${pendingPropertySchemaName}.pending_land_property`,
 
 }
 

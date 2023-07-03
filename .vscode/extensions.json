@@ -1,5 +1,6 @@
 {
     "recommendations": [
-        "dbizzy.dbizzy"
+        "dbizzy.dbizzy",
+        "formulahendry.vscode-mysql"
     ]
 }

@@ -1,33 +1,21 @@
-
-
 {
-    "property":{
-        "property_id":1023,
-        "property_type":"land",
-        "property_name":"bhat khane ",
-        "listed_for":"Sale",
-        "price":8000000 
-    },
     
-    "landProperty":{
-        "land_type":"Agriculter",
-        "soil":"loamy",
-        "road_access_ft":500
-    },
-    "location":{
-        "state":"Karnali",
-        "district":"Surkhet",
-        "city":"Birendranagar",
-        "ward_number":"05",
-        "tole_name":"Chisapani",
-        "latitude": 27.680475, 
-        "longitude": 85.305186
-    },
-     
-    "area":{
-        "area_aana":0,
-        "area_sq_ft":20,
-        "road_access_ft":100
-    }
-}
+        
+    "property_name":"Super Aparment",
+    "listed_for":"sell",
+    "price":70000,
+    "land_type":"agri",
+    "soil":"lommy",
+    "area_aana":0,
+    "area_sq_ft":20,
+    "road_access_ft":100,
+    "state":"Bagmati",
+    "district":"kathmandu",
+    "city":"kathmandu",
+    "ward_number":32,
+    "tole_name":"mahadev",
+    "latitude": 27.680475, 
+    "longitude": 85.305186
 
+
+}

@@ -263,37 +263,33 @@ async function insertIntoRequestedProperty(property) {
 
 
 
-async function insertUnapprovedProperty(property, location, area) {
+async function insertPendingProperty(property, location,insertPropertyCallback) {
 
 
   //createApplyPropertyTable();
 
   // insert into property , location and area;
   //insert into property
-  const insertProperty = `INSERT INTO ${propertyTable.unapproved_property} VALUES (?,?,?,?,?,0,?,null,CURRENT_DATE(),?,?,?,?)`;//0 IS  VIEWS - null video link
-  const insertLocation = `INSERT INTO ${propertyTable.unapproved_property_location} VALUES (0,?,?,?,?,?,?,?,?)`;// 0 is AUTO INCREAMENT ID;
-  const insertArea = `INSERT INTO ${propertyTable.unapproved_property_area} VALUES (0,?,?,?,?)`; // 0 id
+  const insertProperty = `INSERT INTO ${propertyTable.pending_property} VALUES (?,?,?,?,?,?,?,?,?,null,CURRENT_DATE(),?,?)`;
+  const insertLocation = `INSERT INTO ${propertyTable.pending_property_location} VALUES (0,?,?,?,?,?,?,?,?)`;// 0 is AUTO INCREAMENT ID;
+ 
 
-  const propertyValue = Object.values(property);//
+  const propertyValue = Object.values(property);
   const locationValue = Object.values(location);
-  console.log(locationValue);
-  const areaValue = Object.values(area);
 
-  propertyValue.push(null)// no one approve when insertproperty
-  propertyValue.push('pending');// status is pending when insert unapproved property
 
   let connection;
   try {
     connection = await pool.getConnection();
     await connection.beginTransaction();
-    console.log("Transaction Started");
+    console.log("Transaction Started for insert property");
 
     await connection.query(insertProperty, propertyValue);
     await connection.query(insertLocation, locationValue);
-    await connection.query(insertArea, areaValue);
+    await insertPropertyCallback(connection)
     await connection.commit();
 
-    console.log('Transaction committed successfully');
+    console.log('Transaction committed successfully for insert property');
 
   } catch (error) {
     console.log("error occur , rollback")
@@ -307,6 +303,70 @@ async function insertUnapprovedProperty(property, location, area) {
   }
 
 }
+
+
+async function approveProperty(property_id,approved_by,shiftPropertyCallback){
+
+    
+  const shiftPropertyQuery = `INSERT INTO ${propertyTable.property}
+  (property_id, property_type, property_name, listed_for, price, area_aana, area_sq_ft,
+  road_access_ft, property_image, property_video, posted_date, approved_by, customer_id, agent_id)
+  SELECT
+    property_id, property_type, property_name, listed_for, price, area_aana, area_sq_ft,
+    road_access_ft, property_image, property_video, posted_date, ?, customer_id, agent_id
+  FROM ${propertyTable.pending_property} WHERE property_id = ?`;
+
+
+  const shiftLocationQuery = `INSERT INTO ${propertyTable.property_location}  SELECT *
+  FROM ${propertyTable.pending_property_location}
+  WHERE property_id = ?`;
+
+
+  const deletePropertyQuery = `DELETE FROM ${propertyTable.pending_property} WHERE property_id = ?`;
+  const deleteLocationQuery = `DELETE FROM ${propertyTable.pending_property_location} WHERE property_id = ?`;
+
+  let connection;
+
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    
+    console.log("before upate property");
+     await connection.query(shiftPropertyQuery,[property_id,approved_by]);
+     console.log("after update property")
+     console.log(shiftPropertyQuery)
+     await connection.query(shiftLocationQuery,[property_id]);
+    
+     await shiftPropertyCallback(connection,property_id);
+     console.log("after Update apartment");
+     await connection.query(deleteLocationQuery,[property_id]);
+     await connection.query(deletePropertyQuery,[property_id]);
+
+
+     await connection.commit();
+
+  } catch (error) {
+    
+    await connection.rollback();
+      console.log("Error Occur Roll back")
+        console.log(error);
+        throw error;
+  }finally{
+    if(connection){
+        connection.release();
+    }
+}
+
+
+
+}
+
+
+
+
+
+
+
 
 
 // ------------Getting data -------------------------
@@ -367,6 +427,7 @@ module.exports = {
   insertVideoLink,
   insertIntoRequestedProperty,
   createApplyPropertyTable,
-  insertUnapprovedProperty,
-  getProperty
+  insertPendingProperty,
+  getProperty,
+  approveProperty
 };

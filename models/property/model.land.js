@@ -6,6 +6,7 @@ const {
   insertProperty,
   insertApplyProperty,
   insertUnapprovedProperty,
+  insertPendingProperty,
 } = require("../property/model.property");
 const { error } = require("console");
 const { propertyTable, views } = require("../tableName");
@@ -81,40 +82,26 @@ async function insertLandProperty(property, landProperty, user_id, user_type) {
   }
 }
 
-async function insertUnapprovedLandProperty(
-  property,
-  landProperty,
-  location,
-  area
-) {
+async function insertPendingLandProperty(landProperty) {
   // create land table - shift to schema.sql
 
-  const insertQuery = `INSERT INTO ${propertyTable.unapproved_land} VALUES (?,?,?)`;
-  const insertValues = Object.values(landProperty);
-  
+  const insertValue = Object.values(landProperty);
+    
+  const insertQuery = `INSERT INTO  ${propertyTable.pending_land} 
+  (property_id,property_name, listed_for, price,land_type ,soil,area_aana, area_sq_ft, road_access_ft, state, district, city, ward_number, tole_name, latitude, longitude, property_image, property_video, posted_date, approved_by, customer_id, agent_id, views)
 
-  let connection;
+  
+  VALUES (0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?,?,0) `;
+
 
   try {
-    connection = await pool.getConnection();
-    await connection.beginTransaction();
-    console.log("Transaction Started");
-    await insertUnapprovedProperty(property, location, area);
-    await pool.query(insertQuery, insertValues);
-
-    await connection.commit();
-
-    console.log("Transaction committed successfully");
+      const [result,field] = await pool.query(insertQuery,insertValue);
+      return result;
   } catch (error) {
-    console.log("error occur , rollback");
-    await connection.rollback();
-    console.log(error);
-    throw error;
-  } finally {
-    if (connection) {
-      connection.release();
-    }
+      throw error;
   }
+
+
 }
 
 async function getLandProperty(condition, limit, offSet) {
@@ -142,8 +129,8 @@ async function getLandProperty(condition, limit, offSet) {
   }
 }
 
-async function getUnapprovedLandProperty(condition, limit=20, offSet=0) {
-  let sqlQuery = `SELECT * FROM ${views.unapprovedLandView} WHERE 1=1 `;
+async function getPendingLandProperty(condition, limit=20, offSet=0) {
+  let sqlQuery = `SELECT * FROM ${propertyTable.pending_land} WHERE 1=1 `;
   const params = [];
   //adding search conditon on query
   for (let key of Object.keys(condition)) {
@@ -195,8 +182,8 @@ async function getLandByID(property_id) {
   }
 }
 
-async function getUnapprovedLandByID(property_id) {
-  const getQuery = `SELECT * FROM ${views.unapprovedLandView} WHERE property_id = ?`;
+async function getPendingLandByID(property_id) {
+  const getQuery = `SELECT * FROM ${propertyTable.pending_land} WHERE property_id = ?`;
 
   try {
     const [result, field] = await pool.query(getQuery, property_id);
@@ -209,56 +196,49 @@ async function getUnapprovedLandByID(property_id) {
 
 async function approveLand(staff_id, property_id) {
   
-  const updateQuery = `UPDATE ${propertyTable.unapproved_property} SET status='approved',approved_by_id=? WHERE property_id=?`;
-
-  const shiftPropertyQuery = `INSERT INTO ${propertyTable.property} SELECT * FROM ${propertyTable.unapproved_property} WHERE property_id=?`;
+ 
+  const getPropertyID = `SELECT LPAD(property_id, 4, "0") AS newPropertyID FROM ${propertyTable.property_id_tracker}`;
   
-  const shiftLocationQuery = `INSERT INTO ${propertyTable.property_location} SELECT * FROM ${propertyTable.unapproved_property_location} 
-                              WHERE property_id=?`;
-                              
-  const shiftAreaQuery = `INSERT INTO ${propertyTable.property_area} SELECT * FROM ${propertyTable.unapproved_property_area}
-                          WHERE property_id=?`;
-                          
-  const shiftLandQuery = `INSERT INTO ${propertyTable.land} SELECT * FROM ${propertyTable.unapproved_land} WHERE property_id=?`;
+    const shiftLandQuery = `INSERT INTO ${propertyTable.land} (property_id, property_name, listed_for, price, land_type, soil, area_aana, area_sq_ft, road_access_ft, state, district, city, ward_number, tole_name, latitude, longitude, property_image, property_video, posted_date, approved_by, customer_id, agent_id, views) 
+    
+    SELECT ?, property_name, listed_for, price,  land_type, soil, area_aana, area_sq_ft, road_access_ft, state, district, city, ward_number, tole_name, latitude, longitude, property_image, property_video, NOW(), ?, customer_id, agent_id, views FROM ${propertyTable.pending_land} WHERE property_id=?`;
 
+    const updatePropertyID = `UPDATE ${propertyTable.property_id_tracker} SET property_id = property_id+1 WHERE id = ?`;
 
-  const deleteAreaQuery = `DELETE FROM ${propertyTable.unapproved_property_area} WHERE property_id= ?`;
-  const deleteLocationQuery = `DELETE FROM ${propertyTable.unapproved_property_location} WHERE property_id = ?`;
-  const deleteLandQuery = ` DELETE FROM ${propertyTable.unapproved_land} WHERE property_id = ? `;
-  const deletePropertyQuery = ` DELETE FROM ${propertyTable.unapproved_property}  WHERE property_id = ? `;
-  
+    const deleteLandQuery = ` DELETE FROM ${propertyTable.pending_land} WHERE property_id = ? `;
 
-  let connection;
+    let connection;
 
-  try {
-    connection = await pool.getConnection();
-    await connection.beginTransaction();
-    console.log("Transaction Started");
+    try {
 
-    await connection.query(updateQuery, [staff_id, property_id]);
+        connection =await pool.getConnection();
+        await connection.beginTransaction();
+        console.log("transaction started for shift land");
+        
+        const [rows, fields] = await connection.query(getPropertyID);
 
-    await connection.query(shiftPropertyQuery, [property_id]);
-    await connection.query(shiftLandQuery, [property_id]);
-    await connection.query(shiftLocationQuery,[property_id]);//shift location
-    await connection.query(shiftAreaQuery,[property_id]);// shift area
-    await connection.query(deleteAreaQuery,[property_id]);// delete area
-    await connection.query(deleteLocationQuery,[property_id]);// delete location
-    await connection.query(deleteLandQuery, [property_id]); // first delete Land and then property
-    await connection.query(deletePropertyQuery, [property_id]);
+        // Retrieve the value of newPropertyID from the result
+        const newPropertyID = rows[0].newPropertyID;
+        console.log("This is new id " , newPropertyID)
 
-    await connection.commit();
+        await  connection.query(shiftLandQuery,[newPropertyID,staff_id,property_id]);
+        await connection.query(updatePropertyID,[1]);
+        await connection.query(deleteLandQuery,[property_id]);
+        await connection.commit();
+        console.log("Transaction successfully ");
 
-    console.log("Transaction committed successfully");
-  } catch (error) {
-    console.log("error occur , rollback");
-    await connection.rollback();
-    console.log(error);
-    throw error;
-  } finally {
-    if (connection) {
-      connection.release();
+    } catch (error) {
+        connection.rollback();
+        console.log("error happen rollback");
+        throw error;
+    }finally{
+        if(connection){
+            connection.close();
+        }
     }
-  }
+
+
+
 }
 
 module.exports = {
@@ -266,8 +246,8 @@ module.exports = {
   getLandProperty,
   insertLandFeedback,
   getLandByID,
-  insertUnapprovedLandProperty,
-  getUnapprovedLandProperty,
+  insertPendingLandProperty,
+  getPendingLandProperty,
   approveLand,
-  getUnapprovedLandByID,
+  getPendingLandByID,
 };
