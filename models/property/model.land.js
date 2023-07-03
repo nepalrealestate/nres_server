@@ -82,23 +82,25 @@ async function insertLandProperty(property, landProperty, user_id, user_type) {
   }
 }
 
-async function insertPendingLandProperty(
-  property,
-  landProperty,
-  location
-
-) {
+async function insertPendingLandProperty(landProperty) {
   // create land table - shift to schema.sql
 
-  const insertQuery = `INSERT INTO ${propertyTable.pending_land} VALUES (?,?,?)`;
   const insertValue = Object.values(landProperty);
+    
+  const insertQuery = `INSERT INTO  ${propertyTable.pending_land} 
+  (property_id,property_name, listed_for, price,land_type ,soil,area_aana, area_sq_ft, road_access_ft, state, district, city, ward_number, tole_name, latitude, longitude, property_image, property_video, posted_date, approved_by, customer_id, agent_id, views)
+
   
+  VALUES (0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?,?,0) `;
 
-  await insertPendingProperty(property,location,insertPendingLand)
 
-  async function insertPendingLand(connection){
-    await connection.query(insertQuery,insertValue);
+  try {
+      const [result,field] = await pool.query(insertQuery,insertValue);
+      return result;
+  } catch (error) {
+      throw error;
   }
+
 
 }
 
@@ -127,8 +129,8 @@ async function getLandProperty(condition, limit, offSet) {
   }
 }
 
-async function getUnapprovedLandProperty(condition, limit=20, offSet=0) {
-  let sqlQuery = `SELECT * FROM ${views.unapprovedLandView} WHERE 1=1 `;
+async function getPendingLandProperty(condition, limit=20, offSet=0) {
+  let sqlQuery = `SELECT * FROM ${propertyTable.pending_land} WHERE 1=1 `;
   const params = [];
   //adding search conditon on query
   for (let key of Object.keys(condition)) {
@@ -252,7 +254,7 @@ module.exports = {
   insertLandFeedback,
   getLandByID,
   insertPendingLandProperty,
-  getUnapprovedLandProperty,
+  getPendingLandProperty,
   approveLand,
   getUnapprovedLandByID,
 };

@@ -2,9 +2,9 @@ const express = require("express");
 
 const {handleGetStaff, handleStaffRegistration, handleStaffLogin, handleAddVideoLink} = require('../../controllers/users/controller.staff');
 const { verifyToken } = require("../../controllers/users/commonAuthCode");
-const { handleAddApartment, handleApproveApartment, handleGetUnapprovedApartment } = require("../../controllers/property/controller.apartment");
-const { handleAddHouse, handleApproveHouse, handleGetUnapprovedHouse } = require("../../controllers/property/controller.house");
-const { handleAddLand, handleApproveLand, handleGetUnapprovedLand } = require("../../controllers/property/controller.land");
+const { handleAddApartment, handleApproveApartment, handleGetPendingApartment } = require("../../controllers/property/controller.apartment");
+const { handleAddHouse, handleApproveHouse, handleGetPendingHouse } = require("../../controllers/property/controller.house");
+const { handleAddLand, handleApproveLand, handleGetPendingdLand } = require("../../controllers/property/controller.land");
 
 
 
@@ -25,9 +25,9 @@ router.post("/addLand",verifyToken,handleAddLand);
 
 // get applied property
 
-router.get("/unapprovedApartment",verifyToken,handleGetUnapprovedApartment);
-router.get("/unapprovedHouse",verifyToken,handleGetUnapprovedHouse)
-router.get("/unapprovedLand",verifyToken,handleGetUnapprovedLand)
+router.get("/pendingApartment",verifyToken,handleGetPendingApartment);
+router.get("/unapprovedHouse",verifyToken,handleGetPendingHouse)
+router.get("/unapprovedLand",verifyToken,handleGetPendingdLand)
 //approved apply for listing apartment
 
 router.put("/approvedApartment/:property_id",verifyToken,handleApproveApartment);

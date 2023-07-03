@@ -10,6 +10,7 @@ const {
   getUnapprovedLandProperty,
   getUnapprovedLandByID,
   insertPendingLandProperty,
+  getPendingLandProperty,
 } = require("../../models/property/model.land");
 const { updatePropertyViews } = require("../../models/property/model.property");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
@@ -61,29 +62,11 @@ const handleGetLand = async (req, res) => {
   }
 };
 
-const handleGetUnapprovedLand = async (req, res) => {
-  let page, limit, offSet;
+const handleGetPendingdLand = async (req, res) => {
 
-  // if page and limit not set then defualt is 1 and 20 .
-  page = req.query.page || 1;
+    utils.getSearchData(req,res,getPendingLandProperty)
+   
 
-  limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
-  // if page and limit present in query then delete it
-  if (req.query.page) delete req.query.page;
-
-  if (req.query.limit) delete req.query.limit;
-
-  offSet = (page - 1) * limit;
-
-  try {
-    const landData = await getUnapprovedLandProperty(req.query, limit, offSet);
-    console.log(landData);
-
-    return res.status(200).json(landData);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: error.sqlMessage });
-  }
 };
 
 const handleLandFeedback = async (req, res) => {
@@ -154,6 +137,6 @@ module.exports = {
   handleLandFeedback,
   handleUpdateLandViews,
   handleGetLandByID,
-  handleGetUnapprovedLand,
+  handleGetPendingdLand,
   handleApproveLand,
 };

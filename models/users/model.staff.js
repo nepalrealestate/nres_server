@@ -7,18 +7,12 @@ const schemaName = 'nres_users';
 
 async function registerStaff(name,email,password){
 
-     //if table is not exists - create table
+
     
 
     
     
-        const query  = `CREATE TABLE  IF NOT EXISTS ${userTable.staff}
-        (id varchar(36)  PRIMARY KEY,
-        name VARCHAR(255),
-        email VARCHAR(255),
-        password VARCHAR(255),
-        UNIQUE(email) ) ;
-       `;
+   
 
        
 
@@ -29,7 +23,7 @@ async function registerStaff(name,email,password){
         } catch (error) {
             console.log("Console Error from try catch",error);
         }
-        const insertQuery =  `INSERT INTO ${userTable.staff} (id,name,email,password) VALUES (uuid(),?,?,?)`;
+        const insertQuery =  `INSERT INTO ${userTable.staff} (id,name,email,password) VALUES (0,?,?,?)`;
         try {
             const [result,field] = await pool.query(insertQuery,[name,email,password]);
             return result;

@@ -37,7 +37,7 @@ const propertyTable = {
 
     property : `${propertySchemaName}.property`,
     property_location : `${propertySchemaName}.property_location`,
-    property_area     : `${propertySchemaName}.property_area`,
+  
     house: `${propertySchemaName}.house`,
     land :`${propertySchemaName}.land`,
     apartment :`${propertySchemaName}.apartment`,
@@ -47,7 +47,7 @@ const propertyTable = {
 
     pending_property :`${pendingPropertySchemaName}.pending_property` ,
     pending_property_location : `${pendingPropertySchemaName}.pending_property_location`,
-    pending_property_area     : `${pendingPropertySchemaName}.pending_property_area`,
+   
     pending_house :`${pendingPropertySchemaName}.pending_house` ,
     pending_land : `${pendingPropertySchemaName}.pending_land`,
     pending_apartment: `${pendingPropertySchemaName}.pending_apartment`,

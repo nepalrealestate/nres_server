@@ -305,6 +305,70 @@ async function insertPendingProperty(property, location,insertPropertyCallback) 
 }
 
 
+async function approveProperty(property_id,approved_by,shiftPropertyCallback){
+
+    
+  const shiftPropertyQuery = `INSERT INTO ${propertyTable.property}
+  (property_id, property_type, property_name, listed_for, price, area_aana, area_sq_ft,
+  road_access_ft, property_image, property_video, posted_date, approved_by, customer_id, agent_id)
+  SELECT
+    property_id, property_type, property_name, listed_for, price, area_aana, area_sq_ft,
+    road_access_ft, property_image, property_video, posted_date, ?, customer_id, agent_id
+  FROM ${propertyTable.pending_property} WHERE property_id = ?`;
+
+
+  const shiftLocationQuery = `INSERT INTO ${propertyTable.property_location}  SELECT *
+  FROM ${propertyTable.pending_property_location}
+  WHERE property_id = ?`;
+
+
+  const deletePropertyQuery = `DELETE FROM ${propertyTable.pending_property} WHERE property_id = ?`;
+  const deleteLocationQuery = `DELETE FROM ${propertyTable.pending_property_location} WHERE property_id = ?`;
+
+  let connection;
+
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    
+    console.log("before upate property");
+     await connection.query(shiftPropertyQuery,[property_id,approved_by]);
+     console.log("after update property")
+     console.log(shiftPropertyQuery)
+     await connection.query(shiftLocationQuery,[property_id]);
+    
+     await shiftPropertyCallback(connection,property_id);
+     console.log("after Update apartment");
+     await connection.query(deleteLocationQuery,[property_id]);
+     await connection.query(deletePropertyQuery,[property_id]);
+
+
+     await connection.commit();
+
+  } catch (error) {
+    
+    await connection.rollback();
+      console.log("Error Occur Roll back")
+        console.log(error);
+        throw error;
+  }finally{
+    if(connection){
+        connection.release();
+    }
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
 // ------------Getting data -------------------------
 
 async function getProperty(condition, limit = 20, offSet = 0) {
@@ -364,5 +428,6 @@ module.exports = {
   insertIntoRequestedProperty,
   createApplyPropertyTable,
   insertPendingProperty,
-  getProperty
+  getProperty,
+  approveProperty
 };

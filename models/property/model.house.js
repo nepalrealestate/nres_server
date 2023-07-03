@@ -106,24 +106,33 @@ async function insertHouseProperty(
 
 // insert into apply house for listing request
 
-async function insertPendingHouseProperty(property,houseProperty,location) {
+async function insertPendingHouseProperty(houseProperty) {
   // insert house property query
-  const insertQuery = `INSERT INTO ${propertyTable.pending_house} VALUES (?,?,?,?,?,?,?)`;
-  const insertValue = Object.values(houseProperty);
-
-
-  await insertPendingProperty(property,location,insertPendingHouse);
+  
 
   
-  async function insertPendingHouse(connection){
-    await connection.query(insertQuery,insertValue);
-  }
+    const insertValue = Object.values(houseProperty);
+    
+    const insertQuery = `INSERT INTO  ${propertyTable.pending_house} 
+    (property_id,property_name, listed_for, price, bedrooms, livingrooms, kitchen, floor, furnish, parking,facing_direction,facilities, area_aana, area_sq_ft, road_access_ft, state, district, city, ward_number, tole_name, latitude, longitude, property_image, property_video, posted_date, approved_by, customer_id, agent_id, views)
+
+    
+    VALUES (0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?,?,0) `;
+
+
+    try {
+        const [result,field] = await pool.query(insertQuery,insertValue);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+
 
  
 }
 
 async function getHouseProperty(condition, limit, offSet) {
-  let sqlQuery = `SELECT property_id,property_name,listed_for,price,views,city,ward_number,tole_name,house_image FROM ${views.fullHouseView} WHERE 1=1 `;
+  let sqlQuery = `SELECT * FROM ${propertyTable.house} WHERE 1=1 `;
 
   const params = [];
   //adding search conditon on query
@@ -148,8 +157,8 @@ async function getHouseProperty(condition, limit, offSet) {
   }
 }
 
-async function getUnapprovedHouseProperty(condition, limit=20, offSet=0) {
-  let sqlQuery = `SELECT * FROM ${views.unapprovedHouseView} WHERE 1=1 `;
+async function getPendingHouseProperty(condition, limit=20, offSet=0) {
+  let sqlQuery = `SELECT * FROM ${propertyTable.pending_house} WHERE 1=1 `;
 
   const params = [];
   //adding search conditon on query
@@ -275,6 +284,6 @@ module.exports = {
   getHouseByID,
   getUnapprovedHouseByID,
   insertPendingHouseProperty,
-  getUnapprovedHouseProperty,
+  getPendingHouseProperty,
   approveHouse,
 };

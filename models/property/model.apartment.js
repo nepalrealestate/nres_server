@@ -1,6 +1,6 @@
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
-const {createPropertyTable,insertProperty, createApplyPropertyTable, insertApplyProperty, insertUnapprovedProperty, insertPendingProperty} = require("../property/model.property");
+const {createPropertyTable,insertProperty, createApplyPropertyTable, insertApplyProperty, insertUnapprovedProperty, insertPendingProperty, approveProperty} = require("../property/model.property");
 const { propertyTable, views } = require("../tableName");
 const propertyTableName = 'Property'
 const houseTableName = 'House';
@@ -126,47 +126,36 @@ async function insertApartmentProperty(property,apartmentProperty,user_id,user_t
 }
 
 
-async function insertPendingApartmentProperty(property,apartmentProperty,location){
+async function insertPendingApartmentProperty(apartmentProperty){
 
 
     //await createApplyApartmentTable();
+    console.log(apartmentProperty)
     const insertValue = Object.values(apartmentProperty);
-    const insertQuery = `INSERT INTO  ${propertyTable.pending_apartment}  VALUES (?,?,?,?,?,?) `;
+    console.log(insertValue)
+    const insertQuery = `INSERT INTO  ${propertyTable.pending_apartment} 
+    (property_id,property_name, listed_for, price, bedrooms, livingrooms, kitchen, floor, furnish, parking, facilities, area_aana, area_sq_ft, road_access_ft, state, district, city, ward_number, tole_name, latitude, longitude, property_image, property_video, posted_date, approved_by, customer_id, agent_id, views)
 
-
-
-    await insertPendingProperty(property,location,insertPendingApartment)
     
-    async function insertPendingApartment(connection){
-        
-       await connection.query(insertQuery,insertValue);
+    VALUES (0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?,?,0) `;
 
+
+    try {
+        const [result,field] = await pool.query(insertQuery,insertValue);
+        return result;
+    } catch (error) {
+        throw error;
     }
 
-    // let connection;
 
-    // try {
-    //     connection = await pool.getConnection();
-    //     await connection.beginTransaction();
-    //     console.log("Transaction Started");
+    // await insertPendingProperty(property,location,insertPendingApartment)
     
-    //     await insertUnapprovedProperty(property,location);
-    //     await pool.query(insertQuery,insertValue);
+    // async function insertPendingApartment(connection){
+        
+    //    await connection.query(insertQuery,insertValue);
 
-    //     await connection.commit();
+    // }
 
-    //     console.log("Transaction committed successfully");
-    
-    //   } catch (error) {
-    //     console.log("error occur , rollback")
-    //     await connection.rollback();
-    //     console.log(error);
-    //     throw error;
-    //   }finally{
-    //     if(connection){
-    //       connection.release();
-    //   }
-    //   }
 
 }
 
@@ -231,9 +220,9 @@ async function getApartmentProperty(condition,limit,offSet){
 
 }
 
-async function getUnapprovedApartmentProperty(condition,limit,offSet){
+async function getPendingApartmentProperty(condition,limit,offSet){
 
-    let sqlQuery  = `SELECT * FROM ${views.unapprovedApartmentView} WHERE 1=1 `;
+    let sqlQuery  = `SELECT * FROM ${propertyTable.pending_apartment} WHERE 1=1 `;
 
     const params = [];
     //adding search conditon on query
@@ -259,7 +248,7 @@ async function getUnapprovedApartmentProperty(condition,limit,offSet){
     try {
         const [result,field] = await pool.query(sqlQuery,params);
       
-        return result[0];
+        return result;
     } catch (error) {
         console.log(error);
         throw error;
@@ -287,9 +276,9 @@ async function getApartmentByID(property_id){
 
 }
 
-async function getUnapprovedApartmentByID(property_id){
+async function getPendingApartmentByID(property_id){
 
-    const getQuery =`SELECT * FROM ${views.unapprovedApartmentView} WHERE property_id = ?`
+    const getQuery =`SELECT * FROM ${propertyTable.pending_apartment} WHERE property_id = ?`
 
     try {
         const [result,field] = await pool.query(getQuery,[property_id]);
@@ -311,56 +300,33 @@ async function getUnapprovedApartmentByID(property_id){
 
 async function approveApartment(staff_id,property_id){
 
-    // 
 
-    const updateQuery = `UPDATE ${propertyTable.unapproved_property} SET status='approved',approved_by_id=? WHERE property_id=?`;
-    const shiftPropertyQuery = `INSERT INTO ${propertyTable.property} SELECT * FROM ${propertyTable.unapproved_property} WHERE property_id=?`;
-    const shiftLocationQuery = `INSERT INTO ${propertyTable.property_location} SELECT * FROM ${propertyTable.unapproved_property_location} 
-                                WHERE property_id=?`;
-    const shiftAreaQuery = `INSERT INTO ${propertyTable.property_area} SELECT * FROM ${propertyTable.unapproved_property_area}
-                            WHERE property_id=?`;
-    const shiftApartmentQuery = `INSERT INTO ${propertyTable.apartment} SELECT * FROM ${propertyTable.unapproved_apartment} WHERE property_id=?`;
-    
-    const deleteAreaQuery = `DELETE FROM ${propertyTable.unapproved_property_area} WHERE property_id= ?`;
-    const deleteLocationQuery = `DELETE FROM ${propertyTable.unapproved_property_location} WHERE property_id = ?`;
-    const deleteApartmentQuery = ` DELETE FROM ${propertyTable.unapproved_apartment} WHERE property_id = ? `;
-    const deletePropertyQuery = ` DELETE FROM ${propertyTable.unapproved_property}  WHERE property_id = ? `;
-    
-    
 
-    let connection ;
+// -- Retrieve the value, add leading zeros, increment by 1, and insert into the property table
+// INSERT INTO property (property_id, column1, column2, ...)
+// VALUES (LPAD(@latest_property_id, 4, '0'), value1, value2, ...);
+
+// -- Update the user-defined variable with the latest property ID
+// SET @latest_property_id := @latest_property_id + 1;
+
+
+  
+    const shiftApartmentQuery = `INSERT INTO ${propertyTable.apartment} SELECT * FROM ${propertyTable.pending_apartment} WHERE property_id=?`;
+    const deleteApartmentQuery = ` DELETE FROM ${propertyTable.pending_apartment} WHERE property_id = ? `;
 
     try {
-        connection = await pool.getConnection();
-        await connection.beginTransaction();
-        console.log("Transaction Started");
-
-        await connection.query(updateQuery,[staff_id,property_id]);
-        await connection.query(shiftPropertyQuery,[property_id]);
-        await connection.query(shiftApartmentQuery,[property_id]);
-        await connection.query(shiftLocationQuery,[property_id]);//shift location
-        await connection.query(shiftAreaQuery,[property_id]);// shift area
-        await connection.query(deleteAreaQuery,[property_id]);// delete area
-        await connection.query(deleteLocationQuery,[property_id]);// delete location
-        await connection.query(deleteApartmentQuery,[property_id]);// first delete apartment and then property
-        await connection.query(deletePropertyQuery,[property_id]);// delete property
-        
-
-        await connection.commit();
-
-        console.log('Transaction committed successfully');
-
-
+       await approveProperty(property_id,staff_id,async function(connection,property_id){
+   
+            await connection.query(shiftApartmentQuery,[property_id]);
+            //await connection.query(deleteApartmentQuery,[property_id]);//
+       
+       
+    })
     } catch (error) {
-        console.log("error occur , rollback")
-        await connection.rollback();
-        console.log(error);
         throw error;
-    }finally{
-        if(connection){
-            connection.release();
-        }
     }
+
+  
     
 }
 
@@ -373,7 +339,7 @@ module.exports = {insertApartmentProperty,
     insertApartmentFeedback,
     getApartmentByID,
     insertPendingApartmentProperty,
-    getUnapprovedApartmentProperty,
+    getPendingApartmentProperty,
     approveApartment,
-    getUnapprovedApartmentByID
+    getPendingApartmentByID
 };

@@ -74,78 +74,91 @@ CREATE TABLE IF NOT EXISTS nres_users.agentRating
     );
 
 
---- create table for store property;
+--- ------------------------------create table for store property-----------------------------;
 
 
- 
-CREATE TABLE IF NOT EXISTS nres_property.property
-    (   
-		property_id INT NOT NULL PRIMARY KEY,
-		property_type ENUM('house','apartment','land') NOT NULL,
-		property_name varchar(50),
-        listed_for varchar(10) NOT NULL,
-        price  DECIMAL(12, 2),
-        views INT DEFAULT 0,
-        area_aana FLOAT,
-	    area_sq_ft FLOAT,
-	    road_access_ft FLOAT,
-        property_image JSON,
-        property_video JSON,
-        posted_date DATE,
-        approved_by INT NOT NULL ,
-        customer_id INT ,
-        agent_id INT ,
-        FOREIGN KEY (approved_by) REFERENCES nres_users.staff(id),
-        FOREIGN KEY (customer_id) REFERENCES nres_users.customer(id),
-        FOREIGN KEY (agent_id) REFERENCES nres_users.agent(id)
-        );
+-- create user defined variable for track property ID;
 
 
-
---crete table for store property location ;
-    
-    CREATE TABLE IF NOT EXISTS nres_property.property_location (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	property_id INT NOT NULL,
-    state varchar(20),
-	district varchar(20),
-	city varchar(25),
-	ward_number INT,
-	tole_name varchar(20),
-	latitude DECIMAL(9,6),
-    longitude DECIMAL(9,6),
-    FOREIGN KEY (property_id) REFERENCES nres_property.property(property_id)
-	
-);
+SET @latest_property_id := 1;
 
 
 --- create table for store apartment;
 
+
 CREATE TABLE  IF NOT EXISTS nres_property.apartment
     (
-        property_id INT NOT NULL PRIMARY KEY UNIQUE,
-        bhk INT,
-        situated_floor INT,
-        furnish_status BOOL,
+        property_id INT NOT NULL UNIQUE,
+        property_name varchar(50),
+        listed_for 	ENUM ('sell','rent'),
+        price  DECIMAL(12, 2),
+        bedrooms INT,
+        livingrooms INT,
+        kitchen INT,
+        floor INT,
+        furnish BOOL,
         parking BOOL,
         facilities VARCHAR(1000),
-        FOREIGN KEY (property_id) REFERENCES nres_property.property(property_id) ON DELETE CASCADE
-    
+        area_aana FLOAT,
+	    area_sq_ft FLOAT,
+	    road_access_ft FLOAT,
+        state varchar(20),
+	    district varchar(20),
+	    city varchar(25),
+	    ward_number INT,
+	    tole_name varchar(20),
+	    latitude DECIMAL(9,6),
+        longitude DECIMAL(9,6),
+        property_image JSON,
+        property_video JSON,
+        posted_date DATE,
+        approved_by INT  ,
+        customer_id INT ,
+        agent_id INT ,
+        views INT DEFAULT 0,
+        FOREIGN KEY (approved_by) REFERENCES nres_users.staff(id),
+        FOREIGN KEY (customer_id) REFERENCES nres_users.customer(id),
+        FOREIGN KEY (agent_id) REFERENCES nres_users.agent(id)
+
     );
 
 --- create table for store house;
 
 CREATE TABLE IF NOT EXISTS nres_property.house
     (
-        property_id INT NOT NULL PRIMARY KEY UNIQUE,
-        room INT,
+
+        property_id INT NOT NULL UNIQUE,
+        property_name varchar(50),
+        listed_for 	ENUM ('sell','rent'),
+        price  DECIMAL(12, 2),
+        bedrooms INT,
+        livingrooms INT,
+        kitchen INT,
         floor FLOAT,
-        furnish_status BOOL,
+        furnish BOOL,
         parking BOOL,
         facing_direction varchar(20),
         facilities VARCHAR(1000),
-     
-        FOREIGN KEY (property_id) REFERENCES nres_property.property(property_id) ON DELETE CASCADE
+        area_aana FLOAT,
+	    area_sq_ft FLOAT,
+	    road_access_ft FLOAT,
+        state varchar(20),
+	    district varchar(20),
+	    city varchar(25),
+	    ward_number INT,
+	    tole_name varchar(20),
+	    latitude DECIMAL(9,6),
+        longitude DECIMAL(9,6),
+        property_image JSON,
+        property_video JSON,
+        posted_date DATE,
+        approved_by INT  ,
+        customer_id INT ,
+        agent_id INT ,
+        views INT DEFAULT 0,
+        FOREIGN KEY (approved_by) REFERENCES nres_users.staff(id),
+        FOREIGN KEY (customer_id) REFERENCES nres_users.customer(id),
+        FOREIGN KEY (agent_id) REFERENCES nres_users.agent(id)
     
     );
 
@@ -154,10 +167,32 @@ CREATE TABLE IF NOT EXISTS nres_property.house
 
 CREATE TABLE IF NOT EXISTS nres_property.land (
 
-      property_id INT NOT NULL PRIMARY KEY UNIQUE,
-      land_type VARCHAR(255),
-      soil VARCHAR(255),   
-      FOREIGN KEY (property_id) REFERENCES nres_property.property (property_id) ON DELETE CASCADE
+     property_id INT NOT NULL UNIQUE,
+     property_name varchar(50),
+     listed_for 	ENUM ('sell','rent'),
+     price  DECIMAL(12, 2),
+     land_type VARCHAR(255),
+     soil VARCHAR(255),   
+     area_aana FLOAT,
+	 area_sq_ft FLOAT,
+     road_access_ft FLOAT,
+     state varchar(20),
+	 district varchar(20),
+	 city varchar(25),
+	 ward_number INT,
+	 tole_name varchar(20),
+	 latitude DECIMAL(9,6),
+     longitude DECIMAL(9,6),
+     property_image JSON,
+     property_video JSON,
+     posted_date DATE,
+     approved_by INT  ,
+     customer_id INT ,
+     agent_id INT ,
+     views INT DEFAULT 0,
+     FOREIGN KEY (approved_by) REFERENCES nres_users.staff(id),
+     FOREIGN KEY (customer_id) REFERENCES nres_users.customer(id),
+     FOREIGN KEY (agent_id) REFERENCES nres_users.agent(id)
 
 );
 
@@ -176,71 +211,79 @@ CREATE TABLE IF NOT EXISTS nres_property.land (
 
 
  
-CREATE TABLE IF NOT EXISTS nres_pending_property.pending_property
-    (   
-		property_id INT NOT NULL PRIMARY KEY,
-		property_type ENUM('house','apartment','land') NOT NULL,
-		property_name varchar(50),
-        listed_for varchar(10) NOT NULL,
+CREATE TABLE  IF NOT EXISTS nres_pending_property.pending_apartment
+    (
+        property_id INT  AUTO_INCREMENT PRIMARY KEY ,
+        property_name varchar(50),
+        listed_for 	ENUM ('sell','rent'),
         price  DECIMAL(12, 2),
+        bedrooms INT,
+        livingrooms INT,
+        kitchen INT,
+        floor INT,
+        furnish BOOL,
+        parking BOOL,
+        facilities VARCHAR(1000),
         area_aana FLOAT,
 	    area_sq_ft FLOAT,
 	    road_access_ft FLOAT,
+        state varchar(20),
+	    district varchar(20),
+	    city varchar(25),
+	    ward_number INT,
+	    tole_name varchar(20),
+	    latitude DECIMAL(9,6),
+        longitude DECIMAL(9,6),
         property_image JSON,
         property_video JSON,
         posted_date DATE,
+        approved_by INT ,
         customer_id INT ,
         agent_id INT ,
+        views INT DEFAULT 0,
+        FOREIGN KEY (approved_by) REFERENCES nres_users.staff(id),
         FOREIGN KEY (customer_id) REFERENCES nres_users.customer(id),
         FOREIGN KEY (agent_id) REFERENCES nres_users.agent(id)
-        );
 
-
-
---crete table for store property location ;
-    
-    CREATE TABLE IF NOT EXISTS nres_pending_property.pending_property_location (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	property_id INT NOT NULL,
-    state varchar(20),
-	district varchar(20),
-	city varchar(25),
-	ward_number INT,
-	tole_name varchar(20),
-	latitude DECIMAL(9,6),
-    longitude DECIMAL(9,6),
-    FOREIGN KEY (property_id) REFERENCES nres_pending_property.pending_property(property_id)
-	
-);
-
-
---- create table for store apartment;
-
-CREATE TABLE  IF NOT EXISTS nres_pending_property.pending_apartment
-    (
-        property_id INT NOT NULL PRIMARY KEY UNIQUE,
-        bhk INT,
-        situated_floor INT,
-        furnish_status BOOL,
-        parking BOOL,
-        facilities VARCHAR(1000),
-        FOREIGN KEY (property_id) REFERENCES nres_pending_property.pending_property(property_id) ON DELETE CASCADE
-    
     );
 
 --- create table for store house;
 
 CREATE TABLE IF NOT EXISTS nres_pending_property.pending_house
     (
-        property_id INT NOT NULL PRIMARY KEY UNIQUE,
-        room INT,
+
+        property_id INT  AUTO_INCREMENT PRIMARY KEY ,
+        property_name varchar(50),
+        listed_for 	ENUM ('sell','rent'),
+        price  DECIMAL(12, 2),
+        bedrooms INT,
+        livingrooms INT,
+        kitchen INT,
         floor FLOAT,
-        furnish_status BOOL,
+        furnish BOOL,
         parking BOOL,
         facing_direction varchar(20),
         facilities VARCHAR(1000),
-     
-        FOREIGN KEY (property_id) REFERENCES nres_pending_property.pending_property(property_id) ON DELETE CASCADE
+        area_aana FLOAT,
+	    area_sq_ft FLOAT,
+	    road_access_ft FLOAT,
+        state varchar(20),
+	    district varchar(20),
+	    city varchar(25),
+	    ward_number INT,
+	    tole_name varchar(20),
+	    latitude DECIMAL(9,6),
+        longitude DECIMAL(9,6),
+        property_image JSON,
+        property_video JSON,
+        posted_date DATE,
+        approved_by INT  ,
+        customer_id INT ,
+        agent_id INT ,
+        views INT DEFAULT 0,
+        FOREIGN KEY (approved_by) REFERENCES nres_users.staff(id),
+        FOREIGN KEY (customer_id) REFERENCES nres_users.customer(id),
+        FOREIGN KEY (agent_id) REFERENCES nres_users.agent(id)
     
     );
 
@@ -249,10 +292,32 @@ CREATE TABLE IF NOT EXISTS nres_pending_property.pending_house
 
 CREATE TABLE IF NOT EXISTS nres_pending_property.pending_land (
 
-      property_id INT NOT NULL PRIMARY KEY UNIQUE,
-      land_type VARCHAR(255),
-      soil VARCHAR(255),   
-      FOREIGN KEY (property_id) REFERENCES nres_pending_property.pending_property (property_id) ON DELETE CASCADE
+     property_id INT   AUTO_INCREMENT PRIMARY KEY ,
+     property_name varchar(50),
+     listed_for 	ENUM ('sell','rent'),
+     price  DECIMAL(12, 2),
+     land_type VARCHAR(255),
+     soil VARCHAR(255),   
+     area_aana FLOAT,
+	 area_sq_ft FLOAT,
+     road_access_ft FLOAT,
+     state varchar(20),
+	 district varchar(20),
+	 city varchar(25),
+	 ward_number INT,
+	 tole_name varchar(20),
+	 latitude DECIMAL(9,6),
+     longitude DECIMAL(9,6),
+     property_image JSON,
+     property_video JSON,
+     posted_date DATE,
+     approved_by INT  ,
+     customer_id INT ,
+     agent_id INT ,
+     views INT DEFAULT 0,
+     FOREIGN KEY (approved_by) REFERENCES nres_users.staff(id),
+     FOREIGN KEY (customer_id) REFERENCES nres_users.customer(id),
+     FOREIGN KEY (agent_id) REFERENCES nres_users.agent(id)
 
 );
 
@@ -261,59 +326,6 @@ CREATE TABLE IF NOT EXISTS nres_pending_property.pending_land (
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-CREATE TABLE IF NOT EXISTS nres_unapproved_property.unapproved_property LIKE nres_property.property;
-			ALTER TABLE  nres_unapproved_property.unapproved_property 
-             MODIFY COLUMN status ENUM('pending','approved','rejected') DEFAULT 'pending';
-
-
--- create apartment for listing property;
-CREATE TABLE IF NOT EXISTS nres_unapproved_property.unapproved_apartment LIKE nres_property.apartment;
-    ALTER TABLE nres_unapproved_property.unapproved_apartment
-    ADD FOREIGN KEY (property_id) REFERENCES nres_unapproved_property.unapproved_property(property_id);
-
-
---  create house for listing property;
-
-CREATE TABLE IF NOT EXISTS nres_unapproved_property.unapproved_house LIKE nres_property.house;
-    ALTER TABLE nres_unapproved_property.unapproved_house
-    ADD FOREIGN KEY (property_id) REFERENCES nres_unapproved_property.unapproved_property(property_id);
-
-
--- create land for listing property;
-
-CREATE TABLE IF NOT EXISTS nres_unapproved_property.unapproved_land LIKE nres_property.land;
-    ALTER TABLE nres_unapproved_property.unapproved_land
-    ADD FOREIGN KEY (property_id) REFERENCES nres_unapproved_property.unapproved_property(property_id);
-
--- create unapproved property location table ;
-
-CREATE TABLE IF NOT EXISTS nres_unapproved_property.unapproved_property_location LIKE nres_property.property_location;
-    ALTER TABLE nres_unapproved_property.unapproved_property_location 
-    ADD FOREIGN KEY (property_id) REFERENCES nres_unapproved_property.unapproved_property(property_id);
-
--- create unapproved property area table;
-CREATE TABLE IF NOT EXISTS nres_unapproved_property.unapproved_property_area LIKE nres_property.property_area;
-    ALTER TABLE nres_unapproved_property.unapproved_property_area 
-    ADD FOREIGN KEY (property_id) REFERENCES nres_unapproved_property.unapproved_property(property_id);
 
 
 

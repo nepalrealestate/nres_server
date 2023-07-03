@@ -80,7 +80,9 @@ function Utility() {
       customer_id = req.id;
     } else if (user_type === "agent") {
       agent_id = req.id;
-    } else {
+    } else if (user_type ==="staff"){
+
+    }else{
       return res.status(400).json({ message: "bad request" });
     }
 
@@ -88,13 +90,15 @@ function Utility() {
       return res.status(400).json({ message: "missing property " });
     }
 
-    console.log(req.body.property);
 
-    console.log(req.path)
 
-    let { property, [property_type]: callbackProperty, location } = JSON.parse(
-      req.body.property
-    );
+
+
+    // let { property, [property_type]: callbackProperty, location } = JSON.parse(
+    //   req.body.property
+    // );
+    let property = JSON.parse(req.body.property);
+    
     const images = req.files;
 
     const imageObject = JSON.stringify(
@@ -104,27 +108,26 @@ function Utility() {
       )
     );
 
+    console.log(imageObject)
+
     // update object - store some value
-    const property_id = property.property_id;
     property = {
       ...property,
       property_image: imageObject,
+      property_video:null,
+      approved_by:null,
       customer_id: customer_id,
       agent_id: agent_id,
     };
 
-    callbackProperty = { property_id: property_id, ...callbackProperty };
-    location = { property_id: property_id, ...location };
 
-    console.log(property, callbackProperty, location);
+
 
     try {
       //await insertApartmentProperty(property,apartmentProperty,user_id,user_type);
 
       await addCallbackProperty(
-        property,
-        callbackProperty,
-        location
+        property
       );
 
       return res.status(200).json({ message: "Insert into table" });
@@ -158,7 +161,13 @@ function Utility() {
     }
   };
 
-  (this.isValid = {
+ 
+
+
+
+
+
+  this.isValid = {
     phoneNumber: async function (phoneNumber) {
       return phoneNumber?.match(numberRegex);
     },
@@ -170,10 +179,13 @@ function Utility() {
     password: async function (password, confirm_password) {
       return password === confirm_password;
     },
-  }),
-    (this.getRandomNumber = function (minValue, maxValue) {
+  },
+  this.getRandomNumber = function (minValue, maxValue) {
       return Math.floor(Math.random() * (maxValue - minValue) + minValue);
-    });
+    };
+
+
+
 }
 
 function Auth() {

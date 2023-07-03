@@ -1,29 +1,21 @@
-
 {
-    "property":{
-        "property_id":1026,
-        "property_type":"land",
-        "property_name":"Mero Jagga",
-        "listed_for":"Sell",
-        "price":900000,
-        "area_aana":0,
-        "area_sq_ft":20,
-        "road_access_ft":100
+    
+        
+    "property_name":"Super Aparment",
+    "listed_for":"sell",
+    "price":70000,
+    "land_type":"agri",
+    "soil":"lommy",
+    "area_aana":0,
+    "area_sq_ft":20,
+    "road_access_ft":100,
+    "state":"Bagmati",
+    "district":"kathmandu",
+    "city":"kathmandu",
+    "ward_number":32,
+    "tole_name":"mahadev",
+    "latitude": 27.680475, 
+    "longitude": 85.305186
 
-    },
-      
-    "landProperty":{
-        "land_type":"Agriculter",
-        "soil":"loamy"
-       
-    },
-    "location":{
-        "state":"Bagmati",
-        "district":"kathmandu",
-        "city":"kathmandu",
-        "ward_number":"32",
-        "tole_name":"mahadev",
-        "latitude": 27.680475, 
-        "longitude": 85.305186
-    }
+
 }

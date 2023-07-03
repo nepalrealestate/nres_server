@@ -1,11 +1,11 @@
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
 const {
-  insertHouseProperty,
+
   getHouseProperty,
   insertHouseFeedback,
   getHouseByID,
   approveHouse,
-  getUnapprovedHouseProperty,
+  getPendingHouseProperty,
   getUnapprovedHouseByID,
   insertPendingHouseProperty,
 } = require("../../models/property/model.house");
@@ -36,55 +36,17 @@ const handleAddHouse = async (req, res) => {
 };
 
 const handleGetHouse = async (req, res) => {
-  let page, limit, offSet;
-
-  // if page and limit not set then defualt is 1 and 20 .
-  page = req.query.page || 1;
-
-  limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
-  // if page and limit present in query then delete it
-  if (req.query.page) delete req.query.page;
-
-  if (req.query.limit) delete req.query.limit;
-
-  offSet = (page - 1) * limit;
-
-  try {
-    const houseData = await getHouseProperty(req.query, limit, offSet);
-    console.log(houseData);
-
-    return res.status(200).json(houseData);
-  } catch (error) {
-    return res.status(500).json({ message: error.sqlMessage });
-  }
+  
+  utils.getSearchData(req,res, getHouseProperty)    
+ 
+ 
 };
 
-const handleGetUnapprovedHouse = async (req, res) => {
-  let page, limit, offSet;
+const handleGetPendingHouse = async (req, res) => {
 
-  // if page and limit not set then defualt is 1 and 20 .
-  page = req.query.page || 1;
 
-  limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
-  // if page and limit present in query then delete it
-  if (req.query.page) delete req.query.page;
+  utils.getSearchData(req,res,getPendingHouseProperty);
 
-  if (req.query.limit) delete req.query.limit;
-
-  offSet = (page - 1) * limit;
-
-  try {
-    const houseData = await getUnapprovedHouseProperty(
-      req.query,
-      limit,
-      offSet
-    );
-    console.log(houseData);
-
-    return res.status(200).json(houseData);
-  } catch (error) {
-    return res.status(500).json({ message: error.sqlMessage });
-  }
 };
 
 const handleHouseFeedback = async (req, res) => {
@@ -154,6 +116,6 @@ module.exports = {
   handleHouseFeedback,
   handleUpdateHouseViews,
   handleGetHouseByID,
-  handleGetUnapprovedHouse,
+  handleGetPendingHouse,
   handleApproveHouse,
 };
