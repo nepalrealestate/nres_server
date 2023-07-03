@@ -78,10 +78,18 @@ CREATE TABLE IF NOT EXISTS nres_users.agentRating
 
 
 -- create user defined variable for track property ID;
+CREATE TABLE IF NOT EXISTS nres_property.property_id_tracker (
 
+    id INT NOT NULL PRIMARY KEY,
+    property_id INT
 
-SET @latest_property_id := 1;
+)
 
+-- insert id = 1 and property_id 1 for default ;
+INSERT INTO nres_property.property_id_tracker VALUES (1,1);
+ 
+-- revoke insert operation in property_id_tracker
+-- REVOKE INSERT ON nres_property.property_id_tracker FROM ALL;
 
 --- create table for store apartment;
 

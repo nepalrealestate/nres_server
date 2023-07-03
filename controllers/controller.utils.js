@@ -6,6 +6,7 @@ const {
   sendPasswordResetTokenMail,
 } = require("../middlewares/middleware.sendEmail");
 const { wrapAwait } = require("../errorHandling");
+const { error } = require("winston");
 
 const saltRound = 10;
 
@@ -24,8 +25,10 @@ function Utility() {
     isImageRequired = false
   ) {
     if (err instanceof multer.MulterError) {
+      console.log(err);
       return res.status(400).json(err);
     } else if (err) {
+      console.log(err)
       return res.status(400).json(err);
     }
 

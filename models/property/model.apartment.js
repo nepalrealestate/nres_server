@@ -184,7 +184,7 @@ async function insertApartmentFeedback(property_ID,feedback){
 async function getApartmentProperty(condition,limit,offSet){
 
 
-    let sqlQuery =   `SELECT property_id,property_name,listed_for,status,price,views,city,ward_number,tole_name,apartment_image FROM ${views.fullHouseView} WHERE 1=1 `;
+    let sqlQuery =   `SELECT  LPAD(property_id, 4, "0")AS property_id,property_name,listed_for,price,views,city,ward_number,tole_name FROM ${propertyTable.apartment} WHERE 1=1 `;
 
     const params = [];
     //adding search conditon on query
@@ -309,21 +309,44 @@ async function approveApartment(staff_id,property_id){
 // -- Update the user-defined variable with the latest property ID
 // SET @latest_property_id := @latest_property_id + 1;
 
-
+    const getPropertyID = `SELECT LPAD(property_id, 4, "0") AS newPropertyID FROM ${propertyTable.property_id_tracker}`;
   
-    const shiftApartmentQuery = `INSERT INTO ${propertyTable.apartment} SELECT * FROM ${propertyTable.pending_apartment} WHERE property_id=?`;
+    const shiftApartmentQuery = `INSERT INTO ${propertyTable.apartment} (property_id, property_name, listed_for, price, bedrooms, livingrooms, kitchen, floor, furnish, parking, facilities, area_aana, area_sq_ft, road_access_ft, state, district, city, ward_number, tole_name, latitude, longitude, property_image, property_video, posted_date, approved_by, customer_id, agent_id, views) 
+    
+    SELECT ?, property_name, listed_for, price, bedrooms, livingrooms, kitchen, floor, furnish, parking, facilities, area_aana, area_sq_ft, road_access_ft, state, district, city, ward_number, tole_name, latitude, longitude, property_image, property_video, NOW(), ?, customer_id, agent_id, views FROM ${propertyTable.pending_apartment} WHERE property_id=?`;
+
+    const updatePropertyID = `UPDATE ${propertyTable.property_id_tracker} SET property_id = property_id+1 WHERE id = ?`;
+
     const deleteApartmentQuery = ` DELETE FROM ${propertyTable.pending_apartment} WHERE property_id = ? `;
 
+    let connection;
+
     try {
-       await approveProperty(property_id,staff_id,async function(connection,property_id){
-   
-            await connection.query(shiftApartmentQuery,[property_id]);
-            //await connection.query(deleteApartmentQuery,[property_id]);//
-       
-       
-    })
+
+        connection =await pool.getConnection();
+        await connection.beginTransaction();
+        console.log("transaction started for shift apartment");
+        
+        const [rows, fields] = await connection.query(getPropertyID);
+
+        // Retrieve the value of newPropertyID from the result
+        const newPropertyID = rows[0].newPropertyID;
+        console.log("This is new id " , newPropertyID)
+
+        await  connection.query(shiftApartmentQuery,[newPropertyID,staff_id,property_id]);
+        await connection.query(updatePropertyID,[1]);
+        await connection.query(deleteApartmentQuery,[property_id]);
+        await connection.commit();
+        console.log("Transaction successfully ");
+
     } catch (error) {
+        connection.rollback();
+        console.log("error happen rollback");
         throw error;
+    }finally{
+        if(connection){
+            connection.close();
+        }
     }
 
   

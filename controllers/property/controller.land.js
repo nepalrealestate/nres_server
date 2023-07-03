@@ -6,9 +6,7 @@ const {
   
   approveLand,
   
-  insertUnapprovedLandProperty,
-  getUnapprovedLandProperty,
-  getUnapprovedLandByID,
+  getPendingLandByID,
   insertPendingLandProperty,
   getPendingLandProperty,
 } = require("../../models/property/model.land");
@@ -116,7 +114,7 @@ const handleApproveLand = async (req, res) => {
   let land;
 
   try {
-    land = await getUnapprovedLandByID(property_id);
+    land = await getPendingLandByID(property_id);
     if (land === undefined || land === null) {
       return res.status(400).json({ message: "No Land" });
     }

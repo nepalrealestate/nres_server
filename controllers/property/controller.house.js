@@ -8,6 +8,7 @@ const {
   getPendingHouseProperty,
   getUnapprovedHouseByID,
   insertPendingHouseProperty,
+  getPendingHouseByID,
 } = require("../../models/property/model.house");
 const { updatePropertyViews } = require("../../models/property/model.property");
 
@@ -97,7 +98,7 @@ const handleApproveHouse = async (req, res) => {
   const staff_id = req.id;
   let house;
   try {
-    house = await getUnapprovedHouseByID(property_id);
+    house = await getPendingHouseByID(property_id);
     if (house === undefined || house === null) {
       return res.status(400).json({ message: "No House" });
     }

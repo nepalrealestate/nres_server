@@ -26,8 +26,8 @@ router.post("/addLand",verifyToken,handleAddLand);
 // get applied property
 
 router.get("/pendingApartment",verifyToken,handleGetPendingApartment);
-router.get("/unapprovedHouse",verifyToken,handleGetPendingHouse)
-router.get("/unapprovedLand",verifyToken,handleGetPendingdLand)
+router.get("/pendingHouse",verifyToken,handleGetPendingHouse)
+router.get("/pendingLand",verifyToken,handleGetPendingdLand)
 //approved apply for listing apartment
 
 router.put("/approvedApartment/:property_id",verifyToken,handleApproveApartment);

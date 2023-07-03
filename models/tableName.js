@@ -41,7 +41,7 @@ const propertyTable = {
     house: `${propertySchemaName}.house`,
     land :`${propertySchemaName}.land`,
     apartment :`${propertySchemaName}.apartment`,
-    ownership : `${propertySchemaName}.property_ownership`,
+    property_id_tracker: `${propertySchemaName}.property_id_tracker`,
 
 
 

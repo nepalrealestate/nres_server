@@ -43,8 +43,6 @@ async function createHouseTable() {
   }
 }
 
-
-
 async function createHouseFeedbackTable() {
   const sqlQuery = `CREATE TABLE IF NOT EXISTS ${schemaName}.${houseFeedbackTableName} (
 
@@ -108,27 +106,21 @@ async function insertHouseProperty(
 
 async function insertPendingHouseProperty(houseProperty) {
   // insert house property query
-  
 
-  
-    const insertValue = Object.values(houseProperty);
-    
-    const insertQuery = `INSERT INTO  ${propertyTable.pending_house} 
+  const insertValue = Object.values(houseProperty);
+
+  const insertQuery = `INSERT INTO  ${propertyTable.pending_house} 
     (property_id,property_name, listed_for, price, bedrooms, livingrooms, kitchen, floor, furnish, parking,facing_direction,facilities, area_aana, area_sq_ft, road_access_ft, state, district, city, ward_number, tole_name, latitude, longitude, property_image, property_video, posted_date, approved_by, customer_id, agent_id, views)
 
     
     VALUES (0,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?,?,0) `;
 
-
-    try {
-        const [result,field] = await pool.query(insertQuery,insertValue);
-        return result;
-    } catch (error) {
-        throw error;
-    }
-
-
- 
+  try {
+    const [result, field] = await pool.query(insertQuery, insertValue);
+    return result;
+  } catch (error) {
+    throw error;
+  }
 }
 
 async function getHouseProperty(condition, limit, offSet) {
@@ -157,7 +149,7 @@ async function getHouseProperty(condition, limit, offSet) {
   }
 }
 
-async function getPendingHouseProperty(condition, limit=20, offSet=0) {
+async function getPendingHouseProperty(condition, limit = 20, offSet = 0) {
   let sqlQuery = `SELECT * FROM ${propertyTable.pending_house} WHERE 1=1 `;
 
   const params = [];
@@ -215,8 +207,8 @@ async function getHouseByID(property_id) {
   }
 }
 
-async function getUnapprovedHouseByID(property_id) {
-  const getQuery = `SELECT * FROM ${views.applyHouseView} WHERE property_id = ?`;
+async function getPendingHouseByID(property_id) {
+  const getQuery = `SELECT * FROM ${propertyTable.pending_house} WHERE property_id = ?`;
   console.log(getQuery);
 
   try {
@@ -232,18 +224,15 @@ async function getUnapprovedHouseByID(property_id) {
 // approve apply property and shift to property table
 
 async function approveHouse(staff_id, property_id) {
-  const updateQuery = `UPDATE ${propertyTable.unapproved_property} SET status='approved',approved_by_id=? WHERE property_id=?`;
-  const shiftPropertyQuery = `INSERT INTO ${propertyTable.property} SELECT * FROM ${propertyTable.unapproved_property} WHERE property_id=?`;
-  const shiftLocationQuery = `INSERT INTO ${propertyTable.property_location} SELECT * FROM ${propertyTable.unapproved_property_location} 
-                              WHERE property_id=?`;
-  const shiftAreaQuery = `INSERT INTO ${propertyTable.property_area} SELECT * FROM ${propertyTable.unapproved_property_area}
-                          WHERE property_id=?`;
-  const shiftHouseQuery = `INSERT INTO ${propertyTable.house} SELECT * FROM ${propertyTable.unapproved_house} WHERE property_id=?`;
+  const getPropertyID = `SELECT LPAD(property_id, 4, "0") AS newPropertyID FROM ${propertyTable.property_id_tracker}`;
 
-  const deleteAreaQuery = `DELETE FROM ${propertyTable.unapproved_property_area} WHERE property_id= ?`;
-  const deleteLocationQuery = `DELETE FROM ${propertyTable.unapproved_property_location} WHERE property_id = ?`;
-  const deleteHouseQuery = ` DELETE FROM ${propertyTable.unapproved_house} WHERE property_id = ? `;
-  const deletePropertyQuery = ` DELETE FROM ${propertyTable.unapproved_property}  WHERE property_id = ? `;
+  const shiftHomeQuery = `INSERT INTO ${propertyTable.house} (property_id, property_name, listed_for, price, bedrooms, livingrooms, kitchen, floor, furnish, parking,facing_direction,facilities, area_aana, area_sq_ft, road_access_ft, state, district, city, ward_number, tole_name, latitude, longitude, property_image, property_video, posted_date, approved_by, customer_id, agent_id, views) 
+  
+  SELECT ?, property_name, listed_for, price, bedrooms, livingrooms, kitchen, floor, furnish, parking,facing_direction, facilities, area_aana, area_sq_ft, road_access_ft, state, district, city, ward_number, tole_name, latitude, longitude, property_image, property_video, NOW(), ?, customer_id, agent_id, views FROM ${propertyTable.pending_house} WHERE property_id=?`;
+
+  const updatePropertyID = `UPDATE ${propertyTable.property_id_tracker} SET property_id = property_id+1 WHERE id = ?`;
+
+  const deleteHousetQuery = ` DELETE FROM ${propertyTable.pending_house} WHERE property_id = ? `;
 
   let connection;
 
@@ -252,19 +241,19 @@ async function approveHouse(staff_id, property_id) {
     await connection.beginTransaction();
     console.log("Transaction Started");
 
-    await connection.query(updateQuery, [staff_id, property_id]);
-    await connection.query(shiftPropertyQuery, [property_id]);
-    await connection.query(shiftHouseQuery, [property_id]);
-    await connection.query(shiftLocationQuery,[property_id]);//shift location
-    await connection.query(shiftAreaQuery,[property_id]);// shift area
-    await connection.query(deleteAreaQuery,[property_id]);// delete area
-    await connection.query(deleteLocationQuery,[property_id]);// delete location
-    await connection.query(deleteHouseQuery, [property_id]); // first delete apartment and then property
-    await connection.query(deletePropertyQuery, [property_id]);
+    const [rows, fields] = await connection.query(getPropertyID);
+
+    // Retrieve the value of newPropertyID from the result
+    const newPropertyID = rows[0].newPropertyID;
+    console.log("This is new id ", newPropertyID);
+
+    await connection.query(shiftHomeQuery, [ newPropertyID, staff_id, property_id,  ]);
+    await connection.query(updatePropertyID, [1]);
+    await connection.query(deleteHousetQuery, [property_id]);
+    await connection.commit();
+    console.log("Transaction successfully ");
 
     await connection.commit();
-
-    console.log("Transaction committed successfully");
   } catch (error) {
     console.log("error occur , rollback");
     await connection.rollback();
@@ -282,7 +271,7 @@ module.exports = {
   getHouseProperty,
   insertHouseFeedback,
   getHouseByID,
-  getUnapprovedHouseByID,
+  getPendingHouseByID,
   insertPendingHouseProperty,
   getPendingHouseProperty,
   approveHouse,
