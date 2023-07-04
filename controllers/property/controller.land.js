@@ -9,6 +9,7 @@ const {
   getPendingLandByID,
   insertPendingLandProperty,
   getPendingLandProperty,
+  updateLandAds,
 } = require("../../models/property/model.land");
 const { updatePropertyViews } = require("../../models/property/model.property");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
@@ -129,6 +130,35 @@ const handleApproveLand = async (req, res) => {
   }
 };
 
+
+
+
+const handleUpdateLandAds = async (req,res)=>{
+
+  const {property_id} = req.params;
+  const {ads_status} = req.body;
+
+  
+  try {
+    
+    const response = await updateLandAds(ads_status,property_id)
+ 
+    if(response.affectedRows === 0 ){
+      return res.status(400).json({message:"No property to update "})
+    }
+    return res.status(200).json({message:"Successfully Update ads status"});
+
+
+
+  } catch (error) {
+    return res.status(500).json({message:"unable to update"});
+  }
+
+
+
+}
+
+
 module.exports = {
   handleAddLand,
   handleGetLand,
@@ -137,4 +167,5 @@ module.exports = {
   handleGetLandByID,
   handleGetPendingdLand,
   handleApproveLand,
+  handleUpdateLandAds
 };

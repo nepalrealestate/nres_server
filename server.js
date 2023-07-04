@@ -37,7 +37,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
 // excute all sql file for create db , schema and tables;
-//excuteSQLFile();
+excuteSQLFile();
 
 function handleMulterError(err, req, res, next) {
   if (err instanceof multer.MulterError ) {
