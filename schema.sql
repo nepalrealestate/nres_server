@@ -231,6 +231,41 @@ CREATE TABLE IF NOT EXISTS nres_property.land_ads(
 );
 
 
+-- create table for store house comments between staffs;
+CREATE TABLE IF NOT EXISTS nres_property.house_comment(
+    comment_id INT AUTO_INCREMENT PRIMARY KEY,
+    property_id INT NOT NULL,
+    staff_id INT NOT NULL,
+    comment TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (property_id) REFERENCES nres_property.house(property_id),
+    FOREIGN KEY (staff_id) REFERENCES nres_users.staff(id)
+);
+
+-- create table for store apartment comments between staffs;
+CREATE TABLE IF NOT EXISTS nres_property.apartment_comment(
+    comment_id INT AUTO_INCREMENT PRIMARY KEY,
+    property_id INT NOT NULL,
+    staff_id INT NOT NULL,
+    comment TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (property_id) REFERENCES nres_property.apartment(property_id),
+    FOREIGN KEY (staff_id) REFERENCES nres_users.staff(id)
+);
+
+-- create table for store house comments between staffs;
+CREATE TABLE IF NOT EXISTS nres_property.land_comment(
+    comment_id INT AUTO_INCREMENT PRIMARY KEY,
+    property_id INT NOT NULL,
+    staff_id INT NOT NULL,
+    comment TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (property_id) REFERENCES nres_property.land(property_id),
+    FOREIGN KEY (staff_id) REFERENCES nres_users.staff(id)
+);
+
+
+
 
 
 --- create table for listing property before aproved;
