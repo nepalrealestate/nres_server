@@ -356,6 +356,22 @@ async function approveApartment(staff_id,property_id){
 
 
 
+const updateApartmentAds  = async function (ads_status , property_id){
+
+    const updateQuery = `UPDATE ${propertyTable.apartmentAds} SET ads_status=? WHERE property_id = ? `;
+  
+    try {
+      const [row,field] = await pool.query(updateQuery,[ads_status,property_id]);
+      return row;
+    } catch (error) {
+      throw error;
+    }
+  
+  }
+
+
+
+
 
 module.exports = {insertApartmentProperty,
     getApartmentProperty,
@@ -364,5 +380,6 @@ module.exports = {insertApartmentProperty,
     insertPendingApartmentProperty,
     getPendingApartmentProperty,
     approveApartment,
-    getPendingApartmentByID
+    getPendingApartmentByID,
+    updateApartmentAds
 };

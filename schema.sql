@@ -205,6 +205,31 @@ CREATE TABLE IF NOT EXISTS nres_property.land (
 );
 
 
+-- create table for store ads related information ;
+CREATE TABLE IF NOT EXISTS nres_property.house_ads(
+            id INT AUTO_INCREMENT PRIMARY KEY ,
+            property_id INT NOT NULL,
+            ads_status ENUM ('unplanned','posted','progress','planned') DEFAULT 'unplanned',
+            FOREIGN KEY (property_id) REFERENCES nres_property.house(property_id)
+            
+);
+-- create table for store ads related information ;
+CREATE TABLE IF NOT EXISTS nres_property.apartment_ads(
+            id INT AUTO_INCREMENT PRIMARY KEY ,
+            property_id INT NOT NULL,
+            ads_status ENUM ('unplanned','posted','progress','planned') DEFAULT 'unplanned',
+            FOREIGN KEY (property_id) REFERENCES nres_property.apartment(property_id)
+            
+);
+-- create table for store ads related information ;
+CREATE TABLE IF NOT EXISTS nres_property.land_ads(
+            id INT AUTO_INCREMENT PRIMARY KEY ,
+            property_id INT NOT NULL,
+            ads_status ENUM ('unplanned','posted','progress','planned') DEFAULT 'unplanned',
+            FOREIGN KEY (property_id) REFERENCES nres_property.land(property_id)
+            
+);
+
 
 
 
@@ -390,98 +415,9 @@ CREATE TABLE IF NOT EXISTS nres_services.service_provider_rating(
     service_provider_id INT PRIMARY KEY,
     rating INT ,
     FOREIGN KEY (provider_id) REFERENCES nres_services.service_provider(provider_id)
-)
+);
 
 
 
 -------------------------------------------------------------VIEWS------------------------------------------------------;
 
---create view for full apartment property;
-
-CREATE VIEW nres_property.apartment_property AS SELECT p.property_id,p.property_type,
-p.property_name,p.listed_for,p.price,p.views,p.property_image,p.property_video,
-p.posted_date,p.user_id,p.user_type,p.approved_by_id,p.status,
-a.bhk,a.situated_floor,a.furnish_status,a.parking,a.facilities,
-area.area_aana,area.area_sq_ft,area.road_access_ft,
-location.state,location.district,location.city,location.ward_number,
-location.tole_name,location.latitude,location.longitude
-FROM nres_property.property AS p INNER JOIN nres_property.apartment AS a ON p.property_id = a.property_id
-INNER JOIN nres_property.property_area AS area ON p.property_id = area.property_id
-INNER JOIN nres_property.property_location AS location ON p.property_id = location.property_id;
-
- 
-
-
- --create view for full house property;
-
-CREATE VIEW nres_property.house_property AS SELECT p.property_id,p.property_type,
-p.property_name,p.listed_for,p.price,p.views,p.property_image,p.property_video,
-p.posted_date,p.user_id,p.user_type,p.approved_by_id, p.status,
-h.room,h.floor,h.furnish_status,h.parking,h.facing_direction,h.facilities,
-area.area_aana,area.area_sq_ft,area.road_access_ft,
-location.state,location.district,location.city,location.ward_number,
-location.tole_name,location.latitude,location.longitude
-FROM nres_property.property AS p inner join nres_property.house as h on p.property_id = h.property_id
-INNER JOIN nres_property.property_area AS area ON p.property_id = area.property_id
-INNER JOIN nres_property.property_location AS location ON p.property_id = location.property_id;
-
-
-
-
- --create view for full land property;
-
-CREATE VIEW nres_property.land_property AS SELECT p.property_id,p.property_type,
-p.property_name,p.listed_for,p.price,p.views,p.property_image,p.property_video,
-p.posted_date,p.user_id,p.user_type,p.approved_by_id, p.status,
-l.land_type,l.soil,
-area.area_aana,area.area_sq_ft,area.road_access_ft,
-location.state,location.district,location.city,location.ward_number,
-location.tole_name,location.latitude,location.longitude
-FROM nres_property.property AS p inner join nres_property.land as l on p.property_id = l.property_id
-INNER JOIN nres_property.property_area AS area ON p.property_id = area.property_id
-INNER JOIN nres_property.property_location AS location ON p.property_id = location.property_id;
-
-
-
--- view for all apply for listing property before approved;
-
---create view for apply for listing apartment property;
-CREATE VIEW nres_unapproved_property.unapproved_apartment_property AS SELECT p.property_id,p.property_type,
-p.property_name,p.listed_for,p.price, p.user_id,p.user_type,p.approved_by_id,p.status,p.property_image,p.posted_date,
-a.bhk,a.situated_floor,a.furnish_status,a.parking,a.facilities,
-area.area_aana,area.area_sq_ft,area.road_access_ft,
-location.state,location.district,location.city,location.ward_number,
-location.tole_name,location.latitude,location.longitude
-FROM nres_unapproved_property.unapproved_property AS p 
-INNER JOIN nres_unapproved_property.unapproved_apartment AS a ON p.property_id = a.property_id
-INNER JOIN nres_unapproved_property.unapproved_property_area AS area ON p.property_id = area.property_id
-INNER JOIN nres_unapproved_property.unapproved_property_location AS location ON p.property_id = location.property_id;
-
-
- -- create view for apply for listing house property;
-
-CREATE VIEW nres_unapproved_property.unapproved_house_property AS SELECT p.property_id,p.property_type,
-p.property_name,p.listed_for,p.price, p.user_id,p.user_type,p.approved_by_id,p.status,p.property_image,p.posted_date,
-h.room,h.floor,h.furnish_status,h.parking,h.facing_direction,h.facilities,
-area.area_aana,area.area_sq_ft,area.road_access_ft,
-location.state,location.district,location.city,location.ward_number,
-location.tole_name,location.latitude,location.longitude
-FROM nres_unapproved_property.unapproved_property AS p 
-INNER JOIN nres_unapproved_property.unapproved_house AS h ON p.property_id = h.property_id
-INNER JOIN nres_unapproved_property.unapproved_property_area AS area ON p.property_id = area.property_id
-INNER JOIN nres_unapproved_property.unapproved_property_location AS location ON p.property_id = location.property_id;
-
-
-
--- create view for apply for listing land property;
-
-CREATE VIEW nres_unapproved_property.unapproved_land_property AS SELECT p.property_id,p.property_type,
-p.property_name,p.listed_for,p.price, p.user_id,p.user_type,p.approved_by_id,p.status,p.property_image,p.posted_date,
-l.land_type,l.soil,
-area.area_aana,area.area_sq_ft,area.road_access_ft,
-location.state,location.district,location.city,location.ward_number,
-location.tole_name,location.latitude,location.longitude
-FROM nres_unapproved_property.unapproved_property AS p 
-INNER JOIN nres_unapproved_property.unapproved_land AS l ON p.property_id = l.property_id
-INNER JOIN nres_unapproved_property.unapproved_property_area AS area ON p.property_id = area.property_id
-INNER JOIN nres_unapproved_property.unapproved_property_location AS location ON p.property_id = location.property_id;

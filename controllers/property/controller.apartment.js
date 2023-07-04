@@ -11,6 +11,7 @@ const {
   insertPendingApartmentProperty,
   getPendingApartmentProperty,
   getPendingApartmentByID,
+  updateApartmentAds,
 } = require("../../models/property/model.apartment");
 const {
   updatePropertyViews,
@@ -126,6 +127,35 @@ const handleApproveApartment = async (req, res) => {
   }
 };
 
+
+
+
+const handleUpdateApartmentAds = async (req,res)=>{
+
+  const {property_id} = req.params;
+  const {ads_status} = req.body;
+
+  
+  try {
+    
+    const response = await updateApartmentAds(ads_status,property_id)
+ 
+    if(response.affectedRows === 0 ){
+      return res.status(400).json({message:"No property to update "})
+    }
+    return res.status(200).json({message:"Successfully Update ads status"});
+
+
+
+  } catch (error) {
+    return res.status(500).json({message:"unable to update"});
+  }
+
+
+
+}
+
+
 module.exports = {
   handleAddApartment,
   handleGetApartment,
@@ -134,4 +164,5 @@ module.exports = {
   handleGetApartmentByID,
   handleGetPendingApartment,
   handleApproveApartment,
+  handleUpdateApartmentAds
 };

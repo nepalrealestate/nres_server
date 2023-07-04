@@ -241,7 +241,7 @@ async function approveHouse(staff_id, property_id) {
     await connection.beginTransaction();
     console.log("Transaction Started");
 
-    const [rows, fields] = await connection.query(getPropertyID);
+    const [rows, field] = await connection.query(getPropertyID);
 
     // Retrieve the value of newPropertyID from the result
     const newPropertyID = rows[0].newPropertyID;
@@ -266,6 +266,26 @@ async function approveHouse(staff_id, property_id) {
   }
 }
 
+
+
+
+const updateHouseAds  = async function (ads_status , property_id){
+
+  const updateQuery = `UPDATE ${propertyTable.houseAds} SET ads_status=? WHERE property_id = ? `;
+
+  try {
+    const [row,field] = await pool.query(updateQuery,[ads_status,property_id]);
+    return row;
+  } catch (error) {
+    throw error;
+  }
+
+}
+
+
+
+
+
 module.exports = {
   insertHouseProperty,
   getHouseProperty,
@@ -275,4 +295,5 @@ module.exports = {
   insertPendingHouseProperty,
   getPendingHouseProperty,
   approveHouse,
+  updateHouseAds
 };

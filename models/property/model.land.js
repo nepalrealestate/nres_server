@@ -241,6 +241,23 @@ async function approveLand(staff_id, property_id) {
 
 }
 
+
+
+const updateLandAds  = async function (ads_status , property_id){
+
+  const updateQuery = `UPDATE ${propertyTable.landAds} SET ads_status=? WHERE property_id = ? `;
+
+  try {
+    const [row,field] = await pool.query(updateQuery,[ads_status,property_id]);
+    return row;
+  } catch (error) {
+    throw error;
+  }
+
+}
+
+
+
 module.exports = {
   insertLandProperty,
   getLandProperty,
@@ -250,4 +267,5 @@ module.exports = {
   getPendingLandProperty,
   approveLand,
   getPendingLandByID,
+  updateLandAds
 };
