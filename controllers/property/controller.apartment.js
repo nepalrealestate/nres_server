@@ -13,6 +13,7 @@ const {
   getPendingApartmentByID,
   updateApartmentAds,
   insertApartmentComment,
+  getApartmentComment,
 } = require("../../models/property/model.apartment");
 const {
   updatePropertyViews,
@@ -163,6 +164,12 @@ const handleInsertApartmentComment = async function (req,res){
 
 }
 
+const handleGetApartmentComment = async (req,res)=>{
+
+  return utils.handleGetPropertyComment(req,res,getApartmentComment)
+
+}
+
 
 module.exports = {
   handleAddApartment,
@@ -173,5 +180,6 @@ module.exports = {
   handleGetPendingApartment,
   handleApproveApartment,
   handleUpdateApartmentAds,
-  handleInsertApartmentComment
+  handleInsertApartmentComment,
+  handleGetApartmentComment
 };

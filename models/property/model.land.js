@@ -207,7 +207,7 @@ async function approveLand(staff_id, property_id) {
 
     const deleteLandQuery = ` DELETE FROM ${propertyTable.pending_land} WHERE property_id = ? `;
 
-    const insertLandAds = `INSERT INTO ${propertyTable.houseAds} (property_id) VALUES(?)`;
+    const insertLandAds = `INSERT INTO ${propertyTable.landAds} (property_id) VALUES(?)`;
     let connection;
 
     try {
@@ -261,10 +261,32 @@ const updateLandAds  = async function (ads_status , property_id){
 
 async function insertLandComment  (property_id,staff_id,super_admin_id,comment,isPrivate){
 
-  const insertQuery = `INSERT INTO ${propertyTable.landCommnet} (property_id,staff_id,super_admin_id,comment,is_private) VALUES (?,?,?,?,?) `;
+  const insertQuery = `INSERT INTO ${propertyTable.landComment} (property_id,staff_id,super_admin_id,comment,is_private) VALUES (?,?,?,?,?) `;
 
   try {
     const [row,field] = await pool.query(insertQuery,[property_id,staff_id,super_admin_id,comment,isPrivate]);
+    return row;
+  } catch (error) {
+    throw error;
+  }
+
+}
+
+
+async function getLandComment (property_id,super_admin_id=null){
+
+  let getQuery = `SELECT * FROM ${propertyTable.landComment} WHERE   
+  (property_id = ? AND is_private = 0) `;
+  const params= [];
+  params.push(property_id)
+  if(super_admin_id){
+    getQuery += `OR (property_id = ? AND is_private = 1 AND super_admin_id = ?)`
+    params.push(super_admin_id)
+  }
+
+  try {
+    const [row,field] = await pool.query(getQuery,params);
+    console.log(row)
     return row;
   } catch (error) {
     throw error;
@@ -284,4 +306,5 @@ module.exports = {
   getPendingLandByID,
   updateLandAds,
   insertLandComment,
+  getLandComment
 };

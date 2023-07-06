@@ -2,9 +2,10 @@ const express = require("express");
 
 const {handleGetStaff, handleStaffRegistration, handleStaffLogin, handleAddVideoLink} = require('../../controllers/users/controller.staff');
 const { verifyToken } = require("../../controllers/users/commonAuthCode");
-const { handleAddApartment, handleApproveApartment, handleGetPendingApartment, handleUpdateApartmentAds, handleInsertApartmentComment } = require("../../controllers/property/controller.apartment");
-const { handleAddHouse, handleApproveHouse, handleGetPendingHouse, handleUpdateHouseAds, handleGetHouse, handleInsertHouseComment } = require("../../controllers/property/controller.house");
-const { handleAddLand, handleApproveLand, handleGetPendingdLand, handleUpdateLandAds, handleInsertLandComment } = require("../../controllers/property/controller.land");
+const { handleAddApartment, handleApproveApartment, handleGetPendingApartment, handleUpdateApartmentAds, handleInsertApartmentComment, handleGetApartment, handleGetApartmentComment } = require("../../controllers/property/controller.apartment");
+const { handleAddHouse, handleApproveHouse, handleGetPendingHouse, handleUpdateHouseAds, handleGetHouse, handleInsertHouseComment, handleGetHouseComment } = require("../../controllers/property/controller.house");
+const { handleAddLand, handleApproveLand, handleGetPendingdLand, handleUpdateLandAds, handleInsertLandComment, handleGetLandComment } = require("../../controllers/property/controller.land");
+const { handleGetLatestPropertyDashboard } = require("../../controllers/property/controller.property");
 
 
 
@@ -54,9 +55,17 @@ router.post("/apartment/comment/:property_id",verifyToken,handleInsertApartmentC
 router.post("/land/comment/:property_id",verifyToken,handleInsertLandComment);
 
 
+// get property comments by id
+
+router.get("/house/comment/:property_id",verifyToken,handleGetHouseComment)
+
+router.get("/apartment/comment/:property_id",verifyToken,handleGetApartmentComment)
+
+router.get("/land/comment/:property_id",verifyToken,handleGetLandComment)
 
 
-
+//get latest property for dashboard;
+router.get("/property",verifyToken,handleGetLatestPropertyDashboard);
 
 
 

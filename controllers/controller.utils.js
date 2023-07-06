@@ -212,7 +212,25 @@ function Utility() {
     }
   };
 
- 
+  
+  this.handleGetPropertyComment = async function (req,res,getPropertyComment){
+
+    let {property_id} = req.params;
+
+    let super_admin_id = req.baseUrl.substring(1)==="superAdmin"?req.id:null;
+    
+
+
+    try {
+      const data = await getPropertyComment(property_id,super_admin_id);
+      return res.status(200).json(data);
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json({message:"Unable To Get Comments"});
+    }
+
+
+  }
 
 
 
@@ -238,6 +256,10 @@ function Utility() {
 
 
 }
+
+
+
+
 
 
 

@@ -302,6 +302,26 @@ async function insertHouseComment (property_id,staff_id,super_admin_id,comment,i
 }
 
 
+async function getHouseComment (property_id,super_admin_id=null){
+
+  let getQuery = `SELECT * FROM ${propertyTable.houseComment} WHERE   
+  (property_id = ? AND is_private = 0) `;
+  const params= [];
+  params.push(property_id)
+  if(super_admin_id){
+    getQuery += `OR (property_id = ? AND is_private = 1 AND super_admin_id = ?)`
+    params.push(super_admin_id)
+  }
+
+  try {
+    const [row,field] = await pool.query(getQuery,params);
+    console.log(row)
+    return row;
+  } catch (error) {
+    throw error;
+  }
+
+}
 
 
 
@@ -315,5 +335,6 @@ module.exports = {
   getPendingHouseProperty,
   approveHouse,
   updateHouseAds,
-  insertHouseComment
+  insertHouseComment,
+  getHouseComment
 };

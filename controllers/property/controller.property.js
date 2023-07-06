@@ -1,7 +1,7 @@
 
 
 const { wrapAwait } = require("../../errorHandling");
-const {insertIntoRequestedProperty, getProperty}  = require("../../models/property/model.property")
+const {insertIntoRequestedProperty, getProperty, getLatestPropertyDashboard}  = require("../../models/property/model.property")
 
 const handleRequestProperty = async (req,res)=>{
 
@@ -82,4 +82,16 @@ const hanldeGetProperty = async (req,res)=>{
 
 
 
-module.exports = {handleRequestProperty,hanldeGetProperty}
+const handleGetLatestPropertyDashboard = async function (req,res){
+
+  try {
+    const data = await getLatestPropertyDashboard();
+    return res.status(200).json(data)
+  } catch (error) {
+    return res.status(500).json({message:"unable to get data"})
+  }
+
+}
+
+
+module.exports = {handleRequestProperty,hanldeGetProperty,handleGetLatestPropertyDashboard}

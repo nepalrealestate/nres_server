@@ -11,6 +11,7 @@ const {
   getPendingLandProperty,
   updateLandAds,
   insertLandComment,
+  getLandComment,
 } = require("../../models/property/model.land");
 const { updatePropertyViews } = require("../../models/property/model.property");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
@@ -166,6 +167,12 @@ const handleInsertLandComment = async function (req,res){
 
 }
 
+const handleGetLandComment = async (req,res)=>{
+
+  return utils.handleGetPropertyComment(req,res,getLandComment)
+
+}
+
 
 module.exports = {
   handleAddLand,
@@ -176,5 +183,6 @@ module.exports = {
   handleGetPendingdLand,
   handleApproveLand,
   handleUpdateLandAds,
-  handleInsertLandComment
+  handleInsertLandComment,
+  handleGetLandComment
 };
