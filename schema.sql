@@ -15,6 +15,20 @@ CREATE SCHEMA nres_sold_property;
 
 --- create table for store users;
 
+
+-- create table for super admin;
+
+CREATE TABLE  IF NOT EXISTS nres_users.super_admin
+(   
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50),
+    email VARCHAR(50), 
+    password VARCHAR(255),
+    UNIQUE(email) 
+
+) AUTO_INCREMENT=1;
+
+
 -- create agent;
 CREATE TABLE IF NOT EXISTS nres_users.agent 
     
@@ -34,11 +48,11 @@ CREATE TABLE IF NOT EXISTS nres_users.agent
 
 -- create staff;
 CREATE TABLE  IF NOT EXISTS nres_users.staff
- (id INT  PRIMARY KEY,
+ (id INT AUTO_INCREMENT PRIMARY KEY,
  name VARCHAR(255),
  email VARCHAR(255),
  password VARCHAR(255),
- UNIQUE(email) ) ;
+ UNIQUE(email) )AUTO_INCREMENT=1; ;
 
 
 -- create customer;
@@ -229,6 +243,74 @@ CREATE TABLE IF NOT EXISTS nres_property.land_ads(
             FOREIGN KEY (property_id) REFERENCES nres_property.land(property_id)
             
 );
+
+
+-- create table for store house comments between staffs;
+CREATE TABLE IF NOT EXISTS nres_property.house_comment(
+    comment_id INT AUTO_INCREMENT PRIMARY KEY,
+    property_id INT NOT NULL,
+    staff_id INT ,
+    super_admin_id INT ,
+    comment TEXT,
+    is_private BOOL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (property_id) REFERENCES nres_property.house(property_id),
+    FOREIGN KEY (staff_id) REFERENCES nres_users.staff(id),
+    FOREIGN KEY (super_admin_id) REFERENCES nres_users.super_admin(id),
+    CONSTRAINT house_check_staff_super_admin CHECK (
+        (staff_id IS NOT NULL AND super_admin_id IS NULL) OR 
+        (staff_id IS NULL AND super_admin_id IS NOT NULL)
+    ),
+    CONSTRAINT house_check_is_private CHECK (
+        (staff_id IS NOT NULL AND is_private = FALSE ) OR 
+        (staff_id IS NULL)
+    )
+);
+
+-- create table for store apartment comments between staffs;
+CREATE TABLE IF NOT EXISTS nres_property.apartment_comment(
+    comment_id INT AUTO_INCREMENT PRIMARY KEY,
+    property_id INT NOT NULL,
+    staff_id INT ,
+    super_admin_id INT ,
+    comment TEXT,
+    is_private BOOL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (property_id) REFERENCES nres_property.apartment(property_id),
+    FOREIGN KEY (staff_id) REFERENCES nres_users.staff(id),
+    FOREIGN KEY (super_admin_id) REFERENCES nres_users.super_admin(id),
+    CONSTRAINT apartment_check_staff_super_admin CHECK (
+        (staff_id IS NOT NULL AND super_admin_id IS NULL) OR 
+        (staff_id IS NULL AND super_admin_id IS NOT NULL)
+    ),
+    CONSTRAINT apartment_check_is_private CHECK (
+        (staff_id IS NOT NULL AND is_private = FALSE ) OR 
+        (staff_id IS NULL)
+    )
+);
+
+-- create table for store house comments between staffs;
+CREATE TABLE IF NOT EXISTS nres_property.land_comment(
+    comment_id INT AUTO_INCREMENT PRIMARY KEY,
+    property_id INT NOT NULL,
+    staff_id INT ,
+    super_admin_id INT ,
+    comment TEXT,
+    is_private BOOL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (property_id) REFERENCES nres_property.land(property_id),
+    FOREIGN KEY (staff_id) REFERENCES nres_users.staff(id),
+    FOREIGN KEY (super_admin_id) REFERENCES nres_users.super_admin(id),
+    CONSTRAINT land_check_staff_super_admin CHECK (
+        (staff_id IS NOT NULL AND super_admin_id IS NULL) OR 
+        (staff_id IS NULL AND super_admin_id IS NOT NULL)
+    ),
+    CONSTRAINT land_check_is_private CHECK (
+        (staff_id IS NOT NULL AND is_private = FALSE ) OR 
+        (staff_id IS NULL)
+    )
+);
+
 
 
 
