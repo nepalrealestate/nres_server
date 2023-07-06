@@ -56,8 +56,11 @@ const propertyTable = {
 
     houseAds : `${propertySchemaName}.house_ads`,
     apartmentAds : `${propertySchemaName}.apartment_ads`,
-    landAds : `${propertySchemaName}.land_ads`
+    landAds : `${propertySchemaName}.land_ads`,
 
+    houseComment : `${propertySchemaName}.house_comment`,
+    apartmentComment : `${propertySchemaName}.apartment_comment`,
+    landCommnet : `${propertySchemaName}.land_comment`
 }
 
 

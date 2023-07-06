@@ -2,9 +2,9 @@ const express = require("express");
 
 const {handleGetStaff, handleStaffRegistration, handleStaffLogin, handleAddVideoLink} = require('../../controllers/users/controller.staff');
 const { verifyToken } = require("../../controllers/users/commonAuthCode");
-const { handleAddApartment, handleApproveApartment, handleGetPendingApartment, handleUpdateApartmentAds } = require("../../controllers/property/controller.apartment");
-const { handleAddHouse, handleApproveHouse, handleGetPendingHouse, handleUpdateHouseAds, handleGetHouse } = require("../../controllers/property/controller.house");
-const { handleAddLand, handleApproveLand, handleGetPendingdLand, handleUpdateLandAds } = require("../../controllers/property/controller.land");
+const { handleAddApartment, handleApproveApartment, handleGetPendingApartment, handleUpdateApartmentAds, handleInsertApartmentComment } = require("../../controllers/property/controller.apartment");
+const { handleAddHouse, handleApproveHouse, handleGetPendingHouse, handleUpdateHouseAds, handleGetHouse, handleInsertHouseComment } = require("../../controllers/property/controller.house");
+const { handleAddLand, handleApproveLand, handleGetPendingdLand, handleUpdateLandAds, handleInsertLandComment } = require("../../controllers/property/controller.land");
 
 
 
@@ -43,11 +43,21 @@ router.put("/approvedLand/:property_id",verifyToken,handleApproveLand);
 
 
 //update property ads status
-router.put("/house/ads/:property_id",handleUpdateHouseAds);
-router.put("/apartment/ads/:property_id",handleUpdateApartmentAds);
-router.put("/land/ads/:property_id",handleUpdateLandAds);
+router.put("/house/ads/:property_id",verifyToken,handleUpdateHouseAds);
+router.put("/apartment/ads/:property_id",verifyToken,handleUpdateApartmentAds);
+router.put("/land/ads/:property_id",verifyToken,handleUpdateLandAds);
 
-//update property comments for staff
+//insert property comments for staff
+
+router.post("/house/comment/:property_id",verifyToken,handleInsertHouseComment);
+router.post("/apartment/comment/:property_id",verifyToken,handleInsertApartmentComment);
+router.post("/land/comment/:property_id",verifyToken,handleInsertLandComment);
+
+
+
+
+
+
 
 
 module.exports = router;
