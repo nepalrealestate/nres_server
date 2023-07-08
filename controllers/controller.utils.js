@@ -59,6 +59,8 @@ function Utility() {
     return res.status(200).json({ message: "Registration successfully" });
   };
 
+  
+
   this.handleAddProperty = async function (req, res, addCallbackProperty) {
     // get user id from req.id i.e we set req.id when verify token
     let customer_id = null;

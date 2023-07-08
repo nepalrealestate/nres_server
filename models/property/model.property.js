@@ -374,19 +374,8 @@ async function approveProperty(property_id,approved_by,shiftPropertyCallback){
 
 async function getProperty(condition, limit = 20, offSet = 0) {
 
-  // there must be better ways to get data - i'm exploring
 
-  // let getPropertyType =  `SELECT property_type from ${propertyTable.property}`;
-
-  // const [resultType,fieldType] = await pool.query(getPropertyType);
-  // console.log(resultType)
-  // let property_type = resultType[0];
-  // const viewName = `${property_type}_property`;
-  // console.log(viewName)
-  let sqlQuery = `SELECT p.property_id,p.property_type,p.property_name,p.listed_for,p.price,p.views,p.posted_date,p.property_image,l.state,l.city,l.ward_number from ${propertyTable.property} as p 
- inner join ${propertyTable.property_location}  as l on p.property_id=l.property_id 
-
-`;
+  let sqlQuery = `SELECT * FROM ${views.latest_property_dashboard} WHERE 1=1 `
 
   const params = [];
   //adding search conditon on query
@@ -422,17 +411,58 @@ async function getProperty(condition, limit = 20, offSet = 0) {
 
 
 
-async function getLatestPropertyDashboard (){
+async function getLatestPropertyDashboard (condition, limit = 20, offSet = 0){
 
-    const getQuery = `SELECT * FROM ${views.latest_property_dashboard} ORDER BY posted_date`;
+    
 
-    try {
-      const [row,field] = await pool.query(getQuery);
-      return row;
-    } catch (error) {
-      throw error;      
+
+
+  let sqlQuery = `SELECT * FROM ${views.latest_property_dashboard} WHERE 1=1 `
+
+  const params = [];
+  //adding search conditon on query
+  for (let key of Object.keys(condition)) {
+
+
+    if(key==='property_type' || key === 'listed_for' || key === 'ads_status'){
+      if (condition[key]) {
+        // adding search conditon and  push value in params array;
+        sqlQuery += ` AND ${key} = ?`
+        params.push(condition[key]);
+      }
+    }else if(key==='location'){
+      if(condition[key]){
+        sqlQuery += ` AND CONCAT_WS(' ', city,ward_number,tole_name) LIKE ?`
+        params.push(`%${condition[key]}%`);
+      }
     }
+    else{
+      if (condition[key]) {
+        // adding search conditon and  push value in params array;
+        sqlQuery += ` AND ${key} LIKE  ?`
+        params.push(`%${condition[key]}%`);
+      }
+    }
+    
 
+
+  }
+
+  //after adding search condition query
+
+  sqlQuery += ` ORDER BY posted_date DESC LIMIT ${limit} OFFSET ${offSet}`
+
+
+  console.log(sqlQuery,params)
+
+  try {
+    const [result, field] = await pool.query(sqlQuery, params);
+
+    return result;
+  } catch (error) {
+
+    throw error;
+  }
 }
 
 

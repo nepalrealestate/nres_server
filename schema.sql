@@ -500,15 +500,15 @@ CREATE TABLE IF NOT EXISTS nres_services.service_provider_rating(
 -- create view for latest _ property dashboard;
 create view nres_property.latest_property_dashboard as
 
-SELECT h.property_id,h.property_type, h.property_name, h.tole_name, h.ward_number,h.city, h.posted_date ,
+SELECT  LPAD(h.property_id, 4, "0") AS property_id,h.property_type, h.property_name,h.listed_for, h.tole_name, h.ward_number,h.city, h.posted_date ,
  ha.ads_status
 FROM nres_property.house as h INNER JOIN nres_property.house_ads as ha ON h.property_id = ha.property_id
 UNION 
-SELECT l.property_id,l.property_type, l.property_name, l.tole_name, l.ward_number,l.city, l.posted_date ,
+SELECT LPAD(l.property_id, 4, "0") AS property_id,l.property_type, l.property_name,l.listed_for,  l.tole_name, l.ward_number,l.city, l.posted_date ,
  la.ads_status
 FROM nres_property.land as l INNER JOIN nres_property.land_ads as la ON l.property_id = la.property_id
 UNION 
-SELECT a.property_id,a.property_type, a.property_name, a.tole_name, a.ward_number,a.city, a.posted_date ,
+SELECT LPAD(a.property_id, 4, "0") AS property_id,a.property_type, a.property_name, a.listed_for, a.tole_name, a.ward_number,a.city, a.posted_date ,
  aa.ads_status
 FROM nres_property.apartment as a INNER JOIN nres_property.apartment_ads as aa ON a.property_id = aa.property_id;
 

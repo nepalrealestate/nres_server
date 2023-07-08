@@ -1,7 +1,11 @@
 
 
 const { wrapAwait } = require("../../errorHandling");
-const {insertIntoRequestedProperty, getProperty, getLatestPropertyDashboard}  = require("../../models/property/model.property")
+const {insertIntoRequestedProperty, getProperty, getLatestPropertyDashboard}  = require("../../models/property/model.property");
+const { Utility } = require("../controller.utils");
+
+
+const utils = new Utility();
 
 const handleRequestProperty = async (req,res)=>{
 
@@ -31,65 +35,16 @@ const handleRequestProperty = async (req,res)=>{
 
 const hanldeGetProperty = async (req,res)=>{
 
-  let page, limit ,offSet;
-  console.log(req.query)
 
-  // if page and limit not set then defualt is 1 and 20 .
-   page = req.query.page || 1;
-   
-   limit = (req.query.limit < 20 )? req.query.limit : 20 || 20;
-   // if page and limit present in query then delete it 
-   if(req.query.page)  delete  req.query.page;
-   
-   if(req.query.limit) delete req.query.limit;
-     
+  return utils.getSearchData(req,res,getProperty)
   
-
-   offSet = (page-1) * limit;
-
-
-   // write code in wrapAeait function
-  //  try {
-  //     const result = await ;
-  //     return res.status(200).json({result});
-  //  } catch (error) {
-  //     return res
-  //  }
-
-  const [data,error]   =  await wrapAwait(getProperty(req.query,limit,offSet));
- console.log(typeof data)
-  console.log(data);
-
-  if(data){
-    return res.status(200).json({data});
-  }
-  console.log(error)
-  return res.status(400).json({message:"No property"});
-
-
-
-  //  try {
-  //     const houseData = await getHouseProperty(req.query,limit,offSet);
-  //     console.log(houseData)
-   
-  //     return res.status(200).json(houseData);
-  //  } catch (error) {
-  //     return res.status(500).json({message:error.sqlMessage});
-  //  }
-
-
 }
 
 
 
 const handleGetLatestPropertyDashboard = async function (req,res){
 
-  try {
-    const data = await getLatestPropertyDashboard();
-    return res.status(200).json(data)
-  } catch (error) {
-    return res.status(500).json({message:"unable to get data"})
-  }
+  return utils.getSearchData(req,res,getLatestPropertyDashboard);
 
 }
 
