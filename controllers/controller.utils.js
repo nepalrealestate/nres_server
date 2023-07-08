@@ -59,7 +59,7 @@ function Utility() {
     return res.status(200).json({ message: "Registration successfully" });
   };
 
-  
+
 
   this.handleAddProperty = async function (req, res, addCallbackProperty) {
     // get user id from req.id i.e we set req.id when verify token
@@ -228,7 +228,7 @@ function Utility() {
       return res.status(200).json(data);
     } catch (error) {
       console.error(error)
-      return res.status(500).json({message:"Unable To Get Comments"});
+      return res.status(500).json({message:"Unable To Get Data"});
     }
 
 

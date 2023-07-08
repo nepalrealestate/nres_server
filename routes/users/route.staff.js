@@ -6,6 +6,7 @@ const { handleAddApartment, handleApproveApartment, handleGetPendingApartment, h
 const { handleAddHouse, handleApproveHouse, handleGetPendingHouse, handleUpdateHouseAds, handleGetHouse, handleInsertHouseComment, handleGetHouseComment } = require("../../controllers/property/controller.house");
 const { handleAddLand, handleApproveLand, handleGetPendingdLand, handleUpdateLandAds, handleInsertLandComment, handleGetLandComment } = require("../../controllers/property/controller.land");
 const { handleGetLatestPropertyDashboard } = require("../../controllers/property/controller.property");
+const { handleGetAllAgent } = require("../../controllers/users/controller.agent");
 
 
 
@@ -68,5 +69,12 @@ router.get("/land/comment/:property_id",verifyToken,handleGetLandComment)
 router.get("/property",verifyToken,handleGetLatestPropertyDashboard);
 
 
+
+
+//get all agents
+
+router.get("/agent",verifyToken,handleGetAllAgent)
+
+//get all customer
 
 module.exports = router;
