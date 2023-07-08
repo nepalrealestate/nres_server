@@ -56,8 +56,11 @@ const propertyTable = {
 
     houseAds : `${propertySchemaName}.house_ads`,
     apartmentAds : `${propertySchemaName}.apartment_ads`,
-    landAds : `${propertySchemaName}.land_ads`
+    landAds : `${propertySchemaName}.land_ads`,
 
+    houseComment : `${propertySchemaName}.house_comment`,
+    apartmentComment : `${propertySchemaName}.apartment_comment`,
+    landComment : `${propertySchemaName}.land_comment`
 }
 
 
@@ -72,13 +75,8 @@ const serviceTable = {
 
 const views = {
 
-    fullApartmentView : `${propertySchemaName}.apartment_property`,
-    fullHouseView     : `${propertySchemaName}.house_property`,
-    fullLandView      : `${propertySchemaName}.land_property`,
 
-    unapprovedApartmentView : `${pendingPropertySchemaName}.pending_apartment_property`,
-    unapprovedHouseView    : `${pendingPropertySchemaName}.pending_house_property`,
-    unapprovedLandView     : `${pendingPropertySchemaName}.pending_land_property`,
+    latest_property_dashboard : `${propertySchemaName}.latest_property_dashboard`
 
 }
 

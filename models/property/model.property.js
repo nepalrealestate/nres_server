@@ -13,6 +13,7 @@ const agentTableName = "agent";
 
 
 const { propertyTable, userTable, unapprovedPropertyTable, views } = require("../tableName");
+const { ADDRGETNETWORKPARAMS } = require("dns");
 
 //--------------Create Table------------------------------------
 
@@ -419,6 +420,22 @@ async function getProperty(condition, limit = 20, offSet = 0) {
 
 }
 
+
+
+async function getLatestPropertyDashboard (){
+
+    const getQuery = `SELECT * FROM ${views.latest_property_dashboard} ORDER BY posted_date`;
+
+    try {
+      const [row,field] = await pool.query(getQuery);
+      return row;
+    } catch (error) {
+      throw error;      
+    }
+
+}
+
+
 module.exports = {
   createPropertyTable,
   insertProperty,
@@ -429,5 +446,6 @@ module.exports = {
   createApplyPropertyTable,
   insertPendingProperty,
   getProperty,
-  approveProperty
+  approveProperty,
+  getLatestPropertyDashboard
 };

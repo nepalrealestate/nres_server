@@ -319,6 +319,8 @@ async function approveApartment(staff_id,property_id){
 
     const deleteApartmentQuery = ` DELETE FROM ${propertyTable.pending_apartment} WHERE property_id = ? `;
 
+    const insertApartmentAds = `INSERT INTO ${propertyTable.apartmentAds} (property_id) VALUES(?)`;
+
     let connection;
 
     try {
@@ -336,6 +338,7 @@ async function approveApartment(staff_id,property_id){
         await  connection.query(shiftApartmentQuery,[newPropertyID,staff_id,property_id]);
         await connection.query(updatePropertyID,[1]);
         await connection.query(deleteApartmentQuery,[property_id]);
+        await connection.query(insertApartmentAds,[newPropertyID]);
         await connection.commit();
         console.log("Transaction successfully ");
 
@@ -372,6 +375,42 @@ const updateApartmentAds  = async function (ads_status , property_id){
 
 
 
+async function insertApartmentComment (property_id,staff_id,super_admin_id,comment,isPrivate){
+
+    const insertQuery = `INSERT INTO ${propertyTable.apartmentComment} (property_id,staff_id,super_admin_id,comment,is_private) VALUES (?,?,?,?,?) `;
+  
+    try {
+      const [row,field] = await pool.query(insertQuery,[property_id,staff_id,super_admin_id,comment,isPrivate]);
+      return row;
+    } catch (error) {
+      throw error;
+    }
+  
+  }
+
+
+
+  async function getApartmentComment (property_id,super_admin_id=null){
+
+    let getQuery = `SELECT * FROM ${propertyTable.apartmentComment} WHERE   
+    (property_id = ? AND is_private = 0) `;
+    const params= [];
+    params.push(property_id)
+    if(super_admin_id){
+      getQuery += `OR (property_id = ? AND is_private = 1 AND super_admin_id = ?)`
+      params.push(super_admin_id)
+    }
+  
+    try {
+      const [row,field] = await pool.query(getQuery,params);
+      console.log(row)
+      return row;
+    } catch (error) {
+      throw error;
+    }
+  
+  }
+
 
 module.exports = {insertApartmentProperty,
     getApartmentProperty,
@@ -381,5 +420,7 @@ module.exports = {insertApartmentProperty,
     getPendingApartmentProperty,
     approveApartment,
     getPendingApartmentByID,
-    updateApartmentAds
+    updateApartmentAds,
+    insertApartmentComment,
+    getApartmentComment
 };

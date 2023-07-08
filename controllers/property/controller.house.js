@@ -6,10 +6,11 @@ const {
   getHouseByID,
   approveHouse,
   getPendingHouseProperty,
-  getUnapprovedHouseByID,
   insertPendingHouseProperty,
   getPendingHouseByID,
   updateHouseAds,
+  insertHouseComment,
+  getHouseComment,
 } = require("../../models/property/model.house");
 const { updatePropertyViews } = require("../../models/property/model.property");
 
@@ -139,6 +140,25 @@ const handleUpdateHouseAds = async (req,res)=>{
 
 }
 
+
+const handleInsertHouseComment = async (req,res)=>{
+
+  
+  return utils.handleInsertPropertyComment(req,res,insertHouseComment)
+   
+
+
+}
+
+
+const handleGetHouseComment = async (req,res)=>{
+
+  return utils.handleGetPropertyComment(req,res,getHouseComment)
+
+}
+
+
+
 module.exports = {
   handleAddHouse,
   handleGetHouse,
@@ -147,5 +167,7 @@ module.exports = {
   handleGetHouseByID,
   handleGetPendingHouse,
   handleApproveHouse,
-  handleUpdateHouseAds
+  handleUpdateHouseAds,
+  handleInsertHouseComment,
+  handleGetHouseComment
 };

@@ -226,13 +226,17 @@ async function getPendingHouseByID(property_id) {
 async function approveHouse(staff_id, property_id) {
   const getPropertyID = `SELECT LPAD(property_id, 4, "0") AS newPropertyID FROM ${propertyTable.property_id_tracker}`;
 
-  const shiftHomeQuery = `INSERT INTO ${propertyTable.house} (property_id, property_name, listed_for, price, bedrooms, livingrooms, kitchen, floor, furnish, parking,facing_direction,facilities, area_aana, area_sq_ft, road_access_ft, state, district, city, ward_number, tole_name, latitude, longitude, property_image, property_video, posted_date, approved_by, customer_id, agent_id, views) 
+  const shiftHouseQuery = `INSERT INTO ${propertyTable.house} (property_id, property_name, listed_for, price, bedrooms, livingrooms, kitchen, floor, furnish, parking,facing_direction,facilities, area_aana, area_sq_ft, road_access_ft, state, district, city, ward_number, tole_name, latitude, longitude, property_image, property_video, posted_date, approved_by, customer_id, agent_id, views) 
   
   SELECT ?, property_name, listed_for, price, bedrooms, livingrooms, kitchen, floor, furnish, parking,facing_direction, facilities, area_aana, area_sq_ft, road_access_ft, state, district, city, ward_number, tole_name, latitude, longitude, property_image, property_video, NOW(), ?, customer_id, agent_id, views FROM ${propertyTable.pending_house} WHERE property_id=?`;
 
   const updatePropertyID = `UPDATE ${propertyTable.property_id_tracker} SET property_id = property_id+1 WHERE id = ?`;
 
   const deleteHousetQuery = ` DELETE FROM ${propertyTable.pending_house} WHERE property_id = ? `;
+
+
+  const insertHouseAds = `INSERT INTO ${propertyTable.houseAds} (property_id) VALUES(?)`;
+
 
   let connection;
 
@@ -247,9 +251,10 @@ async function approveHouse(staff_id, property_id) {
     const newPropertyID = rows[0].newPropertyID;
     console.log("This is new id ", newPropertyID);
 
-    await connection.query(shiftHomeQuery, [ newPropertyID, staff_id, property_id,  ]);
+    await connection.query(shiftHouseQuery, [ newPropertyID, staff_id, property_id,  ]);
     await connection.query(updatePropertyID, [1]);
     await connection.query(deleteHousetQuery, [property_id]);
+    await connection.query(insertHouseAds,[newPropertyID])
     await connection.commit();
     console.log("Transaction successfully ");
 
@@ -269,7 +274,7 @@ async function approveHouse(staff_id, property_id) {
 
 
 
-const updateHouseAds  = async function (ads_status , property_id){
+async function updateHouseAds (ads_status , property_id){
 
   const updateQuery = `UPDATE ${propertyTable.houseAds} SET ads_status=? WHERE property_id = ? `;
 
@@ -283,6 +288,40 @@ const updateHouseAds  = async function (ads_status , property_id){
 }
 
 
+async function insertHouseComment (property_id,staff_id,super_admin_id,comment,isPrivate){
+
+  const insertQuery = `INSERT INTO ${propertyTable.houseComment} (property_id,staff_id,super_admin_id,comment,is_private) VALUES (?,?,?,?,?) `;
+
+  try {
+    const [row,field] = await pool.query(insertQuery,[property_id,staff_id,super_admin_id,comment,isPrivate]);
+    return row;
+  } catch (error) {
+    throw error;
+  }
+
+}
+
+
+async function getHouseComment (property_id,super_admin_id=null){
+
+  let getQuery = `SELECT * FROM ${propertyTable.houseComment} WHERE   
+  (property_id = ? AND is_private = 0) `;
+  const params= [];
+  params.push(property_id)
+  if(super_admin_id){
+    getQuery += `OR (property_id = ? AND is_private = 1 AND super_admin_id = ?)`
+    params.push(super_admin_id)
+  }
+
+  try {
+    const [row,field] = await pool.query(getQuery,params);
+    console.log(row)
+    return row;
+  } catch (error) {
+    throw error;
+  }
+
+}
 
 
 
@@ -295,5 +334,7 @@ module.exports = {
   insertPendingHouseProperty,
   getPendingHouseProperty,
   approveHouse,
-  updateHouseAds
+  updateHouseAds,
+  insertHouseComment,
+  getHouseComment
 };

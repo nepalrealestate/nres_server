@@ -111,6 +111,7 @@ INSERT INTO nres_property.property_id_tracker VALUES (1,1);
 CREATE TABLE  IF NOT EXISTS nres_property.apartment
     (
         property_id INT NOT NULL UNIQUE,
+        property_type ENUM ('apartment') DEFAULT 'apartment',
         property_name varchar(50),
         listed_for 	ENUM ('sell','rent'),
         price  DECIMAL(12, 2),
@@ -150,6 +151,7 @@ CREATE TABLE IF NOT EXISTS nres_property.house
     (
 
         property_id INT NOT NULL UNIQUE,
+        property_type ENUM ('house') DEFAULT 'house',
         property_name varchar(50),
         listed_for 	ENUM ('sell','rent'),
         price  DECIMAL(12, 2),
@@ -190,6 +192,7 @@ CREATE TABLE IF NOT EXISTS nres_property.house
 CREATE TABLE IF NOT EXISTS nres_property.land (
 
      property_id INT NOT NULL UNIQUE,
+     property_type ENUM ('land') DEFAULT  'land',
      property_name varchar(50),
      listed_for 	ENUM ('sell','rent'),
      price  DECIMAL(12, 2),
@@ -212,7 +215,7 @@ CREATE TABLE IF NOT EXISTS nres_property.land (
      customer_id INT ,
      agent_id INT ,
      views INT DEFAULT 0,
-     FOREIGN KEY (approved_by) REFERENCES nres_users.staff(id),
+     FOREIGN KEY (approved_by) REFERENCES nres_users.staff(id) ,
      FOREIGN KEY (customer_id) REFERENCES nres_users.customer(id),
      FOREIGN KEY (agent_id) REFERENCES nres_users.agent(id)
 
@@ -224,7 +227,7 @@ CREATE TABLE IF NOT EXISTS nres_property.house_ads(
             id INT AUTO_INCREMENT PRIMARY KEY ,
             property_id INT NOT NULL,
             ads_status ENUM ('unplanned','posted','progress','planned') DEFAULT 'unplanned',
-            FOREIGN KEY (property_id) REFERENCES nres_property.house(property_id)
+            FOREIGN KEY (property_id) REFERENCES nres_property.house(property_id) ON DELETE CASCADE
             
 );
 -- create table for store ads related information ;
@@ -232,7 +235,7 @@ CREATE TABLE IF NOT EXISTS nres_property.apartment_ads(
             id INT AUTO_INCREMENT PRIMARY KEY ,
             property_id INT NOT NULL,
             ads_status ENUM ('unplanned','posted','progress','planned') DEFAULT 'unplanned',
-            FOREIGN KEY (property_id) REFERENCES nres_property.apartment(property_id)
+            FOREIGN KEY (property_id) REFERENCES nres_property.apartment(property_id)  ON DELETE CASCADE
             
 );
 -- create table for store ads related information ;
@@ -240,7 +243,7 @@ CREATE TABLE IF NOT EXISTS nres_property.land_ads(
             id INT AUTO_INCREMENT PRIMARY KEY ,
             property_id INT NOT NULL,
             ads_status ENUM ('unplanned','posted','progress','planned') DEFAULT 'unplanned',
-            FOREIGN KEY (property_id) REFERENCES nres_property.land(property_id)
+            FOREIGN KEY (property_id) REFERENCES nres_property.land(property_id)  ON DELETE CASCADE
             
 );
 
@@ -254,9 +257,9 @@ CREATE TABLE IF NOT EXISTS nres_property.house_comment(
     comment TEXT,
     is_private BOOL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (property_id) REFERENCES nres_property.house(property_id),
-    FOREIGN KEY (staff_id) REFERENCES nres_users.staff(id),
-    FOREIGN KEY (super_admin_id) REFERENCES nres_users.super_admin(id),
+    FOREIGN KEY (property_id) REFERENCES nres_property.house(property_id)  ON DELETE CASCADE, 
+    FOREIGN KEY (staff_id) REFERENCES nres_users.staff(id)  ON DELETE CASCADE,
+    FOREIGN KEY (super_admin_id) REFERENCES nres_users.super_admin(id)  ON DELETE CASCADE,
     CONSTRAINT house_check_staff_super_admin CHECK (
         (staff_id IS NOT NULL AND super_admin_id IS NULL) OR 
         (staff_id IS NULL AND super_admin_id IS NOT NULL)
@@ -276,9 +279,9 @@ CREATE TABLE IF NOT EXISTS nres_property.apartment_comment(
     comment TEXT,
     is_private BOOL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (property_id) REFERENCES nres_property.apartment(property_id),
-    FOREIGN KEY (staff_id) REFERENCES nres_users.staff(id),
-    FOREIGN KEY (super_admin_id) REFERENCES nres_users.super_admin(id),
+    FOREIGN KEY (property_id) REFERENCES nres_property.apartment(property_id)  ON DELETE CASCADE,  
+    FOREIGN KEY (staff_id) REFERENCES nres_users.staff(id)  ON DELETE CASCADE,
+    FOREIGN KEY (super_admin_id) REFERENCES nres_users.super_admin(id)  ON DELETE CASCADE,
     CONSTRAINT apartment_check_staff_super_admin CHECK (
         (staff_id IS NOT NULL AND super_admin_id IS NULL) OR 
         (staff_id IS NULL AND super_admin_id IS NOT NULL)
@@ -298,9 +301,9 @@ CREATE TABLE IF NOT EXISTS nres_property.land_comment(
     comment TEXT,
     is_private BOOL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (property_id) REFERENCES nres_property.land(property_id),
-    FOREIGN KEY (staff_id) REFERENCES nres_users.staff(id),
-    FOREIGN KEY (super_admin_id) REFERENCES nres_users.super_admin(id),
+    FOREIGN KEY (property_id) REFERENCES nres_property.land(property_id)  ON DELETE CASCADE,
+    FOREIGN KEY (staff_id) REFERENCES nres_users.staff(id)  ON DELETE CASCADE,
+    FOREIGN KEY (super_admin_id) REFERENCES nres_users.super_admin(id)  ON DELETE CASCADE,
     CONSTRAINT land_check_staff_super_admin CHECK (
         (staff_id IS NOT NULL AND super_admin_id IS NULL) OR 
         (staff_id IS NULL AND super_admin_id IS NOT NULL)
@@ -329,6 +332,7 @@ CREATE TABLE IF NOT EXISTS nres_property.land_comment(
 CREATE TABLE  IF NOT EXISTS nres_pending_property.pending_apartment
     (
         property_id INT  AUTO_INCREMENT PRIMARY KEY ,
+        property_type ENUM ('apartment') DEFAULT  'apartment',
         property_name varchar(50),
         listed_for 	ENUM ('sell','rent'),
         price  DECIMAL(12, 2),
@@ -368,6 +372,7 @@ CREATE TABLE IF NOT EXISTS nres_pending_property.pending_house
     (
 
         property_id INT  AUTO_INCREMENT PRIMARY KEY ,
+        property_type ENUM ('house') DEFAULT  'house',
         property_name varchar(50),
         listed_for 	ENUM ('sell','rent'),
         price  DECIMAL(12, 2),
@@ -408,6 +413,7 @@ CREATE TABLE IF NOT EXISTS nres_pending_property.pending_house
 CREATE TABLE IF NOT EXISTS nres_pending_property.pending_land (
 
      property_id INT   AUTO_INCREMENT PRIMARY KEY ,
+    property_type ENUM ('land') DEFAULT  'land',
      property_name varchar(50),
      listed_for 	ENUM ('sell','rent'),
      price  DECIMAL(12, 2),
@@ -445,18 +451,6 @@ CREATE TABLE IF NOT EXISTS nres_pending_property.pending_land (
 
 
 -- Create table for sold property table;
-
---create property table;
-CREATE TABLE IF NOT EXISTS nres_sold_property.sold_property LIKE nres_property.property;
-            ALTER TABLE nres_sold_property.sold_property
-            ADD COLUMN buyer_id VARCHAR(36) REFERENCES nres_users.customer(id),
-            ADD COLUMN seller_id VARCHAR(36) REFERENCES nres_users.customer(id),
-            ADD COLUMN buyer_agent_id VARCHAR(36) REFERENCES nres_users.agent(id),
-            ADD COLUMN seller_agent_id VARCHAR(36) REFERENCES nres_users.agent(id),
-            ADD COLUMN sold_approved_id VARCHAR(36) REFERENCES nres_users.staff(id),
-            ADD COLUMN sold_price DECIMAL(12, 2),
-            ADD COLUMN sold_date DATE,
-            MODIFY COLUMN status ENUM('sold') DEFAULT 'sold';
 
 
 
@@ -503,3 +497,34 @@ CREATE TABLE IF NOT EXISTS nres_services.service_provider_rating(
 
 -------------------------------------------------------------VIEWS------------------------------------------------------;
 
+-- create view for latest _ property dashboard;
+create view nres_property.latest_property_dashboard as
+
+SELECT h.property_id,h.property_type, h.property_name, h.tole_name, h.ward_number,h.city, h.posted_date ,
+ ha.ads_status
+FROM nres_property.house as h INNER JOIN nres_property.house_ads as ha ON h.property_id = ha.property_id
+UNION 
+SELECT l.property_id,l.property_type, l.property_name, l.tole_name, l.ward_number,l.city, l.posted_date ,
+ la.ads_status
+FROM nres_property.land as l INNER JOIN nres_property.land_ads as la ON l.property_id = la.property_id
+UNION 
+SELECT a.property_id,a.property_type, a.property_name, a.tole_name, a.ward_number,a.city, a.posted_date ,
+ aa.ads_status
+FROM nres_property.apartment as a INNER JOIN nres_property.apartment_ads as aa ON a.property_id = aa.property_id;
+
+
+-- create view for latest_property;
+
+-- create view nres_property.all_property_dashboard as
+
+-- SELECT h.property_id,h.property_type, h.property_name, h.tole_name, h.ward_number,h.city, h.posted_date ,
+--  ha.ads_status
+-- FROM nres_property.house as h INNER JOIN nres_property.house_ads as ha ON h.property_id = ha.property_id
+-- UNION 
+-- SELECT l.property_id,l.property_type, l.property_name, l.tole_name, l.ward_number,l.city, l.posted_date ,
+--  la.ads_status
+-- FROM nres_property.land as l INNER JOIN nres_property.land_ads as la ON l.property_id = la.property_id
+-- UNION 
+-- SELECT a.property_id,a.property_type, a.property_name, a.tole_name, a.ward_number,a.city, a.posted_date ,
+--  aa.ads_status
+-- FROM nres_property.apartment as a INNER JOIN nres_property.apartment_ads as aa ON a.property_id = aa.property_id;

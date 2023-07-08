@@ -140,6 +140,54 @@ function Utility() {
     }
   };
 
+
+  this.handleInsertPropertyComment = async function (req,res,callbackProperty){
+      const {property_id} = req.params;
+  let staff_id;
+  let super_admin_id;
+  
+  const user_type = req.baseUrl.substring(1);
+
+  let comment = req.body.comment ;
+  let private = req.body.private || false;
+
+
+  if(!comment ){
+    return res.status(400).json({message:"Please Submit Your Comment"});
+  }
+
+  if(user_type === 'staff'){
+    staff_id = req.id;
+    super_admin_id = null;
+    private = false;
+  }else if(user_type === 'superAdmin'){
+    super_admin_id = req.id;
+    if(req.body.private===true){
+      private = true;
+    }
+    staff_id = null;
+  }else{
+    return res.status(400).json({message:"You are not Authorize to Comment"});
+  }
+ 
+  
+  try {
+    const response = await callbackProperty(property_id,staff_id,super_admin_id,comment,private);
+    if(response.affectedRows===0){
+      return response.status(500).json({message:"No property to comment"})
+    }
+    return res.status(200).json({message:"comment submit successfully"});
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({message:"Unable to submit comment"});
+  }
+
+  }
+
+
+
+
+
   this.getSearchData = async function (req, res, getDataFunction) {
     let page, limit, offSet;
 
@@ -164,7 +212,25 @@ function Utility() {
     }
   };
 
- 
+  
+  this.handleGetPropertyComment = async function (req,res,getPropertyComment){
+
+    let {property_id} = req.params;
+
+    let super_admin_id = req.baseUrl.substring(1)==="superAdmin"?req.id:null;
+    
+
+
+    try {
+      const data = await getPropertyComment(property_id,super_admin_id);
+      return res.status(200).json(data);
+    } catch (error) {
+      console.error(error)
+      return res.status(500).json({message:"Unable To Get Comments"});
+    }
+
+
+  }
 
 
 
@@ -190,6 +256,16 @@ function Utility() {
 
 
 }
+
+
+
+
+
+
+
+
+
+
 
 function Auth() {
   const tokenExpireTime = "1hr";
