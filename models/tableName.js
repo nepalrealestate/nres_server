@@ -6,6 +6,7 @@ let userSchemaName =  node_env=='Production'?`${db_prefix}_nres_users`:'nres_use
 let propertySchemaName = node_env=='Production'?`${db_prefix}_nres_property`:'nres_property';
 let pendingPropertySchemaName =  node_env=='Production'?`${db_prefix}_nres_pending_property`:'nres_pending_property';
 let serviceSchemaName = node_env=='Production'?`${db_prefix}_nres_services`:'nres_services';
+let chatSchemaName = node_env=='Production'?`${db_prefix}_nres_chat`:'nres_chat';
 
 
 //table name 
@@ -71,6 +72,10 @@ const serviceTable = {
 }
 
 
+const chatTable = {
+    customer : `${chatSchemaName}.customer_chat`
+}
+
 
 
 const views = {
@@ -85,4 +90,4 @@ const views = {
 // property 
 
 
-module.exports = {userTable,propertyTable,serviceTable,views}
+module.exports = {userTable,propertyTable,serviceTable,views,chatTable}

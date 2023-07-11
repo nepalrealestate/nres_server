@@ -1,4 +1,8 @@
 {
     "vscode-mysql.enableTelemetry": true,
-    "vscode-mysql.enableDelimiterOperator": true
+    "vscode-mysql.enableDelimiterOperator": true,
+    "docwriter.style": "Auto-detect",
+    "docwriter.progress.trackFunctions": false,
+    "docwriter.progress.trackMethods": false,
+    "docwriter.hotkey.mac": "⌘ + ."
 }

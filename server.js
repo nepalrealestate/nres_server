@@ -18,7 +18,9 @@ const {connectMysql}  = require("./connection")
 const cookieParser = require('cookie-parser');
 const {excuteSQLFile}  = require("./connection");
 const {logger} = require("./utils/errorLogging/logging")
-const {Chat} = require("./chat/chatConnection");
+
+const {ChatServer, chatServer} = require("./chat/chatConnection");
+const { checkProperties } = require("./controllers/requiredObjectProperties");
 
 const port = 8000;
 
@@ -37,7 +39,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
 // excute all sql file for create db , schema and tables;
-excuteSQLFile();
+//excuteSQLFile();
 
 function handleMulterError(err, req, res, next) {
   if (err instanceof multer.MulterError ) {
@@ -74,8 +76,8 @@ app.use("/service",serviceRouter)
 
 
 // chat running
-const chatServer = new Chat();
-chatServer.chatServer();
+chatServer().startServer();
+
 
 
 if(process.env.NODE_ENV=='production'){

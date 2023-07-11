@@ -1,13 +1,7 @@
 const { pool } = require("../../connection");
-const { isTableExists } = require("../commonModels");
-const {
-  createPasswordResetTable,
-  insertIntoPasswordResetToken,
-} = require("./model.commonUsersCode");
 
-const agentTableName = "agent";
-const schemaName = "nres_users";
-const userRatingTable = "usersRating"
+
+
 const {propertyTable,userTable}= require("../tableName")
 
 // --------inserting 
