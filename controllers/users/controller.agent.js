@@ -7,6 +7,7 @@ const {
   updateProfile,
   updateAgentProfile,
   findAgentPassword,
+  getAllAgent,
 } = require("../../models/users/model.agent");
 const jwt = require("jsonwebtoken");
 const {
@@ -254,6 +255,13 @@ const handleUpdateAgentPassword = async(req,res)=>{
 
 }
 
+
+const handleGetAllAgent = async (req,res)=>{
+
+  return utility.getSearchData(req,res,getAllAgent)
+
+}
+
 module.exports = {
   handleAgentRegistration,
   handleGetAgent,
@@ -262,5 +270,6 @@ module.exports = {
   handleAgentPasswordReset,
   handleAgentRating,
   handleUpdateAgentProfile,
-  handleUpdateAgentPassword
+  handleUpdateAgentPassword,
+  handleGetAllAgent
 };

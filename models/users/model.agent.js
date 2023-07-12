@@ -133,4 +133,44 @@ async function updateAgentProfile(id,updateData){
 
 }
 
-module.exports = { registerAgent, findAgent, updateAgentPassword ,getAgent , updateAgentProfile,findAgentPassword };
+
+
+
+async function getAllAgent(condition,limit,offSet){
+
+    let sqlQuery = `SELECT id, name, email, phone_number, identification_type, 
+    identification_number, image, status FROM ${userTable.agent} WHERE 1=1 `;
+
+
+    const params = [];
+
+    for(let key of Object.keys(condition)){
+
+       
+
+      if(condition[key]){
+          // adding search conditon and  push value in params array;
+          sqlQuery += `AND ${key} = ?`
+          params.push(condition[key]);
+      }
+
+  }
+
+
+  sqlQuery += ` LIMIT ${limit} OFFSET ${offSet}`
+
+
+  
+
+  try {
+      const [result,field] = await pool.query(sqlQuery,params);
+    
+      return result;
+  } catch (error) {
+      console.log(error);
+      throw error;
+  }
+}
+
+
+module.exports = { registerAgent, findAgent, updateAgentPassword ,getAgent , updateAgentProfile,findAgentPassword, getAllAgent };
