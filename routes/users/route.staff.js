@@ -75,6 +75,9 @@ router.get("/property",verifyToken,handleGetLatestPropertyDashboard);
 
 router.get("/agent",verifyToken,handleGetAllAgent)
 
+//router.get("/staff");
+//router.get("/user")
+
 //get all customer
 
 module.exports = router;

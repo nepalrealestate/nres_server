@@ -3,6 +3,18 @@ const mysql = require("mysql2");
 const fs = require("fs");
 
 
+
+const app = require('express')();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server,{
+  pingTimeOut :60000,
+  cors:{
+    origin:"http://localhost:3000",
+  }
+});
+
+
+
 require("dotenv").config();
 
 // read schema.sql file and excute all query to create db , schema and table
@@ -61,5 +73,16 @@ const pool = mysql
     multipleStatements: true,
   })
   .promise(); //the promise() allow to use promises version
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports = { pool, excuteSQLFile };

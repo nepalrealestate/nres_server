@@ -5,7 +5,7 @@ CREATE SCHEMA nres_pending_property;
 CREATE SCHEMA nres_services;
 -- CREATE SCHEMA nres_unapproved_services;
 CREATE SCHEMA nres_sold_property;
-
+CREATE SCHEMA nres_chat;
 
 
 
@@ -491,7 +491,27 @@ CREATE TABLE IF NOT EXISTS nres_services.service_provider_rating(
     service_provider_id INT PRIMARY KEY,
     rating INT ,
     FOREIGN KEY (provider_id) REFERENCES nres_services.service_provider(provider_id)
+
 );
+
+
+
+
+--- CREATE TABLE for store chats between users and admin;
+
+CREATE TABLE IF NOT EXISTS nres_chat.customer_chat(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sender_id INT NOT NULL ,
+    receiver_id INT NOT NULL,
+    message TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+
+
+
 
 
 
