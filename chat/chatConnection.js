@@ -1,4 +1,5 @@
 const { handleUserChat } = require("../controllers/chat/controller.userChat");
+const { getSingleCustomerChat, insertCustomerChat } = require("../models/chat/model.customerChat");
 
 
 const app = require("express")();
@@ -14,37 +15,17 @@ const chatServer = function() {
   let adminChat = io.of("/admin");
   let userChat = io.of("/user");
 
-  const userToSocket = {};
-  const onlineUserID  = [];
+  const userToSocket = new Map();
+  const onlineUsers = [];
 
   let onlineUser = 0;
 
 
-  userChat.on("connection", (socket)=>{handleUserChat(userChat,socket)});
-
-  adminChat.on("connection", function (socket) {
-    onlineUser++;
-    console.log(`Total Online User ${onlineUser}`);
-
-    socket.send("Welcome To chat Bro ");
-
-    socket.broadcast.emit("broadcast", `Total Online User ${onlineUser}`);
-
-    socket.on("message", function (payload) {
-      console.log("Message Receive From Users");
-      console.log(payload);
-      socket.emit("message", {
-        message: "From Admin",
-        name: "Nepal real state ",
-      });
-    });
-
-    socket.on("disconnect", function () {
-      console.log("User Disconnected From Chat");
-      onlineUser--;
-      console.log(onlineUser);
-    });
+  userChat.on("connection", async function(socket){
+    handleUserChat(userChat,socket)
   });
+
+  
 
   const startServer = () => {
     server.listen(5000, () => {
