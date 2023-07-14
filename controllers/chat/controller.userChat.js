@@ -1,30 +1,46 @@
+
+
 const {
   getSingleCustomerChat,
   insertCustomerChat,
+  insertCustomerList,
+  getCustomerChatList,
 } = require("../../models/chat/model.customerChat");
 
 const userToSocket = new Map();
-//const onlineUsers = [];
 
 const handleUserChat = async function (userChat, socket) {
-  console.log("User COnnected to user Chat");
 
-  //mapping user id to socket id;
+
+  console.log("User COnnected to user Chat");
   const userID = socket.handshake.query.sender_id;
 
-  if (!userToSocket[userID]) {
-    userToSocket[userID] = new Set();
+  //  if user present in nres_chat.customer_list or 
+  //  user successfully insert in nres_chat.customer_list 
+  // i.e user register as customer then only allow to chat
+
+
+  try {
+    const chatListResponse = await insertCustomerList(userID);
+    console.log(chatListResponse)
+  } catch (error) {
+    console.log(error)
+    // this means user cannot insert because in customer table user is not register
+    socket.send("User is not register as cutomer");
+    socket.disconnect(true);
+    return;
+    
   }
-  userToSocket[userID].add(socket.id);
-  console.log(userToSocket);
 
-  //after user connected get all message to users
+  //mapping user id to socket id;
 
-  // if(!onlineUsers.some((user)=>user.userID == userID)){
-  //   onlineUsers.push({userID,socketID:socket.id})
-  // }
-  // console.log(onlineUsers)
+  if (!userToSocket.has(userID)) {
+     userToSocket.set(userID, new Set());
+  }
 
+  userToSocket.get(userID).add(socket.id);
+
+// after user connect get all previous chats
   try {
     const chat = await getSingleCustomerChat(userID);
     socket.send(chat);
@@ -61,15 +77,28 @@ const handleUserChat = async function (userChat, socket) {
     }
   })
 
-  //userChat.emit(`Active Users - ${onlineUserID}`)
+
 
   socket.on("disconnect", function () {
    console.log("User disconnet");
    console.log("current user is "+ userID)
    userToSocket.delete(userID);
+   console.log(userToSocket)
   })
 
 
 };
 
-module.exports = { handleUserChat };
+
+const handleGetCustomerChatList = async function(req,res){
+
+  try {
+    const data = await getCustomerChatList();
+    return res.status(200).json(data);
+  } catch (error) {
+    return res.status(500).json("Internal Error");
+  }
+
+}
+
+module.exports = { handleUserChat,handleGetCustomerChatList };

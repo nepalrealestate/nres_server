@@ -73,7 +73,8 @@ const serviceTable = {
 
 
 const chatTable = {
-    customer : `${chatSchemaName}.customer_chat`
+    customer : `${chatSchemaName}.customer_chat`,
+    customer_list: `${chatSchemaName}.customer_list`
 }
 
 
