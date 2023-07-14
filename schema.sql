@@ -495,6 +495,7 @@ CREATE TABLE IF NOT EXISTS nres_services.service_provider_rating(
 );
 
 
+-----------------------------------------------------------CHATS--------------------------------------------------;
 
 
 --- CREATE TABLE for store chats between users and admin;
@@ -505,6 +506,14 @@ CREATE TABLE IF NOT EXISTS nres_chat.customer_chat(
     receiver_id INT NOT NULL,
     message TEXT,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CREATE TABLE for store chat started users;
+
+CREATE TABLE IF NOT EXISTS nres_chat.customer_list (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL UNIQUE,
+    FOREIGN KEY (customer_id) REFERENCES nres_users.customer(id)
 );
 
 

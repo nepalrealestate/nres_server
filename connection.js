@@ -6,12 +6,7 @@ const fs = require("fs");
 
 const app = require('express')();
 const server = require('http').createServer(app);
-const io = require('socket.io')(server,{
-  pingTimeOut :60000,
-  cors:{
-    origin:"http://localhost:3000",
-  }
-});
+
 
 
 
