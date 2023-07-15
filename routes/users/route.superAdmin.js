@@ -13,6 +13,6 @@ router.post("/register",handleSuperAdminRegistration)
 router.post("/login",handleSuperAdminLogin)
 
 
-router.get("chat/userChatList",handleGetCustomerChatList);
+router.get("chat/customerList",handleGetCustomerChatList);
 
 module.exports  = router;

@@ -20,17 +20,17 @@ const handleUserChat = async function (userChat, socket) {
   // i.e user register as customer then only allow to chat
 
 
-  try {
-    const chatListResponse = await insertCustomerList(userID);
-    console.log(chatListResponse)
-  } catch (error) {
-    console.log(error)
-    // this means user cannot insert because in customer table user is not register
-    socket.send("User is not register as cutomer");
-    socket.disconnect(true);
-    return;
+  // try {
+  //   const chatListResponse = await insertCustomerList(userID);
+  //   console.log(chatListResponse)
+  // } catch (error) {
+  //   console.log(error)
+  //   // this means user cannot insert because in customer table user is not register
+  //   socket.send("User is not register as cutomer");
+  //   socket.disconnect(true);
+  //   return;
     
-  }
+  // }
 
   //mapping user id to socket id;
 
@@ -51,9 +51,13 @@ const handleUserChat = async function (userChat, socket) {
   socket.on("message", async function (payload) {
     //save all chats to database;
     console.log(payload);
-    let sender_id = payload.sender_id;
-    let receiver_id = payload.receiver_id;
+    console.log("This is sender id - "+userID);
+    let sender_id = userID;
+    //nres - admin denoted as number 0 
+    let receiver_id = sender_id === Number(0)? 0 : payload.receiver_id;
+     
     let message = payload.message;
+    console.log(sender_id,receiver_id,message)
 
     try {
       const response = await insertCustomerChat(
@@ -101,4 +105,17 @@ const handleGetCustomerChatList = async function(req,res){
 
 }
 
-module.exports = { handleUserChat,handleGetCustomerChatList };
+const handleGetSingleCustomerChat = async function (req,res){
+
+    const {customerID} = req.params;
+
+    try {
+      const data =await getSingleCustomerChat(customerID);
+      return res.status(200).json(data);
+    } catch (error) {
+      return res.status(500).json("Internal Error");
+    }
+
+}
+
+module.exports = { handleUserChat,handleGetCustomerChatList,handleGetSingleCustomerChat };
