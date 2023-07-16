@@ -15,10 +15,7 @@ const chatServer = function() {
   let adminChat = io.of("/admin");
   let userChat = io.of("/user");
 
-  const userToSocket = new Map();
-  const onlineUsers = [];
 
-  let onlineUser = 0;
 
 
   userChat.on("connection", async function(socket){
