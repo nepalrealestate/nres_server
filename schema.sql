@@ -517,6 +517,32 @@ CREATE TABLE IF NOT EXISTS nres_chat.customer_list (
 );
 
 
+--CREATE table for store chats between staff and admins;
+
+CREATE TABLE IF NOT EXISTS nres_chat.staff_chat(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sender_id INT NOT NULL , 
+    receiver_id INT NOT NULL,
+    message TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+--CREATE TABLE FOR store chat started staff i.e all staff ;
+
+CREATE TABLE IF NOT EXISTS nres_chat.staff_list (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    staff_id INT NOT NULL UNIQUE,
+    FOREIGN KEY (staff_id) REFERENCES nres_users.staff(id)
+);
+
+--CREATE TABLE for store staff_list for group chat;
+
+CREATE TABLE IF NOT EXISTS nres_chat.staff_group (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    staff_id INT NOT NULL UNIQUE,
+    FOREIGN KEY (staff_id) REFERENCES nres_users.staff(id)
+);
+
 
 
 
