@@ -1,3 +1,4 @@
+const { handleStaffChat } = require("../controllers/chat/controller.staffChat");
 const { handleUserChat } = require("../controllers/chat/controller.userChat");
 const { getSingleCustomerChat, insertCustomerChat } = require("../models/chat/model.customerChat");
 
@@ -14,6 +15,7 @@ const io = require("socket.io")(server, {
 const chatServer = function() {
   let adminChat = io.of("/admin");
   let userChat = io.of("/user");
+  let staffChat = io.of("/staff");
 
 
 
@@ -22,13 +24,17 @@ const chatServer = function() {
     handleUserChat(userChat,socket)
   });
 
+  staffChat.on("connection",async function (socket){
+   handleStaffChat(userChat,socket);
+  })
+
   
 
   const startServer = () => {
     server.listen(5000, () => {
       console.log('Chat server running on port 5000');
     });
-  };
+  }; 
 
   //return server=()=>{server.listen(5000,()=>console.log("chat server running on port 5000"))};
 

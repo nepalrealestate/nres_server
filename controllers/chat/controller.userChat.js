@@ -1,5 +1,3 @@
-
-
 const {
   getSingleCustomerChat,
   insertCustomerChat,
@@ -7,11 +5,11 @@ const {
   getCustomerChatList,
 } = require("../../models/chat/model.customerChat");
 
-const userToSocket = new Map();
+
 
 const handleUserChat = async function (userChat, socket) {
 
-
+  const userToSocket = new Map();
   console.log("User COnnected to user Chat");
   const userID = socket.handshake.query.sender_id;
   console.log("User ID is " + userID)
@@ -58,6 +56,7 @@ const handleUserChat = async function (userChat, socket) {
       //socket.send(error);
     }
   })
+   
 
 
   socket.on("message", async function (payload) {

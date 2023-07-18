@@ -3,6 +3,7 @@ const express = require("express");
 
 const {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin} = require('../../controllers/users/superAdmin');
 const { handleGetCustomerChatList } = require("../../controllers/chat/controller.userChat");
+const { handleGetStaffChatList, handleInsertStaffGroup, handleDeleteStaffFromGroup } = require("../../controllers/chat/controller.staffChat");
 
 const router = express.Router();
 
@@ -14,5 +15,8 @@ router.post("/login",handleSuperAdminLogin)
 
 
 router.get("chat/customerList",handleGetCustomerChatList);
+router.get("chat/staffList",handleGetStaffChatList);
+router.post("chat/staffGroup/:staffID",handleInsertStaffGroup);
+router.delete("chat/staffGroup/:staffID",handleDeleteStaffFromGroup);
 
 module.exports  = router;
