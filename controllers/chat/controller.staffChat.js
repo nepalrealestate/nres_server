@@ -1,7 +1,8 @@
-const {  insertStaffChatList, insertStaffChat, getStaffChatList, insertStaffGroup, deleteStaffFromGroup } = require("../../models/chat/model.staffChat");
+const {  insertStaffChatList, insertStaffChat, getStaffChatList, insertStaffGroup, deleteStaffFromGroup, getStaffFromGroupByID, insertStaffGroupChat } = require("../../models/chat/model.staffChat");
 
 const handleStaffChat = async function (staffChat, socket) {
   const userToSocket = new Map();
+ 
 
   console.log("Staff Connected To chat");
   const userID = socket.handshake.query.sender_id;
@@ -10,16 +11,30 @@ const handleStaffChat = async function (staffChat, socket) {
   //  user successfully insert in nres_chat.customer_list
   // i.e user register as customer then only allow to chat
 
+  // try {
+  //   const chatListResponse = await insertStaffChatList(userID);
+  //   console.log(chatListResponse);
+  // } catch (error) {
+  //   console.log(error);
+  //   // this means user cannot insert because in customer table user is not register
+  //   socket.send("User is not register as staff");
+  //   socket.disconnect(true);
+  //   return;
+  // }
+
+  // if staff in group then join group chat
   try {
-    const chatListResponse = await insertStaffChatList(userID);
-    console.log(chatListResponse);
+    const groupResponse = await getStaffFromGroupByID(userID);
+    console.log("This is Group Response " + groupResponse)
   } catch (error) {
     console.log(error);
-    // this means user cannot insert because in customer table user is not register
-    socket.send("User is not register as cutomer");
-    socket.disconnect(true);
-    return;
   }
+  if(groupResponse === userID){
+    socket.join("staffGroup");
+    staffChat.sockets.in("staffGroup").emit("connectedRoom" , "You are connected to group");
+    
+  }
+
 
   //mapping user id to socket id;
 
@@ -57,12 +72,12 @@ const handleStaffChat = async function (staffChat, socket) {
         if (userToSocket.has(receiver_id.toString())) {
           //send to sender
           userToSocket.get(sender_id.toString()).forEach(function(socketID){
-            userChat.to(socketID).emit("message",{ sender_id: sender_id,receiver_id:receiver_id,message: message , timestamp:new Date().toISOString()})
+            staffChat.to(socketID).emit("message",{ sender_id: sender_id,receiver_id:receiver_id,message: message , timestamp:new Date().toISOString()})
           })
 
           //send to receiver
           userToSocket.get(receiver_id.toString()).forEach(function (socketID) {
-            userChat
+            staffChat
               .to(socketID)
               .emit("message", { sender_id: sender_id, receiver_id:receiver_id,message: message ,timestamp:new Date().toISOString()});
           });
@@ -73,6 +88,36 @@ const handleStaffChat = async function (staffChat, socket) {
     }
   })
 
+
+  socket.on("groupMessage",async function (room,payload){
+
+    // for only one group
+    if(room !== "staffGroup"){
+      return;
+    }
+
+     //save all chats to database;
+     console.log(payload);
+     console.log("This is sender id - "+userID);
+     let sender_id = userID;
+    
+     let message = payload.message;
+     if(message.length ===0){
+       return;
+     }
+ 
+     try {
+       const response = await insertStaffGroupChat(sender_id,message);
+ 
+       if (response.affectedRows !== 0) {
+         // send message to room 
+          staffChat.to(room).emit("groupMessage",message);
+       }
+     } catch (error) {
+       socket.send(error);
+     }
+
+  })
 
 
   socket.on("disconnect", function () {

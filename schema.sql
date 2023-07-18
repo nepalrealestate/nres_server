@@ -544,6 +544,15 @@ CREATE TABLE IF NOT EXISTS nres_chat.staff_group (
 );
 
 
+--CREATE TABLE FOR store group chat beetween staff and admin;
+
+CREATE TABLE IF NOT EXISTS nres_chat.staff_group_chat (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sender_id INT NOT NULL ,
+    message TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 
 
 
