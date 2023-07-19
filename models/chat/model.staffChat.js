@@ -61,6 +61,17 @@ async function insertStaffGroup(staff_id){
     
 }
 
+async function getStaffFromGroupByID(staff_id){
+  const sqlQuery = `SELECT * FROM ${chatTable.staff_group} WHERE staff_id = ?`;
+
+  try {
+    const [response,field] = await pool.query(sqlQuery,[staff_id]);
+    return response[0];
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function  deleteStaffFromGroup(staff_id){
     const sqlQuery =  `DELETE FROM  ${chatTable.staff_group} WHERE staff_id = ?`;
 
@@ -72,11 +83,24 @@ async function  deleteStaffFromGroup(staff_id){
       }
 }
 
+
+async function insertStaffGroupChat(sender_id , message){
+  const sqlQuery = `INSERT INTO ${chatTable.staff_group_chat} (sender_id,message) VALUES (?,?)`;
+  try {
+    const [response, field] = await pool.query(sqlQuery,[sender_id,message]);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
  getSingleStaffChat,
  insertStaffChat,
  insertStaffChatList,
  getStaffChatList,
  insertStaffGroup,
- deleteStaffFromGroup
+ deleteStaffFromGroup,
+ getStaffFromGroupByID,
+ insertStaffGroupChat
 };

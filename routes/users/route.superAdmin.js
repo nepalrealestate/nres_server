@@ -14,6 +14,9 @@ router.post("/register",handleSuperAdminRegistration)
 router.post("/login",handleSuperAdminLogin)
 
 
+// chat 
+router.post("chat/add")
+
 router.get("chat/customerList",handleGetCustomerChatList);
 router.get("chat/staffList",handleGetStaffChatList);
 router.post("chat/staffGroup/:staffID",handleInsertStaffGroup);

@@ -78,7 +78,8 @@ const chatTable = {
 
     staff    : `${chatSchemaName}.staff_chat`,
     staff_list : `${chatSchemaName}.staff_list`,
-    staff_group : `${chatSchemaName}.staff_group`
+    staff_group : `${chatSchemaName}.staff_group`,
+    staff_group_chat : `${chatSchemaName}.staff_group_chat`
 }
 
 
