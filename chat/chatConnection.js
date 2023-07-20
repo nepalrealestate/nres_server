@@ -25,7 +25,7 @@ const chatServer = function() {
   });
 
   staffChat.on("connection",async function (socket){
-   handleStaffChat(userChat,socket);
+   handleStaffChat(staffChat,socket);
   })
 
   

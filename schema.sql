@@ -49,10 +49,10 @@ CREATE TABLE IF NOT EXISTS nres_users.agent
 -- create staff;
 CREATE TABLE  IF NOT EXISTS nres_users.staff
  (id INT AUTO_INCREMENT PRIMARY KEY,
- name VARCHAR(255),
- email VARCHAR(255),
+ name VARCHAR(50),
+ email VARCHAR(50),
  password VARCHAR(255),
- UNIQUE(email) )AUTO_INCREMENT=1; ;
+ UNIQUE(email) )AUTO_INCREMENT=1; 
 
 
 -- create customer;
