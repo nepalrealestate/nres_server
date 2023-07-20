@@ -23,16 +23,27 @@ const handleStaffChat = async function (staffChat, socket) {
   // }
 
   // if staff in group then join group chat
-  try {
-    const groupResponse = await getStaffFromGroupByID(userID);
-    console.log("This is Group Response " + groupResponse)
-  } catch (error) {
-    console.log(error);
+ 
+  if(Number(userID) !== 0){
+    try {
+      groupResponse = await getStaffFromGroupByID(userID);
+     console.log(" This is Group Response " + groupResponse?.staff_id)
+      if(groupResponse?.staff_id === Number(userID)){
+        socket.join("staffGroup");
+        staffChat.in("staffGroup").emit("connectedRoom" , "You are connected to group");
+        console.log("Staff Join in group")
+     }
+   } catch (error) {
+     console.log(error);
+   }
   }
-  if(groupResponse === userID){
+ 
+  if(Number(userID) === 0){
     socket.join("staffGroup");
-    staffChat.sockets.in("staffGroup").emit("connectedRoom" , "You are connected to group");
-    
+    staffChat.in("staffGroup").emit("connectedRoom" , "You are connected to group");
+    console.log("Admin Join in group")
+
+  
   }
 
 
@@ -88,6 +99,7 @@ const handleStaffChat = async function (staffChat, socket) {
     }
   })
 
+  // group message related
 
   socket.on("groupMessage",async function (room,payload){
 
@@ -102,7 +114,8 @@ const handleStaffChat = async function (staffChat, socket) {
      let sender_id = userID;
     
      let message = payload.message;
-     if(message.length ===0){
+     console.log(room,message)
+     if(message.length === 0){
        return;
      }
  
@@ -111,7 +124,11 @@ const handleStaffChat = async function (staffChat, socket) {
  
        if (response.affectedRows !== 0) {
          // send message to room 
-          staffChat.to(room).emit("groupMessage",message);
+         console.log(socket.adapter.rooms)
+       
+          staffChat.to("staffGroup").emit("groupMessage",{sender_id:sender_id,message:message});
+          console.log("Here is message send")
+          console.log(socket.adapter.rooms.get("staffGroup"))
        }
      } catch (error) {
        socket.send(error);

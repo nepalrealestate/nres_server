@@ -15,11 +15,11 @@ router.post("/login",handleSuperAdminLogin)
 
 
 // chat 
-router.post("chat/add")
+//router.post("chat/add")
 
-router.get("chat/customerList",handleGetCustomerChatList);
-router.get("chat/staffList",handleGetStaffChatList);
-router.post("chat/staffGroup/:staffID",handleInsertStaffGroup);
-router.delete("chat/staffGroup/:staffID",handleDeleteStaffFromGroup);
+router.get("/chat/customerList",handleGetCustomerChatList);
+router.get("/chat/staffList",handleGetStaffChatList);
+router.post("/chat/staffGroup/:staffID",handleInsertStaffGroup);
+router.delete("/chat/staffGroup/:staffID",handleDeleteStaffFromGroup);
 
 module.exports  = router;

@@ -62,10 +62,11 @@ async function insertStaffGroup(staff_id){
 }
 
 async function getStaffFromGroupByID(staff_id){
-  const sqlQuery = `SELECT * FROM ${chatTable.staff_group} WHERE staff_id = ?`;
+  const sqlQuery = `SELECT staff_id FROM ${chatTable.staff_group} WHERE staff_id = ?`;
 
   try {
     const [response,field] = await pool.query(sqlQuery,[staff_id]);
+    
     return response[0];
   } catch (error) {
     throw error;

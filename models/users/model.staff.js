@@ -23,7 +23,7 @@ async function registerStaff(name,email,password){
         } catch (error) {
             console.log("Console Error from try catch",error);
         }
-        const insertQuery =  `INSERT INTO ${userTable.staff} (id,name,email,password) VALUES (0,?,?,?)`;
+        const insertQuery =  `INSERT INTO ${userTable.staff} (name,email,password) VALUES (?,?,?)`;
         try {
             const [result,field] = await pool.query(insertQuery,[name,email,password]);
             return result;
