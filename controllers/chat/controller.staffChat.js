@@ -1,7 +1,9 @@
 const {  insertStaffChatList, insertStaffChat, getStaffChatList, insertStaffGroup, deleteStaffFromGroup, getStaffFromGroupByID, insertStaffGroupChat } = require("../../models/chat/model.staffChat");
 
+const userToSocket = new Map();
+
 const handleStaffChat = async function (staffChat, socket) {
-  const userToSocket = new Map();
+
  
 
   console.log("Staff Connected To chat");
@@ -37,7 +39,7 @@ const handleStaffChat = async function (staffChat, socket) {
      console.log(error);
    }
   }
- 
+  // 0 is represent NRES Super Admin 
   if(Number(userID) === 0){
     socket.join("staffGroup");
     staffChat.in("staffGroup").emit("connectedRoom" , "You are connected to group");
@@ -76,16 +78,15 @@ const handleStaffChat = async function (staffChat, socket) {
         receiver_id,
         message
       );
+     
 
       if (response.affectedRows !== 0) {
         // if receiver_id present in online User then  send message
-     
+            //send to sender
+        userToSocket.get(sender_id.toString()).forEach(function(socketID){
+          staffChat.to(socketID).emit("message",{ sender_id: sender_id,receiver_id:receiver_id,message: message , timestamp:new Date().toISOString()})
+        })
         if (userToSocket.has(receiver_id.toString())) {
-          //send to sender
-          userToSocket.get(sender_id.toString()).forEach(function(socketID){
-            staffChat.to(socketID).emit("message",{ sender_id: sender_id,receiver_id:receiver_id,message: message , timestamp:new Date().toISOString()})
-          })
-
           //send to receiver
           userToSocket.get(receiver_id.toString()).forEach(function (socketID) {
             staffChat
