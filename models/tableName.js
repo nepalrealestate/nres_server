@@ -76,6 +76,9 @@ const chatTable = {
     customer : `${chatSchemaName}.customer_chat`,
     customer_list: `${chatSchemaName}.customer_list`,
 
+    agent : `${chatSchemaName}.agent_chat`,
+    agent_list : `${chatSchemaName}.agent_list`,
+
     staff    : `${chatSchemaName}.staff_chat`,
     staff_list : `${chatSchemaName}.staff_list`,
     staff_group : `${chatSchemaName}.staff_group`,

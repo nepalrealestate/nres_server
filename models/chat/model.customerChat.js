@@ -5,7 +5,7 @@ const { chatTable } = require("../tableName");
 
 async function getSingleCustomerChat(id){
 
-    const sqlQuery = `SELECT sender_id,receiver_id,message,timestamp FROM ${chatTable.customer} WHERE sender_id = ? OR receiver_id = ? `;
+    const sqlQuery = `SELECT id,sender_id,receiver_id,message,timestamp FROM ${chatTable.customer} WHERE sender_id = ? OR receiver_id = ? `;
 
     try {
         const [result,field] = await pool.query(sqlQuery,[id,id]);
