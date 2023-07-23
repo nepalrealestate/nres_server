@@ -26,7 +26,11 @@ const userTable = {
 
     passwordResetToken : `${userSchemaName}.passwordResetToken`,
 
-    agentRating : `${userSchemaName}.agentRating`
+    agentRating : `${userSchemaName}.agentRating`,
+
+    //Staff related table
+    staffActivityLog : `${userSchemaName}.staff_activity_log`
+    
 
 }
 

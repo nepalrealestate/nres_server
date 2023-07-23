@@ -24,6 +24,6 @@ router.delete("/chat/staffGroup/:staffID",handleDeleteStaffFromGroup);
 
 
 // agent chat
-router.get("/chat")
+//router.get("/chat")
 
 module.exports  = router;
