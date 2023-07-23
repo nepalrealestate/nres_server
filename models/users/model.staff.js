@@ -6,23 +6,6 @@ const staffTableName = 'staff';
 const schemaName = 'nres_users';
 
 async function registerStaff(name,email,password){
-
-
-    
-
-    
-    
-   
-
-       
-
-        try {
-            const [row,field] = await pool.query(query)
-            console.log("Table Created");
-            console.log(row);
-        } catch (error) {
-            console.log("Console Error from try catch",error);
-        }
         const insertQuery =  `INSERT INTO ${userTable.staff} (name,email,password) VALUES (?,?,?)`;
         try {
             const [result,field] = await pool.query(insertQuery,[name,email,password]);
@@ -59,5 +42,30 @@ async function getStaffByID(id){
 }
 
 
+async function insertStaffActivityLog(staffID,actionType,action){
 
-module.exports = {registerStaff,findStaff,getStaffByID}
+    const insertQuery = `INSERT INTO ${userTable.staffActivityLog} (staff_id,action_type,action_description)  VALUES (?,?,?)`;
+
+    try {
+        const [response,field] = await pool.query(insertQuery,[staffID,actionType,action]);
+        return response;
+    } catch (error) {
+        throw error;
+    }
+
+}
+
+async function getStaffActivityLog(staffID){
+    
+    const getQuery = `SELECT * FROM ${userTable.staffActivityLog} WHERE staff_id = ?`;
+
+    try {
+        const [result,field]  = await pool.query(getQuery,[staffID]);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+module.exports = {registerStaff,findStaff,getStaffByID , insertStaffActivityLog,getStaffActivityLog}

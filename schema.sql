@@ -88,7 +88,20 @@ CREATE TABLE IF NOT EXISTS nres_users.agentRating
     );
 
 
---- ------------------------------create table for store property-----------------------------;
+-- CREATE table for store staff activity log;
+CREATE TABLE IF NOT EXISTS nres_users.staff_activity_log(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    staff_id INT NOT NULL,
+    action_type ENUM ("update","insert","delete","approve","reject","comment"),
+    action_description TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (staff_id) REFERENCES nres_users.staff(id)
+);
+
+
+
+
+---------------------------------create table for store property-----------------------------;
 
 
 -- create user defined variable for track property ID;

@@ -107,6 +107,14 @@ const handleAddVideoLink = async (req,res)=>{
 
 
 
+const handleInsertStaffActivityLog = async function (req,res){
+
+    
+
+}
+
+
+
 
 
 
