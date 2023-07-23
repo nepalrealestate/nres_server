@@ -516,6 +516,22 @@ CREATE TABLE IF NOT EXISTS nres_chat.customer_list (
     FOREIGN KEY (customer_id) REFERENCES nres_users.customer(id)
 );
 
+-- CREATE TABLE For store agents chat;
+CREATE TABLE IF  NOT EXISTS nres_chat.agent_chat(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    message TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CREATE TABLE for store agent chat list;
+CREATE TABLE IF NOT EXISTS nres_chat.agent_list(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    agent_id INT NOT NULL UNIQUE,
+    FOREIGN KEY (agent_id) REFERENCES nres_users.agent(id)
+);
+
 
 --CREATE table for store chats between staff and admins;
 

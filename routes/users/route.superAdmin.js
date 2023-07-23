@@ -22,4 +22,8 @@ router.get("/chat/staffList",handleGetStaffChatList);
 router.post("/chat/staffGroup/:staffID",handleInsertStaffGroup);
 router.delete("/chat/staffGroup/:staffID",handleDeleteStaffFromGroup);
 
+
+// agent chat
+router.get("/chat")
+
 module.exports  = router;
