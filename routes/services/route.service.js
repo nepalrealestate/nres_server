@@ -1,5 +1,5 @@
 const express = require("express");
-const { handleRegisterServiceProvider, handleGetServieProvider, handleVerifyServiceProvider, handleGetPendingServiceProvider } = require("../../controllers/services/controller.service");
+const { handleRegisterServiceProvider, handleGetServieProvider, handleVerifyServiceProvider, handleGetPendingServiceProvider } = require("../../controllers/nres_services/controller.nres_service");
 
 const router = express.Router();
 
