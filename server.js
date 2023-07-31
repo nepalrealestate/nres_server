@@ -76,7 +76,7 @@ app.use("/service",serviceRouter)
 
 
 // chat running
-chatServer().startServer();
+// chatServer().startServer();
 
 
 
@@ -88,5 +88,3 @@ if(process.env.NODE_ENV=='production'){
     logger.info("port is running in 8000: devs")
 })
 }
-
-
