@@ -106,7 +106,6 @@ CREATE TABLE IF NOT EXISTS nres_users.staff_activity_log(
 
 -- create user defined variable for track property ID;
 CREATE TABLE IF NOT EXISTS nres_property.property_id_tracker (
-
     id INT NOT NULL PRIMARY KEY,
     property_id INT
 

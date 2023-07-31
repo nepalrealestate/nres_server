@@ -4,7 +4,7 @@
 //id,name,phone_number,email,service_type,state,district,city,ward_number,profile_image,status
 
 const { wrapAwait } = require("../../errorHandling")
-const { registerServiceProvider, getServiceProvider, verifyServiceProvider, getPendingServiceProvider } = require("../../models/services/model.service")
+const { registerServiceProvider, getServiceProvider, verifyServiceProvider, getPendingServiceProvider } = require("../../models/nres_services/model.nres_service")
 
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
 const {Utility} = require('../controller.utils')

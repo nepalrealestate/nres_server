@@ -22,7 +22,14 @@ const {logger} = require("./utils/errorLogging/logging")
 const {ChatServer, chatServer} = require("./chat/chatConnection");
 const { checkProperties } = require("./controllers/requiredObjectProperties");
 
+
+const db = require("./models/model.index");
+
 const port = 8000;
+
+// init sequlize;
+db.sequelize.sync();
+
 
 app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 

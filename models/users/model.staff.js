@@ -5,6 +5,48 @@ const { propertyTable, userTable } = require("../tableName");
 const staffTableName = 'staff';
 const schemaName = 'nres_users';
 
+
+
+function staffModel (sequelize,DataTypes){
+    return Staff = sequelize.define('user_staff',{
+      staff_id :{
+        type:DataTypes.INTEGER,
+        autoIncreament:true,
+        primaryKey:true
+      },
+      name:{
+        type:DataTypes.STRING,
+        allowNull:false,
+        validate:{
+          notEmpty:true
+        }
+      },
+      email:{
+        type:DataTypes.STRING,
+        allowNull:false,
+        unique:true,
+        validate:{
+            isEmail:true,
+            notEmpty:true
+        }
+      },
+
+      password:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate: {
+          notEmpty: true  
+      }
+    }
+  
+  
+  
+    })
+  }
+
+
+
+
 async function registerStaff(name,email,password){
         const insertQuery =  `INSERT INTO ${userTable.staff} (name,email,password) VALUES (?,?,?)`;
         try {
@@ -68,4 +110,4 @@ async function getStaffActivityLog(staffID){
 }
 
 
-module.exports = {registerStaff,findStaff,getStaffByID , insertStaffActivityLog,getStaffActivityLog}
+module.exports = {staffModel,registerStaff,findStaff,getStaffByID , insertStaffActivityLog,getStaffActivityLog}
