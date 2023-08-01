@@ -11,8 +11,9 @@ function staffModel (sequelize,DataTypes){
     return Staff = sequelize.define('user_staff',{
       staff_id :{
         type:DataTypes.INTEGER,
-        autoIncreament:true,
+        autoIncrement:true,
         primaryKey:true
+        
       },
       name:{
         type:DataTypes.STRING,

@@ -31,6 +31,7 @@ const port = 8000;
 db.sequelize.sync();
 
 
+
 app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 
 
