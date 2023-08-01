@@ -76,7 +76,7 @@ app.use("/service",serviceRouter)
 
 
 // chat running
-// chatServer().startServer();
+chatServer().startServer();
 
 
 

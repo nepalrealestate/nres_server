@@ -38,7 +38,7 @@ const chatServer = function() {
   
 
   const startServer = () => {
-    server.listen(5000, () => {
+    server.listen(6000, () => {
       console.log('Chat server running on port 5000');
     });
   }; 
