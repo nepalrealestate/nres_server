@@ -13,7 +13,9 @@ db.UserModel = {
 };
 
 db.propertyModel = {
-    House: require('./property/model.house').houseModel(sequelize, DataTypes)
+    House: require('./property/model.house').houseModel(sequelize, DataTypes),
+    Apartment:require('./property/model.apartment').apartmentModel(sequelize,DataTypes),
+    Land:require('./property/model.land').landModel(sequelize,DataTypes)
 };
 
 

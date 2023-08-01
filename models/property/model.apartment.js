@@ -12,6 +12,127 @@ const schemaName = 'nres_property';
 
 // ----------------------------CREATE APARTMENT DATA--------------------------------
 
+// apartmehnt model 
+function apartmentModel (sequelize,DataTypes){
+    return Apartment = sequelize.define('property_apartment',{
+      property_id :{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+        unique:true,
+        primaryKey:true,
+      },
+      property_type :{
+        type:DataTypes.ENUM('commercial','residential','office')
+      },
+      property_name : {
+        type:DataTypes.STRING,
+        allowNull:false,
+        validate:{
+          notEmpty: true, 
+        }
+      },
+      listed_for :{
+        type:DataTypes.ENUM('sell','rent')
+      },
+     
+      property_age:{
+        type:DataTypes.INTEGER
+      },
+      floor:{
+        type:DataTypes.FLOAT
+      },
+     bhk:{
+        type:DataTypes.INTEGER
+     }, 
+      facing:{
+        type:DataTypes.ENUM('east','west','north','south','east-north','east-south','west-north','west-south')
+      },
+      province:{
+        type:DataTypes.STRING
+      },
+      district:{
+        type:DataTypes.STRING
+      },
+      municipality:{
+        type:DataTypes.STRING
+      },
+      ward:{
+        type:DataTypes.INTEGER
+      },
+      landmark:{
+        type:DataTypes.STRING
+      },
+      latitude:{
+        type:DataTypes.DECIMAL(9,6)
+      },
+      longitude:{
+        type:DataTypes.DECIMAL(9,6)
+      },
+      property_area:{
+        type:DataTypes.FLOAT
+      },
+      road_size:{
+        type:DataTypes.FLOAT
+      },
+      price:{
+        type:DataTypes.DECIMAL(12,2),
+        allowNull:false
+      },
+      price_type:{
+        type:DataTypes.ENUM('fixed','negotiable')
+      },
+      furnish:{
+        type:DataTypes.ENUM('non-furnished','furnished','semi-furnished')
+      },
+      parking_bike:{
+        type:DataTypes.INTEGER
+      },
+      parking_car:{
+        type:DataTypes.INTEGER
+      },
+      amenities:{
+        type:DataTypes.JSON
+      },
+      description:{
+        type:DataTypes.TEXT
+      },
+      property_image:{
+        type:DataTypes.JSON
+      },
+      property_video:{
+        type:DataTypes.JSON
+      },
+      posted_date:{
+        type:DataTypes.DATE
+      },
+      staff_id:{
+        type:DataTypes.INTEGER,
+        // references:{
+        //   //model:
+        //   //key 
+        // }
+        
+      },
+      customer_id:{
+        type:DataTypes.INTEGER
+      },
+      agent_id :{
+        type:DataTypes.INTEGER
+      },
+      views:{
+        type:DataTypes.INTEGER,
+        defaultValue:0
+  
+      }
+      
+  
+  
+    })
+  }
+  
+
+
+
 async function createApartmentTable (){
 
     // create property table before apartment table
@@ -412,7 +533,9 @@ async function insertApartmentComment (property_id,staff_id,super_admin_id,comme
   }
 
 
-module.exports = {insertApartmentProperty,
+module.exports = {
+    apartmentModel,
+    insertApartmentProperty,
     getApartmentProperty,
     insertApartmentFeedback,
     getApartmentByID,

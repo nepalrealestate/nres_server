@@ -20,6 +20,113 @@ const schemaName = "nres_property";
 
 // Create Land Table
 
+// sequlize
+function landModel (sequelize,DataTypes){
+  return Land = sequelize.define('property_land',{
+    property_id :{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      unique:true,
+      primaryKey:true,
+    },
+    property_type :{
+      type:DataTypes.ENUM('non-plotted','plotted')
+    },
+    property_name : {
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate:{
+        notEmpty: true, 
+      }
+    },
+    listed_for :{
+      type:DataTypes.ENUM('sell','rent')
+    },
+   
+    property_age:{
+      type:DataTypes.INTEGER
+    },
+    facing:{
+      type:DataTypes.ENUM('east','west','north','south','east-north','east-south','west-north','west-south')
+    },
+    province:{
+      type:DataTypes.STRING
+    },
+    district:{
+      type:DataTypes.STRING
+    },
+    municipality:{
+      type:DataTypes.STRING
+    },
+    ward:{
+      type:DataTypes.INTEGER
+    },
+    landmark:{
+      type:DataTypes.STRING
+    },
+    latitude:{
+      type:DataTypes.DECIMAL(9,6)
+    },
+    longitude:{
+      type:DataTypes.DECIMAL(9,6)
+    },
+    property_area:{
+      type:DataTypes.FLOAT
+    },
+    road_size:{
+      type:DataTypes.FLOAT
+    },
+    price:{
+      type:DataTypes.DECIMAL(12,2),
+      allowNull:false
+    },
+    price_type:{
+      type:DataTypes.ENUM('fixed','negotiable')
+    },
+    amenities:{
+      type:DataTypes.JSON
+    },
+    description:{
+      type:DataTypes.TEXT
+    },
+    property_image:{
+      type:DataTypes.JSON
+    },
+    property_video:{
+      type:DataTypes.JSON
+    },
+    posted_date:{
+      type:DataTypes.DATE
+    },
+    staff_id:{
+      type:DataTypes.INTEGER,
+      // references:{
+      //   //model:
+      //   //key 
+      // }
+      
+    },
+    customer_id:{
+      type:DataTypes.INTEGER
+    },
+    agent_id :{
+      type:DataTypes.INTEGER
+    },
+    views:{
+      type:DataTypes.INTEGER,
+      defaultValue:0
+
+    }
+    
+
+
+  })
+}
+
+
+
+
+
 async function createLandTable() {
   // create property table before apartment table
   await createPropertyTable();
@@ -296,6 +403,7 @@ async function getLandComment (property_id,super_admin_id=null){
 
 
 module.exports = {
+  landModel,
   insertLandProperty,
   getLandProperty,
   insertLandFeedback,
