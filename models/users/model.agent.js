@@ -4,6 +4,67 @@ const { pool } = require("../../connection");
 
 const {propertyTable,userTable}= require("../tableName")
 
+
+
+// --- sequlize
+function agentModel (sequelize,DataTypes){
+  return Agent = sequelize.define('user_agent',{
+    agent_id :{
+      type:DataTypes.INTEGER,
+      autoIncreament:true,
+      primaryKey:true
+    },
+    name:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate:{
+        notEmpty:true
+      }
+    },
+    email:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      unique:true,
+      validate:{
+          isEmail:true,
+          notEmpty:true
+      }
+    },
+    phone_number:{
+    type:DataTypes.STRING,
+    allowNull:false,
+    unique:true,
+    validate:{
+      notEmpty:true
+    }
+    },
+    identification_type:{
+      type:DataTypes.STRING
+    },
+    identification_number:{
+      type:DataTypes.STRING
+    },
+    image:{
+      type:DataTypes.JSON
+    },
+    password:{
+    type:DataTypes.STRING,
+    allowNull:false,
+    validate: {
+        notEmpty: true  
+    }
+    },
+    status:{
+      type:DataTypes.ENUM('pending','approved','rejected'),
+      defaultValue:'pending'
+    }
+
+
+
+  })
+}
+
+
 // --------inserting 
 
 async function registerAgent(values) {
@@ -167,4 +228,4 @@ async function getAllAgent(condition,limit,offSet){
 }
 
 
-module.exports = { registerAgent, findAgent, updateAgentPassword ,getAgent , updateAgentProfile,findAgentPassword, getAllAgent };
+module.exports = {agentModel, registerAgent, findAgent, updateAgentPassword ,getAgent , updateAgentProfile,findAgentPassword, getAllAgent };
