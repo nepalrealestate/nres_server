@@ -118,7 +118,7 @@ const verifyToken = (req, res, next) => {
       return res.status(400).json({ message: "Invalid Token" });
     }
 
-    console.log(user.id);
+    console.log("THIS IS AGENT ID FROM VERFIT TOKEN",user.id);
     //set request id
     req.id = user?.id;
     console.log("Token Verify  !!!");

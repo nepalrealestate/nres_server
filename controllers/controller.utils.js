@@ -34,7 +34,7 @@ function Utility() {
 
     console.log(req.file);
     console.log(req.files);
-    console.log(req?.files[0]?.path);
+    //console.log(req?.files[0]?.path);
 
     if (isImageRequired) {
       if (!req?.file?.path && !req?.files[0]?.path) {
@@ -210,6 +210,7 @@ function Utility() {
 
       return res.status(200).json(data);
     } catch (error) {
+      console.log(error)
       return res.status(500).json({ message: error.sqlMessage });
     }
   };
@@ -275,6 +276,8 @@ function Auth() {
 
   (this.login = async function (req, res, user) {
     const { password } = req.body;
+   
+ 
     if (!user) {
       console.log("No User Found");
       return res.status(404).send("User Not Found");
