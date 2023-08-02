@@ -4,13 +4,13 @@ const {
   getApartmentProperty,
   insertApartmentFeedback,
   getApartmentByID,
-  approveApartment,
+ // approveApartment,
   insertUnapprovedApartmentProperty,
   getUnapprovedApartmentProperty,
   getUnapprovedApartmentByID,
   insertPendingApartmentProperty,
   getPendingApartmentProperty,
-  getPendingApartmentByID,
+ // getPendingApartmentByID,
   updateApartmentAds,
   insertApartmentComment,
   getApartmentComment,
@@ -25,6 +25,7 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const {Utility} = require("../controller.utils");
+const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID } = require("../../models/services/property/service.apartment");
 const utils = new Utility();
 
 
@@ -38,7 +39,7 @@ const handleAddApartment = async (req, res) => {
 
   
   async function addApartment (){
-    utils.handleAddProperty(req,res,insertPendingApartmentProperty);
+    utils.handleAddProperty(req,res,insertPendingApartment);
   }
 
 };
@@ -71,7 +72,7 @@ const handleGetPendingApartment = async (req, res) => {
  
 
  
-    utils.getSearchData(req,res,getPendingApartmentProperty)
+    utils.getSearchData(req,res,getPendingApartment)
 
 };
 

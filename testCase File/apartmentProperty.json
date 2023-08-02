@@ -1,28 +1,33 @@
-
-
+      
+      
+      
+      
+      
 {
-    
-        
-        "property_name":"Super Aparment",
-        "listed_for":"sell",
-        "price":30000,
-        "bedrooms": 2,
-        "livingrooms":1,
-        "kitchen":1,
-        "floor":3,
-        "furnish":false,
-        "parking":true,
-        "facilities":"You can enjoy !!",
-        "area_aana":0,
-        "area_sq_ft":20,
-        "road_access_ft":100,
-        "state":"Bagmati",
-        "district":"kathmandu",
-        "city":"kathmandu",
-        "ward_number":32,
-        "tole_name":"mahadev",
-        "latitude": 27.680475, 
-        "longitude": 85.305186
-
-    
-}
+        "property_type": "residential",
+        "property_name": "Luxuory Apartments",
+        "listed_for": "sell",
+        "property_age": 17,
+        "floor": 6.5,
+        "bhk": 3,
+        "facing": "west-north",
+        "province": "Ontario",
+        "district": "Toronto",
+        "municipality": "Scarborough",
+        "ward": 25,
+        "landmark": "Near Scarborough Town Center",
+        "latitude": 43.776426,
+        "longitude": -79.231752,
+        "property_area": 1850.25,
+        "road_size": 12.0,
+        "price": 500000.00,
+        "price_type": "negotiable",
+        "furnish": "semi-furnished",
+        "parking_bike": 5,
+        "parking_car": 2,
+        "amenities": { "pool": true, "gym": true, "internet": true, "security": true },
+        "description": "A spacious 5 BHK apartment located in the heart of the city. It includes a gym and a pool. Parking space for 2 cars and 5 bikes is also available. The price is negotiable.",
+        "property_image": { "img1": "image_link1", "img2": "image_link2", "img3": "image_link3" },
+        "property_video": { "video1": "video_link1" }
+      }
+      

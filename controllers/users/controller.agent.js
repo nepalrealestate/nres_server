@@ -1,14 +1,4 @@
 const bcrypt = require("bcrypt");
-const {
-  registerAgent,
-  findAgent,
-  updateAgentPassword,
-  getAgent,
-  updateProfile,
-  updateAgentProfile,
-  findAgentPassword,
-  getAllAgent,
-} = require("../../models/users/model.agent");
 const jwt = require("jsonwebtoken");
 const {
   login,
@@ -31,6 +21,7 @@ const multer = require("multer");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
 const { Utility,Auth } = require("../controller.utils");
 const { query } = require("express");
+const { registerAgent, findAgent, getAllAgent, updateAgentProfile, getAgent, findAgentPassword, updateAgentPassword } = require("../../models/services/users/service.agent");
 
 const utility = new Utility();
 const auth = new Auth();
@@ -55,7 +46,7 @@ const handleGetAgent = async (req, res) => {
   const agent_ID = req.id;
 
   if (!agent_ID) {
-    return res.status(400).json({ message: "plase provide agent id" })
+    return res.status(400).json({ message: "please provide agent id" })
   }
 
   try {
@@ -111,7 +102,15 @@ const handleAgentRegistration = async (req, res) => {
     }
   
   
-   const values = [name,email,phone_number,identification_type,identification_number,image,hashPassword];
+   const values = {
+    name:name,
+    email:email,
+    phone_number:phone_number,
+    identification_type:identification_type,
+    identification_number:identification_number,
+    image:image,
+    hashPassword:hashPassword
+  };
 
    utility.handleRegistration(res,registerAgent,values);
 
@@ -130,11 +129,16 @@ const handleAgentLogin = async (req, res) => {
 
   //find buyer userName in DB
 
-  const agent = await findAgent(email);
-  console.log(agent);
+  const [agent,agentError] = await wrapAwait(findAgent(email));
+  if(agentError){
+    
+    console.log(agentError)
+    return res.status(500).json({message:"Internal Error"})
+  }
 
-  //this login function handle all logic
 
+  // change  agent.agent_id to agent.id;
+  
   return auth.login(req, res, agent);
 };
 
@@ -196,6 +200,7 @@ const handleUpdateAgentProfile  = async (req,res)=>{
 
  async function updateProfile(){
     const agent_id = req.id;
+    console.log("THIS IS AGENT ID ",req.id)
 
   const validField = ['name','email','phone_number'];
 

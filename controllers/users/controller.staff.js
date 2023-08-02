@@ -1,8 +1,10 @@
 
 const bcrypt = require('bcrypt');
-const {registerStaff,findStaff, getStaffByID} = require("../../models/users/model.staff");
+//const {registerStaff,findStaff, getStaffByID} = require("../../models/users/model.staff");
 const {login} = require("./commonAuthCode");
 const { insertVideoLink } = require('../../models/property/model.property');
+const { registerStaff, findStaff, getStaff } = require('../../models/services/users/service.staff');
+const { wrapAwait } = require('../../errorHandling');
 
 const saltRound = 10;
 
@@ -12,8 +14,8 @@ const handleGetStaff = async function (req,res){
     console.log(req.id);
 
     try {
-        const result = await getStaffByID(req.id);
-        return res.status(200).json({result});
+        const data = await getStaff(req.id);
+        return res.status(200).json(data);
     } catch (error) {
         return res.status(400).json({message:error});
     }
@@ -71,9 +73,12 @@ const handleStaffLogin  = async(req,res)=>{
     const {email} = req.body;
   
     //find staff userName in DB
-
-    const staff =  await findStaff(email);
+    console.log(email)
+    const [staff,staffError] =  await wrapAwait(findStaff(email));
     console.log(staff);
+    if(staffError){
+        return res.status(500).json({message:"Internal Error"})
+    }
 
     //this login function handle all logic
 

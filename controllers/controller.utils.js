@@ -34,10 +34,10 @@ function Utility() {
 
     console.log(req.file);
     console.log(req.files);
-    console.log(req?.files[0]?.path);
+    //console.log(req?.files[0]?.path);
 
     if (isImageRequired) {
-      if (!req?.file?.path && !req?.files[0]?.path) {
+      if (!req?.file?.path && !(req?.files?.length > 0 && req?.files[0]?.path)) {
         return res.status(400).json({ message: "Please Upload Your Image" });
       }
     }
@@ -120,12 +120,11 @@ function Utility() {
       ...property,
       property_image: imageObject,
       property_video:null,
-      approved_by:null,
+      staff_id:null,
       customer_id: customer_id,
       agent_id: agent_id,
     };
-
-
+   
 
 
     try {
@@ -210,6 +209,7 @@ function Utility() {
 
       return res.status(200).json(data);
     } catch (error) {
+      console.log(error)
       return res.status(500).json({ message: error.sqlMessage });
     }
   };
@@ -275,6 +275,8 @@ function Auth() {
 
   (this.login = async function (req, res, user) {
     const { password } = req.body;
+   
+ 
     if (!user) {
       console.log("No User Found");
       return res.status(404).send("User Not Found");

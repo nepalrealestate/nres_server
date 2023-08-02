@@ -3,3 +3,5 @@
 /uploads
 /utils/errorLogging/combined.log
 /utils/errorLogging/error.log
+combined.log
+error.log

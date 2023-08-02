@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 
 const {login} = require("./commonAuthCode");
-const { registerSuperAdmin,findSuperAdmin } = require('../../models/users/superAdmin');
+const { registerSuperAdmin,findSuperAdmin } = require('../../models/users/model.superAdmin');
 
 const saltRound = 10;
 

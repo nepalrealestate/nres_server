@@ -104,6 +104,9 @@ function houseModel (sequelize,DataTypes){
     amenities:{
       type:DataTypes.JSON
     },
+    description:{
+      type:DataTypes.TEXT
+    },
     property_image:{
       type:DataTypes.JSON
     },
