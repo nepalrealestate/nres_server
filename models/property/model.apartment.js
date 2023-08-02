@@ -1,3 +1,4 @@
+const { Sequelize } = require("sequelize");
 const {pool} = require("../../connection");
 const { isTableExists } = require("../commonModels");
 const {createPropertyTable,insertProperty, createApplyPropertyTable, insertApplyProperty, insertUnapprovedProperty, insertPendingProperty, approveProperty} = require("../property/model.property");
@@ -102,22 +103,27 @@ function apartmentModel (sequelize,DataTypes){
       property_video:{
         type:DataTypes.JSON
       },
-      posted_date:{
-        type:DataTypes.DATE
-      },
       staff_id:{
         type:DataTypes.INTEGER,
-        // references:{
-        //   //model:
-        //   //key 
-        // }
+         references:{
+           model:'user_staffs',
+           key :'staff_id'
+         }
         
       },
       customer_id:{
-        type:DataTypes.INTEGER
+        type:DataTypes.INTEGER,
+        references:{
+          model:'user_customers',
+          key :'customer_id'
+        }
       },
       agent_id :{
-        type:DataTypes.INTEGER
+        type:DataTypes.INTEGER,
+        references:{
+          model:'user_agents',
+          key :'agent_id'
+        }
       },
       views:{
         type:DataTypes.INTEGER,
@@ -127,62 +133,241 @@ function apartmentModel (sequelize,DataTypes){
       
   
   
-    })
+    }
+    )
   }
   
 
+function pendingApartmentModel (sequelize,DataTypes){
 
+  return PendingApartment = sequelize.define('property_pending_apartment',{
+    property_id :{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      unique:true,
+      autoIncrement:true,
+      primaryKey:true,
+    },
+    property_type :{
+      type:DataTypes.ENUM('commercial','residential','office')
+    },
+    property_name : {
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate:{
+        notEmpty: true, 
+      }
+    },
+    listed_for :{
+      type:DataTypes.ENUM('sell','rent')
+    },
+   
+    property_age:{
+      type:DataTypes.INTEGER
+    },
+    floor:{
+      type:DataTypes.FLOAT
+    },
+   bhk:{
+      type:DataTypes.INTEGER
+   }, 
+    facing:{
+      type:DataTypes.ENUM('east','west','north','south','east-north','east-south','west-north','west-south')
+    },
+    province:{
+      type:DataTypes.STRING
+    },
+    district:{
+      type:DataTypes.STRING
+    },
+    municipality:{
+      type:DataTypes.STRING
+    },
+    ward:{
+      type:DataTypes.INTEGER
+    },
+    landmark:{
+      type:DataTypes.STRING
+    },
+    latitude:{
+      type:DataTypes.DECIMAL(9,6)
+    },
+    longitude:{
+      type:DataTypes.DECIMAL(9,6)
+    },
+    property_area:{
+      type:DataTypes.FLOAT
+    },
+    road_size:{
+      type:DataTypes.FLOAT
+    },
+    price:{
+      type:DataTypes.DECIMAL(12,2),
+      allowNull:false
+    },
+    price_type:{
+      type:DataTypes.ENUM('fixed','negotiable')
+    },
+    furnish:{
+      type:DataTypes.ENUM('non-furnished','furnished','semi-furnished')
+    },
+    parking_bike:{
+      type:DataTypes.INTEGER
+    },
+    parking_car:{
+      type:DataTypes.INTEGER
+    },
+    amenities:{
+      type:DataTypes.JSON
+    },
+    description:{
+      type:DataTypes.TEXT
+    },
+    property_image:{
+      type:DataTypes.JSON
+    },
+    property_video:{
+      type:DataTypes.JSON
+    },
+    staff_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'user_staffs',
+        key :'staff_id'
+      } 
+    },
+    customer_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'user_customers',
+        key :'customer_id'
+      }
+    },
+    agent_id :{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'user_agents',
+        key :'agent_id'
+      }
+    },
+    views:{
+      type:DataTypes.INTEGER,
+      defaultValue:0
 
-async function createApartmentTable (){
-
-    // create property table before apartment table
-    await createPropertyTable();
-
-    const sqlQuery = `CREATE TABLE  IF NOT EXISTS ${propertyTable.apartment}
-    (
-        property_id INT NOT NULL PRIMARY KEY UNIQUE,
-        bhk INT,
-        situated_floor INT,
-        furnish_status BOOL,
-        parking BOOL,
-        facilities VARCHAR(1000),
-        apartment_image JSON,
-        FOREIGN KEY (property_id) REFERENCES ${propertyTable.property}(property_id) ON DELETE CASCADE
-    
-    )`;
-
-    try {
-        const[row,field] = await pool.query(sqlQuery);
-        console.log("Table Created");
-        console.log(row);
-    } catch (error) {
-        console.log(error);
-        throw error;
     }
+  })
+
+}
+
+ function apartmentAdsModel(sequelize,DataTypes){
+  return ApartmentAds = sequelize.define('property_apartment_ads',{
+    id:{
+      type:DataTypes.INTEGER,
+      autoIncrement:true,
+      primaryKey:true
+    },
+    property_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'property_apartments',
+        key:'property_id'
+      },
+      onDelete: 'CASCADE'
+    },
+    ads_status: {
+      type: DataTypes.ENUM('unplanned','posted','progress','planned'),
+      defaultValue: 'unplanned'
+    }
+
+  })
 }
 
 
-//create apartment table for applied property store
-
-async function createApplyApartmentTable(){
-    // if create apply property table
-    await createApplyPropertyTable();
-
-        const createQuery = `CREATE TABLE IF NOT EXISTS ${propertyTable.apply_apartment} LIKE ${propertyTable.apartment}`;
-                             
-      
-        try {
-          return await pool.query(createQuery);
-        } catch (error) {
-          throw error;
-        }
+ function apartmentFeedbackModel(sequelize,DataTypes){
+  return ApartmentFeedback = sequelize.define('property_apartment_feedback',{
+    id:{
+      type:DataTypes.INTEGER,
+      autoIncrement:true,
+      primaryKey:true
+    },
+    property_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'property_apartments',
+        key:'property_id'
+      },
+      onDelete: 'CASCADE'
+    },
+    customer_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'user_customers',
+        key:'customer_id'
       }
+    },
+
+    feedback:{
+      type:DataTypes.TEXT('tiny'),
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+
+    }
+
+  })
+}
 
 
 
+function apartmentCommentModel(sequelize,DataTypes){
+  return ApartmentComment = sequelize.define('property_apartment_comment',{
+    comment_id:{
+      type:DataTypes.INTEGER,
+      autoIncrement:true,
+      primaryKey:true
+    },
+    property_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'property_apartments',
+        key:'property_id'
+      },
+      onDelete: 'CASCADE'
+    },
+    staff_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'staff', // replace with your Staff model name
+        key: 'id',
+      },
+      onDelete: 'CASCADE',
+    },
+    super_admin_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'super_admin', // replace with your SuperAdmin model name
+        key: 'id',
+      },
+      onDelete: 'CASCADE',
+    },
+    comment: {
+      type: DataTypes.TEXT,
+      allowNull:false,
+      validate:{
+        notEmpty: true,
+      }
+    },
+    is_private: {
+      type: DataTypes.BOOLEAN,
+    },
 
 
-
+  })
+}
 
 
 async function createApartmentFeedbackTable(){
@@ -535,6 +720,10 @@ async function insertApartmentComment (property_id,staff_id,super_admin_id,comme
 
 module.exports = {
     apartmentModel,
+    apartmentAdsModel,
+    apartmentFeedbackModel,
+    apartmentCommentModel,
+    pendingApartmentModel,
     insertApartmentProperty,
     getApartmentProperty,
     insertApartmentFeedback,

@@ -5,6 +5,7 @@ const superAdminTableName = 'superAdmin';
 const schemaName = 'nres_users';
 
 
+
 async function registerSuperAdmin(name,email,password){
 
      //if table is not exists - create table

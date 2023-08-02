@@ -37,7 +37,7 @@ function Utility() {
     //console.log(req?.files[0]?.path);
 
     if (isImageRequired) {
-      if (!req?.file?.path && !req?.files[0]?.path) {
+      if (!req?.file?.path && !(req?.files?.length > 0 && req?.files[0]?.path)) {
         return res.status(400).json({ message: "Please Upload Your Image" });
       }
     }
@@ -120,12 +120,11 @@ function Utility() {
       ...property,
       property_image: imageObject,
       property_video:null,
-      approved_by:null,
+      staff_id:null,
       customer_id: customer_id,
       agent_id: agent_id,
     };
-
-
+   
 
 
     try {

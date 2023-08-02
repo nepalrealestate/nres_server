@@ -12,10 +12,27 @@ db.UserModel = {
     Customer: require('./users/model.customer').customerModel(sequelize, DataTypes)
 };
 
-db.propertyModel = {
+db.PropertyModel = {
+
+    PropertyIdTracker : require('./property/model.property').propertyIdTrackerModel(sequelize,DataTypes),
+
     House: require('./property/model.house').houseModel(sequelize, DataTypes),
     Apartment:require('./property/model.apartment').apartmentModel(sequelize,DataTypes),
-    Land:require('./property/model.land').landModel(sequelize,DataTypes)
+    Land:require('./property/model.land').landModel(sequelize,DataTypes),
+
+   
+
+    PendingApartment:require('./property/model.apartment').pendingApartmentModel(sequelize,DataTypes),
+
+
+    ApartmentAds: require('./property/model.apartment').apartmentAdsModel(sequelize,DataTypes),
+
+
+    ApartmentFeedback: require('./property/model.apartment').apartmentFeedbackModel(sequelize,DataTypes),
+
+    // ApartmentComment:require('./property/model.apartment').apartmentCommentModel(sequelize,DataTypes)
+   
+
 };
 
 
@@ -27,13 +44,13 @@ db.propertyModel = {
 // Relations
 // house -> agent,customer,staff
 // house ->agent
-db.propertyModel.House.belongsTo(db.UserModel.Agent,{foreignKey:'agent_id'});
-db.UserModel.Agent.hasMany(db.propertyModel.House,{foreignKey:'agent_id'});
+db.PropertyModel.House.belongsTo(db.UserModel.Agent,{foreignKey:'agent_id'});
+db.UserModel.Agent.hasMany(db.PropertyModel.House,{foreignKey:'agent_id'});
 //house ->staff
-db.propertyModel.House.belongsTo(db.UserModel.Staff,{foreignKey:'staff_id'});
-db.UserModel.Staff.hasMany(db.propertyModel.House,{foreignKey:'staff_id'});
+db.PropertyModel.House.belongsTo(db.UserModel.Staff,{foreignKey:'staff_id'});
+db.UserModel.Staff.hasMany(db.PropertyModel.House,{foreignKey:'staff_id'});
 // house->customer
-db.propertyModel.House.belongsTo(db.UserModel.Customer,{foreignKey:'customer_id'});
-db.UserModel.Customer.hasMany(db.propertyModel.House,{foreignKey:'customer_id'});
+db.PropertyModel.House.belongsTo(db.UserModel.Customer,{foreignKey:'customer_id'});
+db.UserModel.Customer.hasMany(db.PropertyModel.House,{foreignKey:'customer_id'});
 
 module.exports = db;

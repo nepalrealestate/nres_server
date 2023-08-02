@@ -19,8 +19,8 @@ const logger = createLogger({
         // - Write all logs with importance level of `info` or less to `combined.log`
         //
        
-        new transports.File({ filename: './utils/errorLogging/error.log', level: 'error' }),
-        new transports.File({ filename: './utils/errorLogging/combined.log' }),
+        //new transports.File({ filename: './utils/errorLogging/error.log', level: 'error' }),
+       // new transports.File({ filename: './utils/errorLogging/combined.log' }),
       ],
 });
 
