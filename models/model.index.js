@@ -24,14 +24,18 @@ db.PropertyModel = {
    
 
     PendingApartment:require('./property/model.apartment').pendingApartmentModel(sequelize,DataTypes),
+    PendingHouse:require('./property/model.house').pendingHouseModel(sequelize,DataTypes),
 
 
     ApartmentAds: require('./property/model.apartment').apartmentAdsModel(sequelize,DataTypes),
+    HouseAds:require('./property/model.house').houseAdsModel(sequelize,DataTypes),
 
 
     ApartmentFeedback: require('./property/model.apartment').apartmentFeedbackModel(sequelize,DataTypes),
+    HouseFeedback: require('./property/model.house').houseFeedbackModel(sequelize,DataTypes),
 
-     ApartmentComment:require('./property/model.apartment').apartmentCommentModel(sequelize,DataTypes)
+    ApartmentComment:require('./property/model.apartment').apartmentCommentModel(sequelize,DataTypes),
+    HouseComment:require('./property/model.house').houseCommentModel(sequelize,DataTypes)
    
 
 };

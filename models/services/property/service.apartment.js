@@ -103,7 +103,7 @@ async function insertApartmentComment(property_id,staff_id,super_admin_id,commen
 }
 
 async function getApartmentComment(property_id,super_admin_id=null){
-    return await Apartment.commentfindAll({
+    return await ApartmentComment.findAll({
         where:{
             property_id:property_id,
             super_admin_id:super_admin_id

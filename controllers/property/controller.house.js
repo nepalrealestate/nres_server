@@ -1,17 +1,5 @@
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
-const {
 
-  getHouseProperty,
-  insertHouseFeedback,
-  getHouseByID,
-  approveHouse,
-  getPendingHouseProperty,
-  insertPendingHouseProperty,
-  getPendingHouseByID,
-  updateHouseAds,
-  insertHouseComment,
-  getHouseComment,
-} = require("../../models/property/model.house");
 const { updatePropertyViews } = require("../../models/property/model.property");
 
 const path = "uploads/property/house/images"; //path from source
@@ -20,6 +8,7 @@ const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 
 const {Utility} = require("../controller.utils");
+const { insertPendingHouse, getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment } = require("../../models/services/property/service.house");
 const utils = new Utility();
 
 
@@ -31,7 +20,7 @@ const handleAddHouse = async (req, res) => {
   });
   
   async function addHouse (){
-    utils.handleAddProperty(req,res,insertPendingHouseProperty);
+    utils.handleAddProperty(req,res,insertPendingHouse);
   }
   
 
@@ -40,7 +29,7 @@ const handleAddHouse = async (req, res) => {
 
 const handleGetHouse = async (req, res) => {
   
-  utils.getSearchData(req,res, getHouseProperty)    
+  utils.getSearchData(req,res, getHouse)    
  
  
 };
@@ -48,7 +37,7 @@ const handleGetHouse = async (req, res) => {
 const handleGetPendingHouse = async (req, res) => {
 
 
-  utils.getSearchData(req,res,getPendingHouseProperty);
+  utils.getSearchData(req,res,getPendingHouse);
 
 };
 
