@@ -9,7 +9,8 @@ db.sequelize = sequelize;
 db.UserModel = {
     Agent: require('./users/model.agent').agentModel(sequelize, DataTypes),
     Staff: require('./users/model.staff').staffModel(sequelize, DataTypes),
-    Customer: require('./users/model.customer').customerModel(sequelize, DataTypes)
+    Customer: require('./users/model.customer').customerModel(sequelize, DataTypes),
+    SuperAdmin:require('./users/model.superAdmin').superAdminModel(sequelize,DataTypes),
 };
 
 db.PropertyModel = {
@@ -30,7 +31,7 @@ db.PropertyModel = {
 
     ApartmentFeedback: require('./property/model.apartment').apartmentFeedbackModel(sequelize,DataTypes),
 
-    // ApartmentComment:require('./property/model.apartment').apartmentCommentModel(sequelize,DataTypes)
+     ApartmentComment:require('./property/model.apartment').apartmentCommentModel(sequelize,DataTypes)
    
 
 };

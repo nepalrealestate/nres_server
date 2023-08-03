@@ -341,16 +341,16 @@ function apartmentCommentModel(sequelize,DataTypes){
     staff_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'staff', // replace with your Staff model name
-        key: 'id',
+        model: 'user_staffs', // replace with your Staff model name
+        key: 'staff_id',
       },
       onDelete: 'CASCADE',
     },
     super_admin_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'super_admin', // replace with your SuperAdmin model name
-        key: 'id',
+        model: 'user_superAdmins', // replace with your SuperAdmin model name
+        key: 'superAdmin_id',
       },
       onDelete: 'CASCADE',
     },
