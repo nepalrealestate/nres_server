@@ -4,7 +4,7 @@ const Apartment = db.PropertyModel.Apartment;
 const PendingApartment = db.PropertyModel.PendingApartment;
 const ApartmentAds = db.PropertyModel.ApartmentAds;
 const ApartmentFeedback = db.PropertyModel.ApartmentFeedback;
-
+const ApartmentComment = db.PropertyModel.ApartmentComment
 
 async function insertPendingApartment(apartment){
 
@@ -93,8 +93,23 @@ async function updateApartmentAds(ads_status,property_id){
 }
 
 async function insertApartmentComment(property_id,staff_id,super_admin_id,comment,isPrivate){
-    
+    return await ApartmentComment.create({
+        property_id:property_id,
+        staff_id:staff_id,
+        super_admin_id:super_admin_id,
+        comment:comment,
+        is_private:isPrivate
+    })
+}
+
+async function getApartmentComment(property_id,super_admin_id=null){
+    return await Apartment.commentfindAll({
+        where:{
+            property_id:property_id,
+            super_admin_id:super_admin_id
+        }
+    })
 }
 
 
-module.exports = {insertPendingApartment,getApartment,getApartmentByID,getPendingApartment,approveApartment,getPendingApartmentByID,insertApartmentFeedback,updateApartmentAds};
+module.exports = {insertPendingApartment,getApartment,getApartmentByID,getPendingApartment,approveApartment,getPendingApartmentByID,insertApartmentFeedback,updateApartmentAds,insertApartmentComment,getApartmentComment};

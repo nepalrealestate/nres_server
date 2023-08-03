@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 
 const {login} = require("./commonAuthCode");
-const { registerSuperAdmin,findSuperAdmin } = require('../../models/users/model.superAdmin');
+const { registerSuperAdmin, findSuperAdmin } = require('../../models/services/users/service.superAdmin');
 
 const saltRound = 10;
 
@@ -13,9 +13,11 @@ const handleGetSuperAdmin = async(req,res)=>{
 const handleSuperAdminRegistration = async(req,res)=>{
     
 
-    const {name:name,email:email,password:password,confirmPassword:confirmPassword} = req.body
+    const {name,email,password,confirmPassword} = req.body
 
     //validate  password
+    console.log(password);
+    console.log(confirmPassword)
 
     if (password !== confirmPassword) {
         console.log("Password not match  ");
