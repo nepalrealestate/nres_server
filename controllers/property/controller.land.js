@@ -1,18 +1,18 @@
-const {
-  insertLandProperty,
-  getLandProperty,
-  insertLandFeedback,
-  getLandByID,
+// const {
+//   insertLandProperty,
+//   getLandProperty,
+//   insertLandFeedback,
+//   getLandByID,
   
-  approveLand,
+//   approveLand,
   
-  getPendingLandByID,
-  insertPendingLandProperty,
-  getPendingLandProperty,
-  updateLandAds,
-  insertLandComment,
-  getLandComment,
-} = require("../../models/property/model.land");
+//   getPendingLandByID,
+//   insertPendingLandProperty,
+//   getPendingLandProperty,
+//   updateLandAds,
+//   insertLandComment,
+//   getLandComment,
+// } = require("../../models/property/model.land");
 const { updatePropertyViews } = require("../../models/property/model.property");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
 const path = "uploads/property/land/images"; //path from source
@@ -21,6 +21,7 @@ const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const { checkProperties } = require("../requiredObjectProperties");
 const {Utility} = require("../controller.utils");
+const { insertPendingLand, getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment } = require("../../models/services/property/service.land");
 const utils = new Utility();
 
 
@@ -33,7 +34,7 @@ const handleAddLand = async (req, res) => {
   
   async function addLand(){
 
-   utils.handleAddProperty( req,res,insertPendingLandProperty);
+   utils.handleAddProperty( req,res,insertPendingLand);
   }
       
     
@@ -54,7 +55,7 @@ const handleGetLand = async (req, res) => {
   offSet = (page - 1) * limit;
 
   try {
-    const landData = await getLandProperty(req.query, limit, offSet);
+    const landData = await getLand(req.query, limit, offSet);
     console.log(landData);
 
     return res.status(200).json(landData);
@@ -65,7 +66,7 @@ const handleGetLand = async (req, res) => {
 
 const handleGetPendingdLand = async (req, res) => {
 
-    utils.getSearchData(req,res,getPendingLandProperty)
+    utils.getSearchData(req,res,getPendingLand)
    
 
 };

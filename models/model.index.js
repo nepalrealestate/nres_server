@@ -16,6 +16,7 @@ db.UserModel = {
 db.PropertyModel = {
 
     PropertyIdTracker : require('./property/model.property').propertyIdTrackerModel(sequelize,DataTypes),
+    
 
     House: require('./property/model.house').houseModel(sequelize, DataTypes),
     Apartment:require('./property/model.apartment').apartmentModel(sequelize,DataTypes),
@@ -25,17 +26,21 @@ db.PropertyModel = {
 
     PendingApartment:require('./property/model.apartment').pendingApartmentModel(sequelize,DataTypes),
     PendingHouse:require('./property/model.house').pendingHouseModel(sequelize,DataTypes),
+    PendingLand:require('./property/model.land').pendingLandModel(sequelize,DataTypes),
 
 
     ApartmentAds: require('./property/model.apartment').apartmentAdsModel(sequelize,DataTypes),
     HouseAds:require('./property/model.house').houseAdsModel(sequelize,DataTypes),
+    LandAds:require('./property/model.land').landAdsModel(sequelize,DataTypes),
 
 
     ApartmentFeedback: require('./property/model.apartment').apartmentFeedbackModel(sequelize,DataTypes),
     HouseFeedback: require('./property/model.house').houseFeedbackModel(sequelize,DataTypes),
+    LandFeedback: require('./property/model.land').landFeedbackModel(sequelize,DataTypes),
 
     ApartmentComment:require('./property/model.apartment').apartmentCommentModel(sequelize,DataTypes),
-    HouseComment:require('./property/model.house').houseCommentModel(sequelize,DataTypes)
+    HouseComment:require('./property/model.house').houseCommentModel(sequelize,DataTypes),
+    LandComment :require('./property/model.land').landCommentModel(sequelize,DataTypes)
    
 
 };
