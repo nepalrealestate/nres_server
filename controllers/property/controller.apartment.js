@@ -1,20 +1,20 @@
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
-const {
-  insertApartmentProperty,
-  getApartmentProperty,
-  insertApartmentFeedback,
-  getApartmentByID,
- // approveApartment,
-  insertUnapprovedApartmentProperty,
-  getUnapprovedApartmentProperty,
-  getUnapprovedApartmentByID,
-  insertPendingApartmentProperty,
-  getPendingApartmentProperty,
- // getPendingApartmentByID,
-  updateApartmentAds,
-  insertApartmentComment,
-  getApartmentComment,
-} = require("../../models/property/model.apartment");
+// const {
+//   insertApartmentProperty,
+//   getApartmentProperty,
+//   insertApartmentFeedback,
+//   //getApartmentByID,
+//  // approveApartment,
+//   insertUnapprovedApartmentProperty,
+//   getUnapprovedApartmentProperty,
+//   getUnapprovedApartmentByID,
+//   insertPendingApartmentProperty,
+//   getPendingApartmentProperty,
+//  // getPendingApartmentByID,
+//   updateApartmentAds,
+//   insertApartmentComment,
+//   getApartmentComment,
+// } = require("../../models/property/model.apartment");
 const {
   updatePropertyViews,
 } = require("../../models/property/model.property");
@@ -24,9 +24,12 @@ const maxImageSize = 2 * 1024 * 1024;
 
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
-const {Utility} = require("../controller.utils");
-const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID } = require("../../models/services/property/service.apartment");
-const utils = new Utility();
+const {Utility, propertyUtility, utility} = require("../controller.utils");
+const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews } = require("../../models/services/property/service.apartment");
+const { wrapAwait } = require("../../errorHandling");
+//const utils = new Utility();
+const utils = utility();
+const property = propertyUtility("apartment");
 
 
 // ------------------------------------------INSERT DATA RELATED ---------------------------------
@@ -39,7 +42,7 @@ const handleAddApartment = async (req, res) => {
 
   
   async function addApartment (){
-    utils.handleAddProperty(req,res,insertPendingApartment);
+    property.handleAddProperty(req,res,insertPendingApartment);
   }
 
 };
@@ -63,7 +66,7 @@ const handleApartmentFeedback = async (req, res) => {
 const handleGetApartment = async (req, res) => {
 
 
-  utils.getSearchData(req,res,getApartmentProperty);
+  utils.getSearchData(req,res,getApartment);
 
   
 };
@@ -77,20 +80,9 @@ const handleGetPendingApartment = async (req, res) => {
 };
 
 const handleGetApartmentByID = async (req, res) => {
-  const { property_ID } = req.params;
-  console.log(property_ID);
 
-  try {
-    const result = await getApartmentByID(property_ID); // get single  apartment by property
-    // if there is apartment then also update views
-    if (result) {
-      await updatePropertyViews(property_ID);
-    }
-    console.log(result);
-    return res.status(200).json({ result });
-  } catch (error) {
-    return res.status(500).json({ message: error.sqlMessage });
-  }
+  return property.handleGetPropertyByID(req,res,getApartmentByID,updateApartmentViews);
+  
 };
 
 //-----------------------------------------------UPDATE RELATED--------------------------------------------------------------

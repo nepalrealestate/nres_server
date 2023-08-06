@@ -5,15 +5,16 @@ const PendingHouse = db.PropertyModel.PendingHouse
 const HouseAds = db.PropertyModel.HouseAds
 const HouseFeedback = db.PropertyModel.HouseFeedback
 const HouseComment = db.PropertyModel.HouseComment
+const HouseViews = db.PropertyModel.HouseViews
 
  async function insertPendingHouse(house){
-    return await House.create(house);
+    return await PendingHouse.create(house);
  }
 
  async function getHouse(condition,limit,offset){
     return await House.findAll({
         where:condition,
-        attributes:[ 'property_id','property_name','listed_for','price,views'],
+        attributes:[ 'property_id','property_name','listed_for','price','views'],
         limit:limit,
         offset:offset
     })
@@ -26,7 +27,7 @@ const HouseComment = db.PropertyModel.HouseComment
  async function getPendingHouse(condition,limit,offset){
     return await PendingHouse.findAll({
         where : condition,
-        attributes:[ 'property_id','property_name','listed_for','price,views'],
+        attributes:[ 'property_id','property_name','listed_for','price','views'],
         limit:limit,
         offset:offset
     })
@@ -114,5 +115,28 @@ async function getHouseComment(property_id,super_admin_id=null){
 }
 
 
+async  function updateHouseViews(property_id,latitude,longitude){
+    //update views in House table and HouseViewsCount Table
+    let transaction ;
 
-module.exports ={insertPendingHouse,getHouse,getHouseByID,getHouseComment,getPendingHouse,getPendingHouseByID,insertHouseFeedback,insertHouseComment,updateHouseAds,approveHouse}
+    try {
+        transaction = await db.sequelize.transaction();
+        // create new views 
+        await HouseViews.create({property_id,latitude,longitude},{transaction});
+
+        // update House views
+        await House.increment('views',{by:1,where:{property_id:property_id},transaction});
+
+        await transaction.commit();
+        return;
+    } catch (error) {
+        console.log(error)
+        await transaction.rollback();
+        throw error;
+    }
+
+}
+
+
+
+module.exports ={insertPendingHouse,getHouse,getHouseByID,getHouseComment,getPendingHouse,getPendingHouseByID,insertHouseFeedback,insertHouseComment,updateHouseAds,approveHouse,updateHouseViews}

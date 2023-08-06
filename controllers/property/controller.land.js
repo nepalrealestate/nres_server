@@ -1,18 +1,4 @@
-// const {
-//   insertLandProperty,
-//   getLandProperty,
-//   insertLandFeedback,
-//   getLandByID,
-  
-//   approveLand,
-  
-//   getPendingLandByID,
-//   insertPendingLandProperty,
-//   getPendingLandProperty,
-//   updateLandAds,
-//   insertLandComment,
-//   getLandComment,
-// } = require("../../models/property/model.land");
+
 const { updatePropertyViews } = require("../../models/property/model.property");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
 const path = "uploads/property/land/images"; //path from source

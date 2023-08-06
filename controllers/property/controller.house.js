@@ -7,10 +7,12 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 
-const {Utility} = require("../controller.utils");
-const { insertPendingHouse, getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment } = require("../../models/services/property/service.house");
-const utils = new Utility();
+const {Utility, propertyUtility, utility} = require("../controller.utils");
+const { insertPendingHouse, getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews } = require("../../models/services/property/service.house");
+//const utils = new Utility();
+const utils  = utility();
 
+const property = propertyUtility("house");
 
 
 const handleAddHouse = async (req, res) => {
@@ -20,7 +22,7 @@ const handleAddHouse = async (req, res) => {
   });
   
   async function addHouse (){
-    utils.handleAddProperty(req,res,insertPendingHouse);
+    property.handleAddProperty(req,res,insertPendingHouse);
   }
   
 
@@ -29,7 +31,7 @@ const handleAddHouse = async (req, res) => {
 
 const handleGetHouse = async (req, res) => {
   
-  utils.getSearchData(req,res, getHouse)    
+  property.handleGetProperty(req,res, getHouse)    
  
  
 };
@@ -37,7 +39,7 @@ const handleGetHouse = async (req, res) => {
 const handleGetPendingHouse = async (req, res) => {
 
 
-  utils.getSearchData(req,res,getPendingHouse);
+  property.handleGetProperty(req,res,getPendingHouse);
 
 };
 
@@ -54,31 +56,23 @@ const handleHouseFeedback = async (req, res) => {
 };
 
 const handleUpdateHouseViews = async (req, res) => {
-  const { property_ID } = req.params;
+  const { property_id } = req.params;
   console.log(req.params);
+  let longitude ;
+  let latitude  ;
 
   try {
-    const result = await updatePropertyViews(property_ID); //update property views common function to update views in parent table property
+    const result = await updateHouseViews(property_id,latitude,longitude); //update property views common function to update views in parent table property
     return res.status(200).json({ message: "Views update successfully" });
   } catch (error) {
-    return res.status(500).json({ message: error.sqlMessage });
+    return res.status(500).json({ message: "Internal Error" });
   }
 };
 
 const handleGetHouseByID = async (req, res) => {
-  const { property_ID } = req.params;
-  console.log(property_ID);
 
-  try {
-    const result = await getHouseByID(property_ID); //get single house
-    // if there is house present then also update views
-    if (result) {
-      await updatePropertyViews(property_ID);
-    }
-    return res.status(200).json({ result });
-  } catch (error) {
-    return res.status(500).json({ message: error.sqlMessage });
-  }
+  return property.handleGetPropertyByID(req,res,getHouseByID,updateHouseViews);
+  
 };
 
 // approve apply house
@@ -145,6 +139,9 @@ const handleGetHouseComment = async (req,res)=>{
   return utils.handleGetPropertyComment(req,res,getHouseComment)
 
 }
+
+
+
 
 
 

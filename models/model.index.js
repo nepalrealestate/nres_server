@@ -23,24 +23,32 @@ db.PropertyModel = {
     Land:require('./property/model.land').landModel(sequelize,DataTypes),
 
    
-
+    // pending property table
     PendingApartment:require('./property/model.apartment').pendingApartmentModel(sequelize,DataTypes),
     PendingHouse:require('./property/model.house').pendingHouseModel(sequelize,DataTypes),
     PendingLand:require('./property/model.land').pendingLandModel(sequelize,DataTypes),
 
-
+    // property ads
     ApartmentAds: require('./property/model.apartment').apartmentAdsModel(sequelize,DataTypes),
     HouseAds:require('./property/model.house').houseAdsModel(sequelize,DataTypes),
     LandAds:require('./property/model.land').landAdsModel(sequelize,DataTypes),
 
-
+    // property feedback by users
     ApartmentFeedback: require('./property/model.apartment').apartmentFeedbackModel(sequelize,DataTypes),
     HouseFeedback: require('./property/model.house').houseFeedbackModel(sequelize,DataTypes),
     LandFeedback: require('./property/model.land').landFeedbackModel(sequelize,DataTypes),
 
+    // property comment for staff and admins
     ApartmentComment:require('./property/model.apartment').apartmentCommentModel(sequelize,DataTypes),
     HouseComment:require('./property/model.house').houseCommentModel(sequelize,DataTypes),
-    LandComment :require('./property/model.land').landCommentModel(sequelize,DataTypes)
+    LandComment :require('./property/model.land').landCommentModel(sequelize,DataTypes),
+
+    //property views count 
+    ApartmentViews: require('./property/model.apartment').apartmentViewsModel(sequelize,DataTypes),
+    HouseViews:require('./property/model.house').houseViewsModel(sequelize,DataTypes)
+
+
+
    
 
 };
