@@ -4,7 +4,7 @@ const {handleGetStaff, handleStaffRegistration, handleStaffLogin, handleAddVideo
 const { verifyToken } = require("../../controllers/users/commonAuthCode");
 const { handleAddApartment, handleApproveApartment, handleGetPendingApartment, handleUpdateApartmentAds, handleInsertApartmentComment, handleGetApartment, handleGetApartmentComment } = require("../../controllers/property/controller.apartment");
 const { handleAddHouse, handleApproveHouse, handleGetPendingHouse, handleUpdateHouseAds, handleGetHouse, handleInsertHouseComment, handleGetHouseComment } = require("../../controllers/property/controller.house");
-const { handleAddLand, handleApproveLand, handleGetPendingdLand, handleUpdateLandAds, handleInsertLandComment, handleGetLandComment } = require("../../controllers/property/controller.land");
+const { handleAddLand, handleApproveLand, handleGetPendingLand, handleUpdateLandAds, handleInsertLandComment, handleGetLandComment } = require("../../controllers/property/controller.land");
 const { handleGetLatestPropertyDashboard } = require("../../controllers/property/controller.property");
 const { handleGetAllAgent } = require("../../controllers/users/controller.agent");
 
@@ -33,7 +33,7 @@ router.post("/addLand",verifyToken,handleAddLand);
 
 router.get("/pendingApartment",verifyToken,handleGetPendingApartment);
 router.get("/pendingHouse",verifyToken,handleGetPendingHouse)
-router.get("/pendingLand",verifyToken,handleGetPendingdLand)
+router.get("/pendingLand",verifyToken,handleGetPendingLand)
 //approved apply for listing apartment
 
 router.put("/approvedApartment/:property_id",verifyToken,handleApproveApartment);

@@ -45,7 +45,8 @@ db.PropertyModel = {
 
     //property views count 
     ApartmentViews: require('./property/model.apartment').apartmentViewsModel(sequelize,DataTypes),
-    HouseViews:require('./property/model.house').houseViewsModel(sequelize,DataTypes)
+    HouseViews:require('./property/model.house').houseViewsModel(sequelize,DataTypes),
+    LandViews : require('./property/model.land').landViewsModel(sequelize,DataTypes)
 
 
 

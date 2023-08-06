@@ -66,7 +66,7 @@ const handleApartmentFeedback = async (req, res) => {
 const handleGetApartment = async (req, res) => {
 
 
-  utils.getSearchData(req,res,getApartment);
+  return property.handleGetProperty(req,res,getApartment);
 
   
 };

@@ -1,21 +1,28 @@
-{
+
+    {
+        "property_type": "plotted",
+        "property_name": "Green Meadow Plot",
+        "listed_for": "sell",
+        "property_age": 0,
+        "facing": "east-north",
+        "province": "Province 1",
+        "district": "Kathmandu",
+        "municipality": "Kathmandu",
+        "ward": 23,
+        "landmark": "Near Green Park",
+        "latitude": 27.704103,
+        "longitude": 85.329255,
+        "property_area": 1200.00,
+        "road_size": 10.00,
+        "price": 5000000.00,
+        "price_type": "fixed",
+        "amenities": {
+            "water_supply": true,
+            "electricity": true,
+            "drainage_system": true,
+            "nearby_school": true,
+            "nearby_hospital": false
+        },
+        "description": "Plotted land for sale in the heart of the city with good water supply and electricity. It's near a school and located in a good neighborhood."
+    }
     
-        
-    "property_name":"Super Aparment",
-    "listed_for":"sell",
-    "price":70000,
-    "land_type":"agri",
-    "soil":"lommy",
-    "area_aana":0,
-    "area_sq_ft":20,
-    "road_access_ft":100,
-    "state":"Bagmati",
-    "district":"kathmandu",
-    "city":"kathmandu",
-    "ward_number":32,
-    "tole_name":"mahadev",
-    "latitude": 27.680475, 
-    "longitude": 85.305186
-
-
-}

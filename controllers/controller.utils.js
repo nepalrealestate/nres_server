@@ -642,7 +642,8 @@ function propertyUtility(property_type) {
 
       return res.status(200).json({ message: `${propertyType} insert` });
     } catch (error) {
-      return res.status(400).json({ message: error });
+      console.log(error)
+      return res.status(500).json({ message: "Internal Error" });
     }
   }
 
@@ -767,10 +768,50 @@ function propertyUtility(property_type) {
     }
   }
 
+  async function handleInsertPropertyFeedback(req,res,insertPropertyFeedback){
+    const customer_id = req.id; // from token verify
+
+    const {property_id,feedback} = req.body;
+    
+    try {
+      const result = await insertPropertyFeedback(property_id,customer_id, feedback);
+      return res.status(200).json({ message: "Feedback Submit" });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Internal Error" });
+    }
+
+  }
+
+  async function handleUpdatePropertyAds(req,res,updatePropertyAds){
+    const {property_id} = req.params;
+    const {ads_status} = req.body;
+  
+    
+    try {
+      
+      const response = await updatePropertyAds(ads_status,property_id)
+   
+      if(response.affectedRows === 0 ){
+        return res.status(400).json({message:"No property to update "})
+      }
+      return res.status(200).json({message:"Successfully Update ads status"});
+  
+  
+  
+    } catch (error) {
+      return res.status(500).json({message:"unable to update"});
+    }
+  }
+
   return {
     handleAddProperty,
     handleGetPropertyByID,
     handleGetProperty,
+    handleInsertPropertyComment,
+    handleGetPropertyComment,
+    handleInsertPropertyFeedback
+
     
   };
 }
