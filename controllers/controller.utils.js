@@ -7,10 +7,42 @@ const {
 } = require("../middlewares/middleware.sendEmail");
 const { wrapAwait } = require("../errorHandling");
 const { error } = require("winston");
+const { getProperty } = require("../models/property/model.property");
 
 const saltRound = 10;
 
 const modelUtils = new ModelUtility();
+
+
+function utility(){
+
+  async function handleMulterError(req,res,err, afterUploadCallback,isImageRequired = false){
+    if (err instanceof multer.MulterError) {
+      console.log(err);
+      return res.status(400).json(err);
+    } else if (err) {
+      console.log(err)
+      return res.status(400).json(err);
+    }
+
+    console.log(req.file);
+    console.log(req.files);
+    //console.log(req?.files[0]?.path);
+
+    if (isImageRequired) {
+      if (!req?.file?.path && !(req?.files?.length > 0 && req?.files[0]?.path)) {
+        return res.status(400).json({ message: "Please Upload Your Image" });
+      }
+    }
+
+    afterUploadCallback();
+  }
+
+
+  return {
+    handleMulterError
+  }
+}
 
 function Utility() {
   //variables
@@ -28,7 +60,7 @@ function Utility() {
       console.log(err);
       return res.status(400).json(err);
     } else if (err) {
-      console.log(err)
+      console.log(err);
       return res.status(400).json(err);
     }
 
@@ -37,7 +69,10 @@ function Utility() {
     //console.log(req?.files[0]?.path);
 
     if (isImageRequired) {
-      if (!req?.file?.path && !(req?.files?.length > 0 && req?.files[0]?.path)) {
+      if (
+        !req?.file?.path &&
+        !(req?.files?.length > 0 && req?.files[0]?.path)
+      ) {
         return res.status(400).json({ message: "Please Upload Your Image" });
       }
     }
@@ -59,8 +94,6 @@ function Utility() {
     return res.status(200).json({ message: "Registration successfully" });
   };
 
-
-
   this.handleAddProperty = async function (req, res, addCallbackProperty) {
     // get user id from req.id i.e we set req.id when verify token
     let customer_id = null;
@@ -68,26 +101,22 @@ function Utility() {
     // baseUrl provide us from where request coming from ex. /agent,/staff,/customer
     const user_type = req.baseUrl.substring(1);
     let property_type = req.path.substring(1);
-    if(property_type==='addApartment'){
-      property_type = 'apartmentProperty';
+    if (property_type === "addApartment") {
+      property_type = "apartmentProperty";
     }
-    if(property_type==='addHouse'){
-      property_type = 'houseProperty';
+    if (property_type === "addHouse") {
+      property_type = "houseProperty";
     }
-    if(property_type==='addLand'){
-      property_type = 'landProperty';
+    if (property_type === "addLand") {
+      property_type = "landProperty";
     }
 
-
-
-    
     if (user_type === "customer") {
       customer_id = req.id;
     } else if (user_type === "agent") {
       agent_id = req.id;
-    } else if (user_type ==="staff"){
-
-    }else{
+    } else if (user_type === "staff") {
+    } else {
       return res.status(400).json({ message: "bad request" });
     }
 
@@ -95,15 +124,11 @@ function Utility() {
       return res.status(400).json({ message: "missing property " });
     }
 
-
-
-
-
     // let { property, [property_type]: callbackProperty, location } = JSON.parse(
     //   req.body.property
     // );
     let property = JSON.parse(req.body.property);
-    
+
     const images = req.files;
 
     const imageObject = JSON.stringify(
@@ -113,26 +138,22 @@ function Utility() {
       )
     );
 
-    console.log(imageObject)
+    console.log(imageObject);
 
     // update object - store some value
     property = {
       ...property,
       property_image: imageObject,
-      property_video:null,
-      staff_id:null,
+      property_video: null,
+      staff_id: null,
       customer_id: customer_id,
       agent_id: agent_id,
     };
-   
-
 
     try {
       //await insertApartmentProperty(property,apartmentProperty,user_id,user_type);
 
-      await addCallbackProperty(
-        property
-      );
+      await addCallbackProperty(property);
 
       return res.status(200).json({ message: "Insert into table" });
     } catch (error) {
@@ -141,53 +162,57 @@ function Utility() {
     }
   };
 
+  this.handleInsertPropertyComment = async function (
+    req,
+    res,
+    callbackProperty
+  ) {
+    const { property_id } = req.params;
+    let staff_id;
+    let super_admin_id;
 
-  this.handleInsertPropertyComment = async function (req,res,callbackProperty){
-      const {property_id} = req.params;
-  let staff_id;
-  let super_admin_id;
-  
-  const user_type = req.baseUrl.substring(1);
+    const user_type = req.baseUrl.substring(1);
 
-  let comment = req.body.comment ;
-  let private = req.body.private || false;
+    let comment = req.body.comment;
+    let private = req.body.private || false;
 
-
-  if(!comment ){
-    return res.status(400).json({message:"Please Submit Your Comment"});
-  }
-
-  if(user_type === 'staff'){
-    staff_id = req.id;
-    super_admin_id = null;
-    private = false;
-  }else if(user_type === 'superAdmin'){
-    super_admin_id = req.id;
-    if(req.body.private===true){
-      private = true;
+    if (!comment) {
+      return res.status(400).json({ message: "Please Submit Your Comment" });
     }
-    staff_id = null;
-  }else{
-    return res.status(400).json({message:"You are not Authorize to Comment"});
-  }
- 
-  
-  try {
-    const response = await callbackProperty(property_id,staff_id,super_admin_id,comment,private);
-    if(response.affectedRows===0){
-      return response.status(500).json({message:"No property to comment"})
+
+    if (user_type === "staff") {
+      staff_id = req.id;
+      super_admin_id = null;
+      private = false;
+    } else if (user_type === "superAdmin") {
+      super_admin_id = req.id;
+      if (req.body.private === true) {
+        private = true;
+      }
+      staff_id = null;
+    } else {
+      return res
+        .status(400)
+        .json({ message: "You are not Authorize to Comment" });
     }
-    return res.status(200).json({message:"comment submit successfully"});
-  } catch (error) {
-    console.log(error)
-    return res.status(500).json({message:"Unable to submit comment"});
-  }
 
-  }
-
-
-
-
+    try {
+      const response = await callbackProperty(
+        property_id,
+        staff_id,
+        super_admin_id,
+        comment,
+        private
+      );
+      if (response.affectedRows === 0) {
+        return response.status(500).json({ message: "No property to comment" });
+      }
+      return res.status(200).json({ message: "comment submit successfully" });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Unable to submit comment" });
+    }
+  };
 
   this.getSearchData = async function (req, res, getDataFunction) {
     let page, limit, offSet;
@@ -206,39 +231,35 @@ function Utility() {
     try {
       const data = await getDataFunction(req.query, limit, offSet);
       console.log(data);
-
+      //update views of property
+      //await updateViewsCount()
       return res.status(200).json(data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return res.status(500).json({ message: error.sqlMessage });
     }
   };
 
-  
-  this.handleGetPropertyComment = async function (req,res,getPropertyComment){
+  this.handleGetPropertyComment = async function (
+    req,
+    res,
+    getPropertyComment
+  ) {
+    let { property_id } = req.params;
 
-    let {property_id} = req.params;
-
-    let super_admin_id = req.baseUrl.substring(1)==="superAdmin"?req.id:null;
-    
-
+    let super_admin_id =
+      req.baseUrl.substring(1) === "superAdmin" ? req.id : null;
 
     try {
-      const data = await getPropertyComment(property_id,super_admin_id);
+      const data = await getPropertyComment(property_id, super_admin_id);
       return res.status(200).json(data);
     } catch (error) {
-      console.error(error)
-      return res.status(500).json({message:"Unable To Get Data"});
+      console.error(error);
+      return res.status(500).json({ message: "Unable To Get Data" });
     }
+  };
 
-
-  }
-
-
-
-
-
-  this.isValid = {
+  (this.isValid = {
     phoneNumber: async function (phoneNumber) {
       return phoneNumber?.match(numberRegex);
     },
@@ -250,24 +271,11 @@ function Utility() {
     password: async function (password, confirm_password) {
       return password === confirm_password;
     },
-  },
-  this.getRandomNumber = function (minValue, maxValue) {
+  }),
+    (this.getRandomNumber = function (minValue, maxValue) {
       return Math.floor(Math.random() * (maxValue - minValue) + minValue);
-    };
-
-
-
+    });
 }
-
-
-
-
-
-
-
-
-
-
 
 function Auth() {
   const tokenExpireTime = "1hr";
@@ -275,8 +283,7 @@ function Auth() {
 
   (this.login = async function (req, res, user) {
     const { password } = req.body;
-   
- 
+
     if (!user) {
       console.log("No User Found");
       return res.status(404).send("User Not Found");
@@ -534,4 +541,238 @@ function Auth() {
   };
 }
 
-module.exports = { Utility, Auth };
+function propertyUtility(property_type) {
+  const validTypes = ["apartment", "house", "land"];
+  if (!validTypes.includes(property_type)) {
+    throw new Error(`Invalid Property type: ${type}`);
+  }
+
+  const propertyType = property_type;
+
+  async function handleMulterError(
+    req,
+    res,
+    err,
+    afterUploadCallback,
+    isImageRequired = false
+  ) {
+    if (err instanceof multer.MulterError) {
+      console.log(err);
+      return res.status(400).json(err);
+    } else if (err) {
+      console.log(err);
+      return res.status(400).json(err);
+    }
+
+    console.log(req.file);
+    console.log(req.files);
+    //console.log(req?.files[0]?.path);
+
+    if (isImageRequired) {
+      if (
+        !req?.file?.path &&
+        !(req?.files?.length > 0 && req?.files[0]?.path)
+      ) {
+        return res.status(400).json({ message: "Please Upload Your Image" });
+      }
+    }
+
+    afterUploadCallback();
+  }
+
+  async function handleAddProperty(req, res, addProperty) {
+    // get user id from req.id i.e we set req.id when verify token
+    let customer_id = null;
+    let agent_id = null;
+    let staff_id = null;
+    // baseUrl provide us from where request coming from ex. /agent,/staff,/customer
+    const user_type = req.baseUrl.substring(1);
+    let property_type = req.path.substring(1);
+    // if(property_type==='addApartment'){
+    //   property_type = 'apartmentProperty';
+    // }
+    // if(property_type==='addHouse'){
+    //   property_type = 'houseProperty';
+    // }
+    // if(property_type==='addLand'){
+    //   property_type = 'landProperty';
+    // }
+
+    if (user_type === "customer") {
+      customer_id = req.id;
+    } else if (user_type === "agent") {
+      agent_id = req.id;
+    } else if (user_type === "staff") {
+    } else {
+      return res.status(400).json({ message: "bad request" });
+    }
+
+    if (!req.body.property) {
+      return res.status(400).json({ message: "missing property " });
+    }
+    // let { property, [property_type]: callbackProperty, location } = JSON.parse(
+    //   req.body.property
+    // );
+    let property = JSON.parse(req.body.property);
+
+    const images = req.files;
+
+    const imageObject = JSON.stringify(
+      images.reduce(
+        (acc, value, index) => ({ ...acc, [index]: value.path }),
+        {}
+      )
+    );
+
+    console.log(imageObject);
+
+    // update object - store some value
+    property = {
+      ...property,
+      property_image: imageObject,
+      property_video: null,
+      staff_id: null,
+      customer_id: customer_id,
+      agent_id: agent_id,
+    };
+
+    try {
+      //await insertApartmentProperty(property,apartmentProperty,user_id,user_type);
+      await addProperty(property);
+
+      return res.status(200).json({ message: `${propertyType} insert` });
+    } catch (error) {
+      return res.status(400).json({ message: error });
+    }
+  }
+
+  async function handleGetPropertyByID(
+    req,
+    res,
+    getPropertyById,
+    updatePropertyViews
+  ) {
+    const { property_id } = req.params;
+    console.log(property_id);
+    let latitude = 28.434883;
+    let longitude = 85.72859;
+
+    try {
+      const result = await getPropertyById(property_id); // get single  apartment by property
+      // if there is apartment then also update views
+      if (!result) {
+        return res.status(400).json({ message: `No ${propertyType}` });
+      }
+      // update views
+      const [updateViews, updateViewsError] = await wrapAwait(
+        updatePropertyViews(property_id, latitude, longitude)
+      );
+      if (updateViewsError) {
+        return res.status(500).json({ message: "Error while getting Data" });
+      }
+
+      return res.status(200).json(result);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Internal Error" });
+    }
+  }
+
+  async function handleInsertPropertyComment(req, res, callbackProperty) {
+    const { property_id } = req.params;
+    let staff_id;
+    let super_admin_id;
+
+    const user_type = req.baseUrl.substring(1);
+
+    let comment = req.body.comment;
+    let private = req.body.private || false;
+
+    if (!comment) {
+      return res.status(400).json({ message: "Please Submit Your Comment" });
+    }
+
+    if (user_type === "staff") {
+      staff_id = req.id;
+      super_admin_id = null;
+      private = false;
+    } else if (user_type === "superAdmin") {
+      super_admin_id = req.id;
+      if (req.body.private === true) {
+        private = true;
+      }
+      staff_id = null;
+    } else {
+      return res
+        .status(400)
+        .json({ message: "You are not Authorize to Comment" });
+    }
+
+    try {
+      const response = await callbackProperty(
+        property_id,
+        staff_id,
+        super_admin_id,
+        comment,
+        private
+      );
+      if (response.affectedRows === 0) {
+        return response.status(500).json({ message: "No property to comment" });
+      }
+      return res.status(200).json({ message: "comment submit successfully" });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Unable to submit comment" });
+    }
+  }
+
+  async function handleGetProperty(req, res, getProperty) {
+    let page, limit, offSet;
+
+    // if page and limit not set then defualt is 1 and 20 .
+    page = req.query.page || 1;
+
+    limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
+    // if page and limit present in query then delete it
+    if (req.query.page) delete req.query.page;
+
+    if (req.query.limit) delete req.query.limit;
+
+    offSet = (page - 1) * limit;
+
+    try {
+      const data = await getProperty(req.query, limit, offSet);
+      console.log(data);
+      //update views of property
+      //await updateViewsCount()
+      return res.status(200).json(data);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Internal Error " });
+    }
+  }
+
+  async function handleGetPropertyComment(req, res, getPropertyComment) {
+    let { property_id } = req.params;
+
+    let super_admin_id =
+      req.baseUrl.substring(1) === "superAdmin" ? req.id : null;
+
+    try {
+      const data = await getPropertyComment(property_id, super_admin_id);
+      return res.status(200).json(data);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Unable To Get Data" });
+    }
+  }
+
+  return {
+    handleAddProperty,
+    handleGetPropertyByID,
+    handleGetProperty,
+    
+  };
+}
+
+module.exports = { Utility, Auth, propertyUtility,utility };

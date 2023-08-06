@@ -13,7 +13,7 @@ const schemaName = 'nres_property';
 
 // ----------------------------CREATE APARTMENT DATA--------------------------------
 
-// apartmehnt model 
+// apartment model 
 function apartmentModel (sequelize,DataTypes){
     return Apartment = sequelize.define('property_apartment',{
       property_id :{
@@ -21,6 +21,7 @@ function apartmentModel (sequelize,DataTypes){
         allowNull:false,
         unique:true,
         primaryKey:true,
+      
       },
       property_type :{
         type:DataTypes.ENUM('commercial','residential','office')
@@ -368,6 +369,42 @@ function apartmentCommentModel(sequelize,DataTypes){
 
   })
 }
+
+
+
+function apartmentViewsModel (sequelize,DataTypes){
+  return ApartmentViews = sequelize.define('property_apartment_views',{
+    id :{
+      type:DataTypes.INTEGER,
+      autoIncrement:true,
+      primaryKey:true,
+    },
+    property_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references: {
+        model: 'property_apartments',
+        key: 'property_id'
+    }
+    },
+    latitude:{
+      type:DataTypes.DECIMAL(9,6)
+    },
+    longitude:{
+      type:DataTypes.DECIMAL(9,6)
+    },
+    date: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue:DataTypes.NOW
+  },
+  },{
+    freezeTableName: true,
+  }
+  
+  )
+}
+
 
 
 async function createApartmentFeedbackTable(){
@@ -724,6 +761,7 @@ module.exports = {
     apartmentFeedbackModel,
     apartmentCommentModel,
     pendingApartmentModel,
+    apartmentViewsModel,
     insertApartmentProperty,
     getApartmentProperty,
     insertApartmentFeedback,

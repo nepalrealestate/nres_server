@@ -145,7 +145,11 @@ function houseModel (sequelize,DataTypes){
     }
 
 
-  })
+  }
+  ,{
+    freezeTableName: true,
+  }
+  )
 }
 
 
@@ -155,6 +159,7 @@ function pendingHouseModel (sequelize,DataTypes){
       type:DataTypes.INTEGER,
       allowNull:false,
       unique:true,
+      autoIncrement:true,
       primaryKey:true,
     },
     property_type :{
@@ -279,6 +284,9 @@ function pendingHouseModel (sequelize,DataTypes){
     }
 
 
+  }
+  ,{
+    freezeTableName: true,
   })
 }
 
@@ -295,7 +303,7 @@ function houseAdsModel (sequelize,DataTypes){
       type:DataTypes.INTEGER,
       allowNull:false,
       references:{
-        model:'property_houses',
+        model:'property_house',
         key:'property_id'
       },
       onDelete: 'CASCADE'
@@ -305,6 +313,9 @@ function houseAdsModel (sequelize,DataTypes){
       defaultValue: 'unplanned'
     }
 
+  }
+  ,{
+    freezeTableName: true,
   })
 }
 
@@ -321,7 +332,7 @@ function houseFeedbackModel(sequelize,DataTypes){
       type:DataTypes.INTEGER,
       allowNull:false,
       references:{
-        model:'property_houses',
+        model:'property_house',
         key:'property_id'
       },
       onDelete: 'CASCADE'
@@ -342,7 +353,11 @@ function houseFeedbackModel(sequelize,DataTypes){
       }
 
     }
-  })
+  }
+  ,{
+    freezeTableName: true,
+  }
+  )
 }
 
 
@@ -359,7 +374,7 @@ function houseCommentModel(sequelize,DataTypes){
       type:DataTypes.INTEGER,
       allowNull:false,
       references:{
-        model:'property_houses',
+        model:'property_house',
         key:'property_id'
       },
       onDelete: 'CASCADE'
@@ -390,11 +405,49 @@ function houseCommentModel(sequelize,DataTypes){
     is_private: {
       type: DataTypes.BOOLEAN,
     }
+  }
+  ,{
+    freezeTableName: true,
   })
 }
 
 
-// --- Testing code for convert to sequelize
+
+function houseViewsModel (sequelize,DataTypes){
+  return HouseViewsCount = sequelize.define('property_house_views',{
+    id :{
+      type:DataTypes.INTEGER,
+      autoIncrement:true,
+      primaryKey:true,
+    },
+    property_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references: {
+        model: 'property_house',
+        key: 'property_id'
+    }
+    },
+    latitude:{
+      type:DataTypes.DECIMAL(9,6)
+    },
+    longitude:{
+      type:DataTypes.DECIMAL(9,6)
+    },
+    date: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue:DataTypes.NOW
+  },
+  },{
+    freezeTableName: true,
+  }
+  
+  )
+}
+
+
+// --- Testing 1e for convert to sequelize
 
 // create house model
 
@@ -719,6 +772,7 @@ module.exports = {
   houseCommentModel,
   houseFeedbackModel,
   houseAdsModel,
+  houseViewsModel,
   insertHouseProperty,
   getHouseProperty,
   insertHouseFeedback,
