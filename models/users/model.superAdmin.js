@@ -38,6 +38,8 @@ function superAdminModel(sequelize,DataTypes){
           }
         }
 
+    },{
+      freezeTableName:true
     })
 }
 

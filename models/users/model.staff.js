@@ -41,6 +41,8 @@ function staffModel (sequelize,DataTypes){
   
   
   
+    },{
+      freezeTableName:true
     })
   }
 

@@ -1,6 +1,8 @@
-const { Sequelize } = require('sequelize');
+;
 const db = require('../../model.index');
 const Agent = db.UserModel.Agent;
+const AgentRating = db.UserModel.AgentRating;
+const AgentInfo = db.UserModel.AgentInfo
 
 async function registerAgent(data){
     return await Agent.create({
@@ -43,6 +45,8 @@ async function getAgent(id){
     return await Agent.findOne({
         where:{agent_id:id},
         attributes: { exclude: ['password'] },
+        include:{model:AgentInfo,as:'agentInfo'}
+        
     })
 }
 
@@ -74,7 +78,7 @@ async function updateAgentProfile(id,updateData){
         delete updateData.profile;
     }
 
-    return Agent.update({...updateData,...profileImage},{
+    return await Agent.update({...updateData,...profileImage},{
         where:{
             agent_id:id
         }
@@ -94,6 +98,55 @@ async function updateAgentPassword(id,hashPassword){
 }
 
 
+async function insertAgentRating(agentRating,review,customer_id,agent_id) {
+    let transaction;
+    try {
+        transaction = await db.sequelize.transaction();
+
+        await AgentRating.create({
+            rating:agentRating,
+            review:review,
+            customer_id:customer_id,
+            agent_id:agent_id
+        },{ transaction: transaction });
+        
+        // update average rating and total rating in agent info table
+
+        
+        const ratingResult = await AgentRating.findAll({
+            where: { agent_id: agent_id },
+            attributes: [
+              [db.sequelize.fn('AVG', db.sequelize.col('rating')), 'averageRating'],
+              [db.sequelize.fn('COUNT', db.sequelize.col('rating')), 'totalRating']
+            ],
+            raw: true,
+           
+        }, {transaction: transaction});
+
+        
+
+        const averageRating = ratingResult[0].averageRating;
+        const totalRating = ratingResult[0].totalRating;
+        console.log(averageRating, totalRating);
+
+        // update
+        await AgentInfo.upsert(
+            { agent_id:agent_id,averageRating: averageRating, totalRating: totalRating },
+            
+            { transaction: transaction }
+        );
+
+        await transaction.commit();
+    } catch (error) {
+        if (transaction) await transaction.rollback();
+        console.log(error)
+        throw error;
+    }
+}
+
+
+
+
 module.exports ={
     registerAgent,
     findAgent,
@@ -101,5 +154,6 @@ module.exports ={
     getAgent,
     getAllAgent,
     updateAgentPassword,
-    updateAgentProfile
+    updateAgentProfile,
+    insertAgentRating
 }
