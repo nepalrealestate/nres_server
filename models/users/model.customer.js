@@ -1,8 +1,8 @@
 function customerModel(sequelize, DataTypes) {
-  return (Customer = sequelize.define("user_customer", {
+  return Customer = sequelize.define("user_customer", {
     customer_id: {
       type: DataTypes.INTEGER,
-      autoIncreament: true,
+      autoIncrement: true,
       primaryKey: true,
     },
     name: {
@@ -37,8 +37,15 @@ function customerModel(sequelize, DataTypes) {
         notEmpty: true,
       },
     },
-  }));
+  },{
+    freezeTableName:true
+  })
 }
+
+
+
+
+
 
 
  module.exports = {customerModel}

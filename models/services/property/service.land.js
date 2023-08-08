@@ -4,17 +4,18 @@ const PendingLand = db.PropertyModel.PendingLand
 const LandAds = db.PropertyModel.LandAds
 const LandComment = db.PropertyModel.LandComment
 const LandFeedback = db.PropertyModel.LandFeedback
+const LandViews = db.PropertyModel.LandViews
 
 
 
 async function insertPendingLand(land){
-    return await Land.create(house)
+    return await PendingLand.create(land)
 }
 
 async function getLand(condition,limit,offset){
     return await Land.findAll({
         where:condition,
-        attributes:[ 'property_id','property_name','listed_for','price,views'],
+        attributes:[ 'property_id','property_name','listed_for','price','views'],
         limit:limit,
         offset:offset
     })
@@ -27,7 +28,7 @@ async function getLandByID(property_id){
 async function getPendingLand(condition,limit,offset){
     return await PendingLand.findAll({
         where : condition,
-        attributes:[ 'property_id','property_name','listed_for','price,views'],
+        attributes:[ 'property_id','property_name','listed_for','price','views'],
         limit:limit,
         offset:offset
     })
@@ -117,6 +118,31 @@ async function getLandComment(property_id,super_admin_id=null){
 }
 
 
+async function updateLandViews(property_id,latitude,longitude){
+    //update views in Apartment table and Land views  Table
+    let transaction ;
+
+
+    try {
+        transaction = await db.sequelize.transaction();
+        // create new views 
+        await LandViews.create({property_id,latitude,longitude},{transaction});
+
+        // update Apartment views
+        await Land.increment('views', { by: 1, where: { property_id: property_id }, transaction });
+
+        await transaction.commit();
+        return;
+
+    } catch (error) {
+
+        await transaction.rollback();
+        throw error;
+    }
+
+}
+
+
 
 module.exports = {
     insertPendingLand,
@@ -128,5 +154,6 @@ module.exports = {
     insertLandFeedback,
     insertLandComment,
     updateLandAds,
-    approveLand
+    approveLand,
+    updateLandViews
 }

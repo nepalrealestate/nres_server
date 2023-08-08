@@ -6,9 +6,11 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const { checkProperties } = require("../requiredObjectProperties");
-const {Utility} = require("../controller.utils");
-const { insertPendingLand, getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment } = require("../../models/services/property/service.land");
-const utils = new Utility();
+const {Utility, utility, propertyUtility} = require("../controller.utils");
+const { insertPendingLand, getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews } = require("../../models/services/property/service.land");
+//const utils = new Utility();
+const utils = utility();
+const property = propertyUtility("land");
 
 
 const handleAddLand = async (req, res) => {
@@ -20,80 +22,31 @@ const handleAddLand = async (req, res) => {
   
   async function addLand(){
 
-   utils.handleAddProperty( req,res,insertPendingLand);
+   property.handleAddProperty( req,res,insertPendingLand);
   }
       
     
 };
 
 const handleGetLand = async (req, res) => {
-  let page, limit, offSet;
 
-  // if page and limit not set then defualt is 1 and 20 .
-  page = req.query.page || 1;
+  return property.handleGetProperty(req,res,getLand);
 
-  limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
-  // if page and limit present in query then delete it
-  if (req.query.page) delete req.query.page;
-
-  if (req.query.limit) delete req.query.limit;
-
-  offSet = (page - 1) * limit;
-
-  try {
-    const landData = await getLand(req.query, limit, offSet);
-    console.log(landData);
-
-    return res.status(200).json(landData);
-  } catch (error) {
-    return res.status(500).json({ message: error.sqlMessage });
-  }
 };
 
-const handleGetPendingdLand = async (req, res) => {
+const handleGetPendingLand = async (req, res) => {
 
-    utils.getSearchData(req,res,getPendingLand)
+    return property.handleGetProperty(req,res,getPendingLand);
    
 
 };
 
 const handleLandFeedback = async (req, res) => {
-  const { property_ID, feedback } = req.body;
-
-  try {
-    const result = await insertLandFeedback(property_ID, feedback);
-    return res.status(200).json({ message: "Feedback Submit" });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: error.sqlMessage });
-  }
-};
-const handleUpdateLandViews = async (req, res) => {
-  const { property_ID } = req.params;
-  console.log(req.params);
-
-  try {
-    const result = await updatePropertyViews(property_ID); // update property views common function to update views in parent table property;
-    return res.status(200).json({ message: "Views update successfully" });
-  } catch (error) {
-    return res.status(500).json({ message: error.sqlMessage });
-  }
+  return property.handleInsertPropertyFeedback(req,res,insertLandFeedback)
 };
 
 const handleGetLandByID = async (req, res) => {
-  const { property_ID } = req.params;
-
-  try {
-    const result = await getLandByID(property_ID); //get single land
-    //if there is land present then update views also;
-    if (result) {
-      await updatePropertyViews(property_ID);
-    }
-    console.log(result);
-    return res.status(200).json({ result });
-  } catch (error) {
-    return res.status(500).json({ message: error.sqlMessage });
-  }
+  return property.handleGetPropertyByID(req,res,getLandByID,updateLandViews)
 };
 
 const handleApproveLand = async (req, res) => {
@@ -132,7 +85,7 @@ const handleUpdateLandAds = async (req,res)=>{
     
     const response = await updateLandAds(ads_status,property_id)
  
-    if(response.affectedRows === 0 ){
+    if(!response ){
       return res.status(400).json({message:"No property to update "})
     }
     return res.status(200).json({message:"Successfully Update ads status"});
@@ -165,9 +118,8 @@ module.exports = {
   handleAddLand,
   handleGetLand,
   handleLandFeedback,
-  handleUpdateLandViews,
   handleGetLandByID,
-  handleGetPendingdLand,
+  handleGetPendingLand,
   handleApproveLand,
   handleUpdateLandAds,
   handleInsertLandComment,

@@ -19,16 +19,18 @@ const { wrapAwait } = require("../../errorHandling");
 const validator = require("email-validator");
 const multer = require("multer");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
-const { Utility,Auth } = require("../controller.utils");
+// const { Utility,Auth } = require("../controller.utils");
 const { query } = require("express");
-const { registerAgent, findAgent, getAllAgent, updateAgentProfile, getAgent, findAgentPassword, updateAgentPassword } = require("../../models/services/users/service.agent");
-
-const utility = new Utility();
-const auth = new Auth();
+const { registerAgent, findAgent, getAllAgent, updateAgentProfile, getAgent, findAgentPassword, updateAgentPassword, insertAgentRating } = require("../../models/services/users/service.agent");
+const  utility = require("../controller.utils");
+const utils = utility.utility() ;
 
 const saltRound = 10;
-
 const tokenExpireTime = "1hr";
+const JWT_KEY = process.env.JWT_KEY_AGENT
+const auth = utility.authUtility(tokenExpireTime,saltRound,JWT_KEY,"agent");
+
+
 
 
 const imagePath = "uploads/users/agent/images";
@@ -52,7 +54,7 @@ const handleGetAgent = async (req, res) => {
   try {
     const data = await getAgent(agent_ID);
     console.log(data);
-    return res.status(200).json({ data });
+    return res.status(200).json( data );
   } catch (error) {
     return res.status(400).json({ message: error });
   }
@@ -65,7 +67,7 @@ const handleAgentRegistration = async (req, res) => {
 
 
   upload.single('identification_image')(req,res,async function(err){
-    utility.handleMulterError(req,res,err,registration,true)
+    utils.handleMulterError(req,res,err,registration,true)
    
   })
 
@@ -75,9 +77,9 @@ const handleAgentRegistration = async (req, res) => {
     const {name,email,phone_number,identification_type,identification_number,password,confirm_password} = req.body;
     const image = JSON.stringify({"identification":req.file.path});
 
-    const isEmailValid = await  utility.isValid.email(email);
-    const isPhoneNumberValid =await  utility.isValid.phoneNumber(phone_number);
-    const isPasswordValid =await  utility.isValid.password(password,confirm_password)
+    const isEmailValid = await  utils.isValid.email(email);
+    const isPhoneNumberValid =await  utils.isValid.phoneNumber(phone_number);
+    const isPasswordValid =await  utils.isValid.password(password,confirm_password)
 
     if(!name || !identification_type || !identification_number){
       return res.status(400).json({message:"field missing"})
@@ -112,7 +114,19 @@ const handleAgentRegistration = async (req, res) => {
     hashPassword:hashPassword
   };
 
-   utility.handleRegistration(res,registerAgent,values);
+  const [response,responseError]= await wrapAwait(registerAgent(values));
+
+  if(responseError){
+      console.log(responseError);
+      if(responseError.name==='SequelizeUniqueConstraintError'){
+          return res.status(400).json({message:"Agent Already Register"})
+      }
+      return res.status(500).json({message:"Internal Error"});
+
+  }
+  return res.status(200).json({message:"Agent Registration success"})
+
+   
 
    
 
@@ -196,7 +210,7 @@ const handleAgentRating = async (req, res) => {
 const handleUpdateAgentProfile  = async (req,res)=>{
 
 
-  upload.single('profile_image')(req,res,(err)=>utility.handleMulterError(req,res,err,updateProfile))
+  upload.single('profile_image')(req,res,(err)=>utils.handleMulterError(req,res,err,updateProfile))
 
  async function updateProfile(){
     const agent_id = req.id;
@@ -263,8 +277,28 @@ const handleUpdateAgentPassword = async(req,res)=>{
 
 const handleGetAllAgent = async (req,res)=>{
 
-  return utility.getSearchData(req,res,getAllAgent)
+  return utils.getSearchData(req,res,getAllAgent)
 
+}
+
+const handleInsertAgentRating = async (req,res)=>{
+  //this request comes from customer router;
+  const {rating,review,agent_id} = req.body;
+  const customer_id = req.id;
+
+
+  try {
+    await insertAgentRating(rating,review,customer_id,agent_id);
+    return res.status(200).json({message:"Insert Ratings"})
+  } catch (error) {
+    return res.status(500).json({message:"Internal Error"});
+  }
+
+}
+
+
+const agentVerifyToken = async (req,res,next)=>{
+  auth.verifyToken(req,res,next)
 }
 
 module.exports = {
@@ -276,5 +310,7 @@ module.exports = {
   handleAgentRating,
   handleUpdateAgentProfile,
   handleUpdateAgentPassword,
-  handleGetAllAgent
+  handleGetAllAgent,
+  handleInsertAgentRating,
+  agentVerifyToken
 };
