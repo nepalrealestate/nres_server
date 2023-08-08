@@ -43,6 +43,16 @@ function customerModel(sequelize, DataTypes) {
 }
 
 
+// function customerFavoriteHouseModel(sequelize,DataTypes){
+
+//     return CustomerFavoriteHouse = sequelize.define('user_customer_favoriteHouse',{
+//       property_id:{
+//         type:DataTypes.INTEGER,
+//       },
+      
+//     })
+// }
+
 
 
 

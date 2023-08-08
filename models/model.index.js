@@ -1,4 +1,4 @@
-const sequelize = require("../db.confing");
+const sequelize = require("../db.config");
 const {DataTypes} = require('sequelize');
 
 
@@ -16,6 +16,13 @@ db.UserModel = {
     AgentRating:require('./users/model.agent').agentRatingModel(sequelize,DataTypes),
     AgentInfo :require('./users/model.agent').agentInfoModel(sequelize,DataTypes)
 };
+
+db.ServiceModel={
+    ServiceProvider:require('./nres_services/model.nres_service').serviceProviderModel(sequelize,DataTypes),
+
+
+    ServiceProviderRating:require('./nres_services/model.nres_service').serviceProviderRatingModel(sequelize,DataTypes)
+}
 
 
 db.PropertyModel = {

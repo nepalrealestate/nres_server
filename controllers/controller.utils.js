@@ -15,10 +15,18 @@ const modelUtils = new ModelUtility();
 
 
 function userUtility(user_type){
+
+
+
   const validTypes = ["staff", "superAdmin", "customer","agent"];
   if (!validTypes.includes(user_type)) {
     throw new Error(`Invalid Property type: ${user_type}`);
   }
+
+  const passwordToken = new Map();
+
+
+  
 
   const passwordReset = async function (req, res, user) {
     if (!user) {
@@ -290,11 +298,157 @@ function authUtility(tokenExpireTime,saltRound,JWT_KEY,user_type){
         console.log("Refresh TOken Successfull  ");
         next();
       });
+
+
+
+      const passwordReset = async function (req, res, user) {
+        if (!user) {
+          return res.status(404).json({ message: "User Not FounpasswordResetd!" });
+        }
+    
+        const randomToken = getRandomNumber(1000, 9999);
+    
+        const [resultToken, errorToken] = await wrapAwait(
+          modelUtils.insertPasswordResetToken(user.id, randomToken)
+        );
+        // if we get error of duplicate entry then update token value
+    
+        let isTokenUpdate = false;
+    
+        if (errorToken) {
+          console.log(errorToken);
+          if (errorToken.code === "ER_DUP_ENTRY") {
+            // if duplicate entry the udpate token value
+            const [resultUpdateToken, errorUpdateToken] = await wrapAwait(
+              modelUtils.updatePasswordToken(user.id, randomToken)
+            );
+            if (errorUpdateToken) {
+              return res.status(500).json({ message: error.sqlMessage });
+            }
+            isTokenUpdate = true;
+            console.log(isTokenUpdate);
+          } else {
+            console.log(errorToken);
+            return res.status(500).json({ message: "server Error " });
+          }
+        }
+        // if token insert in db or updated in db then send mail
+        if (resultToken || isTokenUpdate) {
+          sendPasswordResetTokenMail(user.email, randomToken)
+            .then(function (data) {
+              console.log(data);
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        }
+    
+        return res
+          .status(200)
+          .json({ message: "Token re-generate sucessfully Check Your Email " });
+      };
+    
+      const passwordUpdate = async function (req, res, user, updateUserPassword) {
+      if (!user) {
+        return res.status(404).json({ message: "User Not Found!" });
+      }
+    
+      const { email, token } = req.query;
+    
+      // if email field empty
+      if (!email) {
+        return res.status(400).json({ message: "Please Enter Email" });
+      }
+    
+      if (email && token && user) {
+        // logic for update password
+        const { password, confirmPassword } = req.body;
+        // if password doesnot match
+        if (password !== confirmPassword) {
+          console.log(" New Password not match  ");
+          return res.status(403).json({ message: " New Password  not match" });
+        }
+    
+        const [storeToken, storeTokenError] = await wrapAwait(
+          modelUtils.findPasswordResetToken(user.id)
+        );
+    
+        console.log(storeToken);
+    
+        // check expire date
+    
+        const expireDate = new Date(storeToken.expirationTime);
+        const currentDate = new Date();
+        const expireDay = expireDate.getUTCDate();
+        const currentDay = currentDate.getUTCDate();
+    
+        if (storeToken.token !== token || storeTokenError) {
+          return res.status(401).json({ message: "No Token Match" });
+        }
+    
+        //if token expire
+        if (Number(currentDay) >= Number(expireDay)) {
+          return res
+            .status(401)
+            .json({ message: "Token Expire ! please generate New Token" });
+        }
+    
+        const [hashPassword, hashPasswordError] = await wrapAwait(
+          bcrypt.hash(password, saltRound)
+        );
+    
+        if (hashPassword) {
+          // this updateUser password return result in array in form of resolve and reject
+          const [passwordUpdate, passwordUpdateError] = await wrapAwait(
+            updateUserPassword(user.id, hashPassword)
+          );
+          if (passwordUpdate) {
+            modelUtils.deleteToken(user.id).then(function () {
+              console.log("token delete Successfully");
+            });
+            return res
+              .status(200)
+              .json({ message: "Password Update succesfuly" });
+          }
+    
+          if (passwordUpdateError) {
+            console.log("password Update Error");
+            return res.status(500).json({ message: "Password doesnot update" });
+          }
+        }
+    
+        return res.status(500).json({ message: "couldn't update password" });
+      }
+    };
+    
+    const updateProfilePassword = async function (req, res, userPasswordUpdate) {
+      const newPassword = req.body.new_password;
+      const confirmPassword = req.body.confirm_password;
+    
+      if (newPassword !== confirmPassword) {
+        return res.status(400).json({ message: "Password doesnot match " });
+      }
+    
+      const [hashPassword, hashPasswordError] = await wrapAwait(
+        bcrypt.hash(newPassword, saltRound)
+      );
+    
+      try {
+        const response = await userPasswordUpdate(req.id, hashPassword);
+        return res.status(200).json({ message: "Password Update " });
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Unable to update password" });
+      }
+    };
+
+
     }
+
     return{
       login,
       verifyToken,
-      refreshToken
+      refreshToken,
     }
 }
 

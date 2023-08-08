@@ -11,8 +11,6 @@ CREATE SCHEMA nres_chat;
 
 
 
-
-
 --- create table for store users;
 
 

@@ -1,6 +1,11 @@
 const {pool} = require("../connection");
 const { userTable } = require("./tableName");
 
+
+
+
+
+
 function ModelUtility() {
 
 
@@ -12,8 +17,7 @@ function ModelUtility() {
     // const hours = String(currentDate.getHours()).padStart(2, "0");
     // const minutes = String(currentDate.getMinutes()).padStart(2, "0");
     // const seconds = String(currentDate.getSeconds()).padStart(2, "0");
-
-  //  const expireTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    // const expireTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
     const insertQuery =  `INSERT INTO ${userTable.passwordResetToken} (id,token,createdTime,expirationTime,ipAddress) VALUES(?,?,NOW(),DATE_ADD(NOW(), INTERVAL 1 DAY),?)`;
 

@@ -5,6 +5,102 @@ const { serviceTable, propertyTable } = require("../tableName");
 
 
 
+function serviceProviderModel(sequelize,DataTypes){
+  return ServiceProvider = sequelize.define('service_provider',{
+    provider_id:{
+      type:DataTypes.INTEGER,
+      autoIncrement:true,
+      primaryKey:true
+
+    },
+    name:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate:{
+        notEmpty:true
+      }
+    },
+    email:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      unique:true,
+      validate:{
+          isEmail:true,
+          notEmpty:true
+      }
+    },
+    phone_number:{
+    type:DataTypes.STRING,
+    allowNull:false,
+    unique:true,
+    validate:{
+      notEmpty:true
+    }
+    },
+    service_type:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate:{
+        notEmpty:true
+      }
+    },
+    state:{
+      type:DataTypes.STRING,
+    },
+    district:{
+      type:DataTypes.STRING
+    },
+    city:{      
+      type:DataTypes.STRING
+    },
+    ward_number:{
+      type:DataTypes.INTEGER
+    },
+    profileImage:{
+      type:DataTypes.STRING
+    },
+    status:{
+      type:DataTypes.ENUM('pending','approved','rejected'),
+      defaultValue:'pending'
+    }
+
+  },{
+    freezeTableName:true
+  })
+}
+
+
+
+function serviceProviderRatingModel(sequelize,Datatypes){
+  return serviceProviderRating = sequelize.define('service_provider_rating',{
+    provider_id:{
+      type:Datatypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'service_provider',
+        key:'provider_id'
+      }
+    },
+    customer_id:{
+      type:Datatypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'user_customer',
+        key:'customer_id'
+      }
+    },
+    rating:{
+      type:Datatypes.INTEGER,
+      allowNull:false,
+    },
+    review:{
+      type:Datatypes.TEXT,
+    }
+  },{
+    freezeTableName:true
+  })
+}
+
 async function registerServiceProvider(providerData){
 
     const query = `INSERT INTO ${serviceTable.service_provider} (name,phone_number,email,service_type,state,district,city,ward_number,profile_image,status) VALUES (?,?,?,?,?,?,?,?,?,'pending')`;
@@ -115,4 +211,9 @@ async function verifyServiceProvider(status,service_provider_id){
 
 
 
-module.exports = {registerServiceProvider,getServiceProvider,verifyServiceProvider,getPendingServiceProvider}
+
+
+
+
+
+module.exports = {serviceProviderModel,serviceProviderRatingModel,registerServiceProvider,getServiceProvider,verifyServiceProvider,getPendingServiceProvider}
