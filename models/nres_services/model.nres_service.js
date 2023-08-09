@@ -152,10 +152,10 @@ async function getPendingServiceProvider(condition,limit,offSet){
 
     
   const params = ['pending'];
-  //adding search conditon on query
+  //adding search condition on query
   for (let key of Object.keys(condition)) {
     if (condition[key]) {
-      // adding search conditon and  push value in params array;
+      // adding search condition and  push value in params array;
       sqlQuery += ` AND ${key} = ?`;
       params.push(condition[key]);
     }

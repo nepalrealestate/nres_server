@@ -2,7 +2,7 @@
 const express = require("express");
 
 const {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin} = require('../../controllers/users/controller.superAdmin');
-const { handleGetCustomerChatList } = require("../../controllers/chat/controller.userChat");
+const { handleGetCustomerChatList } = require("../../controllers/chat/controller.customerChat");
 const { handleGetStaffChatList, handleInsertStaffGroup, handleDeleteStaffFromGroup } = require("../../controllers/chat/controller.staffChat");
 
 const router = express.Router();

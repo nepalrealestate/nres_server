@@ -1,6 +1,6 @@
 const { handleAgentChat } = require("../controllers/chat/controller.agentChat");
 const { handleStaffChat } = require("../controllers/chat/controller.staffChat");
-const { handleUserChat } = require("../controllers/chat/controller.userChat");
+const { handleUserChat } = require("../controllers/chat/controller.customerChat");
 const { getSingleCustomerChat, insertCustomerChat } = require("../models/chat/model.customerChat");
 
 
