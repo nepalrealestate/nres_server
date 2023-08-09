@@ -1,5 +1,4 @@
 
-const { where } = require("sequelize");
 const db = require("../../model.index");
 const Apartment = db.PropertyModel.Apartment;
 const PendingApartment = db.PropertyModel.PendingApartment;
@@ -7,6 +6,7 @@ const ApartmentAds = db.PropertyModel.ApartmentAds;
 const ApartmentFeedback = db.PropertyModel.ApartmentFeedback;
 const ApartmentComment = db.PropertyModel.ApartmentComment
 const ApartmentViews = db.PropertyModel.ApartmentViews
+const RequestedApartment = db.PropertyModel.ApartmentViews
 
 async function insertPendingApartment(apartment){
 
@@ -145,5 +145,17 @@ async function updateApartmentViews(property_id,latitude,longitude){
 }
 
 
+async function insertRequestedApartment(data){
+    return await RequestedApartment.create(data)
+}
 
-module.exports = {insertPendingApartment,getApartment,getApartmentByID,getPendingApartment,approveApartment,getPendingApartmentByID,insertApartmentFeedback,updateApartmentAds,insertApartmentComment,getApartmentComment,updateApartmentViews};
+async function getRequestedApartment(condition,limit,offset){
+    return await RequestedApartment.findAll({
+        where:condition,
+        limit:limit,
+        offset
+    })
+}
+
+
+module.exports = {insertPendingApartment,getApartment,getApartmentByID,getPendingApartment,approveApartment,getPendingApartmentByID,insertApartmentFeedback,updateApartmentAds,insertApartmentComment,getApartmentComment,updateApartmentViews,insertRequestedApartment,getRequestedApartment};
