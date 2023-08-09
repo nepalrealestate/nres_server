@@ -59,8 +59,12 @@ db.PropertyModel = {
     //property views count 
     ApartmentViews: require('./property/model.apartment').apartmentViewsModel(sequelize,DataTypes),
     HouseViews:require('./property/model.house').houseViewsModel(sequelize,DataTypes),
-    LandViews : require('./property/model.land').landViewsModel(sequelize,DataTypes)
+    LandViews : require('./property/model.land').landViewsModel(sequelize,DataTypes),
 
+
+    //Requested Property
+    RequestedApartment:require('./property/model.apartment').requestedApartmentModel(sequelize,DataTypes),
+    //RequestedApartmentBy:require('./property/model.apartment').requestedApartmentByModel(sequelize,DataTypes),
 
 };
 

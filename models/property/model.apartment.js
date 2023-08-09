@@ -406,6 +406,136 @@ function apartmentViewsModel (sequelize,DataTypes){
 }
 
 
+function requestedApartmentModel(sequelize,DataTypes){
+  return RequestedApartment = sequelize.define('property_requested_apartment',{
+    
+    property_type :{
+      type:DataTypes.ENUM('commercial','residential','office')
+    },
+    property_area:{
+      type:DataTypes.FLOAT
+    },
+    property_age:{
+      type:DataTypes.INTEGER
+    },
+    floor:{
+      type:DataTypes.FLOAT
+    },
+   bhk:{
+      type:DataTypes.INTEGER
+   }, 
+    facing:{
+      type:DataTypes.ENUM('east','west','north','south','east-north','east-south','west-north','west-south')
+    },
+    road_size:{
+      type:DataTypes.FLOAT
+    },
+   minPrice:{
+    type:DataTypes.DECIMAL(12,2),
+    allowNull:false
+   },
+   maxPrice:{
+    type:DataTypes.DECIMAL(12,2),
+    allowNull:false
+   },
+    
+  furnish:{
+    type:DataTypes.ENUM('non-furnished','furnished','semi-furnished')
+  },
+  description:{
+    type:DataTypes.TEXT
+  },
+  needed:{
+    type: DataTypes.ENUM(
+      'urgent',
+      'within a month',
+      'within 3 months',
+      'within a year',
+      'after a year'
+    ),
+    allowNull: false
+  },
+    province:{
+      type:DataTypes.STRING
+    },
+    zone:{
+      type:DataTypes.STRING
+    },
+    district:{
+      type:DataTypes.STRING
+    },
+    municipality:{
+      type:DataTypes.STRING
+    },
+    ward:{
+      type:DataTypes.INTEGER
+    },
+    landmark:{
+      type:DataTypes.STRING
+    },
+    name:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate:{
+        notEmpty:true
+      }
+    },
+    email:{
+      type:DataTypes.STRING,
+      unique:true,
+      validate:{
+          isEmail:true,
+          notEmpty:true
+      }
+    },
+    phone_number:{
+    type:DataTypes.STRING,
+    unique:true,
+    validate:{
+      notEmpty:true
+    },
+  },
+  address:{
+    type:DataTypes.STRING
+  },
+  },{freezeTableName:true})
+}
+
+function requestedApartmentByModel(sequelize,DataTypes){
+  return RequestedApartmentBy = sequelize.define('property_requested_apartment_by',{
+    name:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate:{
+        notEmpty:true
+      }
+    },
+    email:{
+      type:DataTypes.STRING,
+      unique:true,
+      validate:{
+          isEmail:true,
+          notEmpty:true
+      }
+    },
+    phone_number:{
+    type:DataTypes.STRING,
+    unique:true,
+    validate:{
+      notEmpty:true
+    },
+  },
+  address:{
+    type:DataTypes.STRING
+  },
+  references:{
+    model:'property_requested_apartment',
+    key:'id'
+  }
+},{
+  freezeTableName: true,
+})
+}
 
 
 
@@ -415,5 +545,8 @@ module.exports = {
     apartmentFeedbackModel,
     apartmentCommentModel,
     pendingApartmentModel,
-    apartmentViewsModel
+    apartmentViewsModel,
+    requestedApartmentModel,
+    requestedApartmentByModel,
+  
 };
