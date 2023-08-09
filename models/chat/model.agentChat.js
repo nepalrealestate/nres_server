@@ -1,4 +1,51 @@
 
+
+
+
+function agentChatModel(sequelize,DataTypes){
+    return AgentChatModel = sequelize.define('chat_agent',{
+        sender_id:{
+            type:DataTypes.INTEGER,
+            allowNull:false,
+        },
+        receiver_id:{
+            type:DataTypes.INTEGER,
+            allowNull:false
+        },
+        message:{
+            type:DataTypes.STRING
+        }
+    },{
+        freezeTableName:true
+    })
+}
+
+
+function agentChatListModel (sequelize,DataTypes){
+    return AgentChatListModel =sequelize.define('chat_agent_list',{
+        agent_id:{
+            type:DataTypes.INTEGER,
+            allowNull:false,
+            unique:true,
+            references:{
+                model:'user_agent',
+                key:'agent_id'
+            }
+        }
+    })
+}
+
+
+module.exports = {agentChatModel,agentChatListModel}
+
+
+
+
+
+
+
+
+
 const { pool } = require("../../connection");
 const { chatTable } = require("../tableName");
 
@@ -54,5 +101,5 @@ async function getAgentChatList(){
 }
 
 
-module.exports ={getSingleAgentChat,insertAgentChat,insertAgentList,getAgentChatList}
+// module.exports ={getSingleAgentChat,insertAgentChat,insertAgentList,getAgentChatList}
 

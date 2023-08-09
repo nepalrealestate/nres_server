@@ -23,19 +23,18 @@ const { UploadImage } = require("../../middlewares/middleware.uploadFile");
 const { query } = require("express");
 const { registerAgent, findAgent, getAllAgent, updateAgentProfile, getAgent, findAgentPassword, updateAgentPassword, insertAgentRating } = require("../../models/services/users/service.agent");
 const  utility = require("../controller.utils");
-const utils = utility.utility() ;
+
 
 const saltRound = 10;
 const tokenExpireTime = "1hr";
 const JWT_KEY = process.env.JWT_KEY_AGENT
 const auth = utility.authUtility(tokenExpireTime,saltRound,JWT_KEY,"agent");
 
-
-
+const utils = utility.utility() ;
 
 const imagePath = "uploads/users/agent/images";
-const maxSixe = 2 * 1024 * 1024;
-const {upload} = new UploadImage(imagePath, maxSixe);
+const maxSize = 2 * 1024 * 1024;
+const {upload} = new UploadImage(imagePath, maxSize);
 
 
 
@@ -173,7 +172,7 @@ const handleAgentPasswordReset = async (req, res, next) => {
 
   const { email, token } = req.query;
 
-  // if email field empty
+  // if email field emptyempty
   if (!email) {
     return res.status(400).json({ message: "Please Enter Email" });
   }

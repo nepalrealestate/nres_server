@@ -1,4 +1,64 @@
+
+
+function staffChatModel(sequelize,DataTypes){
+  return StaffChat = sequelize.define('chat_staff',{
+    sender_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+  },
+  receiver_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false
+  },
+  message:{
+      type:DataTypes.STRING
+  }
+
+},{
+  freezeTableName:true
+})
+  
+}
+
+
+
+function staffChatListModel(sequelize,DataTypes){
+  return StaffChatList = sequelize.define('chat_staff_list',{
+    staff_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      unique:true,
+      references:{
+        model:'user_staff',
+        key:"staff_id"
+      }
+    }
+  },{
+    freezeTableName:true
+  })
+}
+
+function staffChatGroupModel(sequelize,DataTypes){
+  return StaffChatGroup = sequelize.define('chat_staff_group',{
+    staff_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      unique:true,
+      references:{
+        model:'user_staff',
+        key:"staff_id"
+      }
+    }
+  })
+}
+
+
+
+module.exports = {staffChatModel,staffChatListModel,staffChatGroupModel}
+
+
 const { pool } = require("../../connection");
+const ModelUtility = require("../model.utils");
 const { chatTable } = require("../tableName");
 
 async function getSingleStaffChat(id) {
@@ -95,13 +155,13 @@ async function insertStaffGroupChat(sender_id , message){
   }
 }
 
-module.exports = {
- getSingleStaffChat,
- insertStaffChat,
- insertStaffChatList,
- getStaffChatList,
- insertStaffGroup,
- deleteStaffFromGroup,
- getStaffFromGroupByID,
- insertStaffGroupChat
-};
+// module.exports = {
+//  getSingleStaffChat,
+//  insertStaffChat,
+//  insertStaffChatList,
+//  getStaffChatList,
+//  insertStaffGroup,
+//  deleteStaffFromGroup,
+//  getStaffFromGroupByID,
+//  insertStaffGroupChat
+// };

@@ -1,4 +1,4 @@
-;
+
 const db = require('../../model.index');
 const Agent = db.UserModel.Agent;
 const AgentRating = db.UserModel.AgentRating;

@@ -1,9 +1,5 @@
-const {
-  getSingleCustomerChat,
-  insertCustomerChat,
-  insertCustomerList,
-  getCustomerChatList,
-} = require("../../models/chat/model.customerChat");
+const { insertCustomerChat, getSingleCustomerChat, getCustomerChatList } = require("../../models/services/chat/service.customerChat");
+
 
 const userToSocket = new Map();
 
@@ -16,17 +12,17 @@ const handleUserChat = async function (userChat, socket) {
   //  user successfully insert in nres_chat.customer_list
   // i.e user register as customer then only allow to chat
 
-  // try {
-  //   const chatListResponse = await insertCustomerList(userID);
-  //   console.log(chatListResponse)
-  // } catch (error) {
-  //   console.log(error)
-  //   // this means user cannot insert because in customer table user is not register
-  //   socket.send("User is not register as cutomer");
-  //   socket.disconnect(true);
-  //   return;
+  try {
+    const chatListResponse = await insertCustomerChat(userID);
+    console.log(chatListResponse)
+  } catch (error) {
+    console.log(error)
+    // this means user cannot insert because in customer table user is not register
+    socket.send("User is not register as cutomer");
+    socket.disconnect(true);
+    return;
 
-  // }
+  }
 
   //mapping user id to socket id;
 

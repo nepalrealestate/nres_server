@@ -1,4 +1,6 @@
-const {  insertStaffChatList, insertStaffChat, getStaffChatList, insertStaffGroup, deleteStaffFromGroup, getStaffFromGroupByID, insertStaffGroupChat } = require("../../models/chat/model.staffChat");
+// const {  insertStaffChatList, insertStaffChat, getStaffChatList, insertStaffGroup, deleteStaffFromGroup, getStaffFromGroupByID, insertStaffGroupChat } = require("../../models/chat/model.staffChat");
+
+const { insertStaffChatList, getStaffFromGroupById, insertStaffChat, insertStaffGroupChat, getStaffChatList, getSingleStaffChat, insertStaffGroup, deleteStaffFromGroup } = require("../../models/services/chat/service.staffChat");
 
 const userToSocket = new Map();
 
@@ -13,22 +15,22 @@ const handleStaffChat = async function (staffChat, socket) {
   //  user successfully insert in nres_chat.customer_list
   // i.e user register as customer then only allow to chat
 
-  // try {
-  //   const chatListResponse = await insertStaffChatList(userID);
-  //   console.log(chatListResponse);
-  // } catch (error) {
-  //   console.log(error);
-  //   // this means user cannot insert because in customer table user is not register
-  //   socket.send("User is not register as staff");
-  //   socket.disconnect(true);
-  //   return;
-  // }
+  try {
+    const chatListResponse = await insertStaffChatList(userID);
+    console.log(chatListResponse);
+  } catch (error) {
+    console.log(error);
+    // this means user cannot insert because in customer table user is not register
+    socket.send("User is not register as staff");
+    socket.disconnect(true);
+    return;
+  }
 
   // if staff in group then join group chat
  
   if(Number(userID) !== 0){
     try {
-      groupResponse = await getStaffFromGroupByID(userID);
+      groupResponse = await getStaffFromGroupById(userID);
      console.log(" This is Group Response " + groupResponse?.staff_id)
       if(groupResponse?.staff_id === Number(userID)){
         socket.join("staffGroup");
@@ -166,7 +168,7 @@ const handleGetStaffChatList = async function(req,res){
       const {staffID} = req.params;
   
       try {
-        const data =await handleGetSingleStaffChat(staffID);
+        const data =await getSingleStaffChat(staffID);
         return res.status(200).json(data);
       } catch (error) {
         return res.status(500).json("Internal Error");

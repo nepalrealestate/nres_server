@@ -1,5 +1,6 @@
-const sequelize = require("../db.confing");
+const sequelize = require("../db.config");
 const {DataTypes} = require('sequelize');
+const { agentChatModel } = require("./chat/model.agentChat");
 
 
 db = {};
@@ -16,6 +17,13 @@ db.UserModel = {
     AgentRating:require('./users/model.agent').agentRatingModel(sequelize,DataTypes),
     AgentInfo :require('./users/model.agent').agentInfoModel(sequelize,DataTypes)
 };
+
+db.ServiceModel={
+    ServiceProvider:require('./nres_services/model.nres_service').serviceProviderModel(sequelize,DataTypes),
+
+
+    ServiceProviderRating:require('./nres_services/model.nres_service').serviceProviderRatingModel(sequelize,DataTypes)
+}
 
 
 db.PropertyModel = {
@@ -54,11 +62,25 @@ db.PropertyModel = {
     LandViews : require('./property/model.land').landViewsModel(sequelize,DataTypes)
 
 
-
-   
-
 };
 
+
+
+//chat 
+db.ChatModel={
+
+    CustomerChat:require('./chat/model.customerChat').customerChatModel(sequelize,DataTypes),
+    CustomerChatList:require('./chat/model.customerChat').customerChatListModel(sequelize,DataTypes),
+
+    AgentChatModel:require('./chat/model.agentChat').agentChatModel(sequelize,DataTypes),
+    AgentChatListModel:require('./chat/model.agentChat').agentChatListModel(sequelize,DataTypes),
+
+
+    StaffChat : require('./chat/model.staffChat').staffChatModel(sequelize,DataTypes),
+    StaffChatList : require('./chat/model.staffChat').staffChatListModel(sequelize,DataTypes),
+    StaffChatGroup : require('./chat/model.staffChat').staffChatGroupModel(sequelize,DataTypes)
+
+}
 
 
 

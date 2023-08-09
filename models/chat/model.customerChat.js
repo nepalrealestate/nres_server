@@ -1,5 +1,48 @@
 
+function customerChatModel(sequelize,DataTypes){
+    return CustomerChatModel = sequelize.define('chat_customer',{
+        
+        sender_id:{
+            type:DataTypes.INTEGER,
+            allowNull:false,
+        },
+        receiver_id:{
+            type:DataTypes.INTEGER,
+            allowNull:false
+        },
+        message:{
+            type:DataTypes.STRING
+        }
+
+    },{
+        freezeTableName:true
+    })
+}
+
+function customerChatListModel (sequelize,DataTypes){
+    return CustomerChatList = sequelize.define('chat_customer_list',{
+        customer_id:{
+            type:DataTypes.INTEGER,
+            allowNull:false,
+            unique:true,
+            references:{
+                model:'user_customer',
+                key:'customer_id'
+            }
+        }
+
+    },{
+        freezeTableName:true
+    })
+}
+
+
+module.exports = {customerChatModel,customerChatListModel}
+
+
+
 const { pool } = require("../../connection");
+const ModelUtility = require("../model.utils");
 const { chatTable } = require("../tableName");
 
 
@@ -58,4 +101,4 @@ async function getCustomerChatList(){
 
 
 
-module.exports = {getSingleCustomerChat,insertCustomerChat,insertCustomerList,getCustomerChatList}
+//module.exports = {getSingleCustomerChat,insertCustomerChat,insertCustomerList,getCustomerChatList}

@@ -1,9 +1,3 @@
-const {pool}  = require("../../connection");
-const {isTableExists} = require("../commonModels");
-
-const superAdminTableName = 'superAdmin';
-const schemaName = 'nres_users';
-
 
 function superAdminModel(sequelize,DataTypes){
     return SuperAdmin = sequelize.define('user_superAdmin',{
