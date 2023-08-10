@@ -25,7 +25,7 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const {Utility, propertyUtility, utility} = require("../controller.utils");
-const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews } = require("../../models/services/property/service.apartment");
+const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment } = require("../../models/services/property/service.apartment");
 const { wrapAwait } = require("../../errorHandling");
 //const utils = new Utility();
 const utils = utility();
@@ -164,6 +164,39 @@ const handleGetApartmentComment = async (req,res)=>{
 }
 
 
+const handleInsertRequestedApartment = async (req,res)=>{
+  const requiredFields = [
+    'property_type', 'property_area', 'property_age', 'floor', 'bhk', 
+    'facing', 'road_size', 'minPrice', 'maxPrice', 'furnish', 'description',
+    'needed', 'province', 'zone', 'district', 'municipality', 'ward', 
+    'landmark', 'name', 'email', 'phone_number', 'address'
+];
+console.log(req.body);
+
+for (const field of requiredFields) {
+  if (!req.body.hasOwnProperty(field)) {
+      return res.status(400).json({message:"missing field"})
+  }
+}
+
+const requestedApartment = req.body;
+
+try {
+  const response = await insertRequestedApartment(requestedApartment);
+  return res.status(200).json({message:"Requested Apartment Inserted successfully"})
+} catch (error) {
+  return res.status(500).json({message:"Internal Error"})
+}
+
+
+
+
+
+
+
+}
+
+
 module.exports = {
   handleAddApartment,
   handleGetApartment,
@@ -174,5 +207,6 @@ module.exports = {
   handleApproveApartment,
   handleUpdateApartmentAds,
   handleInsertApartmentComment,
-  handleGetApartmentComment
+  handleGetApartmentComment,
+  handleInsertRequestedApartment
 };
