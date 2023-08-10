@@ -12,8 +12,6 @@ db.UserModel = {
     Staff: require('./users/model.staff').staffModel(sequelize, DataTypes),
     Customer: require('./users/model.customer').customerModel(sequelize, DataTypes),
     SuperAdmin:require('./users/model.superAdmin').superAdminModel(sequelize,DataTypes),
-
-
     AgentRating:require('./users/model.agent').agentRatingModel(sequelize,DataTypes),
     AgentInfo :require('./users/model.agent').agentInfoModel(sequelize,DataTypes)
 };
@@ -65,6 +63,8 @@ db.PropertyModel = {
     //Requested Property
     RequestedApartment:require('./property/model.apartment').requestedApartmentModel(sequelize,DataTypes),
     //RequestedApartmentBy:require('./property/model.apartment').requestedApartmentByModel(sequelize,DataTypes),
+    RequestedHouse : require('./property/model.house').requestedHouseModel(sequelize,DataTypes),
+    RequestedLand : require('./property/model.land').requestedLandModel(sequelize,DataTypes)
 
 };
 

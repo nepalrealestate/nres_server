@@ -453,7 +453,7 @@ function requestedApartmentModel(sequelize,DataTypes){
       'within a year',
       'after a year'
     ),
-    allowNull: false
+    
   },
     province:{
       type:DataTypes.STRING

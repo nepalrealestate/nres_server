@@ -6,6 +6,7 @@ const HouseAds = db.PropertyModel.HouseAds
 const HouseFeedback = db.PropertyModel.HouseFeedback
 const HouseComment = db.PropertyModel.HouseComment
 const HouseViews = db.PropertyModel.HouseViews
+const RequestedHouse = db.PropertyModel.RequestedHouse
 
  async function insertPendingHouse(house){
     return await PendingHouse.create(house);
@@ -139,4 +140,10 @@ async  function updateHouseViews(property_id,latitude,longitude){
 
 
 
-module.exports ={insertPendingHouse,getHouse,getHouseByID,getHouseComment,getPendingHouse,getPendingHouseByID,insertHouseFeedback,insertHouseComment,updateHouseAds,approveHouse,updateHouseViews}
+async function insertRequestedHouse (data){
+    return await RequestedHouse.create(data);
+}
+
+
+
+module.exports ={insertPendingHouse,getHouse,getHouseByID,getHouseComment,getPendingHouse,getPendingHouseByID,insertHouseFeedback,insertHouseComment,updateHouseAds,approveHouse,updateHouseViews,insertRequestedHouse}
