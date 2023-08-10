@@ -5,7 +5,7 @@ const LandAds = db.PropertyModel.LandAds
 const LandComment = db.PropertyModel.LandComment
 const LandFeedback = db.PropertyModel.LandFeedback
 const LandViews = db.PropertyModel.LandViews
-
+const RequestedLand = db.PropertyModel.RequestedLand
 
 
 async function insertPendingLand(land){
@@ -142,6 +142,15 @@ async function updateLandViews(property_id,latitude,longitude){
 
 }
 
+async function insertRequestedLand(data){
+    try {
+        return await RequestedLand.create(data);
+    } catch (error) {
+        console.log(error)
+        throw error
+    }
+}
+    
 
 
 module.exports = {
@@ -155,5 +164,6 @@ module.exports = {
     insertLandComment,
     updateLandAds,
     approveLand,
-    updateLandViews
+    updateLandViews,
+    insertRequestedLand,
 }

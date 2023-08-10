@@ -7,7 +7,7 @@ const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const { checkProperties } = require("../requiredObjectProperties");
 const {Utility, utility, propertyUtility} = require("../controller.utils");
-const { insertPendingLand, getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews } = require("../../models/services/property/service.land");
+const { insertPendingLand, getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand } = require("../../models/services/property/service.land");
 //const utils = new Utility();
 const utils = utility();
 const property = propertyUtility("land");
@@ -113,6 +113,35 @@ const handleGetLandComment = async (req,res)=>{
 
 }
 
+const handleInsertRequestedLand = async (req,res)=>{
+  const requiredFields = [
+    'property_type', 'property_area', 'road_size', 'sewage', 'furnish', 
+    'drinking_water', 'electricity', 'minPrice', 'maxPrice', 'description',
+    'needed', 'province', 'zone', 'district', 'municipality', 'ward',
+    'landmark', 'name', 'email', 'phone_number', 'address'
+];
+
+console.log(requiredFields)
+
+for (const field of requiredFields) {
+  
+  if (!req.body.hasOwnProperty(field)) {
+      return res.status(400).json({message:"missing field"})
+  }
+}
+
+const requestedLand= req.body;
+
+try {
+  const response = await insertRequestedLand(requestedLand)
+  return res.status(200).json({message:"Requested Land Inserted Successfully"})
+} catch (error) {
+  return res.status(500).json({message:"Internal Error"});
+}
+
+
+}
+
 
 module.exports = {
   handleAddLand,
@@ -123,5 +152,6 @@ module.exports = {
   handleApproveLand,
   handleUpdateLandAds,
   handleInsertLandComment,
-  handleGetLandComment
+  handleGetLandComment,
+  handleInsertRequestedLand
 };

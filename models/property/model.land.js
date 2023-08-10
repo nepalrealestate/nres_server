@@ -372,6 +372,98 @@ function landViewsModel (sequelize,DataTypes){
   ) 
 }
 
+function requestedLandModel(sequelize,DataTypes){
+  return RequestedLand = sequelize.define('property_requested_land',{
+    
+    property_type :{
+      type:DataTypes.ENUM('non-plotted','plotted')
+    },
+    property_area:{
+      type:DataTypes.FLOAT
+    },
+    road_size:{
+      type:DataTypes.FLOAT
+    },
+    sewage:{
+      type:DataTypes.BOOLEAN
+    },
+      
+    furnish:{
+    type:DataTypes.ENUM('non-furnished','furnished','semi-furnished')
+    },
+    drinking_water:{
+      type:DataTypes.BOOLEAN
+    },
+    electricity:{
+      type:DataTypes.BOOLEAN
+    },
+   minPrice:{
+    type:DataTypes.DECIMAL(12,2),
+    allowNull:false
+   },
+   maxPrice:{
+    type:DataTypes.DECIMAL(12,2),
+    allowNull:false
+   },
+    
+  description:{
+    type:DataTypes.TEXT
+  },
+  needed:{
+    type: DataTypes.ENUM(
+      'urgent',
+      'within a month',
+      'within 3 months',
+      'within a year',
+      'after a year'
+    ),
+    
+  },
+    province:{
+      type:DataTypes.STRING
+    },
+    zone:{
+      type:DataTypes.STRING
+    },
+    district:{
+      type:DataTypes.STRING
+    },
+    municipality:{
+      type:DataTypes.STRING
+    },
+    ward:{
+      type:DataTypes.INTEGER
+    },
+    landmark:{
+      type:DataTypes.STRING
+    },
+    name:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate:{
+        notEmpty:true
+      }
+    },
+    email:{
+      type:DataTypes.STRING,
+      unique:true,
+      validate:{
+          isEmail:true,
+          notEmpty:true
+      }
+    },
+    phone_number:{
+    type:DataTypes.STRING,
+    unique:true,
+    validate:{
+      notEmpty:true
+    },
+  },
+  address:{
+    type:DataTypes.STRING
+  },
+  },{freezeTableName:true})
+}
 
 
 
@@ -383,5 +475,6 @@ module.exports = {
   landAdsModel,
   landCommentModel,
   landFeedbackModel,
-  landViewsModel
+  landViewsModel,
+  requestedLandModel
 };
