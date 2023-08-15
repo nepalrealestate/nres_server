@@ -64,73 +64,76 @@ const handleGetAgent = async (req, res) => {
 
 const handleAgentRegistration = async (req, res) => {
 
+  if(req.body.googleAccessToken){
 
-  upload.single('identification_image')(req,res,async function(err){
-    utils.handleMulterError(req,res,err,registration,true)
-   
-  })
+    const data = await axios.get()
 
-  async function registration(){
+  }else{
+    upload.single('identification_image')(req,res,async function(err){
+      utils.handleMulterError(req,res,err,registration,true)
+     
+    })
   
-
-    const {name,email,phone_number,identification_type,identification_number,password,confirm_password} = req.body;
-    const image = JSON.stringify({"identification":req.file.path});
-
-    const isEmailValid = await  utils.isValid.email(email);
-    const isPhoneNumberValid =await  utils.isValid.phoneNumber(phone_number);
-    const isPasswordValid =await  utils.isValid.password(password,confirm_password)
-
-    if(!name || !identification_type || !identification_number){
-      return res.status(400).json({message:"field missing"})
-    }
-    if( ! isEmailValid ) {
-      return res.status(400).json({message:"Invalid Email"});   
-    }
-    if( ! isPhoneNumberValid){
-      return res.status(400).json({message:"Invalid Phone Number"});   
-    }
-    if( ! isPasswordValid ){
-      return res.status(400).json({message:"Invalid Password"});
-    }
-
+    async function registration(){
+    
   
-    const [hashPassword, hashPasswordError] = await wrapAwait(
-      bcrypt.hash(password, saltRound)
-    );
-    if (hashPasswordError) {
-      console.log(hashPasswordError);
-      return res.status(500).json({ message: "Something happen" });
-    }
+      const {name,email,phone_number,identification_type,identification_number,password,confirm_password} = req.body;
+      const image = JSON.stringify({"identification":req.file.path});
   
+      const isEmailValid = utils.isValid.email(email);
+      const isPhoneNumberValid = utils.isValid.phoneNumber(phone_number);
+      const isPasswordValid =  utils.isValid.password(password,confirm_password)
   
-   const values = {
-    name:name,
-    email:email,
-    phone_number:phone_number,
-    identification_type:identification_type,
-    identification_number:identification_number,
-    image:image,
-    hashPassword:hashPassword
-  };
-
-  const [response,responseError]= await wrapAwait(registerAgent(values));
-
-  if(responseError){
-      console.log(responseError);
-      if(responseError.name==='SequelizeUniqueConstraintError'){
-          return res.status(400).json({message:"Agent Already Register"})
+      if(!name || !identification_type || !identification_number){
+        return res.status(400).json({message:"field missing"})
       }
-      return res.status(500).json({message:"Internal Error"});
-
+      if( ! isEmailValid ) {
+        return res.status(400).json({message:"Invalid Email"});   
+      }
+      if( ! isPhoneNumberValid){
+        return res.status(400).json({message:"Invalid Phone Number"});   
+      }
+      if( ! isPasswordValid ){
+        return res.status(400).json({message:"Invalid Password"});
+      }
+  
+    
+      const [hashPassword, hashPasswordError] = await wrapAwait(
+        bcrypt.hash(password, saltRound)
+      );
+      if (hashPasswordError) {
+        console.log(hashPasswordError);
+        return res.status(500).json({ message: "Something happen" });
+      }
+    
+    
+     const values = {
+      name:name,
+      email:email,
+      phone_number:phone_number,
+      identification_type:identification_type,
+      identification_number:identification_number,
+      image:image,
+      hashPassword:hashPassword
+    };
+  
+    const [response,responseError]= await wrapAwait(registerAgent(values));
+  
+    if(responseError){
+        console.log(responseError);
+        if(responseError.name==='SequelizeUniqueConstraintError'){
+            return res.status(400).json({message:"Agent Already Register"})
+        }
+        return res.status(500).json({message:"Internal Error"});
+  
+    }
+    return res.status(200).json({message:"Agent Registration success"})
+     
+    }
   }
-  return res.status(200).json({message:"Agent Registration success"})
 
-   
 
-   
-
-   
-  }
+  
 }
 
 

@@ -1,10 +1,17 @@
 const sequelize = require("../db.config");
 const {DataTypes} = require('sequelize');
-const { agentChatModel } = require("./chat/model.agentChat");
+
 
 
 db = {};
 db.sequelize = sequelize;
+
+
+// notification
+db.NotificationModel = {
+    NotifyAdmin :require('./notification/model.notification').notificationModel(sequelize,DataTypes)
+};
+
 
 
 db.UserModel = {
@@ -84,7 +91,8 @@ db.ChatModel={
     StaffChatList : require('./chat/model.staffChat').staffChatListModel(sequelize,DataTypes),
     StaffChatGroup : require('./chat/model.staffChat').staffChatGroupModel(sequelize,DataTypes)
 
-}
+};
+
 
 
 

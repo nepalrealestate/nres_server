@@ -1,9 +1,9 @@
 
 const db = require('../../model.index');
+
 const Agent = db.UserModel.Agent;
 const AgentRating = db.UserModel.AgentRating;
 const AgentInfo = db.UserModel.AgentInfo
-
 async function registerAgent(data){
     return await Agent.create({
         name:data.name,

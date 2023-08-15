@@ -104,7 +104,7 @@ function houseModel (sequelize,DataTypes){
     staff_id:{
       type:DataTypes.INTEGER,
        references:{
-         model:'user_staffs',
+         model:'user_staff',
          key :'staff_id'
        }
       
@@ -112,14 +112,14 @@ function houseModel (sequelize,DataTypes){
     customer_id:{
       type:DataTypes.INTEGER,
       references:{
-        model:'user_customers',
+        model:'user_customer',
         key :'customer_id'
       }
     },
     agent_id :{
       type:DataTypes.INTEGER,
       references:{
-        model:'user_agents',
+        model:'user_agent',
         key :'agent_id'
       }
     },
@@ -243,7 +243,7 @@ function pendingHouseModel (sequelize,DataTypes){
     staff_id:{
       type:DataTypes.INTEGER,
        references:{
-         model:'user_staffs',
+         model:'user_staff',
          key :'staff_id'
        }
       
@@ -251,14 +251,14 @@ function pendingHouseModel (sequelize,DataTypes){
     customer_id:{
       type:DataTypes.INTEGER,
       references:{
-        model:'user_customers',
+        model:'user_customer',
         key :'customer_id'
       }
     },
     agent_id :{
       type:DataTypes.INTEGER,
       references:{
-        model:'user_agents',
+        model:'user_agent',
         key :'agent_id'
       }
     },
@@ -325,7 +325,7 @@ function houseFeedbackModel(sequelize,DataTypes){
     customer_id:{
       type:DataTypes.INTEGER,
       references:{
-        model:'user_customers',
+        model:'user_customer',
         key:'customer_id'
       }
     },
@@ -367,7 +367,7 @@ function houseCommentModel(sequelize,DataTypes){
     staff_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'user_staffs', // replace with your Staff model name
+        model: 'user_staff', // replace with your Staff model name
         key: 'staff_id',
       },
       onDelete: 'CASCADE',
@@ -375,7 +375,7 @@ function houseCommentModel(sequelize,DataTypes){
     super_admin_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'user_superAdmins', // replace with your SuperAdmin model name
+        model: 'user_superAdmin', // replace with your SuperAdmin model name
         key: 'superAdmin_id',
       },
       onDelete: 'CASCADE',
@@ -444,7 +444,7 @@ function apartmentCommentModel(sequelize,DataTypes){
       type:DataTypes.INTEGER,
       allowNull:false,
       references:{
-        model:'property_apartments',
+        model:'property_apartment',
         key:'property_id'
       },
       onDelete: 'CASCADE'
@@ -452,7 +452,7 @@ function apartmentCommentModel(sequelize,DataTypes){
     staff_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'user_staffs', // replace with your Staff model name
+        model: 'user_staff', // replace with your Staff model name
         key: 'staff_id',
       },
       onDelete: 'CASCADE',
@@ -460,7 +460,7 @@ function apartmentCommentModel(sequelize,DataTypes){
     super_admin_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'user_superAdmins', // replace with your SuperAdmin model name
+        model: 'user_superAdmin', // replace with your SuperAdmin model name
         key: 'superAdmin_id',
       },
       onDelete: 'CASCADE',
@@ -497,7 +497,7 @@ function apartmentViewsModel (sequelize,DataTypes){
       type:DataTypes.INTEGER,
       allowNull:false,
       references: {
-        model: 'property_apartments',
+        model: 'property_apartment',
         key: 'property_id'
     }
     },

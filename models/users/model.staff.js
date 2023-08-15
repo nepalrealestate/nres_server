@@ -1,7 +1,4 @@
-const {pool}  = require("../../connection");
-const {isTableExists} = require("../commonModels");
-const { propertyTable, userTable } = require("../tableName");
-
+const {pool}  = require("../../connection")
 
 
 

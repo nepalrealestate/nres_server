@@ -3,7 +3,6 @@ const ServiceProvider = db.ServiceModel.ServiceProvider
 const ServiceProviderRating = db.ServiceModel.ServiceProviderRating
 
 
-
 async function  registerServiceProvider(data){
     return await ServiceProvider.create(data);
 }

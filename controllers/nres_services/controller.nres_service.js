@@ -1,26 +1,21 @@
 
 
-
-//id,name,phone_number,email,service_type,state,district,city,ward_number,profile_image,status
-
-const { wrapAwait } = require("../../errorHandling")
-const { registerServiceProvider, getServiceProvider, verifyServiceProvider, getPendingServiceProvider } = require("../../models/nres_services/model.nres_service")
-
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
-const {Utility} = require('../controller.utils')
+const { registerServiceProvider, getServiceProvider, getPendingServiceProvider, verifyServiceProvider } = require("../../models/services/nres_service/service.nres_service");
+
 const imagePath = "uploads/users/agent/images";
 const maxSixe = 2 * 1024 * 1024;
 const upload = new UploadImage(imagePath, maxSixe).upload.single('image');
 
 
-const utility = new Utility();
-
+const  utility = require("../controller.utils");
+const utils   = utility.utility();
 
 const handleRegisterServiceProvider = async function (req, res,next) {
 
 
      upload(req,res,async function(err){
-        utility.handleMulterError(req,res,err,registration,true)
+        utils.handleMulterError(req,res,err,registration,true)
        
       })
      
@@ -28,12 +23,12 @@ const handleRegisterServiceProvider = async function (req, res,next) {
             const { name, phone_number, email, service_type, state, district, city, ward_number } = req.body;
             console.log(req.body)
             const imagePath = req?.file?.path 
-            utility.isValid.email(res,email);
-            utility.isValid.phoneNumber(res,phone_number)
+            utils.isValid.email(res,email);
+            utils.isValid.phoneNumber(res,phone_number)
     
             const values =[name,phone_number,email,service_type,state,district,city,ward_number,imagePath];
         
-            utility.handleRegistration(res,registerServiceProvider,values);
+            utils.handleRegistration(res,registerServiceProvider,values);
             
            
         }

@@ -1,12 +1,14 @@
 
 const db = require("../../model.index");
+
 const Apartment = db.PropertyModel.Apartment;
 const PendingApartment = db.PropertyModel.PendingApartment;
 const ApartmentAds = db.PropertyModel.ApartmentAds;
 const ApartmentFeedback = db.PropertyModel.ApartmentFeedback;
 const ApartmentComment = db.PropertyModel.ApartmentComment
 const ApartmentViews = db.PropertyModel.ApartmentViews
-const RequestedApartment = db.PropertyModel.ApartmentViews
+
+
 
 async function insertPendingApartment(apartment){
 

@@ -1,20 +1,5 @@
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
-// const {
-//   insertApartmentProperty,
-//   getApartmentProperty,
-//   insertApartmentFeedback,
-//   //getApartmentByID,
-//  // approveApartment,
-//   insertUnapprovedApartmentProperty,
-//   getUnapprovedApartmentProperty,
-//   getUnapprovedApartmentByID,
-//   insertPendingApartmentProperty,
-//   getPendingApartmentProperty,
-//  // getPendingApartmentByID,
-//   updateApartmentAds,
-//   insertApartmentComment,
-//   getApartmentComment,
-// } = require("../../models/property/model.apartment");
+
 const {
   updatePropertyViews,
 } = require("../../models/property/model.property");
@@ -54,6 +39,7 @@ const handleApartmentFeedback = async (req, res) => {
 
   try {
     const result = await insertApartmentFeedback(property_ID, feedback);
+    
     return res.status(200).json({ message: "Feedback Submit" });
   } catch (error) {
     console.log(error);
@@ -85,7 +71,7 @@ const handleGetApartmentByID = async (req, res) => {
   
 };
 
-//-----------------------------------------------UPDATE RELATED--------------------------------------------------------------
+//-----------------------------------------------UPDATE RELATED-------------------------------------------------------------
 
 const handleUpdateApartmentViews = async (req, res) => {
   const { property_ID } = req.params;

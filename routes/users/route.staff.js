@@ -5,7 +5,7 @@ const { verifyToken } = require("../../controllers/users/commonAuthCode");
 const { handleAddApartment, handleApproveApartment, handleGetPendingApartment, handleUpdateApartmentAds, handleInsertApartmentComment, handleGetApartment, handleGetApartmentComment, handleInsertRequestedApartment } = require("../../controllers/property/controller.apartment");
 const { handleAddHouse, handleApproveHouse, handleGetPendingHouse, handleUpdateHouseAds, handleGetHouse, handleInsertHouseComment, handleGetHouseComment, handleInsertRequestedHouse } = require("../../controllers/property/controller.house");
 const { handleAddLand, handleApproveLand, handleGetPendingLand, handleUpdateLandAds, handleInsertLandComment, handleGetLandComment, handleInsertRequestedLand } = require("../../controllers/property/controller.land");
-const { handleGetLatestPropertyDashboard } = require("../../controllers/property/controller.property");
+
 const { handleGetAllAgent } = require("../../controllers/users/controller.agent");
 const { insertRequestedLand } = require("../../models/services/property/service.land");
 
@@ -67,7 +67,7 @@ router.get("/land/comment/:property_id",verifyToken,handleGetLandComment)
 
 
 //get latest property for dashboard;
-router.get("/property",verifyToken,handleGetLatestPropertyDashboard);
+// router.get("/property",verifyToken,handleGetLatestPropertyDashboard);
 
 
 

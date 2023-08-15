@@ -1,12 +1,20 @@
 
 const bcrypt = require('bcrypt');
 //const {registerStaff,findStaff, getStaffByID} = require("../../models/users/model.staff");
-const {login} = require("./commonAuthCode");
+
 const { insertVideoLink } = require('../../models/property/model.property');
 const { registerStaff, findStaff, getStaff } = require('../../models/services/users/service.staff');
 const { wrapAwait } = require('../../errorHandling');
 
+const  utility = require("../controller.utils");
+
+
 const saltRound = 10;
+const tokenExpireTime = "1hr";
+const JWT_KEY = process.env.JWT_KEY_AGENT
+const auth = utility.authUtility(tokenExpireTime,saltRound,JWT_KEY,"staff");
+
+const utils = utility.utility() ;
 
 const handleGetStaff = async function (req,res){
     console.log("Handling Staff");
@@ -82,7 +90,7 @@ const handleStaffLogin  = async(req,res)=>{
 
     //this login function handle all logic
 
-    return login(req,res,staff);
+    return auth.login(req,res,staff);
 
 }
 
