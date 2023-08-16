@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 //const {registerStaff,findStaff, getStaffByID} = require("../../models/users/model.staff");
 
 const { insertVideoLink } = require('../../models/property/model.property');
-const { registerStaff, findStaff, getStaff } = require('../../models/services/users/service.staff');
+const { registerStaff, findStaff, getStaff, updateStaffPassword } = require('../../models/services/users/service.staff');
 const { wrapAwait } = require('../../errorHandling');
 
 const  utility = require("../controller.utils");
@@ -15,6 +15,8 @@ const JWT_KEY = process.env.JWT_KEY_AGENT
 const auth = utility.authUtility(tokenExpireTime,saltRound,JWT_KEY,"staff");
 
 const utils = utility.utility() ;
+const user = utility.userUtility("staff");
+
 
 const handleGetStaff = async function (req,res){
     console.log("Handling Staff");
@@ -127,12 +129,39 @@ const handleInsertStaffActivityLog = async function (req,res){
 }
 
 
+const handleStaffPasswordReset = async (req,res,next)=>{
+    // recive email in parameter
+
+  // if we recieve only email then reset password
+  // if we recieve token email and password (in body)
+  // after update password - delete token 
+
+  const { email, token } = req.query;
+
+  // if email field emptyempty
+  if (!email) {
+    return res.status(400).json({ message: "Please Enter Email" });
+  }
+
+  const [agent, agentError] = await wrapAwait(findStaff(email));
+  if (email && token && agent) {
+   
+    // pass update Password function as parameters;
+    return await user.passwordUpdate(req, res, agent,updateStaffPassword );
+  }
+  // if there is no token - then get token for reset password
+  return await user.passwordReset(req, res, agent);
+}
+
+
+
+
+const staffVerifyToken = async (req,res,next)=>{
+    auth.verifyToken(req,res,next);
+}
 
 
 
 
 
-
-
-
-module.exports={handleGetStaff,handleStaffRegistration,handleStaffLogin,handleAddVideoLink}
+module.exports={handleGetStaff,handleStaffRegistration,handleStaffLogin,handleAddVideoLink,handleStaffPasswordReset,staffVerifyToken}

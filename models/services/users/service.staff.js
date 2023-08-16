@@ -26,6 +26,13 @@ async function getStaff(id){
     })
 }
 
+async function updateStaffPassword(id,hashPassword){
+    return await Staff.update({password:hashPassword},
+        {
+            where:{
+                staff_id:id
+            }
+        })
+}
 
-
-module.exports = {registerStaff,findStaff,getStaff}
+module.exports = {registerStaff,findStaff,getStaff,updateStaffPassword}

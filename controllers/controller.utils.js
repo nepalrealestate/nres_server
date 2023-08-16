@@ -1,184 +1,145 @@
 const multer = require("multer");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const ModelUtility = require("../models/model.utils");
+
 const {
   sendPasswordResetTokenMail,
 } = require("../middlewares/middleware.sendEmail");
 const { wrapAwait } = require("../errorHandling");
-const { error } = require("winston");
-const { getProperty } = require("../models/property/model.property");
+
 const { pushNotification } = require("./notification/controller.notification");
 
 const saltRound = 10;
 
-const modelUtils = new ModelUtility();
 
-
-
-
-function userUtility(user_type){
-
-
-
-  const validTypes = ["staff", "superAdmin", "customer","agent"];
+function userUtility(user_type) {
+  const validTypes = ["staff", "superAdmin", "customer", "agent"];
   if (!validTypes.includes(user_type)) {
     throw new Error(`Invalid Property type: ${user_type}`);
   }
 
   const passwordToken = new Map();
 
-
-  
-
   const passwordReset = async function (req, res, user) {
+    const user_id = req.id;
     if (!user) {
       return res.status(404).json({ message: "User Not Found!" });
     }
 
-    const randomToken = getRandomNumber(1000, 9999);
+    const randomToken = Math.floor(Math.random()*(9999-1000)+1000)
+    const expireTime = Date.now() + 5 * 60 * 1000
+   
+    console.log(passwordToken)
+    passwordToken.set(user_id, {token:randomToken,expireTime:expireTime});
 
-    const [resultToken, errorToken] = await wrapAwait(
-      modelUtils.insertPasswordResetToken(user.id, randomToken)
-    );
-    // if we get error of duplicate entry then update token value
-
-    let isTokenUpdate = false;
-
-    if (errorToken) {
-      console.log(errorToken);
-      if (errorToken.code === "ER_DUP_ENTRY") {
-        // if duplicate entry the udpate token value
-        const [resultUpdateToken, errorUpdateToken] = await wrapAwait(
-          modelUtils.updatePasswordToken(user.id, randomToken)
-        );
-        if (errorUpdateToken) {
-          return res.status(500).json({ message: error.sqlMessage });
-        }
-        isTokenUpdate = true;
-        console.log(isTokenUpdate);
-      } else {
-        console.log(errorToken);
-        return res.status(500).json({ message: "server Error " });
-      }
-    }
-    // if token insert in db or updated in db then send mail
-    if (resultToken || isTokenUpdate) {
-      sendPasswordResetTokenMail(user.email, randomToken)
-        .then(function (data) {
-          console.log(data);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    }
+    sendPasswordResetTokenMail(user.email, randomToken)
+      .then(function (data) {
+        console.log(data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
 
     return res
       .status(200)
-      .json({ message: "Token re-generate sucessfully Check Your Email " });
+      .json({ message: "Token  sucessfully Check Your Email " });
   };
 
-  const passwordUpdate = async function (req, res, user, updateUserPassword) {
-  if (!user) {
-    return res.status(404).json({ message: "User Not Found!" });
-  }
-
-  const { email, token } = req.query;
-
-  // if email field empty
-  if (!email) {
-    return res.status(400).json({ message: "Please Enter Email" });
-  }
-
-  if (email && token && user) {
-    // logic for update password
-    const { password, confirmPassword } = req.body;
-    // if password doesnot match
-    if (password !== confirmPassword) {
-      console.log(" New Password not match  ");
-      return res.status(403).json({ message: " New Password  not match" });
+  const passwordUpdate = async function (req, res, user, updatePasswordCB) {
+    if (!user) {
+      return res.status(404).json({ message: "User Not Found!" });
     }
 
-    const [storeToken, storeTokenError] = await wrapAwait(
-      modelUtils.findPasswordResetToken(user.id)
-    );
+    const { email, token } = req.query;
+    const user_id = req.id;
 
-    console.log(storeToken);
-
-    // check expire date
-
-    const expireDate = new Date(storeToken.expirationTime);
-    const currentDate = new Date();
-    const expireDay = expireDate.getUTCDate();
-    const currentDay = currentDate.getUTCDate();
-
-    if (storeToken.token !== token || storeTokenError) {
-      return res.status(401).json({ message: "No Token Match" });
+    // if email field empty
+    if (!email) {
+      return res.status(400).json({ message: "Please Enter Email" });
     }
 
-    //if token expire
-    if (Number(currentDay) >= Number(expireDay)) {
-      return res
-        .status(401)
-        .json({ message: "Token Expire ! please generate New Token" });
+    if (email && token && user) {
+      // logic for update password
+      const { password, confirmPassword } = req.body;
+      // if password doesnot match
+      if (password !== confirmPassword) {
+        console.log(" New Password not match  ");
+        return res.status(403).json({ message: " New Password  not match" });
+      }
+
+      
+
+     const storeToken = passwordToken.get(user_id);
+     console.log(storeToken)
+
+     if(!storeToken){
+      return res.status(200).json({message:"Please generate token again"});
+     }
+     if(storeToken.token !== Number(token)){
+      return res.status(400).json({ message: "No Token Match" });
+     }
+
+      // check expire date
+      if(Date.now>storeToken.expireTime){
+        return res.status(400).json({ message: "Token Expire ! please generate New Token" });
+      }
+    
+  
+      const [hashPassword, hashPasswordError] = await wrapAwait(
+        bcrypt.hash(password, saltRound)
+      );
+
+      if (hashPassword) {
+        // this updateUser password return result in array in form of resolve and reject
+        const [passwordUpdate, passwordUpdateError] = await wrapAwait(
+          updatePasswordCB(user.id, hashPassword)
+        );
+        if (passwordUpdate) {
+          passwordToken.delete(user_id); 
+          return res
+            .status(200)
+            .json({ message: "Password Update succesfuly" });
+        }
+
+        if (passwordUpdateError) {
+          console.log("password Update Error");
+          return res.status(500).json({ message: "Password doesnot update" });
+        }
+      }
+      console.log(hashPasswordError)
+      return res.status(500).json({ message: "couldn't update password hash error" });
+    }
+  };
+
+  const updateProfilePassword = async function (req, res, userPasswordUpdate) {
+    const newPassword = req.body.newPassword;
+    const confirmPassword = req.body.confirmPassword;
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "Password doesnot match " });
     }
 
     const [hashPassword, hashPasswordError] = await wrapAwait(
-      bcrypt.hash(password, saltRound)
+      bcrypt.hash(newPassword, saltRound)
     );
 
-    if (hashPassword) {
-      // this updateUser password return result in array in form of resolve and reject
-      const [passwordUpdate, passwordUpdateError] = await wrapAwait(
-        updateUserPassword(user.id, hashPassword)
-      );
-      if (passwordUpdate) {
-        modelUtils.deleteToken(user.id).then(function () {
-          console.log("token delete Successfully");
-        });
-        return res
-          .status(200)
-          .json({ message: "Password Update succesfuly" });
-      }
-
-      if (passwordUpdateError) {
-        console.log("password Update Error");
-        return res.status(500).json({ message: "Password doesnot update" });
-      }
+    try {
+      const response = await userPasswordUpdate(req.id, hashPassword);
+      return res.status(200).json({ message: "Password Update " });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Unable to update password" });
     }
-
-    return res.status(500).json({ message: "couldn't update password" });
-  }
-};
-
-const updateProfilePassword = async function (req, res, userPasswordUpdate) {
-  const newPassword = req.body.new_password;
-  const confirmPassword = req.body.confirm_password;
-
-  if (newPassword !== confirmPassword) {
-    return res.status(400).json({ message: "Password doesnot match " });
-  }
-
-  const [hashPassword, hashPasswordError] = await wrapAwait(
-    bcrypt.hash(newPassword, saltRound)
-  );
-
-  try {
-    const response = await userPasswordUpdate(req.id, hashPassword);
-    return res.status(200).json({ message: "Password Update " });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Unable to update password" });
-  }
-};
-
+  };
+  return {
+    passwordReset,
+    passwordUpdate,
+    updateProfilePassword,
+  };
 }
 
-
-
-function authUtility(tokenExpireTime,saltRound,JWT_KEY,user_type){
+function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
   //const tokenExpireTime = "1hr";
-  
 
   const login = async function (req, res, user) {
     const { password } = req.body;
@@ -192,7 +153,7 @@ function authUtility(tokenExpireTime,saltRound,JWT_KEY,user_type){
       return res.status(401).json({ message: "Password  doesnot match" });
     }
 
-    const token = jwt.sign({ id: user.id },JWT_KEY, {
+    const token = jwt.sign({ id: user.id }, JWT_KEY, {
       expiresIn: tokenExpireTime,
     });
 
@@ -228,252 +189,247 @@ function authUtility(tokenExpireTime,saltRound,JWT_KEY,user_type){
       sameSite: "lax",
     });
 
-    
-    
-
     return res.status(200).json({ message: "Successfully Logged In", token });
-  }
-
+  };
 
   const verifyToken = async function (req, res, next) {
-      const cookies = req.headers.cookie;
-      console.log(req.cookies);
-      console.log("THIS IS COOKIES", req.headers.cookie);
-      if (!cookies) {
-        console.log("No cookies Bro !!!!!!!");
-        return res.status(404).json({ message: "Cannot get information" });
-      }
-
-      const token = cookies.split("=")[1];
-      console.log(token);
-      if (!token) {
-        return res.status(404).json({ message: "No Token found" });
-      }
-      jwt.verify(String(token),JWT_KEY, (err, user) => {
-        if (err) {
-          console.log(err);
-          return res.status(400).json({ message: "Invalid Token" });
-        }
-
-        console.log(user.id);
-        //set request id
-        req.id = user?.id;
-        console.log("Token Verify  !!!");
-        next();
-      });
+    const cookies = req.headers.cookie;
+    console.log(req.cookies);
+    console.log("THIS IS COOKIES", req.headers.cookie);
+    if (!cookies) {
+      console.log("No cookies Bro !!!!!!!");
+      return res.status(404).json({ message: "Cannot get information" });
     }
 
-
-    const refreshToken = async (req, res, next) => {
-      const cookies = req.headers.cookie;
-      let prevToken;
-      if (typeof cookies === "string") {
-        prevToken = cookies.split("=")[1]; //slipt headers from token
+    const token = cookies.split("=")[1];
+    console.log(token);
+    if (!token) {
+      return res.status(404).json({ message: "No Token found" });
+    }
+    jwt.verify(String(token), JWT_KEY, (err, user) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).json({ message: "Invalid Token" });
       }
 
-      if (!prevToken) {
-        return res.status(400).json({ message: "No Token found" });
+      console.log(user.id);
+      //set request id
+      req.id = user?.id;
+      console.log("Token Verify  !!!");
+      next();
+    });
+  };
+
+  const refreshToken = async (req, res, next) => {
+    const cookies = req.headers.cookie;
+    let prevToken;
+    if (typeof cookies === "string") {
+      prevToken = cookies.split("=")[1]; //slipt headers from token
+    }
+
+    if (!prevToken) {
+      return res.status(400).json({ message: "No Token found" });
+    }
+
+    jwt.verify(String(prevToken), JWT_KEY, (err, decode) => {
+      if (err) {
+        console.log(err);
+        return res.status(403).json({ message: "Authentication Failed" });
       }
 
-      jwt.verify(String(prevToken),JWT_KEY, (err, decode) => {
-        if (err) {
-          console.log(err);
-          return res.status(403).json({ message: "Authentication Failed" });
-        }
+      //clear cookies from response
+      res.clearCookie(`${decode.id}`);
+      //clear cookies from headers
+      req.cookies[`${decode.id}`] = "";
 
-        //clear cookies from response
-        res.clearCookie(`${decode.id}`);
-        //clear cookies from headers
-        req.cookies[`${decode.id}`] = "";
-
-        //generate new token
-        const newToken = jwt.sign({ id: decode.id },JWT_KEY, {
-          expiresIn: tokenExpireTime,
-        });
-
-        //set new Token to cookie
-        res.cookie(String(decode.id), newToken, {
-          path: "/",
-          expires: new Date(Date.now() + 1000 * 1000 * 60),
-          httpOnly: true,
-          sameSite: "lax",
-        });
-
-        //set request id to user id
-        req.id = decode.id;
-        console.log("Refresh TOken Successfull  ");
-        next();
+      //generate new token
+      const newToken = jwt.sign({ id: decode.id }, JWT_KEY, {
+        expiresIn: tokenExpireTime,
       });
 
+      //set new Token to cookie
+      res.cookie(String(decode.id), newToken, {
+        path: "/",
+        expires: new Date(Date.now() + 1000 * 1000 * 60),
+        httpOnly: true,
+        sameSite: "lax",
+      });
 
+      //set request id to user id
+      req.id = decode.id;
+      console.log("Refresh TOken Successfull  ");
+      next();
+    });
+  };
 
-      const passwordReset = async function (req, res, user) {
-        if (!user) {
-          return res.status(404).json({ message: "User Not FounpasswordResetd!" });
-        }
-    
-        const randomToken = getRandomNumber(1000, 9999);
-    
-        const [resultToken, errorToken] = await wrapAwait(
-          modelUtils.insertPasswordResetToken(user.id, randomToken)
-        );
-        // if we get error of duplicate entry then update token value
-    
-        let isTokenUpdate = false;
-    
-        if (errorToken) {
-          console.log(errorToken);
-          if (errorToken.code === "ER_DUP_ENTRY") {
-            // if duplicate entry the udpate token value
-            const [resultUpdateToken, errorUpdateToken] = await wrapAwait(
-              modelUtils.updatePasswordToken(user.id, randomToken)
-            );
-            if (errorUpdateToken) {
-              return res.status(500).json({ message: error.sqlMessage });
-            }
-            isTokenUpdate = true;
-            console.log(isTokenUpdate);
-          } else {
-            console.log(errorToken);
-            return res.status(500).json({ message: "server Error " });
-          }
-        }
-        // if token insert in db or updated in db then send mail
-        if (resultToken || isTokenUpdate) {
-          sendPasswordResetTokenMail(user.email, randomToken)
-            .then(function (data) {
-              console.log(data);
-            })
-            .catch(function (error) {
-              console.log(error);
-            });
-        }
-    
-        return res
-          .status(200)
-          .json({ message: "Token re-generate sucessfully Check Your Email " });
-      };
-    
-      const passwordUpdate = async function (req, res, user, updateUserPassword) {
-      if (!user) {
-        return res.status(404).json({ message: "User Not Found!" });
-      }
-    
-      const { email, token } = req.query;
-    
-      // if email field empty
-      if (!email) {
-        return res.status(400).json({ message: "Please Enter Email" });
-      }
-    
-      if (email && token && user) {
-        // logic for update password
-        const { password, confirmPassword } = req.body;
-        // if password doesnot match
-        if (password !== confirmPassword) {
-          console.log(" New Password not match  ");
-          return res.status(403).json({ message: " New Password  not match" });
-        }
-    
-        const [storeToken, storeTokenError] = await wrapAwait(
-          modelUtils.findPasswordResetToken(user.id)
-        );
-    
-        console.log(storeToken);
-    
-        // check expire date
-    
-        const expireDate = new Date(storeToken.expirationTime);
-        const currentDate = new Date();
-        const expireDay = expireDate.getUTCDate();
-        const currentDay = currentDate.getUTCDate();
-    
-        if (storeToken.token !== token || storeTokenError) {
-          return res.status(401).json({ message: "No Token Match" });
-        }
-    
-        //if token expire
-        if (Number(currentDay) >= Number(expireDay)) {
-          return res
-            .status(401)
-            .json({ message: "Token Expire ! please generate New Token" });
-        }
-    
-        const [hashPassword, hashPasswordError] = await wrapAwait(
-          bcrypt.hash(password, saltRound)
-        );
-    
-        if (hashPassword) {
-          // this updateUser password return result in array in form of resolve and reject
-          const [passwordUpdate, passwordUpdateError] = await wrapAwait(
-            updateUserPassword(user.id, hashPassword)
-          );
-          if (passwordUpdate) {
-            modelUtils.deleteToken(user.id).then(function () {
-              console.log("token delete Successfully");
-            });
-            return res
-              .status(200)
-              .json({ message: "Password Update succesfuly" });
-          }
-    
-          if (passwordUpdateError) {
-            console.log("password Update Error");
-            return res.status(500).json({ message: "Password doesnot update" });
-          }
-        }
-    
-        return res.status(500).json({ message: "couldn't update password" });
-      }
-    };
-    
-    const updateProfilePassword = async function (req, res, userPasswordUpdate) {
-      const newPassword = req.body.new_password;
-      const confirmPassword = req.body.confirm_password;
-    
-      if (newPassword !== confirmPassword) {
-        return res.status(400).json({ message: "Password doesnot match " });
-      }
-    
-      const [hashPassword, hashPasswordError] = await wrapAwait(
-        bcrypt.hash(newPassword, saltRound)
-      );
-    
-      try {
-        const response = await userPasswordUpdate(req.id, hashPassword);
-        return res.status(200).json({ message: "Password Update " });
-      } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: "Unable to update password" });
-      }
-    };
+  //   const passwordReset = async function (req, res, user) {
+  //     if (!user) {
+  //       return res.status(404).json({ message: `${user_type} not found` });
+  //     }
 
+  //     const randomToken = getRandomNumber(1000, 9999);
 
-    }
+  //     const [resultToken, errorToken] = await wrapAwait(
+  //       modelUtils.insertPasswordResetToken(user.id, randomToken)
+  //     );
+  //     // if we get error of duplicate entry then update token value
 
-    return{
-      login,
-      verifyToken,
-      refreshToken,
-    }
+  //     let isTokenUpdate = false;
+
+  //     if (errorToken) {
+  //       console.log(errorToken);
+  //       if (errorToken.code === "ER_DUP_ENTRY") {
+  //         // if duplicate entry the udpate token value
+  //         const [resultUpdateToken, errorUpdateToken] = await wrapAwait(
+  //           modelUtils.updatePasswordToken(user.id, randomToken)
+  //         );
+  //         if (errorUpdateToken) {
+  //           return res.status(500).json({ message: error.sqlMessage });
+  //         }
+  //         isTokenUpdate = true;
+  //         console.log(isTokenUpdate);
+  //       } else {
+  //         console.log(errorToken);
+  //         return res.status(500).json({ message: "server Error " });
+  //       }
+  //     }
+  //     // if token insert in db or updated in db then send mail
+  //     if (resultToken || isTokenUpdate) {
+  //       sendPasswordResetTokenMail(user.email, randomToken)
+  //         .then(function (data) {
+  //           console.log(data);
+  //         })
+  //         .catch(function (error) {
+  //           console.log(error);
+  //         });
+  //     }
+
+  //     return res
+  //       .status(200)
+  //       .json({ message: "Token re-generate sucessfully Check Your Email " });
+  //   };
+
+  //   const passwordUpdate = async function (req, res, user, updateUserPassword) {
+  //   if (!user) {
+  //     return res.status(404).json({ message: "User Not Found!" });
+  //   }
+
+  //   const { email, token } = req.query;
+
+  //   // if email field empty
+  //   if (!email) {
+  //     return res.status(400).json({ message: "Please Enter Email" });
+  //   }
+
+  //   if (email && token && user) {
+  //     // logic for update password
+  //     const { password, confirmPassword } = req.body;
+  //     // if password doesnot match
+  //     if (password !== confirmPassword) {
+  //       console.log(" New Password not match  ");
+  //       return res.status(403).json({ message: " New Password  not match" });
+  //     }
+
+  //     const [storeToken, storeTokenError] = await wrapAwait(
+  //       modelUtils.findPasswordResetToken(user.id)
+  //     );
+
+  //     console.log(storeToken);
+
+  //     // check expire date
+
+  //     const expireDate = new Date(storeToken.expirationTime);
+  //     const currentDate = new Date();
+  //     const expireDay = expireDate.getUTCDate();
+  //     const currentDay = currentDate.getUTCDate();
+
+  //     if (storeToken.token !== token || storeTokenError) {
+  //       return res.status(401).json({ message: "No Token Match" });
+  //     }
+
+  //     //if token expire
+  //     if (Number(currentDay) >= Number(expireDay)) {
+  //       return res
+  //         .status(401)
+  //         .json({ message: "Token Expire ! please generate New Token" });
+  //     }
+
+  //     const [hashPassword, hashPasswordError] = await wrapAwait(
+  //       bcrypt.hash(password, saltRound)
+  //     );
+
+  //     if (hashPassword) {
+  //       // this updateUser password return result in array in form of resolve and reject
+  //       const [passwordUpdate, passwordUpdateError] = await wrapAwait(
+  //         updateUserPassword(user.id, hashPassword)
+  //       );
+  //       if (passwordUpdate) {
+  //         modelUtils.deleteToken(user.id).then(function () {
+  //           console.log("token delete Successfully");
+  //         });
+  //         return res
+  //           .status(200)
+  //           .json({ message: "Password Update succesfuly" });
+  //       }
+
+  //       if (passwordUpdateError) {
+  //         console.log("password Update Error");
+  //         return res.status(500).json({ message: "Password doesnot update" });
+  //       }
+  //     }
+
+  //     return res.status(500).json({ message: "couldn't update password" });
+  //   }
+  // };
+
+  // const updateProfilePassword = async function (req, res, userPasswordUpdate) {
+  //   const newPassword = req.body.new_password;
+  //   const confirmPassword = req.body.confirm_password;
+
+  //   if (newPassword !== confirmPassword) {
+  //     return res.status(400).json({ message: "Password doesnot match " });
+  //   }
+
+  //   const [hashPassword, hashPasswordError] = await wrapAwait(
+  //     bcrypt.hash(newPassword, saltRound)
+  //   );
+
+  //   try {
+  //     const response = await userPasswordUpdate(req.id, hashPassword);
+  //     return res.status(200).json({ message: "Password Update " });
+  //   } catch (error) {
+  //     console.log(error);
+  //     return res.status(500).json({ message: "Unable to update password" });
+  //   }
+  // };
+
+  return {
+    login,
+    verifyToken,
+    refreshToken,
+    // passwordReset,
+    // passwordUpdate,
+    // updateProfilePassword,
+    // updateProfilePassword,
+  };
 }
 
-
-
-
-
-
-function utility(){
-
+function utility() {
   const numberRegex = /(\+977)?[9][6-9]\d{8}/;
   const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
-  const  handleMulterError = async function (req,res,err, afterUploadCallback,isImageRequired = false){
+  const handleMulterError = async function (
+    req,
+    res,
+    err,
+    afterUploadCallback,
+    isImageRequired = false
+  ) {
     if (err instanceof multer.MulterError) {
       console.log(err);
       return res.status(400).json(err);
     } else if (err) {
-      console.log(err)
+      console.log(err);
       return res.status(400).json(err);
     }
 
@@ -482,37 +438,38 @@ function utility(){
     //console.log(req?.files[0]?.path);
 
     if (isImageRequired) {
-      if (!req?.file?.path && !(req?.files?.length > 0 && req?.files[0]?.path)) {
+      if (
+        !req?.file?.path &&
+        !(req?.files?.length > 0 && req?.files[0]?.path)
+      ) {
         return res.status(400).json({ message: "Please Upload Your Image" });
       }
     }
 
     afterUploadCallback();
-  }
+  };
 
   const getSearchData = async function (req, res, getDataCB) {
-        let page, limit, offSet;
-    
-        page = req.query.page || 1;
-    
-        limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
-        
-        if (req.query.page) delete req.query.page;
-    
-        if (req.query.limit) delete req.query.limit;
-    
-        offSet = (page - 1) * limit;
-    
-        try {
-          const data = await getDataCB(req.query, limit, offSet);
-          return res.status(200).json(data);
-        } catch (error) {
-          console.log(error);
-          return res.status(500).json({ message:"Internal Error" });
-        }
-      };
+    let page, limit, offSet;
 
-  
+    page = req.query.page || 1;
+
+    limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
+
+    if (req.query.page) delete req.query.page;
+
+    if (req.query.limit) delete req.query.limit;
+
+    offSet = (page - 1) * limit;
+
+    try {
+      const data = await getDataCB(req.query, limit, offSet);
+      return res.status(200).json(data);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: "Internal Error" });
+    }
+  };
 
   const isValid = {
     phoneNumber: async function (phoneNumber) {
@@ -526,19 +483,18 @@ function utility(){
     password: async function (password, confirm_password) {
       return password === confirm_password;
     },
-  }
+  };
 
   const getRandomNumber = function (minValue, maxValue) {
-      return Math.floor(Math.random() * (maxValue - minValue) + minValue);
-    }
-
+    return Math.floor(Math.random() * (maxValue - minValue) + minValue);
+  };
 
   return {
     handleMulterError,
     isValid,
     getRandomNumber,
-    getSearchData
-  }
+    getSearchData,
+  };
 }
 
 // function Utility() {
@@ -576,8 +532,6 @@ function utility(){
 
 //     afterUploadCallback();
 //   };
-
- 
 
 //   this.handleAddProperty = async function (req, res, addCallbackProperty) {
 //     // get user id from req.id i.e we set req.id when verify token
@@ -1034,7 +988,6 @@ function propertyUtility(property_type) {
 
   const propertyType = property_type;
 
- 
   async function handleAddProperty(req, res, addPropertyCB) {
     // get user id from req.id i.e we set req.id when verify token
     let customer_id = null;
@@ -1093,21 +1046,19 @@ function propertyUtility(property_type) {
 
     try {
       //await insertApartmentProperty(property,apartmentProperty,user_id,user_type);
-      const response = await addPropertyCB(property);// callback
+      const response = await addPropertyCB(property); // callback
       // data for notification
-      const data  = {};
-      data.notification = `New ${propertyType} Upload`,
-      data.url=`/pending${propertyType.charAt(0).toUpperCase() + propertyType.slice(1)}/${response.get().property_id}`
-      
-      
-      pushNotification(data);
-      
+      const data = {};
+      (data.notification = `New ${propertyType} Upload`),
+        (data.url = `/pending${
+          propertyType.charAt(0).toUpperCase() + propertyType.slice(1)
+        }/${response.get().property_id}`);
 
-     
+      pushNotification(data);
 
       return res.status(200).json({ message: `${propertyType} insert` });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return res.status(500).json({ message: "Internal Error" });
     }
   }
@@ -1233,39 +1184,43 @@ function propertyUtility(property_type) {
     }
   }
 
-  async function handleInsertPropertyFeedback(req,res,insertPropertyFeedback){
+  async function handleInsertPropertyFeedback(
+    req,
+    res,
+    insertPropertyFeedback
+  ) {
     const customer_id = req.id; // from token verify
 
-    const {property_id,feedback} = req.body;
-    
+    const { property_id, feedback } = req.body;
+
     try {
-      const result = await insertPropertyFeedback(property_id,customer_id, feedback);
+      const result = await insertPropertyFeedback(
+        property_id,
+        customer_id,
+        feedback
+      );
       return res.status(200).json({ message: "Feedback Submit" });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: "Internal Error" });
     }
-
   }
 
-  async function handleUpdatePropertyAds(req,res,updatePropertyAds){
-    const {property_id} = req.params;
-    const {ads_status} = req.body;
-  
-    
+  async function handleUpdatePropertyAds(req, res, updatePropertyAds) {
+    const { property_id } = req.params;
+    const { ads_status } = req.body;
+
     try {
-      
-      const response = await updatePropertyAds(ads_status,property_id)
-   
-      if(response.affectedRows === 0 ){
-        return res.status(400).json({message:"No property to update "})
+      const response = await updatePropertyAds(ads_status, property_id);
+
+      if (response.affectedRows === 0) {
+        return res.status(400).json({ message: "No property to update " });
       }
-      return res.status(200).json({message:"Successfully Update ads status"});
-  
-  
-  
+      return res
+        .status(200)
+        .json({ message: "Successfully Update ads status" });
     } catch (error) {
-      return res.status(500).json({message:"unable to update"});
+      return res.status(500).json({ message: "unable to update" });
     }
   }
 
@@ -1275,14 +1230,8 @@ function propertyUtility(property_type) {
     handleGetProperty,
     handleInsertPropertyComment,
     handleGetPropertyComment,
-    handleInsertPropertyFeedback
-
-    
+    handleInsertPropertyFeedback,
   };
 }
 
-
-
-
-
-module.exports = {  propertyUtility,utility,authUtility };
+module.exports = { propertyUtility, utility, authUtility, userUtility };

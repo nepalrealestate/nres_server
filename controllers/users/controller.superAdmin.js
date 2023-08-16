@@ -1,9 +1,14 @@
 const bcrypt = require('bcrypt');
 
-const {login} = require("./commonAuthCode");
 const { registerSuperAdmin, findSuperAdmin } = require('../../models/services/users/service.superAdmin');
 
+const  utility = require("../controller.utils");
+
+
 const saltRound = 10;
+const tokenExpireTime = "1hr";
+const JWT_KEY = process.env.JWT_KEY_AGENT
+const auth = utility.authUtility(tokenExpireTime,saltRound,JWT_KEY,"superAdmin");
 
 const handleGetSuperAdmin = async(req,res)=>{
     console.log("Get Super Admin Api Hit Hard!!")
@@ -61,7 +66,7 @@ const handleSuperAdminLogin = async(req,res)=>{
 
     //this login function handle all logic
 
-    return login(req,res,superAdmin);
+    return auth.login(req,res,superAdmin);
 
 }
 
