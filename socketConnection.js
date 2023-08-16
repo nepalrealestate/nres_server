@@ -41,18 +41,7 @@ socketServer.chat = function() {
   agentChat.on("connection",async function (socket){
     handleAgentChat(agentChat,socket)
   })
-
   
-
-  const startServer = () => {
-    server.listen(5000, () => {
-      console.log('Chat server running on port 5000');
-    });
-  }; 
-
-  return {
-    startServer
-  };
 }
 
 

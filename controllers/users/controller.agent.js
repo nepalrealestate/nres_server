@@ -16,10 +16,10 @@ const {
   insertUsersRating,
 } = require("../../models/users/model.commonUsersCode");
 const { wrapAwait } = require("../../errorHandling");
-const validator = require("email-validator");
+
 const multer = require("multer");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
-// const { Utility,Auth } = require("../controller.utils");
+
 const { query } = require("express");
 const { registerAgent, findAgent, getAllAgent, updateAgentProfile, getAgent, findAgentPassword, updateAgentPassword, insertAgentRating } = require("../../models/services/users/service.agent");
 const  utility = require("../controller.utils");

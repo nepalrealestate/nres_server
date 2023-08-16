@@ -18,7 +18,7 @@ const cookieParser = require('cookie-parser');
 
 const {logger} = require("./utils/errorLogging/logging")
 
-const {chatServer, socketServer} = require("./socketConnection");
+
 
 const {chatServer, socketServer} = require("./socketConnection");
 
@@ -82,13 +82,6 @@ socketServer.notification();
 socketServer.startServer();
 
 
-
-//chat running
-//chatServer().startServer();
-//notification running
-socketServer.chat()
-socketServer.notification();
-socketServer.startServer();
 
 
 

@@ -490,6 +490,30 @@ function utility(){
     afterUploadCallback();
   }
 
+  const getSearchData = async function (req, res, getDataCB) {
+        let page, limit, offSet;
+    
+        page = req.query.page || 1;
+    
+        limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
+        
+        if (req.query.page) delete req.query.page;
+    
+        if (req.query.limit) delete req.query.limit;
+    
+        offSet = (page - 1) * limit;
+    
+        try {
+          const data = await getDataCB(req.query, limit, offSet);
+          return res.status(200).json(data);
+        } catch (error) {
+          console.log(error);
+          return res.status(500).json({ message:"Internal Error" });
+        }
+      };
+
+  
+
   const isValid = {
     phoneNumber: async function (phoneNumber) {
       return phoneNumber?.match(numberRegex);
@@ -513,6 +537,7 @@ function utility(){
     handleMulterError,
     isValid,
     getRandomNumber,
+    getSearchData
   }
 }
 
