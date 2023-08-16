@@ -12,9 +12,13 @@ const app  = express();
 const cors = require("cors")
 const bodyParser = require('body-parser')
 
+
 const cookieParser = require('cookie-parser');
 
+
 const {logger} = require("./utils/errorLogging/logging")
+
+const {chatServer, socketServer} = require("./socketConnection");
 
 const {chatServer, socketServer} = require("./socketConnection");
 
@@ -25,6 +29,9 @@ const db = require("./models/model.index");
 const port = 8000;
 
 // init sequlize;
+
+db.sequelize.sync({force:false});
+
 
 db.sequelize.sync({force:false});
 
@@ -50,6 +57,7 @@ app.use('/uploads', express.static('uploads'));
 
 
 
+
 //Routes
 app.use(express.json())
 app.use("/customer",customerRouter);
@@ -60,8 +68,18 @@ app.use("/house",houseRouter);
 app.use("/land",landRouter)
 app.use ("/apartment",apartmentRouter);
 // app.use("/property",propertyRouter);
+// app.use("/property",propertyRouter);
 app.use("/service",serviceRouter)
 
+
+
+
+//chat running
+//chatServer().startServer();
+//notification running
+socketServer.chat()
+socketServer.notification();
+socketServer.startServer();
 
 
 
@@ -84,4 +102,5 @@ if(process.env.NODE_ENV=='production'){
     console.log(` port ${port} is listening.......`)
     logger.info("port is running in 8000: devs")
 })
+
 }
