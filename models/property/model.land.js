@@ -83,7 +83,7 @@ function landModel (sequelize,DataTypes){
     staff_id:{
       type:DataTypes.INTEGER,
        references:{
-         model:'user_staffs',
+         model:'user_staff',
          key :'staff_id'
        }
       
@@ -91,14 +91,14 @@ function landModel (sequelize,DataTypes){
     customer_id:{
       type:DataTypes.INTEGER,
       references:{
-        model:'user_customers',
+        model:'user_customer',
         key :'customer_id'
       }
     },
     agent_id :{
       type:DataTypes.INTEGER,
       references:{
-        model:'user_agents',
+        model:'user_agent',
         key :'agent_id'
       }
     },
@@ -197,7 +197,7 @@ function pendingLandModel (sequelize,DataTypes){
     staff_id:{
       type:DataTypes.INTEGER,
        references:{
-         model:'user_staffs',
+         model:'user_staff',
          key :'staff_id'
        }
       
@@ -205,14 +205,14 @@ function pendingLandModel (sequelize,DataTypes){
     customer_id:{
       type:DataTypes.INTEGER,
       references:{
-        model:'user_customers',
+        model:'user_customer',
         key :'customer_id'
       }
     },
     agent_id :{
       type:DataTypes.INTEGER,
       references:{
-        model:'user_agents',
+        model:'user_agent',
         key :'agent_id'
       }
     },
@@ -264,7 +264,7 @@ function landFeedbackModel (sequelize,DataTypes){
       type:DataTypes.INTEGER,
       allowNull:false,
       references:{
-        model:'property_lands',
+        model:'property_land',
         key:'property_id'
       },
       onDelete: 'CASCADE'
@@ -272,7 +272,7 @@ function landFeedbackModel (sequelize,DataTypes){
     customer_id:{
       type:DataTypes.INTEGER,
       references:{
-        model:'user_customers',
+        model:'user_customer',
         key:'customer_id'
       }
     },
@@ -302,7 +302,7 @@ function landCommentModel (sequelize,DataTypes){
       type:DataTypes.INTEGER,
       allowNull:false,
       references:{
-        model:'property_lands',
+        model:'property_land',
         key:'property_id'
       },
       onDelete: 'CASCADE'
@@ -310,7 +310,7 @@ function landCommentModel (sequelize,DataTypes){
     staff_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'user_staffs', // replace with your Staff model name
+        model: 'user_staff', // replace with your Staff model name
         key: 'staff_id',
       },
       onDelete: 'CASCADE',
@@ -318,7 +318,7 @@ function landCommentModel (sequelize,DataTypes){
     super_admin_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'user_superAdmins', // replace with your SuperAdmin model name
+        model: 'user_superAdmin', // replace with your SuperAdmin model name
         key: 'superAdmin_id',
       },
       onDelete: 'CASCADE',

@@ -1,10 +1,4 @@
 
-const {pool}  = require("../../connection");
-const { param } = require("../../routes/services/route.service");
-const { serviceTable, propertyTable } = require("../tableName");
-
-
-
 function serviceProviderModel(sequelize,DataTypes){
   return ServiceProvider = sequelize.define('service_provider',{
     provider_id:{

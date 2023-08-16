@@ -2,6 +2,7 @@
 const db = require('../../model.index');
 const AgentChat = db.ChatModel.AgentChatModel
 const AgentChatList = db.ChatModel.AgentChatListModel
+console.log("Loggin from agent chat")
 
 async function getSingleAgentChat(id){
     return await AgentChat.findAll({
