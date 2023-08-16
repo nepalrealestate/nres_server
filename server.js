@@ -33,7 +33,7 @@ const port = 8000;
 db.sequelize.sync({force:false});
 
 
-db.sequelize.sync({force:false});
+
 
 
 
@@ -68,7 +68,7 @@ app.use("/house",houseRouter);
 app.use("/land",landRouter)
 app.use ("/apartment",apartmentRouter);
 // app.use("/property",propertyRouter);
-// app.use("/property",propertyRouter);
+app.use("/property",propertyRouter);
 app.use("/service",serviceRouter)
 
 

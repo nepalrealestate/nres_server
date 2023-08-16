@@ -25,6 +25,7 @@ router.put("/resetPassword",handleStaffPasswordReset);
 
 // get property
 router.get("/house",staffVerifyToken,handleGetHouse);
+router.get("/apartment",staffVerifyToken,handleGetApartment)
 
 
 router.post("/addApartment",staffVerifyToken,handleAddApartment);

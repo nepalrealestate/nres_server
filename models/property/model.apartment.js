@@ -11,7 +11,11 @@ function apartmentModel (sequelize,DataTypes){
         primaryKey:true,
       
       },
-      property_type :{
+      property_type:{
+        type:DataTypes.ENUM('apartment'),
+        defaultValue:"apartment"
+      },
+      property_for :{
         type:DataTypes.ENUM('commercial','residential','office')
       },
       property_name : {
@@ -139,7 +143,11 @@ function pendingApartmentModel (sequelize,DataTypes){
       autoIncrement:true,
       primaryKey:true,
     },
-    property_type :{
+    property_type:{
+      type:DataTypes.ENUM('apartment'),
+      defaultValue:"apartment"
+    },
+    property_for :{
       type:DataTypes.ENUM('commercial','residential','office')
     },
     property_name : {
@@ -330,7 +338,7 @@ function apartmentCommentModel(sequelize,DataTypes){
       type:DataTypes.INTEGER,
       allowNull:false,
       references:{
-        model:'property_apartments',
+        model:'property_apartment',
         key:'property_id'
       },
       onDelete: 'CASCADE'

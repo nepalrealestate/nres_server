@@ -94,6 +94,14 @@ db.ChatModel={
 };
 
 
+// views 
+db.Views={
+
+    PropertyViewAdmin:require("./property/model.property").propertyViewAdminModel(sequelize,DataTypes)
+
+}
+
+
 
 
 //-----------------Relation-------------------------------

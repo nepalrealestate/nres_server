@@ -8,7 +8,11 @@ function houseModel (sequelize,DataTypes){
       unique:true,
       primaryKey:true,
     },
-    property_type :{
+    property_type:{
+      type:DataTypes.ENUM('house'),
+      defaultValue:"house"
+    },
+    property_for :{
       type:DataTypes.ENUM('commercial','residential','office')
     },
     property_name : {
@@ -147,7 +151,11 @@ function pendingHouseModel (sequelize,DataTypes){
       autoIncrement:true,
       primaryKey:true,
     },
-    property_type :{
+    property_type:{
+      type:DataTypes.ENUM('house'),
+      defaultValue:"house"
+    },
+    property_for :{
       type:DataTypes.ENUM('commercial','residential','office')
     },
     property_name : {

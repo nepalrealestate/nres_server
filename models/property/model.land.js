@@ -11,7 +11,11 @@ function landModel (sequelize,DataTypes){
       unique:true,
       primaryKey:true,
     },
-    property_type :{
+    property_type:{
+      type:DataTypes.ENUM('land'),
+      defaultValue:"land"
+    },
+    property_for :{
       type:DataTypes.ENUM('non-plotted','plotted')
     },
     property_name : {
@@ -125,7 +129,11 @@ function pendingLandModel (sequelize,DataTypes){
       autoIncrement:true,
       primaryKey:true,
     },
-    property_type :{
+    property_type:{
+      type:DataTypes.ENUM('land'),
+      defaultValue:"land"
+    },
+    property_for :{
       type:DataTypes.ENUM('non-plotted','plotted')
     },
     property_name : {

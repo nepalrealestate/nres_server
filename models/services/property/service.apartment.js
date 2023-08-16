@@ -39,7 +39,7 @@ async function getApartmentByID(property_id){
 async function getPendingApartment(condition,limit,offset){
     return await PendingApartment.findAll({
         where : condition,
-        attributes:[ 'property_id','property_name','listed_for','price,views'],
+        attributes:[ 'property_id','property_name','listed_for','price','views'],
         limit:limit,
         offset:offset
     })
