@@ -84,8 +84,6 @@ if(process.env.NODE_ENV=='production'){
     console.log(` port ${port} is listening.......`)
     logger.info("port is running in 8000: devs")
 })
+
 }
-
-
-
 
