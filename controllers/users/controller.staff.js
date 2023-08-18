@@ -8,6 +8,9 @@ const {
   findStaff,
   getStaff,
   updateStaffPassword,
+  getAllStaff,
+  updateStaff,
+  deleteStaff,
 } = require("../../models/services/users/service.staff");
 const { wrapAwait } = require("../../errorHandling");
 
@@ -28,15 +31,24 @@ const maxImageSize = "";
 const { upload } = new UploadImage(imageFolderPath, maxImageSize);
 
 const handleGetStaff = async function (req, res) {
-  console.log("Handling Staff");
+  
+  let staff_id;
+  if(req.id){
+    staff_id=req.id
+}else{
+    staff_id=req.params.staff_id;
+}
 
-  console.log(req.id);
+
+
+  
 
   try {
-    const data = await getStaff(req.id);
+    const data = await getStaff(staff_id);
     return res.status(200).json(data);
   } catch (error) {
-    return res.status(400).json({ message: error });
+    console.log(error)
+    return res.status(500).json({ message: "Internal Error" });
   }
 };
 
@@ -102,12 +114,12 @@ const handleStaffRegistration = async (req, res) => {
       salary,
       qualification,
       pan_no,
-      documentsObject,  
+      documents:documentsObject,  
       password:hashPassword
     }
 
 
-    
+    console.log(staffData)
     //store details in DB
     try {
       const result = await registerStaff(staffData);
@@ -118,10 +130,35 @@ const handleStaffRegistration = async (req, res) => {
       return res.status(200).json({ message: "Registration Succesfully" });
     } catch (error) {
       console.log(error)
-      return res.status(500).json({message:"Internal Error"})
+      return res.status(500).json({message:error.errors[0].message})
     }
   }
 };
+
+const handleStaffUpdate = async (req,res)=>{
+    const staff_id = req.params.staff_id;
+    
+
+    try {
+        const response = await updateStaff(staff_id,req.body);
+        console.log(response)
+        return res.status(200).json({message:"Update Successfully"});
+    } catch (error) {
+        return res.status(500).json({message:"Internal Error"});
+    }
+}
+
+const handleStaffDelete = async (req,res)=>{
+    const staff_id  = req.params.staff_id;
+
+    try {
+        const response = await deleteStaff(staff_id)
+        return res.status(200).json({message:"Delete Successfully"});
+    } catch (error) {
+        return res.status(500).json({message:"Internal Error"})
+        
+    }
+}
 
 const handleStaffLogin = async (req, res) => {
   const { email } = req.body;
@@ -139,26 +176,18 @@ const handleStaffLogin = async (req, res) => {
   return auth.login(req, res, staff);
 };
 
-const handleAddVideoLink = async (req, res) => {
-  const { property_type, videoLink } = req.body;
 
-  if (!property_type || !videoLink) {
-    return res.status(400).json({ message: "Input field cannot be empty" });
-  }
+const handleGetAllStaff = async (req,res)=>{
+    
+    try {
+        const data = await getAllStaff();
+        return res.status(200).json(data)
+    } catch (error) {
+        return res.status(500).json({message:error?.errors[0]?.message})
+    }
 
-  const link = videoLink.split("=");
-  const video_ID = link[1];
-  try {
-    await insertVideoLink(video_ID, property_type, videoLink);
-    console.log("Video Upload succesfully");
-    return res.status(200).json({ message: "video link upload sucessfull" });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: error.sqlMessage });
-  }
-};
+}
 
-const handleInsertStaffActivityLog = async function (req, res) {};
 
 const handleStaffPasswordReset = async (req, res, next) => {
   // recive email in parameter
@@ -191,7 +220,9 @@ module.exports = {
   handleGetStaff,
   handleStaffRegistration,
   handleStaffLogin,
-  handleAddVideoLink,
   handleStaffPasswordReset,
   staffVerifyToken,
+  handleGetAllStaff,
+  handleStaffUpdate,
+  handleStaffDelete
 };

@@ -46,7 +46,7 @@ function staffModel (sequelize,DataTypes){
       date_of_birth:{
         type:DataTypes.DATEONLY,
       },
-      recruited_data:{
+      recruited_date:{
         type:DataTypes.DATEONLY
       },
       tenure:{
@@ -62,7 +62,7 @@ function staffModel (sequelize,DataTypes){
       pan_no:{
         type:DataTypes.STRING
       },
-      document:{
+      documents:{
         type:DataTypes.JSON
       },
       password:{

@@ -17,7 +17,7 @@ const router  = express.Router();
 router.get("/",staffVerifyToken,handleGetStaff);
 router.post("/register",handleStaffRegistration);
 router.post("/login",handleStaffLogin);
-router.post("/videoLink",handleAddVideoLink);
+
 
 router.put("/resetPassword",handleStaffPasswordReset);
 
