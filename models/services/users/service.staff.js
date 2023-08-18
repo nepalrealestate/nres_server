@@ -2,12 +2,8 @@ const db  = require('../../model.index');
 const Staff = db.UserModel.Staff
 
 
-async function registerStaff(name,email,password){
-    return await Staff.create({
-        name:name,
-        email:email,
-        password:password
-    }) 
+async function registerStaff(data){
+    return await Staff.create(data) 
 }
 
 async function findStaff(email){

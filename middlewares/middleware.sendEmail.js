@@ -36,6 +36,23 @@ let transporter = nodemailer.createTransport({
         reject(error);
       })
     })
+  }
+
+
+    async function sendPasswordToStaff(email,password){
+      return new Promise((resolve,reject)=>{
+        transporter.sendMail({
+          from:'test@nres.com',
+          to:email,
+          subject:"Your NRES Login Password",
+          text:`Your Password is ${password} . Please Change `,
+        }).then((data)=>{
+          resolve(data);
+        }).catch(function(err){
+          reject(err)
+        })
+      })
+    }
 
   //  const info =  await transporter.sendMail({
 
@@ -44,7 +61,7 @@ let transporter = nodemailer.createTransport({
   //   }).catch((error)=>console.log(error))
 
   //   console.log(info);
-  }
+  
 
 
- module.exports = {sendPasswordResetTokenMail};
+ module.exports = {sendPasswordResetTokenMail,sendPasswordToStaff};

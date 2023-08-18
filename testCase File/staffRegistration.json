@@ -1,0 +1,50 @@
+[
+    {
+      
+      "name": "John Doe",
+      "gender": "male",
+      "email": "amirpoudel2058@gmail.com",
+      "address": "123 Elm St, Springfield",
+      "contact": "9855420049",
+      "responsibility": "Manager",
+      "date_of_birth": "1985-03-15",
+      "recruited_date": "2012-01-15",
+      "tenure": "10 years",
+      "salary": "50000.00",
+      "qualification": "MBA",
+      "pan_no": "ABCDE1234F"
+      
+    },
+    {
+    
+      "name": "Jane Smith",
+      "gender": "female",
+      "email": "janesmith@example.com",
+      "address": "456 Oak St, Rivertown",
+      "contact": "555-5678",
+      "responsibility": "Accountant",
+      "date_of_birth": "1990-08-25",
+      "recruited_data": "2015-05-05",
+      "tenure": "7 years",
+      "salary": "45000.00",
+      "qualification": "B.Com",
+      "pan_no": "FGHIJ5678K"
+      
+    },
+    {
+      "name": "Alex Taylor",
+      "gender": "other",
+      "email": "alextaylor@example.com",
+      "address": "789 Maple St, Greendale",
+      "contact": "555-9101",
+      "responsibility": "HR",
+      "date_of_birth": "1988-06-10",
+      "recruited_data": "2018-10-01",
+      "tenure": "4 years",
+      "salary": "48000.00",
+      "qualification": "MSW",
+      "pan_no": "KLMNO9876P"
+    
+    }
+  ]
+  

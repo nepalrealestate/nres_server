@@ -27,7 +27,7 @@ const handleAddApartment = async (req, res) => {
 
   
   async function addApartment (){
-    property.handleAddProperty(req,res,insertPendingApartment);
+    property.handleAddProperty(req, res, insertPendingApartment);
   }
 
 };
