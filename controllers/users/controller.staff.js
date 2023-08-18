@@ -178,12 +178,20 @@ const handleStaffLogin = async (req, res) => {
 
 
 const handleGetAllStaff = async (req,res)=>{
+    let searchName  = req.query.name?req.query.name:null;
+    console.log(searchName)
+
     
     try {
-        const data = await getAllStaff();
+        const data = await getAllStaff(searchName);
         return res.status(200).json(data)
     } catch (error) {
-        return res.status(500).json({message:error?.errors[0]?.message})
+
+        if(error?.errors){
+            return res.status(500).json({message:error?.errors[0]?.message})
+        }
+        console.log(error)
+        return res.status(500).json({message:"Internal Error"})
     }
 
 }

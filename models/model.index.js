@@ -1,10 +1,12 @@
 const sequelize = require("../db.config");
-const {DataTypes} = require('sequelize');
+const {DataTypes,Op} = require('sequelize');
+
 
 
 
 db = {};
 db.sequelize = sequelize;
+db.Op  = Op
 
 
 // notification

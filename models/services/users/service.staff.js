@@ -1,3 +1,4 @@
+
 const db  = require('../../model.index');
 const Staff = db.UserModel.Staff
 
@@ -23,8 +24,15 @@ async function getStaff(id){
     })
 }
 
-async function getAllStaff(){
+async function getAllStaff(searchName){
+    const whereCondition = {};
+    if(searchName){
+        whereCondition.name={
+            [db.Op.substring]:searchName
+        }
+    }
     return await Staff.findAll({
+        where:whereCondition,
         attributes:{exclude:['password']}
     });
 }
