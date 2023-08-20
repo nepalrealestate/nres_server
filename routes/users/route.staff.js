@@ -8,6 +8,7 @@ const { handleAddLand, handleApproveLand, handleGetPendingLand, handleUpdateLand
 
 const { handleGetAllAgent } = require("../../controllers/users/controller.agent");
 const { insertRequestedLand } = require("../../models/services/property/service.land");
+const { handleGetPropertyWithAds } = require("../../controllers/property/controller.property");
 
 
 
@@ -22,10 +23,13 @@ router.post("/login",handleStaffLogin);
 router.put("/resetPassword",handleStaffPasswordReset);
 
 //testing 
+// get latest property for dashboard
+router.get("/property",staffVerifyToken,handleGetPropertyWithAds)
 
 // get property
 router.get("/house",staffVerifyToken,handleGetHouse);
 router.get("/apartment",staffVerifyToken,handleGetApartment)
+
 
 
 router.post("/addApartment",staffVerifyToken,handleAddApartment);

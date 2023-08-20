@@ -5,6 +5,9 @@ const {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin} =
 const { handleGetCustomerChatList } = require("../../controllers/chat/controller.customerChat");
 const { handleGetStaffChatList, handleInsertStaffGroup, handleDeleteStaffFromGroup } = require("../../controllers/chat/controller.staffChat");
 const { handleStaffRegistration, handleGetAllStaff, handleStaffUpdate, handleStaffDelete, handleGetStaff } = require("../../controllers/users/controller.staff");
+const { handleGetAllAgent } = require("../../controllers/users/controller.agent");
+const { handleGetServiceProvider } = require("../../controllers/nres_services/controller.nres_service");
+const { handleGetCustomer } = require("../../controllers/users/controller.customer");
 
 const router = express.Router();
 
@@ -36,6 +39,16 @@ router.put("/staff/:staff_id",handleStaffUpdate)
 router.delete("/staff/:staff_id",handleStaffDelete);
 
 
+// agent related routes
+router.get("/agent",handleGetAllAgent);
+
+
+//service provider related routes
+router.get("/service/provider",handleGetServiceProvider)
+
+
+//customer related routes
+router.get("/customer/:customer_id",handleGetCustomer)
 
 
 module.exports  = router;

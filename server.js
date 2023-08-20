@@ -30,7 +30,17 @@ const port = 8000;
 
 // init sequlize;
 
-db.sequelize.sync({force:false});
+db.sequelize.sync({alter:true});
+// async function synchronizeDatabase() {
+//   try {
+//     await db.sequelize.sync({ force: true });
+//     console.log('Database synchronized successfully.');
+//   } catch (error) {
+//     console.error('Error synchronizing the database:', error);
+//   }
+// }
+
+// synchronizeDatabase();
 
 
 

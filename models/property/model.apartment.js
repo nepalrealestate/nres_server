@@ -276,10 +276,28 @@ function pendingApartmentModel (sequelize,DataTypes){
       },
       onDelete: 'CASCADE'
     },
-    ads_status: {
-      type: DataTypes.ENUM('unplanned','posted','progress','planned'),
+    twitter:{
+      type:DataTypes.ENUM('unplanned','posted','progress','planned'),
       defaultValue: 'unplanned'
-    }
+    },
+    tiktok:{
+      type:DataTypes.ENUM('unplanned','posted','progress','planned'),
+      defaultValue: 'unplanned'
+    },
+    instagram:{
+      type:DataTypes.ENUM('unplanned','posted','progress','planned'),
+      defaultValue: 'unplanned'
+    },
+    facebook:{
+      type:DataTypes.ENUM('unplanned','posted','progress','planned'),
+      defaultValue: 'unplanned'
+    },
+    youtube:{
+      type:DataTypes.ENUM('unplanned','posted','progress','planned'),
+      defaultValue: 'unplanned'
+    },
+
+
 
   },{
     freezeTableName: true,

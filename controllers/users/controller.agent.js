@@ -48,7 +48,7 @@ const handleGetAgent = async (req, res) => {
     console.log(data);
     return res.status(200).json( data );
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return res.status(500).json({ message: error });
   }
 
 
@@ -261,7 +261,7 @@ const handleUpdateAgentPassword = async(req,res)=>{
   return res.status(400).json({message:"Password does not match"})
  }
 
- return auth.updateProfilePassword(req,res,updateAgentPassword);
+ return user.updateProfilePassword(req,res,updateAgentPassword);
 
  
  
