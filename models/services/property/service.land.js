@@ -94,8 +94,8 @@ async function getPendingLand(condition,limit,offset){
 
 
 
- async function updateLandAds(ads_status,property_id){
-    return await LandAds.update({ads_status:ads_status},{where:{property_id:property_id}})
+ async function updateLandAds(platform,ads_status,property_id){
+    return await LandAds.update({[platform]:ads_status},{where:{property_id:property_id}})
 }
 
 async function insertLandComment(property_id,staff_id,super_admin_id,comment,isPrivate){

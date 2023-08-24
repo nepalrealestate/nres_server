@@ -646,6 +646,9 @@ function requestedHouseModel(sequelize,DataTypes){
 }
 
 
+
+
+
 module.exports = {
   houseModel,
   pendingHouseModel,
@@ -654,4 +657,5 @@ module.exports = {
   houseAdsModel,
   houseViewsModel,
   requestedHouseModel,
+  
 };

@@ -1,5 +1,5 @@
 const express = require("express");
-const { handleGetPropertyWithAds } = require("../../controllers/property/controller.property");
+const { handleGetPropertyWithAds, handleGetProperty } = require("../../controllers/property/controller.property");
 
 
 const router = express.Router();
@@ -8,7 +8,8 @@ const router = express.Router();
 // router.post("/requestProperty",handleRequestProperty);
 
 
- router.get("/",handleGetPropertyWithAds)
+ router.get("/propertyAds",handleGetPropertyWithAds)
+ router.get("/",handleGetProperty)
 
 
 module.exports = router;

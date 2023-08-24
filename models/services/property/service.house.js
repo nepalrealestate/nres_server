@@ -92,8 +92,8 @@ const RequestedHouse = db.PropertyModel.RequestedHouse
 
 
 
- async function updateHouseAds(ads_status,property_id){
-    return await HouseAds.update({ads_status:ads_status},{where:{property_id:property_id}})
+ async function updateHouseAds(platform,ads_status,property_id){
+    return await HouseAds.update({[platform]:ads_status},{where:{property_id:property_id}})
 }
 
 async function insertHouseComment(property_id,staff_id,super_admin_id,comment,isPrivate){

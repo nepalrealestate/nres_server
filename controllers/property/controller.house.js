@@ -101,15 +101,23 @@ const handleApproveHouse = async (req, res) => {
 const handleUpdateHouseAds = async (req,res)=>{
 
   const {property_id} = req.params;
-  const {ads_status} = req.body;
+  const {platform,ads_status} = req.body;
 
+  ads_statusRequired = ['unplanned','posted','progress','planned'];
+  platformRequired  =['twitter','tiktok','instagram','facebook','youtube']
+
+  if(!ads_statusRequired.includes(ads_status)  || 
+    !platformRequired.includes(platform)){
+      return res.status(400).json({message:"Wrong Input"});
+    }
   
   try {
     
-    const response = await updateHouseAds(ads_status,property_id)
+    const response = await updateHouseAds(platform,ads_status,property_id)
+    console.log(response)
  
-    if(response.affectedRows === 0 ){
-      return res.status(400).json({message:"No property to update "})
+    if(response[0] === 0 ){
+      return res.status(404).json({message:"No property to update "})
     }
     return res.status(200).json({message:"Successfully Update ads status"});
 
@@ -126,8 +134,8 @@ const handleUpdateHouseAds = async (req,res)=>{
 
 const handleInsertHouseComment = async (req,res)=>{
 
-  
-  return utils.handleInsertPropertyComment(req,res,insertHouseComment)
+
+  return property.handleInsertPropertyComment(req,res,insertHouseComment)
    
 
 
@@ -136,7 +144,7 @@ const handleInsertHouseComment = async (req,res)=>{
 
 const handleGetHouseComment = async (req,res)=>{
 
-  return utils.handleGetPropertyComment(req,res,getHouseComment)
+  return property.handleGetPropertyComment(req,res,getHouseComment)
 
 }
 

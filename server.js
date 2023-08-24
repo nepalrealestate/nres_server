@@ -30,7 +30,7 @@ const port = 8000;
 
 // init sequlize;
 
-db.sequelize.sync({alter:true});
+db.sequelize.sync({force:false}); // alter creates duplicates index every time
 // async function synchronizeDatabase() {
 //   try {
 //     await db.sequelize.sync({ force: true });

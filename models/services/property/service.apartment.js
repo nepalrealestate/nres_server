@@ -7,7 +7,7 @@ const ApartmentAds = db.PropertyModel.ApartmentAds;
 const ApartmentFeedback = db.PropertyModel.ApartmentFeedback;
 const ApartmentComment = db.PropertyModel.ApartmentComment
 const ApartmentViews = db.PropertyModel.ApartmentViews
-
+const ApartmentShootSchedule = db.PropertyModel.ApartmentShootSchedule;
 
 
 async function insertPendingApartment(apartment){
@@ -98,8 +98,8 @@ async function insertApartmentFeedback(property_id,customer_id,feedback){
 }
 
 
-async function updateApartmentAds(ads_status,property_id){
-    return await ApartmentAds.update({ads_status:ads_status},{where:{property_id:property_id}})
+async function updateApartmentAds(platform,ads_status,property_id){
+    return await ApartmentAds.update({[platform]:ads_status},{where:{property_id:property_id}})
 }
 
 async function insertApartmentComment(property_id,staff_id,super_admin_id,comment,isPrivate){
@@ -160,4 +160,20 @@ async function getRequestedApartment(condition,limit,offset){
 }
 
 
-module.exports = {insertPendingApartment,getApartment,getApartmentByID,getPendingApartment,approveApartment,getPendingApartmentByID,insertApartmentFeedback,updateApartmentAds,insertApartmentComment,getApartmentComment,updateApartmentViews,insertRequestedApartment,getRequestedApartment};
+async function insertApartmentShootSchedule(property_id,shootStatus,datetime){
+    return await ApartmentShootSchedule.create({
+        property_id:property_id,
+        shoot_status:shootStatus,
+        date:datetime,
+        
+    })
+}
+
+async function getApartmentShootScheduleById(property_id){
+    
+    
+
+
+}
+
+module.exports = {insertPendingApartment,getApartment,getApartmentByID,getPendingApartment,approveApartment,getPendingApartmentByID,insertApartmentFeedback,updateApartmentAds,insertApartmentComment,getApartmentComment,updateApartmentViews,insertRequestedApartment,getRequestedApartment,insertApartmentShootSchedule};

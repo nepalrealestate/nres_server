@@ -78,14 +78,22 @@ const handleApproveLand = async (req, res) => {
 const handleUpdateLandAds = async (req,res)=>{
 
   const {property_id} = req.params;
-  const {ads_status} = req.body;
+  const {platform,ads_status} = req.body;
+
+  ads_statusRequired = ['unplanned','posted','progress','planned'];
+  platformRequired  =['twitter','tiktok','instagram','facebook','youtube']
+
+  if(!ads_statusRequired.includes(ads_status)  || 
+    !platformRequired.includes(platform)){
+      return res.status(400).json({message:"Wrong Input"});
+    }
 
   
   try {
     
-    const response = await updateLandAds(ads_status,property_id)
+    const response = await updateLandAds(platform,ads_status,property_id)
  
-    if(!response ){
+    if(response[0] === 0 ){
       return res.status(400).json({message:"No property to update "})
     }
     return res.status(200).json({message:"Successfully Update ads status"});

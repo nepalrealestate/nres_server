@@ -10,7 +10,7 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const {Utility, propertyUtility, utility} = require("../controller.utils");
-const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment } = require("../../models/services/property/service.apartment");
+const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds } = require("../../models/services/property/service.apartment");
 const { wrapAwait } = require("../../errorHandling");
 //const utils = new Utility();
 const utils = utility();
@@ -114,14 +114,22 @@ const handleApproveApartment = async (req, res) => {
 const handleUpdateApartmentAds = async (req,res)=>{
 
   const {property_id} = req.params;
-  const {ads_status} = req.body;
+  const {platform,ads_status} = req.body;
+
+  ads_statusRequired = ['unplanned','posted','progress','planned'];
+  platformRequired  =['twitter','tiktok','instagram','facebook','youtube']
+
+  if(!ads_statusRequired.includes(ads_status)  || 
+    !platformRequired.includes(platform)){
+      return res.status(400).json({message:"Wrong Input"});
+    }
 
   
   try {
     
-    const response = await updateApartmentAds(ads_status,property_id)
+    const response = await updateApartmentAds(platform,ads_status,property_id)
  
-    if(response.affectedRows === 0 ){
+    if(response[0] === 0  ){
       return res.status(400).json({message:"No property to update "})
     }
     return res.status(200).json({message:"Successfully Update ads status"});

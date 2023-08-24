@@ -493,6 +493,7 @@ function requestedLandModel(sequelize,DataTypes){
 
 
 
+
 module.exports = {
   landModel,
   pendingLandModel,
@@ -500,5 +501,5 @@ module.exports = {
   landCommentModel,
   landFeedbackModel,
   landViewsModel,
-  requestedLandModel
+  requestedLandModel,
 };

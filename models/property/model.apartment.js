@@ -364,7 +364,7 @@ function apartmentCommentModel(sequelize,DataTypes){
     staff_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'user_staff', // replace with your Staff model name
+        model: 'user_staff', 
         key: 'staff_id',
       },
       onDelete: 'CASCADE',
@@ -372,7 +372,7 @@ function apartmentCommentModel(sequelize,DataTypes){
     super_admin_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'user_superAdmin', // replace with your SuperAdmin model name
+        model: 'user_superAdmin', 
         key: 'superAdmin_id',
       },
       onDelete: 'CASCADE',
@@ -565,6 +565,9 @@ function requestedApartmentByModel(sequelize,DataTypes){
 
 
 
+
+
+
 module.exports = {
     apartmentModel,
     apartmentAdsModel,
@@ -574,5 +577,5 @@ module.exports = {
     apartmentViewsModel,
     requestedApartmentModel,
     requestedApartmentByModel,
-  
+
 };
