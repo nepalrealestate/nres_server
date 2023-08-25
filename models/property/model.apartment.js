@@ -90,10 +90,10 @@ function apartmentModel (sequelize,DataTypes){
       description:{
         type:DataTypes.TEXT
       },
-      property_image:{
+      social_media:{
         type:DataTypes.JSON
       },
-      property_video:{
+      property_image:{
         type:DataTypes.JSON
       },
       staff_id:{
@@ -222,10 +222,10 @@ function pendingApartmentModel (sequelize,DataTypes){
     description:{
       type:DataTypes.TEXT
     },
-    property_image:{
+    social_media:{
       type:DataTypes.JSON
     },
-    property_video:{
+    property_image:{
       type:DataTypes.JSON
     },
     staff_id:{

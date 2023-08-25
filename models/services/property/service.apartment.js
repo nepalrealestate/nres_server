@@ -1,5 +1,6 @@
 
 const db = require("../../model.index");
+const { getPropertyId, updatePropertyId } = require("./service.property");
 
 const Apartment = db.PropertyModel.Apartment;
 const PendingApartment = db.PropertyModel.PendingApartment;
@@ -14,6 +15,32 @@ async function insertPendingApartment(apartment){
 
     return await PendingApartment.create(apartment);
 
+}
+
+async function insertApartment(apartment){
+
+    let transaction ; 
+
+    try {
+        transaction  = await db.sequelize.transaction();
+
+        const property_id = await getPropertyId();
+        
+
+       const createdApartment =  await Apartment.create({
+            property_id:property_id,
+            ...apartment
+        });
+        await updatePropertyId(transaction);
+        transaction.commit();
+        return createdApartment;
+
+    //return await  Apartment.create(apartment);
+}catch(error){
+    transaction.rollback();
+    throw error;
+    
+}
 }
 
 
@@ -176,4 +203,4 @@ async function getApartmentShootScheduleById(property_id){
 
 }
 
-module.exports = {insertPendingApartment,getApartment,getApartmentByID,getPendingApartment,approveApartment,getPendingApartmentByID,insertApartmentFeedback,updateApartmentAds,insertApartmentComment,getApartmentComment,updateApartmentViews,insertRequestedApartment,getRequestedApartment,insertApartmentShootSchedule};
+module.exports = {insertApartment,insertPendingApartment,getApartment,getApartmentByID,getPendingApartment,approveApartment,getPendingApartmentByID,insertApartmentFeedback,updateApartmentAds,insertApartmentComment,getApartmentComment,updateApartmentViews,insertRequestedApartment,getRequestedApartment,insertApartmentShootSchedule};

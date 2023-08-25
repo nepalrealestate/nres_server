@@ -8,6 +8,9 @@ const { handleStaffRegistration, handleGetAllStaff, handleStaffUpdate, handleSta
 const { handleGetAllAgent } = require("../../controllers/users/controller.agent");
 const { handleGetServiceProvider } = require("../../controllers/nres_services/controller.nres_service");
 const { handleGetCustomer } = require("../../controllers/users/controller.customer");
+const { handleAddApartment, handleGetApartment } = require("../../controllers/property/controller.apartment");
+const { handleAddHouse, handleGetHouse } = require("../../controllers/property/controller.house");
+const { handleAddLand, handleGetLand } = require("../../controllers/property/controller.land");
 
 const router = express.Router();
 
@@ -49,6 +52,17 @@ router.get("/service/provider",handleGetServiceProvider)
 
 //customer related routes
 router.get("/customer/:customer_id",handleGetCustomer)
+
+
+// property Related Routes
+router.post("/property/apartment",handleAddApartment)
+router.get("/property/apartment",handleGetApartment)
+
+router.post("/property/house",handleAddHouse)
+router.get("/property/house",handleGetHouse)
+
+router.post("/property/land",handleAddLand)
+router.get("/property/land",handleGetLand)
 
 
 module.exports  = router;

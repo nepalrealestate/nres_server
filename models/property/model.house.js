@@ -96,14 +96,11 @@ function houseModel (sequelize,DataTypes){
     description:{
       type:DataTypes.TEXT
     },
+    social_media:{
+      type:DataTypes.JSON
+    },
     property_image:{
       type:DataTypes.JSON
-    },
-    property_video:{
-      type:DataTypes.JSON
-    },
-    posted_date:{
-      type:DataTypes.DATE
     },
     staff_id:{
       type:DataTypes.INTEGER,
@@ -239,14 +236,11 @@ function pendingHouseModel (sequelize,DataTypes){
     description:{
       type:DataTypes.TEXT
     },
+    social_media:{
+      type:DataTypes.JSON
+    },
     property_image:{
       type:DataTypes.JSON
-    },
-    property_video:{
-      type:DataTypes.JSON
-    },
-    posted_date:{
-      type:DataTypes.DATE
     },
     staff_id:{
       type:DataTypes.INTEGER,

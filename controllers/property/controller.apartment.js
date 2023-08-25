@@ -10,7 +10,7 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const {Utility, propertyUtility, utility} = require("../controller.utils");
-const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds } = require("../../models/services/property/service.apartment");
+const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment } = require("../../models/services/property/service.apartment");
 const { wrapAwait } = require("../../errorHandling");
 //const utils = new Utility();
 const utils = utility();
@@ -27,7 +27,8 @@ const handleAddApartment = async (req, res) => {
 
   
   async function addApartment (){
-    property.handleAddProperty(req, res, insertPendingApartment);
+    //property.handleAddProperty(req, res, insertPendingApartment);
+    property.handleAddProperty(req,res,insertApartment);
   }
 
 };

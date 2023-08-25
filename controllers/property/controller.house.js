@@ -8,7 +8,7 @@ const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 
 const {Utility, propertyUtility, utility} = require("../controller.utils");
-const { insertPendingHouse, getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse } = require("../../models/services/property/service.house");
+const { insertPendingHouse, getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse } = require("../../models/services/property/service.house");
 //const utils = new Utility();
 const utils  = utility();
 
@@ -22,7 +22,8 @@ const handleAddHouse = async (req, res) => {
   });
   
   async function addHouse (){
-    property.handleAddProperty(req,res,insertPendingHouse);
+    property.handleAddProperty(req,res,insertHouse);
+   // property.handleAddProperty(req,res,insertPendingHouse);
   }
   
 

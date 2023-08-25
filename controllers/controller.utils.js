@@ -1011,7 +1011,10 @@ function propertyUtility(property_type) {
     } else if (user_type === "agent") {
       agent_id = req.id;
     } else if (user_type === "staff") {
-    } else {
+      staff_id = req.id
+    } else if(user_type === "admin"){
+      //do nothing
+    }else{
       return res.status(400).json({ message: "bad request" });
     }
 
@@ -1038,8 +1041,7 @@ function propertyUtility(property_type) {
     property = {
       ...property,
       property_image: imageObject,
-      property_video: null,
-      staff_id: null,
+      staff_id: staff_id,
       customer_id: customer_id,
       agent_id: agent_id,
     };
@@ -1058,7 +1060,11 @@ function propertyUtility(property_type) {
 
       return res.status(200).json({ message: `${propertyType} insert` });
     } catch (error) {
-      console.log(error);
+    
+      console.log(error)
+      if(error.name==='SequelizeDatabaseError'){
+        return res.status(400).json({message:error.parent.sqlMessage})
+      }
       return res.status(500).json({ message: "Internal Error" });
     }
   }

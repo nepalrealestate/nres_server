@@ -25,6 +25,5 @@
   "parking_car": 2,
   "amenities": { "pool": true, "gym": true, "internet": true, "security": true },
   "description": "A spacious 3 BHK apartment located in the heart of the city. It includes a gym and a pool. Parking space for 2 cars and 5 bikes is also available. The price is negotiable.",
-  "property_image": { "img1": "image_link1", "img2": "image_link2", "img3": "image_link3" },
-  "property_video": { "video1": "video_link1" }
+  "social_media": { "youtube": "https://www.youtube.com/watch?v=D4dXCTf4yfA&ab_channel=NepalRealEstateSolution-NRES" }
 }

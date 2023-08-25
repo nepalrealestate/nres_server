@@ -1,5 +1,6 @@
 
 const db = require("../../model.index");
+const { updatePropertyId, getPropertyId } = require("./service.property");
 const House = db.PropertyModel.House
 const PendingHouse = db.PropertyModel.PendingHouse
 const HouseAds = db.PropertyModel.HouseAds
@@ -10,6 +11,31 @@ const RequestedHouse = db.PropertyModel.RequestedHouse
 
  async function insertPendingHouse(house){
     return await PendingHouse.create(house);
+ }
+
+ async function insertHouse(house){
+    let transaction ; 
+
+    try {
+        transaction  = await db.sequelize.transaction();
+
+        const property_id = await getPropertyId();
+        
+
+       const createdHouse =  await House.create({
+            property_id:property_id,
+            ...house
+        });
+        await updatePropertyId(transaction);
+        transaction.commit();
+        return createdHouse;
+
+    //return await  Apartment.create(apartment);
+}catch(error){
+    transaction.rollback();
+    throw error;
+    
+}
  }
 
  async function getHouse(condition,limit,offset){
@@ -146,4 +172,4 @@ async function insertRequestedHouse (data){
 
 
 
-module.exports ={insertPendingHouse,getHouse,getHouseByID,getHouseComment,getPendingHouse,getPendingHouseByID,insertHouseFeedback,insertHouseComment,updateHouseAds,approveHouse,updateHouseViews,insertRequestedHouse}
+module.exports ={insertHouse,insertPendingHouse,getHouse,getHouseByID,getHouseComment,getPendingHouse,getPendingHouseByID,insertHouseFeedback,insertHouseComment,updateHouseAds,approveHouse,updateHouseViews,insertRequestedHouse}

@@ -1,4 +1,5 @@
 const db = require("../../model.index");
+const { getPropertyId, updatePropertyId } = require("./service.property");
 const Land = db.PropertyModel.Land;
 const PendingLand = db.PropertyModel.PendingLand
 const LandAds = db.PropertyModel.LandAds
@@ -10,6 +11,31 @@ const RequestedLand = db.PropertyModel.RequestedLand
 
 async function insertPendingLand(land){
     return await PendingLand.create(land)
+}
+
+async function insertLand(land){
+    let transaction ; 
+
+    try {
+        transaction  = await db.sequelize.transaction();
+
+        const property_id = await getPropertyId();
+        
+
+       const createdLand=  await Land.create({
+            property_id:property_id,
+            ...land
+        });
+        await updatePropertyId(transaction);
+        transaction.commit();
+        return createdLand;
+
+    //return await  Apartment.create(apartment);
+}catch(error){
+    transaction.rollback();
+    throw error;
+    
+}
 }
 
 async function getLand(condition,limit,offset){
@@ -154,6 +180,7 @@ async function insertRequestedLand(data){
 
 
 module.exports = {
+    insertLand,
     insertPendingLand,
     getLand,
     getLandByID,

@@ -1,7 +1,29 @@
+
 const db = require("../../model.index");
 const PropertyAdminView = db.Views.PropertyViewAdmin;
 const PropertyShootSchedule = db.PropertyModel.PropertyShootSchedule;
 const PropertyViewClient = db.Views.PropertyViewClient;
+const PropertyIdTracker = db.PropertyModel.PropertyIdTracker;
+
+// get latest property insert id
+async function getPropertyId(){
+    const property_id =  await PropertyIdTracker.findOne({where:{id:1}});
+    return property_id.dataValues.property_id;
+}
+
+async function updatePropertyId(transaction){
+     try {
+        const propertyIdTracker = await PropertyIdTracker.findByPk(1, { transaction });
+    //     propertyIdTracker.property_id += 1;
+    //  await propertyIdTracker.save({ transaction });
+    await propertyIdTracker.increment('property_id', { by: 1, transaction });
+     } catch (error) {
+        throw error;
+     }
+     
+}
+
+
 
 async function getPropertyWithAds(condition,limit,offset){
 
@@ -36,11 +58,27 @@ async function getProperty(condition,limit,offset){
     return await PropertyViewClient.findAll({
         where:condition,
         attributes: { exclude: ['id'] },
-        order:[['createdAt', 'DESC']],
+        order:[
+            ['createdAt', 'DESC']],
         limit:limit,
         offset:offset,
     })
 }
 
+async function getLatestPropertyPriorityLocation(condition,limit,offset){
+    return await PropertyViewClient.findAll({
+        where:condition,
+        attributes:{exclude:['id']},
+        order: [
+            [db.sequelize.literal(`(CASE WHEN district='${condition.district}' THEN 1 ELSE 2 END)`), 'ASC'],
+            ['createdAt', 'DESC']
+          ],
+        limit:limit,
+        offset:offset
+    })
+}
 
-module.exports = {getPropertyWithAds,insertPropertyShootSchedule,getPropertyShootSchedule,getProperty}
+
+
+
+module.exports = {getPropertyWithAds,insertPropertyShootSchedule,getPropertyShootSchedule,getProperty,getLatestPropertyPriorityLocation,getPropertyId,updatePropertyId}

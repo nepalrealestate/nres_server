@@ -7,7 +7,7 @@ const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const { checkProperties } = require("../requiredObjectProperties");
 const {Utility, utility, propertyUtility} = require("../controller.utils");
-const { insertPendingLand, getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand } = require("../../models/services/property/service.land");
+const { insertPendingLand, getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand, insertLand } = require("../../models/services/property/service.land");
 //const utils = new Utility();
 const utils = utility();
 const property = propertyUtility("land");
@@ -21,8 +21,8 @@ const handleAddLand = async (req, res) => {
   });
   
   async function addLand(){
-
-   property.handleAddProperty( req,res,insertPendingLand);
+    property.handleAddProperty(req,res,insertLand)
+   //property.handleAddProperty( req,res,insertPendingLand);
   }
       
     

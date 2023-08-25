@@ -70,4 +70,10 @@ const handleSuperAdminLogin = async(req,res)=>{
 
 }
 
-module.exports = {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin}
+const superAdminVerifyToken = async (req,res,next)=>{
+
+    auth.verifyToken(req,res,next);
+
+}
+
+module.exports = {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin,superAdminVerifyToken}

@@ -75,14 +75,11 @@ function landModel (sequelize,DataTypes){
     description:{
       type:DataTypes.TEXT
     },
+    social_media:{
+      type:DataTypes.JSON
+    },
     property_image:{
       type:DataTypes.JSON
-    },
-    property_video:{
-      type:DataTypes.JSON
-    },
-    posted_date:{
-      type:DataTypes.DATE
     },
     staff_id:{
       type:DataTypes.INTEGER,
@@ -193,14 +190,11 @@ function pendingLandModel (sequelize,DataTypes){
     description:{
       type:DataTypes.TEXT
     },
+    social_media:{
+      type:DataTypes.JSON
+    },
     property_image:{
       type:DataTypes.JSON
-    },
-    property_video:{
-      type:DataTypes.JSON
-    },
-    posted_date:{
-      type:DataTypes.DATE
     },
     staff_id:{
       type:DataTypes.INTEGER,
