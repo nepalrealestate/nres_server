@@ -119,19 +119,19 @@ function propertyViewClientModel(sequelize, DataTypes) {
     CREATE OR REPLACE VIEW property_view_client AS
     
   
-    SELECT   h.property_id,h.property_type, h.property_name,h.listed_for, h.district, h.municipality,h.ward, h.createdAt 
+    SELECT   h.property_id,h.property_type, h.property_name,h.listed_for,h.province, h.district, h.municipality,h.ward,h.price, h.createdAt 
     FROM nres.property_house  as h
    
     UNION 
    
-    SELECT l.property_id,l.property_type, l.property_name,l.listed_for,  l.district, l.municipality,l.ward, l.createdAt 
+    SELECT l.property_id,l.property_type, l.property_name,l.listed_for,l.province,  l.district, l.municipality,l.ward,l.price, l.createdAt 
   
   
     FROM nres.property_land as l 
     
     UNION
    
-    SELECT a.property_id,a.property_type, a.property_name, a.listed_for, a.district, a.municipality,a.ward, a.createdAt 
+    SELECT a.property_id,a.property_type, a.property_name, a.listed_for,a.province, a.district, a.municipality,a.ward,a.price, a.createdAt 
   
     FROM nres.property_apartment as a 
   `;

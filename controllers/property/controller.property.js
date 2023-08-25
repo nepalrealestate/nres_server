@@ -71,10 +71,30 @@ const handleGetPropertyPriorityLocation = async function (req,res){
   offSet = (page - 1) * limit;
 
   // get condition
+  let district  = req.body?.district?req.body.district:null;
+  let condition = req.query?req.query:null;
+  let location = req.query?.location?req.query.location:null;
+  let minPrice = req.query?.minPrice?req.query.minPrice:null;
+  let maxPrice  = req.query?.maxPrice?req.query.maxPrice:null
+  condition.district = district;
+  condition.location = location;
+
+  condition.priceRange = {}
+  if(minPrice){
+    condition.priceRange.minPrice = minPrice;
+    delete condition.minPrice;
+  }
+  if(maxPrice){
+    condition.priceRange.maxPrice = maxPrice;
+    delete condition.maxPrice;
+  }
+
+
+  console.log(condition)
   
 
   try {
-    const data = await getLatestPropertyPriorityLocation(req.query, limit, offSet);
+    const data = await getLatestPropertyPriorityLocation(condition, limit, offSet);
     console.log(data);
     //update views of property
     //await updateViewsCount()
@@ -86,4 +106,4 @@ const handleGetPropertyPriorityLocation = async function (req,res){
 
 }
 
-module.exports = {handleGetPropertyWithAds,handleGetProperty}
+module.exports = {handleGetPropertyWithAds,handleGetProperty,handleGetPropertyPriorityLocation}
