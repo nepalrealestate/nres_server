@@ -539,7 +539,7 @@ function apartmentViewsModel (sequelize,DataTypes){
 
 
 function requestedHouseModel(sequelize,DataTypes){
-  return RequestedHouse = sequelize.define('property_requested_House',{
+  return RequestedHouse = sequelize.define('property_requested_house',{
     
     property_type :{
       type:DataTypes.ENUM('commercial','residential','office')

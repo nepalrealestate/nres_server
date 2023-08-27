@@ -1149,22 +1149,57 @@ function propertyUtility(property_type) {
     }
   }
 
-  async function handleGetProperty(req, res, getProperty) {
+  async function handleGetProperty(req, res, getPropertyCallBack) {
+    
     let page, limit, offSet;
 
-    // if page and limit not set then defualt is 1 and 20 .
-    page = req.query.page || 1;
+  // if page and limit not set then defualt is 1 and 20 .
+  page = req.query.page || 1;
 
-    limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
-    // if page and limit present in query then delete it
-    if (req.query.page) delete req.query.page;
+  limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
+  // if page and limit present in query then delete it
+  if (req.query.page) delete req.query.page;
 
-    if (req.query.limit) delete req.query.limit;
+  if (req.query.limit) delete req.query.limit;
 
-    offSet = (page - 1) * limit;
+  offSet = (page - 1) * limit;
+
+  // get condition
+  let  condition = req.query?req.query:{};
+  let district  = req.body?.district?req.body.district:null;
+
+
+
+  // district for location based search
+  if(district){
+    condition.district = district;
+  }
+
+  
+
+  if(condition?.minPrice || condition?.maxPrice){
+    condition.priceRange = {};
+  }
+  if(condition?.minPrice){
+    condition.priceRange.minPrice = minPrice;
+    delete condition.minPrice;
+  }
+  if(condition?.maxPrice){
+    condition.priceRange.maxPrice = maxPrice;
+    delete condition.maxPrice;
+  }
+
+
+
+  ///
+  condition.limit = limit;
+  condition.offset = offSet;
+
+  console.log(condition);
+  
 
     try {
-      const data = await getProperty(req.query, limit, offSet);
+      const data = await getPropertyCallBack(condition);
       console.log(data);
       //update views of property
       //await updateViewsCount()

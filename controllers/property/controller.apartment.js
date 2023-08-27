@@ -10,7 +10,7 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const {Utility, propertyUtility, utility} = require("../controller.utils");
-const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment } = require("../../models/services/property/service.apartment");
+const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment } = require("../../models/services/property/service.apartment");
 const { wrapAwait } = require("../../errorHandling");
 //const utils = new Utility();
 const utils = utility();
@@ -166,7 +166,6 @@ const handleInsertRequestedApartment = async (req,res)=>{
     'needed', 'province', 'zone', 'district', 'municipality', 'ward', 
     'landmark', 'name', 'email', 'phone_number', 'address'
 ];
-console.log(req.body);
 
 for (const field of requiredFields) {
   if (!req.body.hasOwnProperty(field)) {
@@ -180,10 +179,19 @@ try {
   const response = await insertRequestedApartment(requestedApartment);
   return res.status(200).json({message:"Requested Apartment Inserted successfully"})
 } catch (error) {
+
+  if(error.parent.code === 'WARN_DATA_TRUNCATED'){
+    return res.status(400).json({message:error.parent.sqlMessage})
+  }
+
   return res.status(500).json({message:"Internal Error"})
 }
 
+}
 
+const handleGetRequestedApartment = async (req,res)=>{
+  
+  property.handleGetProperty(req,res,getRequestedApartment);
 
 }
 
@@ -201,5 +209,6 @@ module.exports = {
   handleUpdateApartmentAds,
   handleInsertApartmentComment,
   handleGetApartmentComment,
-  handleInsertRequestedApartment
+  handleInsertRequestedApartment,
+  handleGetRequestedApartment
 };

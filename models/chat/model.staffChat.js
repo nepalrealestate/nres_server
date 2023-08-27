@@ -58,8 +58,7 @@ module.exports = {staffChatModel,staffChatListModel,staffChatGroupModel}
 
 
 const { pool } = require("../../connection");
-const ModelUtility = require("../model.utils");
-const { chatTable } = require("../tableName");
+
 
 async function getSingleStaffChat(id) {
   const sqlQuery = `SELECT sender_id,receiver_id,message,timestamp FROM ${chatTable.staff} WHERE sender_id = ? OR receiver_id = ? `;

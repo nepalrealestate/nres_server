@@ -47,7 +47,7 @@ module.exports = {agentChatModel,agentChatListModel}
 
 
 const { pool } = require("../../connection");
-const { chatTable } = require("../tableName");
+
 
 
 async function getSingleAgentChat(id){

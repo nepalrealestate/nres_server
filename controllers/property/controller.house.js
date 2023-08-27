@@ -8,7 +8,7 @@ const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 
 const {Utility, propertyUtility, utility} = require("../controller.utils");
-const { insertPendingHouse, getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse } = require("../../models/services/property/service.house");
+const { insertPendingHouse, getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse, getRequestedHouse } = require("../../models/services/property/service.house");
 //const utils = new Utility();
 const utils  = utility();
 
@@ -156,7 +156,7 @@ const handleInsertRequestedHouse = async (req,res)=>{
     'furnish', 'description', 'needed', 'province', 'zone', 'district', 
     'municipality', 'ward', 'landmark', 'name', 'email', 'phone_number', 'address'
 ];
-  console.log(req.body);
+  
   for(const field of requiredHouseFields){
     if(!req.body.hasOwnProperty(field)){
       return res.status(400).json({message:"missing field"})
@@ -168,9 +168,17 @@ const handleInsertRequestedHouse = async (req,res)=>{
     const response = await insertRequestedHouse(requestedHouse);
     return res.status(200).json({message:"Requested House Inserted Successfully"});
   } catch (error) {
+    console.log(error.name);
+    if(error.name === 'SequelizeUniqueConstraintError'){
+      return res.status(400).json({message:error.errors})
+    }
     return res.status(500).json({message:"Internal Error"})
     
   }
+}
+
+const handleGetRequestedHouse = async (req,res)=>{
+  property.handleGetProperty(req,res,getRequestedHouse)
 }
 
 
@@ -187,5 +195,6 @@ module.exports = {
   handleUpdateHouseAds,
   handleInsertHouseComment,
   handleGetHouseComment,
-  handleInsertRequestedHouse
+  handleInsertRequestedHouse,
+  handleGetRequestedHouse
 };

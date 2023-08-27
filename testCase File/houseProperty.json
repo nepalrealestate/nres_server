@@ -1,3 +1,4 @@
+[
 {
     "property_for": "commercial",
     "property_name": "Acme Office Park",
@@ -31,4 +32,33 @@
     },
     "description": "Spacious commercial property for sale in the heart of the city. It comes semi-furnished with ample parking space and modern amenities.",
     "social_media":{"youtube":"https://www.youtube.com/watch?v=tEgSNg_6eCw&ab_channel=NepalRealEstateSolution-NRES"}
+},
+
+{
+    "property_type": "commercial",
+    "property_area": 2200.5,
+    "property_age": 2,
+    "floor": 1.0,
+    "bedrooms": 4,
+    "kitchen": 1,
+    "living_rooms": 2,
+    "facing": "west-north",
+    "road_size": 16.0,
+    "minPrice": "12000000.00",
+    "maxPrice": "12500000.00",
+    "furnish": "furnished",
+    "description": "A prime commercial property suitable for both offices and shops. Located near the main market area, ensuring high footfall.",
+    "needed": "urgent",
+    "province": "Province 1",
+    "zone": "Koshi Zone",
+    "district": "Bhojpur",
+    "municipality": "Bhojpur Municipality",
+    "ward": 4,
+    "landmark": "Close to Bhojpur Bazaar",
+    "name": "Sunita Rai",
+    "email": "sunita.rai@email.np",
+    "phone_number": "9841798647",
+    "address": "Main Street, Bhojpur, Nepal"
 }
+]
+

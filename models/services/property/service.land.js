@@ -1,5 +1,8 @@
 const db = require("../../model.index");
 const { getPropertyId, updatePropertyId } = require("./service.property");
+
+const propertyService = require("../service.utils").propertyServiceUtility();
+
 const Land = db.PropertyModel.Land;
 const PendingLand = db.PropertyModel.PendingLand
 const LandAds = db.PropertyModel.LandAds
@@ -38,13 +41,15 @@ async function insertLand(land){
 }
 }
 
-async function getLand(condition,limit,offset){
-    return await Land.findAll({
-        where:condition,
-        attributes:[ 'property_id','property_name','listed_for','price','views'],
-        limit:limit,
-        offset:offset
-    })
+async function getLand(condition){
+
+    return await propertyService.getProperty(condition,Land)
+    // return await Land.findAll({
+    //     where:condition,
+    //     attributes:[ 'property_id','property_name','listed_for','price','views'],
+    //     limit:limit,
+    //     offset:offset
+    // })
 }
 
 async function getLandByID(property_id){
@@ -177,7 +182,9 @@ async function insertRequestedLand(data){
     }
 }
     
-
+async function getRequestedLand(condition){
+    return propertyService.getProperty(condition,RequestedLand);
+}
 
 module.exports = {
     insertLand,
@@ -193,4 +200,5 @@ module.exports = {
     approveLand,
     updateLandViews,
     insertRequestedLand,
+    getRequestedLand
 }

@@ -42,8 +42,6 @@ module.exports = {customerChatModel,customerChatListModel}
 
 
 const { pool } = require("../../connection");
-const ModelUtility = require("../model.utils");
-const { chatTable } = require("../tableName");
 
 
 async function getSingleCustomerChat(id){

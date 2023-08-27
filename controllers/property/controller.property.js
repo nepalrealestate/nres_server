@@ -1,5 +1,8 @@
 const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation } = require("../../models/services/property/service.property");
 
+
+
+
 const handleGetPropertyWithAds = async function (req,res){
 
     let page, limit, offSet;
@@ -56,6 +59,7 @@ const handleGetProperty = async function(req,res){
 }
 
 const handleGetPropertyPriorityLocation = async function (req,res){
+
 
   let page, limit, offSet;
 

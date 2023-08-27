@@ -1,6 +1,7 @@
 
 const db = require("../../model.index");
-const { updatePropertyId, getPropertyId } = require("./service.property");
+const { propertyServiceUtility } = require("../service.utils");
+const { updatePropertyId, getPropertyId, getLatestPropertyPriorityLocation } = require("./service.property");
 const House = db.PropertyModel.House
 const PendingHouse = db.PropertyModel.PendingHouse
 const HouseAds = db.PropertyModel.HouseAds
@@ -8,6 +9,8 @@ const HouseFeedback = db.PropertyModel.HouseFeedback
 const HouseComment = db.PropertyModel.HouseComment
 const HouseViews = db.PropertyModel.HouseViews
 const RequestedHouse = db.PropertyModel.RequestedHouse
+
+const propertyService = propertyServiceUtility();
 
  async function insertPendingHouse(house){
     return await PendingHouse.create(house);
@@ -38,13 +41,18 @@ const RequestedHouse = db.PropertyModel.RequestedHouse
 }
  }
 
- async function getHouse(condition,limit,offset){
-    return await House.findAll({
-        where:condition,
-        attributes:[ 'property_id','property_name','listed_for','price','views'],
-        limit:limit,
-        offset:offset
-    })
+ async function getHouse(condition){
+
+    return await propertyService.getProperty(condition,House);
+
+
+
+    // return await House.findAll({
+    //     where:condition,
+    //     attributes:[ 'property_id','property_name','listed_for','price','views'],
+    //     limit:limit,
+    //     offset:offset
+    // })
  }
 
  async function getHouseByID(property_id){
@@ -170,6 +178,10 @@ async function insertRequestedHouse (data){
     return await RequestedHouse.create(data);
 }
 
+async function getRequestedHouse(condition){
+    propertyService.getProperty(condition,RequestedHouse);
+}
 
 
-module.exports ={insertHouse,insertPendingHouse,getHouse,getHouseByID,getHouseComment,getPendingHouse,getPendingHouseByID,insertHouseFeedback,insertHouseComment,updateHouseAds,approveHouse,updateHouseViews,insertRequestedHouse}
+
+module.exports ={insertHouse,insertPendingHouse,getHouse,getHouseByID,getHouseComment,getPendingHouse,getPendingHouseByID,insertHouseFeedback,insertHouseComment,updateHouseAds,approveHouse,updateHouseViews,insertRequestedHouse,getRequestedHouse}

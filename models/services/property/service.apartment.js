@@ -2,6 +2,8 @@
 const db = require("../../model.index");
 const { getPropertyId, updatePropertyId } = require("./service.property");
 
+const propertyService = require("../service.utils").propertyServiceUtility();
+
 const Apartment = db.PropertyModel.Apartment;
 const PendingApartment = db.PropertyModel.PendingApartment;
 const ApartmentAds = db.PropertyModel.ApartmentAds;
@@ -9,6 +11,7 @@ const ApartmentFeedback = db.PropertyModel.ApartmentFeedback;
 const ApartmentComment = db.PropertyModel.ApartmentComment
 const ApartmentViews = db.PropertyModel.ApartmentViews
 const ApartmentShootSchedule = db.PropertyModel.ApartmentShootSchedule;
+const RequestedApartment = db.PropertyModel.RequestedApartment;
 
 
 async function insertPendingApartment(apartment){
@@ -44,13 +47,19 @@ async function insertApartment(apartment){
 }
 
 
-async function getApartment(condition,limit,offset){
-    return await Apartment.findAll({
-        where:condition,
-        attributes:[ 'property_id','property_name','listed_for','price','views'],
-        limit:limit,
-        offset:offset
-    })
+async function getApartment(condition){
+
+
+
+    return await propertyService.getProperty(condition,Apartment)
+
+
+    // return await Apartment.findAll({
+    //     where:condition,
+    //     attributes:[ 'property_id','property_name','listed_for','price','views'],
+    //     limit:limit,
+    //     offset:offset
+    // })
 }
 
 async function getApartmentByID(property_id){
@@ -178,12 +187,10 @@ async function insertRequestedApartment(data){
     return await RequestedApartment.create(data)
 }
 
-async function getRequestedApartment(condition,limit,offset){
-    return await RequestedApartment.findAll({
-        where:condition,
-        limit:limit,
-        offset
-    })
+async function getRequestedApartment(condition){
+
+   return await propertyService.getProperty(condition,RequestedApartment)
+    
 }
 
 

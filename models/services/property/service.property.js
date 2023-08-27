@@ -114,20 +114,6 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
   delete condition.priceRange;
   console.log(condition);
   return await PropertyViewClient.findAll({
-    // where:{
-    //     // [db.Op.and]:[
-    //     //     {
-    //     //         price:{
-    //     //             [db.Op.between]:[minPrice,maxPrice]
-    //     //         }
-    //     //     }
-    //     // ],
-    //     [db.Op.or]:[
-    //         { province: { [db.Op.like]: `%${location}%` } },
-    //     { district: { [db.Op.like]: `%${location}%` } },
-    //     { municipality: { [db.Op.like]: `%${location}%` } }
-    //     ]
-    // },
     where: whereConditions,
     attributes: { exclude: ["id"] },
     order: orderConditions,
