@@ -21,6 +21,8 @@ async function insertPendingApartment(apartment){
 }
 
 async function insertApartment(apartment){
+    
+    
 
     let transaction ; 
 

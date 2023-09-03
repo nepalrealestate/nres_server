@@ -1,7 +1,7 @@
 
 const express = require("express");
 
-const {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin} = require('../../controllers/users/controller.superAdmin');
+const {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin, superAdminVerifyToken, superAdminVerifyLogin} = require('../../controllers/users/controller.superAdmin');
 const { handleGetCustomerChatList } = require("../../controllers/chat/controller.customerChat");
 const { handleGetStaffChatList, handleInsertStaffGroup, handleDeleteStaffFromGroup } = require("../../controllers/chat/controller.staffChat");
 const { handleStaffRegistration, handleGetAllStaff, handleStaffUpdate, handleStaffDelete, handleGetStaff } = require("../../controllers/users/controller.staff");
@@ -19,6 +19,7 @@ const router = express.Router();
 router.get("/",handleGetSuperAdmin);
 router.post("/register",handleSuperAdminRegistration)
 router.post("/login",handleSuperAdminLogin)
+router.get("/isLoggedIn",superAdminVerifyToken,superAdminVerifyLogin)
 
 
 // chat 
@@ -55,23 +56,23 @@ router.get("/customer/:customer_id",handleGetCustomer)
 
 
 // property Related Routes
-router.post("/property/apartment",handleAddApartment)
-router.get("/property/apartment",handleGetApartment)
+router.post("/property/apartment",superAdminVerifyToken,handleAddApartment)
+router.get("/property/apartment",superAdminVerifyToken,handleGetApartment)
 
 router.post("/property/house",handleAddHouse)
-router.get("/property/house",handleGetHouse)
+router.get("/property/house",superAdminVerifyToken,handleGetHouse)
 
-router.post("/property/land",handleAddLand)
-router.get("/property/land",handleGetLand)
+router.post("/property/land",superAdminVerifyToken,handleAddLand)
+router.get("/property/land",superAdminVerifyToken,handleGetLand)
 
 
-router.post("/property/apartment/request",handleInsertRequestedApartment)
-router.get("/property/apartment/request",handleGetRequestedApartment)
+router.post("/property/apartment/request",superAdminVerifyToken,handleInsertRequestedApartment)
+router.get("/property/apartment/request",superAdminVerifyToken,handleGetRequestedApartment)
 
-router.post("/property/house/request",handleInsertRequestedHouse)
-router.get("/property/house/request",handleGetRequestedHouse)
+router.post("/property/house/request",superAdminVerifyToken,handleInsertRequestedHouse)
+router.get("/property/house/request",superAdminVerifyToken,handleGetRequestedHouse)
 
-router.post("/property/land/request",handleInsertRequestedLand)
-router.get("/property/land/request",handleGetRequestedLand)
+router.post("/property/land/request",superAdminVerifyToken,handleInsertRequestedLand)
+router.get("/property/land/request",superAdminVerifyToken,handleGetRequestedLand)
 
 module.exports  = router;

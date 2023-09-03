@@ -17,6 +17,8 @@ const propertyService = propertyServiceUtility();
  }
 
  async function insertHouse(house){
+    
+    console.log("Insert model House ",house)
     let transaction ; 
 
     try {

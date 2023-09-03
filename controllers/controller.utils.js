@@ -8,6 +8,9 @@ const {
 const { wrapAwait } = require("../errorHandling");
 
 const { pushNotification } = require("./notification/controller.notification");
+const { apartmentSchema, validateSchema } = require("./validationSchema");
+const { deleteFiles } = require("../middlewares/middleware.uploadFile");
+
 
 const saltRound = 10;
 
@@ -141,16 +144,16 @@ function userUtility(user_type) {
 function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
   //const tokenExpireTime = "1hr";
 
-  const login = async function (req, res, user) {
+  const login = async function (req, res, user,path="/") {
     const { password } = req.body;
 
     if (!user) {
       console.log("No User Found");
-      return res.status(404).send("User Not Found");
+      return res.status(401).send({message:"Invalid Email or Password"});
     }
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).json({ message: "Password  doesnot match" });
+      return res.status(401).send({message:"Invalid Email or Password"});
     }
 
     const token = jwt.sign({ id: user.id }, JWT_KEY, {
@@ -162,25 +165,27 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
       console.log("THe cookies from inside");
       console.log(req.cookies[`${user.id}`]);
       req.cookies[`${user.id}`] = ""; // set null if already present
-      //res.clearCookie(`${user.id}`,{path: "/"});// if already set on response
+      res.clearCookie(`${user.id}`,{path:path});// if already set on response
     }
 
     // //if there are two or more than different users login cookies then remove it from loop
     // not fully optimized solution
-    if (checkCookie) {
-      let cookieArray = req.headers.cookie.split(";");
-      console.log(cookieArray);
-      cookieArray.forEach((cookie) => {
-        let key = cookie.trim().split("=")[0];
-        if (req.cookies[`${key}`]) {
-          //if user cookie already present then remove it
-          console.log("This cookie already present", key);
-          //req.cookies[`${key}`]="";
-          res.clearCookie(`${key}`, { path: "/" });
-          return;
-        }
-      });
-    }
+    // if (checkCookie) {
+    //   let cookieArray = req.headers.cookie.split(";");
+    //   console.log(cookieArray);
+    //   cookieArray.forEach((cookie) => {
+    //     let key = cookie.trim().split("=")[0];
+    //     if (req.cookies[`${key}`]) {
+    //       //if user cookie already present then remove it
+    //       console.log("This cookie already present", key);
+    //       //req.cookies[`${key}`]="";
+    //       res.clearCookie(`${key}`, { path: path });
+    //       return;
+    //     }
+    //   });
+    // }
+    console.log(String(user.id));
+    console.log(token)
 
     res.cookie(String(user.id), token, {
       path: "/",
@@ -188,34 +193,39 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
       httpOnly: true,
       sameSite: "lax",
     });
-
-    return res.status(200).json({ message: "Successfully Logged In", token });
+    console.log(res)
+    return res.status(200).json({ message: "Successfully Logged In", token ,role:user_type});
   };
 
   const verifyToken = async function (req, res, next) {
-    const cookies = req.headers.cookie;
-    console.log(req.cookies);
-    console.log("THIS IS COOKIES", req.headers.cookie);
+    //in req.headers we get cookie in array
+     const cookies = req.headers.cookie;
+     console.log(req.headers)
+     console.log(req.cookies)
+   
+    //const cookies = req.cookies;
+   // console.log(cookies);
+    console.log("THIS IS COOKIES", cookies);
     if (!cookies) {
       console.log("No cookies Bro !!!!!!!");
-      return res.status(404).json({ message: "Cannot get information" });
+      return res.status(401).json({ message: "Unauthorized" });
     }
 
     const token = cookies.split("=")[1];
     console.log(token);
     if (!token) {
-      return res.status(404).json({ message: "No Token found" });
+      return res.status(401).json({ message: "Unauthorized" });
     }
     jwt.verify(String(token), JWT_KEY, (err, user) => {
       if (err) {
         console.log(err);
-        return res.status(400).json({ message: "Invalid Token" });
+        return res.status(401).json({ message: "Unauthorized" });
       }
 
       console.log(user.id);
       //set request id
       req.id = user?.id;
-      console.log("Token Verify  !!!");
+      console.log("Token Verify !!!");
       next();
     });
   };
@@ -433,8 +443,8 @@ function utility() {
       return res.status(400).json(err);
     }
 
-    console.log(req.file);
-    console.log(req.files);
+    console.log("This is Single Image",req.file);
+    console.log("This is double Image",req.files);
     //console.log(req?.files[0]?.path);
 
     if (isImageRequired) {
@@ -989,22 +999,15 @@ function propertyUtility(property_type) {
   const propertyType = property_type;
 
   async function handleAddProperty(req, res, addPropertyCB) {
+
+    let property = JSON.parse(req.body.property);
     // get user id from req.id i.e we set req.id when verify token
     let customer_id = null;
     let agent_id = null;
     let staff_id = null;
     // baseUrl provide us from where request coming from ex. /agent,/staff,/customer
     const user_type = req.baseUrl.substring(1);
-    let property_type = req.path.substring(1);
-    // if(property_type==='addApartment'){
-    //   property_type = 'apartmentProperty';
-    // }
-    // if(property_type==='addHouse'){
-    //   property_type = 'houseProperty';
-    // }
-    // if(property_type==='addLand'){
-    //   property_type = 'landProperty';
-    // }
+    
 
     if (user_type === "customer") {
       customer_id = req.id;
@@ -1018,27 +1021,26 @@ function propertyUtility(property_type) {
       return res.status(400).json({ message: "bad request" });
     }
 
-    if (!req.body.property) {
-      return res.status(400).json({ message: "missing property " });
+    let images;
+    if(req.file){
+      images = req.file;
+    }else if(req.files){
+      images = req.files;
+    }else{
+      images = null
     }
-    // let { property, [property_type]: callbackProperty, location } = JSON.parse(
-    //   req.body.property
-    // );
-    let property = JSON.parse(req.body.property);
 
-    const images = req.files;
-
-    const imageObject = JSON.stringify(
-      images.reduce(
-        (acc, value, index) => ({ ...acc, [index]: value.path }),
-        {}
-      )
-    );
-
-    console.log(imageObject);
-
+    let imageObject;
+    if(images){
+       imageObject = JSON.stringify(
+        images.reduce(
+          (acc, value, index) => ({ ...acc, [index]: value.path }),
+          {}
+        )
+      );
+    }
     // update object - store some value
-    property = {
+   let updatedProperty = {
       ...property,
       property_image: imageObject,
       staff_id: staff_id,
@@ -1046,9 +1048,12 @@ function propertyUtility(property_type) {
       agent_id: agent_id,
     };
 
+    //console.log(property,imageObject)
     try {
-      //await insertApartmentProperty(property,apartmentProperty,user_id,user_type);
-      const response = await addPropertyCB(property); // callback
+      const value = await validateSchema[property_type](property);
+      console.log("Validate schema",value);
+    
+      const response = await addPropertyCB(updatedProperty); // callback
       // data for notification
       const data = {};
       (data.notification = `New ${propertyType} Upload`),
@@ -1059,13 +1064,18 @@ function propertyUtility(property_type) {
       pushNotification(data);
 
       return res.status(200).json({ message: `${propertyType} insert` });
+
     } catch (error) {
-    
-      console.log(error)
-      if(error.name==='SequelizeDatabaseError'){
-        return res.status(400).json({message:error.parent.sqlMessage})
+      //delete uploaded images
+      if(images){
+        
+        deleteFiles(images)
+        
       }
-      return res.status(500).json({ message: "Internal Error" });
+
+    
+      return handleErrorResponse(res,error);
+
     }
   }
 
@@ -1275,4 +1285,58 @@ function propertyUtility(property_type) {
   };
 }
 
-module.exports = { propertyUtility, utility, authUtility, userUtility };
+
+function handleErrorResponse(res,error){
+  
+  console.log(error.name)
+  console.log(error)
+
+  const errorType  = {
+      "SequelizeUniqueConstraintError":{
+        //"email must be unique":{status:409,message:"Email Already Register"}
+        status:409,
+        message:`${error?.errors?.[0]?.message}`
+      },
+      "ValidationError":{
+        status:400,
+        message:`${error?.details?.[0]?.message}`
+      }
+  }
+  
+  const validEmailResponse = errorType[error.name];
+
+  console.log(validEmailResponse)
+
+  if(validEmailResponse){
+    return res.status(validEmailResponse.status).json({message:validEmailResponse.message})
+  }
+  return res.status(500).json({message:"Internal Error"})
+
+
+
+  // if(er)
+
+  // console.log( error.errors[0])
+  // if(error.errors[0]){
+  //   return res.status(409).json({message:error.errors[0].message});
+  // }
+  // if(error?.errors){
+  //   if(error.errors[0]?.ValidationErrorItem){
+  //     console.log("I am inside the if block")
+  //     let errorData= error.errors.ValidationErrorItem;
+  //     return res.status(403).json({message:`${errorData.message}`,type:`${errorData.type}`});
+  //   }
+  // }
+  // if(error?.parent){
+  //   if(error.parent.code === 'WARN_DATA_TRUNCATED'){
+  //     return res.status(400).json({message:error.parent.sqlMessage})
+  //   }
+  // }
+  
+  // return res.status(500).json({message:"Internal Error"});
+}
+
+
+
+
+module.exports = { propertyUtility, utility, authUtility, userUtility,handleErrorResponse };

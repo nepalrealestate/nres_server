@@ -47,8 +47,8 @@ db.sequelize.sync({force:false}); // alter creates duplicates index every time
 
 
 
-
 app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
+
 
 
 app.use(cookieParser());

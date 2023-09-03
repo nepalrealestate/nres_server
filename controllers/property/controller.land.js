@@ -5,7 +5,6 @@ const path = "uploads/property/land/images"; //path from source
 const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
-const { checkProperties } = require("../requiredObjectProperties");
 const {Utility, utility, propertyUtility} = require("../controller.utils");
 const { insertPendingLand, getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand, insertLand, getRequestedLand } = require("../../models/services/property/service.land");
 //const utils = new Utility();

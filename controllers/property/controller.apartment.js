@@ -9,9 +9,10 @@ const maxImageSize = 2 * 1024 * 1024;
 
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
-const {Utility, propertyUtility, utility} = require("../controller.utils");
+const {Utility, propertyUtility, utility, handleErrorResponse} = require("../controller.utils");
 const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment } = require("../../models/services/property/service.apartment");
 const { wrapAwait } = require("../../errorHandling");
+const { apartmentSchema } = require("../validationSchema");
 //const utils = new Utility();
 const utils = utility();
 const property = propertyUtility("apartment");
@@ -21,16 +22,16 @@ const property = propertyUtility("apartment");
 
 const handleAddApartment = async (req, res) => {
 
-  upload(req, res, async function (err) {
-    utils.handleMulterError(req,res,err,addApartment,true);
-  });
-
+    upload(req, res, async function (err) {
+      utils.handleMulterError(req,res,err,addApartment,false);
+    });
   
-  async function addApartment (){
-    //property.handleAddProperty(req, res, insertPendingApartment);
-    property.handleAddProperty(req,res,insertApartment);
-  }
-
+    
+    async function addApartment (){
+      //property.handleAddProperty(req, res, insertPendingApartment);
+      property.handleAddProperty(req,res,insertApartment);
+    }
+    
 };
 
 
@@ -43,8 +44,7 @@ const handleApartmentFeedback = async (req, res) => {
     
     return res.status(200).json({ message: "Feedback Submit" });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: error.sqlMessage });
+   return handleErrorResponse(res,error)
   }
 };
 
@@ -180,11 +180,11 @@ try {
   return res.status(200).json({message:"Requested Apartment Inserted successfully"})
 } catch (error) {
 
-  if(error.parent.code === 'WARN_DATA_TRUNCATED'){
-    return res.status(400).json({message:error.parent.sqlMessage})
-  }
+  return handleErrorResponse(res,error);
 
-  return res.status(500).json({message:"Internal Error"})
+  
+
+
 }
 
 }
