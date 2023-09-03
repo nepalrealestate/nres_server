@@ -104,6 +104,7 @@ const handleGetPropertyPriorityLocation = async function (req,res){
     //await updateViewsCount()
     return res.status(200).json(data);
   } catch (error) {
+    
     console.log(error);
     return res.status(500).json({ message: "Internal Error " });
   }

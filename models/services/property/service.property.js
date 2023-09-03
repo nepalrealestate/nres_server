@@ -115,7 +115,8 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
   console.log(condition);
   return await PropertyViewClient.findAll({
     where: whereConditions,
-    attributes: { exclude: ["id"] },
+   // attributes: { exclude: ["id"] },
+   attributes:['property_id','property_type','property_name','listed_for','district','municipality','area_name','property_image','views'],
     order: orderConditions,
     // replacements: [condition.district],
     limit: limit,

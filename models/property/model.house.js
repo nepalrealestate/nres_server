@@ -50,12 +50,18 @@ function houseModel (sequelize,DataTypes){
     province:{
       type:DataTypes.STRING
     },
+    zone:{
+      type:DataTypes.STRING
+    },
     district:{
       type:DataTypes.STRING
     },
     municipality:{
       type:DataTypes.STRING
     },
+    area_name:{
+      type:DataTypes.STRING
+    } ,     
     ward:{
       type:DataTypes.INTEGER
     },
@@ -190,12 +196,18 @@ function pendingHouseModel (sequelize,DataTypes){
     province:{
       type:DataTypes.STRING
     },
+    zone:{
+      type:DataTypes.STRING
+    },
     district:{
       type:DataTypes.STRING
     },
     municipality:{
       type:DataTypes.STRING
     },
+    area_name:{
+      type:DataTypes.STRING
+    } ,     
     ward:{
       type:DataTypes.INTEGER
     },

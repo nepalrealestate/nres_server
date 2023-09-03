@@ -11,8 +11,13 @@ function customerChatModel(sequelize,DataTypes){
             allowNull:false
         },
         message:{
-            type:DataTypes.STRING
-        }
+            type:DataTypes.STRING,
+            allowNull:true
+        },
+        // imageLink:{
+        //     type:DataTypes.STRING,
+        //     allowNull:true
+        // }
 
     },{
         freezeTableName:true

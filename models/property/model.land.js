@@ -29,13 +29,13 @@ function landModel (sequelize,DataTypes){
       type:DataTypes.ENUM('sell','rent')
     },
    
-    property_age:{
-      type:DataTypes.INTEGER
-    },
     facing:{
       type:DataTypes.ENUM('east','west','north','south','east-north','east-south','west-north','west-south')
     },
     province:{
+      type:DataTypes.STRING
+    },
+    zone:{
       type:DataTypes.STRING
     },
     district:{
@@ -44,6 +44,9 @@ function landModel (sequelize,DataTypes){
     municipality:{
       type:DataTypes.STRING
     },
+    area_name:{
+      type:DataTypes.STRING
+    } ,     
     ward:{
       type:DataTypes.INTEGER
     },
@@ -153,12 +156,18 @@ function pendingLandModel (sequelize,DataTypes){
     province:{
       type:DataTypes.STRING
     },
+    zone:{
+      type:DataTypes.STRING
+    },
     district:{
       type:DataTypes.STRING
     },
     municipality:{
       type:DataTypes.STRING
     },
+    area_name:{
+      type:DataTypes.STRING
+    } ,     
     ward:{
       type:DataTypes.INTEGER
     },

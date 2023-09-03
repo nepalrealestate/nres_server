@@ -16,7 +16,7 @@ const handleAddLand = async (req, res) => {
   
   upload(req, res, async function (err) {
    
-    utils.handleMulterError(req,res,err,addLand,true);
+    utils.handleMulterError(req,res,err,addLand,false);
   });
   
   async function addLand(){

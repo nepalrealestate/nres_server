@@ -44,12 +44,18 @@ function apartmentModel (sequelize,DataTypes){
       province:{
         type:DataTypes.STRING
       },
+      zone:{
+        type:DataTypes.STRING
+      },
       district:{
         type:DataTypes.STRING
       },
       municipality:{
         type:DataTypes.STRING
       },
+      area_name:{
+        type:DataTypes.STRING
+      } ,     
       ward:{
         type:DataTypes.INTEGER
       },
@@ -176,12 +182,18 @@ function pendingApartmentModel (sequelize,DataTypes){
     province:{
       type:DataTypes.STRING
     },
+    zone:{
+      type:DataTypes.STRING
+    },
     district:{
       type:DataTypes.STRING
     },
     municipality:{
       type:DataTypes.STRING
     },
+    area_name:{
+      type:DataTypes.STRING
+    } ,     
     ward:{
       type:DataTypes.INTEGER
     },
@@ -199,10 +211,6 @@ function pendingApartmentModel (sequelize,DataTypes){
     },
     road_size:{
       type:DataTypes.FLOAT
-    },
-    price:{
-      type:DataTypes.DECIMAL(12,2),
-      allowNull:false
     },
     price_type:{
       type:DataTypes.ENUM('fixed','negotiable')
