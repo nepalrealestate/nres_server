@@ -36,6 +36,8 @@ async function insertApartment(apartment){
             property_id:property_id,
             ...apartment
         });
+        //insert into apartments ads
+        await ApartmentAds.create({property_id:newPropertyId},{transaction})
         await updatePropertyId(transaction);
         transaction.commit();
         return createdApartment;
