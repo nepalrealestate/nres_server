@@ -35,6 +35,6 @@
     "winston-daily-rotate-file": "^4.7.1"
   },
   "engines": {
-    "node": "16.19.1"
+    "node": "16.20.1"
   }
 }
