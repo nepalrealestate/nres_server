@@ -2,6 +2,7 @@ const { handleAgentChat } = require("./controllers/chat/controller.agentChat");
 const { handleStaffChat } = require("./controllers/chat/controller.staffChat");
 const { handleUserChat } = require("./controllers/chat/controller.customerChat");
 const { handleNotification } = require("./controllers/notification/controller.notification");
+const logger = require("./utils/errorLogging/logger");
 // const { getSingleCustomerChat, insertCustomerChat } = require("./models/chat/model.customerChat");
 
 
@@ -27,9 +28,6 @@ socketServer.chat = function() {
   let agentChat = io.of("/agent");
 
 
-
-
-
   userChat.on("connection", async function(socket){
     handleUserChat(userChat,socket)
   });
@@ -41,6 +39,9 @@ socketServer.chat = function() {
   agentChat.on("connection",async function (socket){
     handleAgentChat(agentChat,socket)
   })
+
+
+  
   
 }
 
@@ -55,12 +56,14 @@ socketServer.notification = function (){
     handleNotification(notification,socket)
 
   })
+  
 }
 
 
 socketServer.startServer =  () => {
   server.listen(5000, () => {
     console.log('Socket server running on port 5000');
+    logger.info("Socket Server Started")
   });
 }; 
 

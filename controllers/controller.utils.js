@@ -10,6 +10,7 @@ const { wrapAwait } = require("../errorHandling");
 const { pushNotification } = require("./notification/controller.notification");
 const { apartmentSchema, validateSchema } = require("./validationSchema");
 const { deleteFiles } = require("../middlewares/middleware.uploadFile");
+const logger = require("../utils/errorLogging/logger");
 
 
 const saltRound = 10;
@@ -1308,8 +1309,10 @@ function handleErrorResponse(res,error){
   console.log(validEmailResponse)
 
   if(validEmailResponse){
+    logger.error(validEmailResponse);
     return res.status(validEmailResponse.status).json({message:validEmailResponse.message})
   }
+  logger.error(error);
   return res.status(500).json({message:"Internal Error"})
 
 

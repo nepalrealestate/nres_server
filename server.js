@@ -16,8 +16,6 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser');
 
 
-const {logger} = require("./utils/errorLogging/logging")
-
 
 
 const {chatServer, socketServer} = require("./socketConnection");
@@ -25,6 +23,7 @@ const {chatServer, socketServer} = require("./socketConnection");
 
 
 const db = require("./models/model.index");
+const logger = require("./utils/errorLogging/logger");
 
 const port = 8000;
 
@@ -99,7 +98,9 @@ socketServer.startServer();
 
 
 if(process.env.NODE_ENV=='production'){
-  app.listen();
+  app.listen(()=>{
+   logger.info("Server Started")
+  });
 }else{
   app.listen(port,()=>{
     console.log(` port ${port} is listening.......`)
