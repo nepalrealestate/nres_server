@@ -1288,55 +1288,61 @@ function propertyUtility(property_type) {
 
 
 function handleErrorResponse(res,error){
+  //log error
+  // logger.error(error)
   
   console.log(error.name)
   console.log(error)
+
 
   const errorType  = {
       "SequelizeUniqueConstraintError":{
         //"email must be unique":{status:409,message:"Email Already Register"}
         status:409,
-        message:`${error?.errors?.[0]?.message}`
+        error:"UniqueConstraintError",
+        message:`${error?.errors?.[0]?.message}`,
+        logLevel:'info'
+      },
+      "SequelizeForeignKeyConstraintError":{
+        status:400,
+        error:"ForeignKeyConstraintError",
+        message:"The provided foreign key does not match any existing record.",
+        logLevel:'info'
+      },
+      "SequelizeValidationError":{
+        status:400,
+        error:"SequelizeValidationError",
+        message:error?.message,
+        logLevel:'info'
       },
       "ValidationError":{
         status:400,
-        message:`${error?.details?.[0]?.message}`
-      }
+        error:"ValidationError",
+        message:`${error?.details?.[0]?.message}`,
+        logLevel:'info'
+      },
+      
   }
   
-  const validEmailResponse = errorType[error.name];
+  const validResponse = errorType[error?.name];
 
-  console.log(validEmailResponse)
+  console.log(validResponse)
 
-  if(validEmailResponse){
-    logger.error(validEmailResponse);
-    return res.status(validEmailResponse.status).json({message:validEmailResponse.message})
+  if(validResponse){
+    // logger.error(`originalError:${error}, responseError: ${validResponse}`);
+    logger.log({
+      level:validResponse.logLevel,
+      message:validResponse.message
+    })
+    return res.status(validResponse.status).json
+    ({
+      error:validResponse.error,
+      message:validResponse.message
+    })
   }
-  logger.error(error);
+  // logger.error(`originalError:${error}, responseError: ${validResponse}`);
   return res.status(500).json({message:"Internal Error"})
 
-
-
-  // if(er)
-
-  // console.log( error.errors[0])
-  // if(error.errors[0]){
-  //   return res.status(409).json({message:error.errors[0].message});
-  // }
-  // if(error?.errors){
-  //   if(error.errors[0]?.ValidationErrorItem){
-  //     console.log("I am inside the if block")
-  //     let errorData= error.errors.ValidationErrorItem;
-  //     return res.status(403).json({message:`${errorData.message}`,type:`${errorData.type}`});
-  //   }
-  // }
-  // if(error?.parent){
-  //   if(error.parent.code === 'WARN_DATA_TRUNCATED'){
-  //     return res.status(400).json({message:error.parent.sqlMessage})
-  //   }
-  // }
-  
-  // return res.status(500).json({message:"Internal Error"});
 }
 
 

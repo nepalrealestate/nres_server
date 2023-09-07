@@ -81,7 +81,10 @@ db.PropertyModel = {
     RequestedLand : require('./property/model.land').requestedLandModel(sequelize,DataTypes),
 
 
-    PropertyShootSchedule : require('./property/model.property').propertyShootScheduleModel(sequelize,DataTypes)
+    PropertyShootSchedule : require('./property/model.property').propertyShootScheduleModel(sequelize,DataTypes),
+
+    PropertyFieldVisit : require('./property/model.property').propertyFieldVisitRequestModel(sequelize,DataTypes),
+    PropertyFieldVisitComment : require('./property/model.property').propertyFieldVisitCommentModel(sequelize,DataTypes)
 
 
 };

@@ -1,4 +1,5 @@
-const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation } = require("../../models/services/property/service.property");
+const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyFieldVisit } = require("../../models/services/property/service.property");
+const { handleErrorResponse } = require("../controller.utils");
 
 
 
@@ -111,4 +112,29 @@ const handleGetPropertyPriorityLocation = async function (req,res){
 
 }
 
-module.exports = {handleGetPropertyWithAds,handleGetProperty,handleGetPropertyPriorityLocation}
+
+
+const handleInsertPropertyFieldVisitRequest = async function (req,res){
+
+    const {customer_id,property_id,property_type,request_date}  = req.body;
+
+    try {
+      const data  = await insertPropertyFieldVisit({
+        customer_id,
+        property_id,
+        property_type,
+        request_date
+      })
+      console.log(data);
+      return res.status(200).json({message:"created Property Field Visit Request "})
+    } catch (error) {
+      handleErrorResponse(res,error);
+    }
+
+
+
+}
+
+
+
+module.exports = {handleGetPropertyWithAds,handleGetProperty,handleGetPropertyPriorityLocation,handleInsertPropertyFieldVisitRequest}

@@ -31,18 +31,20 @@ const handleCustomerRegistration = async (req,res)=>{
 
     if(hashPasswordError){
         console.log(hashPasswordError);
-        return res.status(500).json({message:"Internal Error !  please try "});
+        
+        return res.status(500).json({error:"hash password error",message:"Internal Error !  please try "});
     }
 
 
     const [response,responseError]= await wrapAwait(registerCustomer({name,email,phoneNumber,hashPassword}));
 
     if(responseError){
-        console.log(responseError);
-        if(responseError.name==='SequelizeUniqueConstraintError'){
-            return res.status(400).json({message:"Customer Already Register"})
-        }
-        return res.status(500).json({message:"Internal Error"});
+        // console.log(responseError);
+        // if(responseError.name==='SequelizeUniqueConstraintError'){
+        //     return res.status(400).json({message:"Customer Already Register"})
+        // }
+        // return res.status(500).json({message:"Internal Error"});
+        utility.handleErrorResponse(res,responseError)
 
     }
     return res.status(200).json({message:"Customer Registration success"})

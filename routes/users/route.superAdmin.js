@@ -11,6 +11,7 @@ const { handleGetCustomer } = require("../../controllers/users/controller.custom
 const { handleAddApartment, handleGetApartment, handleInsertRequestedApartment, handleGetRequestedApartment } = require("../../controllers/property/controller.apartment");
 const { handleAddHouse, handleGetHouse, handleInsertRequestedHouse, handleGetRequestedHouse } = require("../../controllers/property/controller.house");
 const { handleAddLand, handleGetLand, handleInsertRequestedLand, handleGetRequestedLand } = require("../../controllers/property/controller.land");
+const { handleInsertPropertyFieldVisitRequest } = require("../../controllers/property/controller.property");
 
 const router = express.Router();
 
@@ -74,5 +75,8 @@ router.get("/property/house/request",superAdminVerifyToken,handleGetRequestedHou
 
 router.post("/property/land/request",superAdminVerifyToken,handleInsertRequestedLand)
 router.get("/property/land/request",superAdminVerifyToken,handleGetRequestedLand)
+
+// field visit 
+router.post("/property/field-visit-request",superAdminVerifyToken,handleInsertPropertyFieldVisitRequest)
 
 module.exports  = router;

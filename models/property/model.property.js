@@ -1,3 +1,6 @@
+const { capitalizeFirstLetter } = require("../../utils/helperFunction/helper");
+
+
 function propertyIdTrackerModel(sequelize, DataTypes) {
   const PropertyIdTracker = sequelize.define(
     "property_id_tracker",
@@ -246,9 +249,125 @@ function propertyShootScheduleModel(sequelize, DataTypes) {
   // })
 }
 
+function propertyFieldVisitRequestModel(sequelize,DataTypes){
+
+  return sequelize.define('property_field_visit_request',{
+    field_visit_id:{
+      type:DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    customer_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'user_customer',
+        key:'customer_id'
+      }
+    },
+    property_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+    },
+    property_type:{
+      type:DataTypes.ENUM('house','apartment','land')
+    },
+    request_date:{
+      type:DataTypes.DATE
+    },
+    visit_status:{
+      type:DataTypes.ENUM('not schedule','schedule')
+    }
+
+
+  },
+  { 
+    hooks:{
+      beforeCreate:async (instance,options)=>{
+        const {property_id,property_type} = instance;
+
+        //const modelName = capitalizeFirstLetter(property_type);
+        const modelName = `property_${property_type}`
+        
+        console.log(sequelize.models[modelName])
+        // check property exists for not with property type and 
+        const property = await sequelize.models[modelName].findOne({
+          where:{
+            property_id:property_id,
+            property_type:property_type
+          }
+        })
+
+        if(!property){
+          throw new sequelize.Sequelize.ValidationError(`The provided property_id and property_type do not match any record in property_${property_type} table.`)
+          
+        }
+      }
+    },
+    freezeTableName:true
+  }
+  )
+
+}
+
+function propertyFieldVisitCommentModel(sequelize,DataTypes){
+  return sequelize.define('property_field_visit_comment',{
+    field_visit_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'property_field_visit_request',
+        key:'field_visit_id'
+      }
+    },
+    comment:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate: {
+        notEmpty: true,
+      },
+    },
+
+    staff_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'user_staff',
+        key:'staff_id'
+      }
+      
+    },
+    superAdmin_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'user_superAdmin',
+        key:'superAdmin_id'
+      }
+    }
+
+
+
+  },{
+    hooks:{
+      beforeValidate: (instance)=>{
+        if(instance.staff_id && instance.superAdmin_id){
+          throw new sequelize.ValidationError('Only one of staff_id or superAdmin_id can be set.')
+        }
+        if (!instance.staff_id && !instance.superAdmin_id) {
+          throw new sequelize.ValidationError('Either staff_id or superAdmin_id must be set.');
+        }
+      }
+    },
+      freezeTableName:true
+    
+  })
+  
+}
+
+
 module.exports = {
   propertyIdTrackerModel,
   propertyViewAdminModel,
   propertyShootScheduleModel,
   propertyViewClientModel,
+  propertyFieldVisitRequestModel, 
+  propertyFieldVisitCommentModel
 };

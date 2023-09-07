@@ -3,6 +3,8 @@ const PropertyAdminView = db.Views.PropertyViewAdmin;
 const PropertyShootSchedule = db.PropertyModel.PropertyShootSchedule;
 const PropertyViewClient = db.Views.PropertyViewClient;
 const PropertyIdTracker = db.PropertyModel.PropertyIdTracker;
+const PropertyFieldVisit = db.PropertyModel.PropertyFieldVisit;
+const PropertyFieldVisitComment = db.PropertyModel.PropertyFieldVisitComment;
 
 // get latest property insert id
 async function getPropertyId() {
@@ -124,6 +126,15 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
   });
 }
 
+
+async function insertPropertyFieldVisit(data){
+  return await PropertyFieldVisit.create(data);
+}
+
+async function insertPropertyFieldVisitComment(data){
+  return await PropertyIdTracker.create(data);
+}
+
 module.exports = {
   getPropertyWithAds,
   insertPropertyShootSchedule,
@@ -132,4 +143,6 @@ module.exports = {
   getLatestPropertyPriorityLocation,
   getPropertyId,
   updatePropertyId,
+  insertPropertyFieldVisit,
+  insertPropertyFieldVisitComment
 };

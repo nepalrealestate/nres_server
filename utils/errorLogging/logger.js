@@ -1,8 +1,12 @@
 const winston = require("winston");
 const fs = require('fs');
 
-//clear the content of dbinit.log - 
-fs.writeFileSync('Error/DB/dbinit.log', ''); // This will clear the contents of the file
+const filePath = 'Error/DB/dbinit.log';
+
+// Check if the file exists before writing
+if (fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, ''); // This will clear the contents of the file
+}
 
 
 const jsonFormat = winston.format.printf(({ level, message, timestamp }) => {
