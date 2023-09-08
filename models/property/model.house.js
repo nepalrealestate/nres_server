@@ -50,9 +50,7 @@ function houseModel (sequelize,DataTypes){
     province:{
       type:DataTypes.STRING
     },
-    zone:{
-      type:DataTypes.STRING
-    },
+  
     district:{
       type:DataTypes.STRING
     },

@@ -28,14 +28,20 @@ function landModel (sequelize,DataTypes){
     listed_for :{
       type:DataTypes.ENUM('sale','rent')
     },
+    twist:{
+      type:DataTypes.FLOAT
+    },
+    property_area:{
+      type:DataTypes.FLOAT
+    },
+    road_size:{
+      type:DataTypes.FLOAT
+    },
    
     facing:{
-      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
+      type:DataTypes.ENUM('east','west','north','south','east-north','east-south','west-north','west-south')
     },
     province:{
-      type:DataTypes.STRING
-    },
-    zone:{
       type:DataTypes.STRING
     },
     district:{
@@ -58,12 +64,6 @@ function landModel (sequelize,DataTypes){
     },
     longitude:{
       type:DataTypes.DECIMAL(9,6)
-    },
-    property_area:{
-      type:DataTypes.FLOAT
-    },
-    road_size:{
-      type:DataTypes.FLOAT
     },
     price:{
       type:DataTypes.DECIMAL(12,2),
@@ -146,12 +146,17 @@ function pendingLandModel (sequelize,DataTypes){
     listed_for :{
       type:DataTypes.ENUM('sale','rent')
     },
-   
-    property_age:{
-      type:DataTypes.INTEGER
+    twist:{
+      type:DataTypes.FLOAT
+    },
+    property_area:{
+      type:DataTypes.FLOAT
+    },
+    road_size:{
+      type:DataTypes.FLOAT
     },
     facing:{
-      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
+      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south')
     },
     province:{
       type:DataTypes.STRING
@@ -179,12 +184,6 @@ function pendingLandModel (sequelize,DataTypes){
     },
     longitude:{
       type:DataTypes.DECIMAL(9,6)
-    },
-    property_area:{
-      type:DataTypes.FLOAT
-    },
-    road_size:{
-      type:DataTypes.FLOAT
     },
     price:{
       type:DataTypes.DECIMAL(12,2),

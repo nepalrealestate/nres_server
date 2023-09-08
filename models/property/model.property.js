@@ -1,5 +1,11 @@
 const { capitalizeFirstLetter } = require("../../utils/helperFunction/helper");
+require("dotenv").config();
 
+const DB_PREFIX = process.env.DB_PREFIX;
+
+const propertyAdminView = DB_PREFIX?`${DB_PREFIX}_nres.property_view_admin`:'nres.property_view_admin'
+
+const propertyClientView = DB_PREFIX?`${DB_PREFIX}_nres.property_view_client`:'property_view_client'
 
 function propertyIdTrackerModel(sequelize, DataTypes) {
   const PropertyIdTracker = sequelize.define(
@@ -35,7 +41,7 @@ function propertyIdTrackerModel(sequelize, DataTypes) {
 
 function propertyViewAdminModel(sequelize, DataTypes) {
   async function createPropertyViewAdmin() {
-    const sql = ` CREATE OR REPLACE VIEW property_view_admin AS
+    const sql = ` CREATE OR REPLACE VIEW ${propertyAdminView} AS
 
     SELECT    h.property_id,h.property_type, h.property_name,h.listed_for,h.district, h.municipality,h.area_name,h.price,h.property_image,h.views, h.createdAt  ,
     ha.twitter,ha.tiktok,ha.instagram,ha.facebook,ha.youtube
@@ -131,7 +137,7 @@ function propertyViewAdminModel(sequelize, DataTypes) {
 function propertyViewClientModel(sequelize, DataTypes) {
   async function createPropertyView() {
     const sql = `
-    CREATE OR REPLACE VIEW property_view_client AS
+    CREATE OR REPLACE VIEW ${propertyClientView} AS
     
   
     SELECT   h.property_id,h.property_type, h.property_name,h.listed_for,h.district, h.municipality,h.area_name,h.price,h.property_image,h.views, h.createdAt 
