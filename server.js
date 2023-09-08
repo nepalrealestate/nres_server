@@ -72,7 +72,7 @@ app.use(express.json())
 app.use("/customer",customerRouter);
 app.use("/agent",agentRouter);
 app.use("/staff",staffRouter);
-app.use("/admin",superAdminRouter);
+app.use("/api/admin",superAdminRouter);
 app.use("/house",houseRouter);
 app.use("/land",landRouter)
 app.use ("/apartment",apartmentRouter);
