@@ -39,12 +39,9 @@ function apartmentModel (sequelize,DataTypes){
         type:DataTypes.INTEGER
      }, 
       facing:{
-        type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
+        type:DataTypes.ENUM('east','west','north','south','east-north','east-south','west-north','west-south')
       },
       province:{
-        type:DataTypes.STRING
-      },
-      zone:{
         type:DataTypes.STRING
       },
       district:{
@@ -182,9 +179,7 @@ function pendingApartmentModel (sequelize,DataTypes){
     province:{
       type:DataTypes.STRING
     },
-    zone:{
-      type:DataTypes.STRING
-    },
+
     district:{
       type:DataTypes.STRING
     },
