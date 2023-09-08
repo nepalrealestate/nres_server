@@ -46,7 +46,7 @@ db.sequelize.sync({force:false}); // alter creates duplicates index every time
 
 
 
-app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
+app.use(cors({credentials: true, origin: ['http://localhost:3000', 'PostmanRuntime']}));
 
 
 
@@ -86,9 +86,9 @@ app.use("/service",serviceRouter)
 //chat running
 //chatServer().startServer();
 //notification running
-socketServer.chat()
-socketServer.notification();
-socketServer.startServer();
+// socketServer.chat()
+// socketServer.notification();
+// socketServer.startServer();
 
 
 
@@ -97,7 +97,7 @@ socketServer.startServer();
 
 
 
-if(process.env.NODE_ENV=='production'){
+if(process.env.NODE_ENV=='Production'){
   app.listen(()=>{
    logger.info("Server Started")
   });
