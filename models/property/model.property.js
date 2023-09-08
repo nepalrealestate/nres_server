@@ -3,6 +3,8 @@ require("dotenv").config();
 
 const DB_PREFIX = process.env.DB_PREFIX;
 
+const DB_NAME = DB_PREFIX?`${DB_PREFIX}_nres`:'nres'
+
 const propertyAdminView = DB_PREFIX?`${DB_PREFIX}_nres.property_view_admin`:'nres.property_view_admin'
 
 const propertyClientView = DB_PREFIX?`${DB_PREFIX}_nres.property_view_client`:'property_view_client'
@@ -45,21 +47,21 @@ function propertyViewAdminModel(sequelize, DataTypes) {
 
     SELECT    h.property_id,h.property_type, h.property_name,h.listed_for,h.district, h.municipality,h.area_name,h.price,h.property_image,h.views, h.createdAt  ,
     ha.twitter,ha.tiktok,ha.instagram,ha.facebook,ha.youtube
-   FROM nres.property_house as h INNER JOIN nres.property_house_ads as ha ON h.property_id = ha.property_id
+   FROM ${DB_NAME}.property_house as h INNER JOIN ${DB_NAME}.property_house_ads as ha ON h.property_id = ha.property_id
   
    UNION 
   
    SELECT l.property_id,l.property_type, l.property_name,l.listed_for,l.district,l.municipality,l.area_name,l.price,l.property_image,l.views, l.createdAt ,
     la.twitter,la.tiktok,la.instagram,la.facebook,la.youtube
 
-   FROM nres.property_land as l INNER JOIN nres.property_land_ads as la ON l.property_id = la.property_id
+   FROM ${DB_NAME}.property_land as l INNER JOIN ${DB_NAME}.property_land_ads as la ON l.property_id = la.property_id
    
    UNION
   
    SELECT a.property_id,a.property_type, a.property_name, a.listed_for,a.district, a.municipality,a.area_name,a.price,a.property_image,a.views, a.createdAt ,
 
     aa.twitter,aa.tiktok,aa.instagram,aa.facebook,aa.youtube
-   FROM nres.property_apartment as a INNER JOIN nres.property_apartment_ads as aa ON a.property_id = aa.property_id;`;
+   FROM ${DB_NAME}.property_apartment as a INNER JOIN ${DB_NAME}.property_apartment_ads as aa ON a.property_id = aa.property_id;`;
 
     try {
       await sequelize.query(sql);
@@ -142,20 +144,20 @@ function propertyViewClientModel(sequelize, DataTypes) {
   
     SELECT   h.property_id,h.property_type, h.property_name,h.listed_for,h.district, h.municipality,h.area_name,h.price,h.property_image,h.views, h.createdAt 
 
-    FROM nres.property_house  as h
+    FROM ${DB_NAME}.property_house  as h
    
     UNION 
    
     SELECT l.property_id,l.property_type, l.property_name,l.listed_for,l.district,l.municipality,l.area_name,l.price,l.property_image,l.views, l.createdAt 
   
   
-    FROM nres.property_land as l 
+    FROM ${DB_NAME}.property_land as l 
     
     UNION
    
     SELECT a.property_id,a.property_type, a.property_name, a.listed_for,a.district, a.municipality,a.area_name,a.price,a.property_image,a.views, a.createdAt 
   
-    FROM nres.property_apartment as a 
+    FROM ${DB_NAME}.property_apartment as a 
   `;
 
     try {
