@@ -1002,6 +1002,7 @@ function propertyUtility(property_type) {
   async function handleAddProperty(req, res, addPropertyCB) {
 
     let property = JSON.parse(req.body.property);
+  
     // get user id from req.id i.e we set req.id when verify token
     let customer_id = null;
     let agent_id = null;

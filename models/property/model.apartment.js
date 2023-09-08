@@ -39,7 +39,7 @@ function apartmentModel (sequelize,DataTypes){
         type:DataTypes.INTEGER
      }, 
       facing:{
-        type:DataTypes.ENUM('east','west','north','south','east-north','east-south','west-north','west-south')
+        type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
       },
       province:{
         type:DataTypes.STRING
