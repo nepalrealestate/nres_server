@@ -17,6 +17,7 @@ function propertyIdTrackerModel(sequelize, DataTypes) {
       },
     },
     {
+      freezeTableName: true,
       hooks: {
         afterSync: async () => {
           await PropertyIdTracker.findOrCreate({
@@ -25,7 +26,7 @@ function propertyIdTrackerModel(sequelize, DataTypes) {
           });
         },
       },
-    }
+    },
   );
   return PropertyIdTracker;
 }

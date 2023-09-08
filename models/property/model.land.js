@@ -26,11 +26,11 @@ function landModel (sequelize,DataTypes){
       }
     },
     listed_for :{
-      type:DataTypes.ENUM('sell','rent')
+      type:DataTypes.ENUM('sale','rent')
     },
    
     facing:{
-      type:DataTypes.ENUM('east','west','north','south','east-north','east-south','west-north','west-south')
+      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
     },
     province:{
       type:DataTypes.STRING
@@ -144,14 +144,14 @@ function pendingLandModel (sequelize,DataTypes){
       }
     },
     listed_for :{
-      type:DataTypes.ENUM('sell','rent')
+      type:DataTypes.ENUM('sale','rent')
     },
    
     property_age:{
       type:DataTypes.INTEGER
     },
     facing:{
-      type:DataTypes.ENUM('east','west','north','south','east-north','east-south','west-north','west-south')
+      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
     },
     province:{
       type:DataTypes.STRING

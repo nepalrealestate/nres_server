@@ -194,7 +194,7 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
       httpOnly: true,
       sameSite: "lax",
     });
-    console.log(res)
+  
     return res.status(200).json({ message: "Successfully Logged In", token ,role:user_type});
   };
 

@@ -62,7 +62,7 @@ const handleSuperAdminLogin = async(req,res)=>{
     //find superAdmin userName in DB
     const [superAdmin,superAdminError] =  await wrapAwait(findSuperAdmin(email));
     console.log(superAdmin);
-    console.log(superAdmin.id)
+    
     if(superAdminError){
         utility.handleErrorResponse()
     }
@@ -79,7 +79,7 @@ const superAdminVerifyToken = async (req,res,next)=>{
 }
 
 const superAdminVerifyLogin = async(req,res)=>{
-    return res.status(200).json({message:"Admin Logged In",role:"admin"});
+    return res.status(200).json({message:"Admin Logged In",role:"superAdmin"});
 }
 
 module.exports = {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin,superAdminVerifyToken,superAdminVerifyLogin}

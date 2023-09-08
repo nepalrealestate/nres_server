@@ -31,7 +31,7 @@ const propertyService = propertyServiceUtility();
             property_id:property_id,
             ...house
         });
-        await HouseAds.create({property_id:newPropertyId},{transaction});
+        await HouseAds.create({property_id:property_id},{transaction});
         await updatePropertyId(transaction);
         transaction.commit();
         return createdHouse;

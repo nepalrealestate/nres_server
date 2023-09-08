@@ -19,7 +19,10 @@ async function updatePropertyId(transaction) {
     });
     //     propertyIdTracker.property_id += 1;
     //  await propertyIdTracker.save({ transaction });
+    console.log("Before update Property ID")
     await propertyIdTracker.increment("property_id", { by: 1, transaction });
+    console.log("propertyIdUpdate")
+    return;
   } catch (error) {
     throw error;
   }

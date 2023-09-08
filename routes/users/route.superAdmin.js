@@ -60,7 +60,7 @@ router.get("/customer/:customer_id",handleGetCustomer)
 router.post("/property/apartment",superAdminVerifyToken,handleAddApartment)
 router.get("/property/apartment",superAdminVerifyToken,handleGetApartment)
 
-router.post("/property/house",handleAddHouse)
+router.post("/property/house",superAdminVerifyToken,handleAddHouse)
 router.get("/property/house",superAdminVerifyToken,handleGetHouse)
 
 router.post("/property/land",superAdminVerifyToken,handleAddLand)

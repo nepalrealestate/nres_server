@@ -29,7 +29,7 @@ async function insertLand(land){
             property_id:property_id,
             ...land
         });
-        await LandAds.create({property_id:newPropertyId},{transaction});
+        await LandAds.create({property_id:property_id},{transaction});
         
         await updatePropertyId(transaction);
         transaction.commit();
