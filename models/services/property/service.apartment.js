@@ -37,13 +37,15 @@ async function insertApartment(apartment){
             ...apartment
         });
         //insert into apartments ads
-        await ApartmentAds.create({property_id:newPropertyId},{transaction})
+        await ApartmentAds.create({property_id:property_id},{transaction})
         await updatePropertyId(transaction);
         transaction.commit();
+        console.log("Commit succesfull");
         return createdApartment;
 
     //return await  Apartment.create(apartment);
 }catch(error){
+    console.log(error)
     transaction.rollback();
     throw error;
     

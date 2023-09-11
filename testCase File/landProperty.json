@@ -1,54 +1,38 @@
 
-   [ {
-        "property_for": "plotted",
-        "property_name": "Green Meadow Plot",
-        "listed_for": "sell",
-        "property_age": 0,
-        "facing": "east-north",
-        "province": "Province 1",
-        "district": "Kathmandu",
-        "municipality": "Kathmandu",
-        "ward": 23,
-        "landmark": "Near Green Park",
-        "latitude": 27.704103,
-        "longitude": 85.329255,
-        "property_area": 1200.00,
-        "road_size": 10.00,
-        "price": 5000000.00,
-        "price_type": "fixed",
-        "amenities": {
-            "water_supply": true,
-            "electricity": true,
-            "drainage_system": true,
-            "nearby_school": true,
-            "nearby_hospital": false
-        },
-        "description": "Plotted land for sale in the heart of the city with good water supply and electricity. It's near a school and located in a good neighborhood.",
-        "social_media":{"youtube":"https://www.youtube.com/watch?v=WG-8F6UaB8M&ab_channel=NepalRealEstateSolution-NRES"}
+[ 
+
+{
+    "property_type": "land",
+    "property_for": "plotted",
+    "property_name": "Kathmandu Premium Land",
+    "listed_for": "sale",
+    "twist": 3.5,
+    "property_area": 500.0,
+    "road_size": 20.0,
+    "facing": "east",
+    "province": "Province 3",
+    "district": "Kathmandu",
+    "municipality": "Kathmandu Metropolitan City",
+    "area_name": "Thamel",
+    "ward": 10,
+    "landmark": "Nearby Kathmandu Durbar Square",
+    "latitude": 27.700769,
+    "longitude": 85.300140,
+    "price": 15000000.00,
+    "price_type": "negotiable",
+    "amenities": {
+      "water_supply": true,
+      "electricity": true,
+      "parking": true
     },
-    {
-        "property_type": "plotted",
-        "property_area": 500.0,
-        "road_size": 10.0,
-        "sewage": true,
-        "furnish": "non-furnished",
-        "drinking_water": true,
-        "electricity": true,
-        "minPrice": "5000000.00",
-        "maxPrice": "5500000.00",
-        "description": "A beautiful plotted land located in a peaceful environment, perfect for building a dream home. Comes with access to road, drinking water, and electricity.",
-        "needed": "within a month",
-        "province": "Province 4",
-        "zone": "Gandaki Zone",
-        "district": "Pokhara",
-        "municipality": "Pokhara Metropolitan City",
-        "ward": 12,
-        "landmark": "5 mins walk from Lakeside",
-        "name": "Bimala Magar",
-        "email": "bimala.magar@email.np",
-        "phone_number": "9867786549",
-        "address": "Lakeside, Pokhara, Nepal"
+    "description": "A beautiful piece of land located in the heart of Kathmandu, perfect for both residential and commercial purposes.",
+    "social_media": {
+      "facebook": "https://facebook.com/kathmanduProperty",
+      "instagram": "https://instagram.com/kathmanduLand",
+      "youtube":"https://www.youtube.com/watch?v=WG-8F6UaB8M&t=132s&ab_channel=NepalRealEstateSolution-NRES"
     }
+  }
+  
     
     
 ]

@@ -1,33 +1,44 @@
       
       
 [      
-{
-  "property_for": "office",
-  "property_name": "Productive",
-  "listed_for": "rent",
-  "property_age": 5,
-  "floor": 6.5,
-  "bhk": 3,
-  "facing": "west-north",
-  "province": "Ontario",
-  "district": "Toronto",
-  "municipality": "Scarborough",
-  "ward": 25,
-  "landmark": "Near Scarborough Town Center",
-  "latitude": 43.776426,
-  "longitude": -79.231752,
-  "property_area": 1850.25,
-  "road_size": 12.0,
-  "price": 500000.00,
-  "price_type": "negotiable",
-  "furnish": "semi-furnished",
-  "parking_bike": 5,
-  "parking_car": 2,
-  "amenities": { "pool": true, "gym": true, "internet": true, "security": true },
-  "description": "A spacious 3 BHK apartment located in the heart of the city. It includes a gym and a pool. Parking space for 2 cars and 5 bikes is also available. The price is negotiable.",
-  "social_media": { "youtube": "https://www.youtube.com/watch?v=D4dXCTf4yfA&ab_channel=NepalRealEstateSolution-NRES" }
-},
-
+  {
+    "property_type": "apartment",
+    "property_for": "residential",
+    "property_name": "Lalitpur Luxe Apartment",
+    "listed_for": "rent",
+    "property_age": 2,
+    "floor": 3.5,
+    "bhk": 3,
+    "facing": "north-east",
+    "province": "Province 3",
+    "district": "Lalitpur",
+    "municipality": "Lalitpur Sub-Metropolitan City",
+    "area_name": "Pulchowk",
+    "ward": 5,
+    "landmark": "Nearby Patan Durbar Square",
+    "latitude": 27.673582,
+    "longitude": 85.325939,
+    "property_area": 1400.0,
+    "road_size": 18.0,
+    "price": 50000.00,
+    "price_type": "negotiable",
+    "furnish": "furnished",
+    "parking_bike": 5,
+    "parking_car": 2,
+    "amenities": {
+      "lift": true,
+      "24hr_water_supply": true,
+      "backup_power": true,
+      "gym": true
+    },
+    "description": "A luxurious apartment situated in the heart of Lalitpur. Close to major landmarks and with all modern amenities.",
+    "social_media": {
+      "facebook": "https://facebook.com/LalitpurLuxeApartment",
+      "instagram": "https://instagram.com/LalitpurLuxe",
+      "youtube":"https://www.youtube.com/watch?v=D4dXCTf4yfA&t=3s&ab_channel=NepalRealEstateSolution-NRES"
+    }
+  },
+  
 
 
 

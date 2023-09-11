@@ -1008,9 +1008,8 @@ function propertyUtility(property_type) {
     let agent_id = null;
     let staff_id = null;
     // baseUrl provide us from where request coming from ex. /agent,/staff,/customer
-    const user_type = req.baseUrl.substring(1);
-    
-
+    const user_type = req.baseUrl.split('/')[2];
+    console.log(user_type)
     if (user_type === "customer") {
       customer_id = req.id;
     } else if (user_type === "agent") {

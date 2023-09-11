@@ -1,37 +1,45 @@
 [
 {
-    "property_for": "commercial",
-    "property_name": "Acme Office Park",
-    "listed_for": "sell",
+    "property_type": "house",
+    "property_for": "residential",
+    "property_name": "Kathmandu Villa",
+    "listed_for": "sale",
     "property_age": 10,
-    "floor": 3.5,
-    "bedrooms": 5,
-    "kitchen": 2,
-    "bathrooms_attached": 3,
-    "bathrooms_common": 2,
-    "facing": "east-north",
-    "province": "Province 1",
+    "floor": 2.5,
+    "bedrooms": 4,
+    "kitchen": 1,
+    "bathrooms_attached": 2,
+    "bathrooms_common": 1,
+    "facing": "east",
+    "province": "Bagmati",
     "district": "Kathmandu",
-    "municipality": "Kathmandu",
-    "ward": 23,
-    "landmark": "Near Acme Corporation",
-    "latitude": 27.704103,
-    "longitude": 85.329255,
-    "property_area": 2500.00,
-    "road_size": 20.00,
-    "price": 15000000.00,
+    "municipality": "Kathmandu Metropolitan",
+    "area_name": "Thamel",
+    "ward": 29,
+    "landmark": "Near Narayanhiti Palace",
+    "latitude": 27.714501,
+    "longitude": 85.310020,
+    "property_area": 1500,
+    "road_size": 5,
+    "price": 30000000.00,
     "price_type": "negotiable",
-    "furnish": "semi-furnished",
-    "parking_bike": 10,
-    "parking_car": 4,
+    "furnish": "furnished",
+    "parking_bike": 4,
+    "parking_car": 2,
     "amenities": {
-        "gym": true,
-        "pool": true,
-        "security": true,
-        "lift": false
+      "wifi": true,
+      "gym": false,
+      "swimming_pool": true,
+      "backup_power": true
     },
-    "description": "Spacious commercial property for sale in the heart of the city. It comes semi-furnished with ample parking space and modern amenities.",
-    "social_media":{"youtube":"https://www.youtube.com/watch?v=tEgSNg_6eCw&ab_channel=NepalRealEstateSolution-NRES"}
+    "description": "A luxurious villa located in the heart of Kathmandu with all modern amenities and beautiful view.",
+    "social_media": {
+      "facebook": "https://www.facebook.com/KathmanduVilla",
+      "twitter": "https://twitter.com/KathmanduVilla",
+      "instagram": "https://instagram.com/KathmanduVilla"
+    }
+  
+  
 },
 
 {

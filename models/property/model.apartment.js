@@ -131,6 +131,7 @@ function apartmentModel (sequelize,DataTypes){
   
     },{
       freezeTableName: true,
+     
     }
     )
   }

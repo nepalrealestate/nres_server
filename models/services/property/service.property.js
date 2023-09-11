@@ -24,6 +24,8 @@ async function updatePropertyId(transaction) {
     console.log("propertyIdUpdate")
     return;
   } catch (error) {
+    console.log("Error in update propertyId",error)
+    transaction.rollback();
     throw error;
   }
 }
@@ -121,11 +123,11 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
   return await PropertyViewClient.findAll({
     where: whereConditions,
    // attributes: { exclude: ["id"] },
-   attributes:['property_id','property_type','property_name','listed_for','district','municipality','area_name','property_image','views'],
+   attributes:['property_id','property_type','property_name','listed_for','price','district','municipality','area_name','property_image','views'],
     order: orderConditions,
     // replacements: [condition.district],
-    limit: limit,
-    offset: offset,
+    // limit: limit,
+    // offset: offset,
   });
 }
 

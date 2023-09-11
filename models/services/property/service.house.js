@@ -58,6 +58,7 @@ const propertyService = propertyServiceUtility();
     // })
  }
 
+ 
  async function getHouseByID(property_id){
     return await House.findByPk(property_id)
  }

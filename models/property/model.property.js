@@ -142,20 +142,20 @@ function propertyViewClientModel(sequelize, DataTypes) {
     CREATE OR REPLACE VIEW ${propertyClientView} AS
     
   
-    SELECT   h.property_id,h.property_type, h.property_name,h.listed_for,h.district, h.municipality,h.area_name,h.price,h.property_image,h.views, h.createdAt 
+    SELECT   h.property_id,h.property_type, h.property_name,h.listed_for,h.province,h.district, h.municipality,h.area_name,h.price,h.property_image,h.views, h.createdAt 
 
     FROM ${DB_NAME}.property_house  as h
    
     UNION 
    
-    SELECT l.property_id,l.property_type, l.property_name,l.listed_for,l.district,l.municipality,l.area_name,l.price,l.property_image,l.views, l.createdAt 
+    SELECT l.property_id,l.property_type, l.property_name,l.listed_for,l.province,l.district,l.municipality,l.area_name,l.price,l.property_image,l.views, l.createdAt 
   
   
     FROM ${DB_NAME}.property_land as l 
     
     UNION
    
-    SELECT a.property_id,a.property_type, a.property_name, a.listed_for,a.district, a.municipality,a.area_name,a.price,a.property_image,a.views, a.createdAt 
+    SELECT a.property_id,a.property_type, a.property_name, a.listed_for,a.province,a.district, a.municipality,a.area_name,a.price,a.property_image,a.views, a.createdAt 
   
     FROM ${DB_NAME}.property_apartment as a 
   `;
