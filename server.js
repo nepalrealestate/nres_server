@@ -69,16 +69,16 @@ app.use('/uploads', express.static('uploads'));
 
 //Routes
 app.use(express.json())
-app.use("/customer",customerRouter);
-app.use("/agent",agentRouter);
-app.use("/staff",staffRouter);
+app.use("/api/customer",customerRouter);
+app.use("/api/agent",agentRouter);
+app.use("/api/staff",staffRouter);
 app.use("/api/admin",superAdminRouter);
-app.use("/property/house",houseRouter);
-app.use("/property/land",landRouter)
-app.use ("/property/apartment",apartmentRouter);
+app.use("/api/property/house",houseRouter);
+app.use("/api/property/land",landRouter)
+app.use ("/api/property/apartment",apartmentRouter);
 // app.use("/property",propertyRouter);
-app.use("/property",propertyRouter);
-app.use("/service",serviceRouter)
+app.use("/api/property",propertyRouter);
+app.use("/api/service",serviceRouter)
 
 
 
