@@ -1010,17 +1010,17 @@ function propertyUtility(property_type) {
     // baseUrl provide us from where request coming from ex. /agent,/staff,/customer
     const user_type = req.baseUrl.split('/')[2];
     console.log(user_type)
-    if (user_type === "customer") {
-      customer_id = req.id;
-    } else if (user_type === "agent") {
-      agent_id = req.id;
-    } else if (user_type === "staff") {
-      staff_id = req.id
-    } else if(user_type === "admin"){
-      //do nothing
-    }else{
-      return res.status(400).json({ message: "bad request" });
-    }
+    // if (user_type === "customer") {
+    //   customer_id = req.id;
+    // } else if (user_type === "agent") {
+    //   agent_id = req.id;
+    // } else if (user_type === "staff") {
+    //   staff_id = req.id
+    // } else if(user_type === "admin"){
+    //   //do nothing
+    // }else{
+    //   return res.status(400).json({ message: "bad request" });
+    // }
 
     let images;
     if(req.file){
