@@ -305,6 +305,7 @@ function pendingApartmentModel (sequelize,DataTypes){
 
   },{
     freezeTableName: true,
+  
   })
 }
 
@@ -344,6 +345,7 @@ function pendingApartmentModel (sequelize,DataTypes){
 
   },{
     freezeTableName: true,
+   
   })
 }
 
@@ -415,7 +417,9 @@ function apartmentViewsModel (sequelize,DataTypes){
       references: {
         model: 'property_apartment',
         key: 'property_id'
-    }
+    },
+    onDelete: 'CASCADE',
+    
     },
     latitude:{
       type:DataTypes.DECIMAL(9,6)
@@ -561,7 +565,8 @@ function requestedApartmentByModel(sequelize,DataTypes){
   references:{
     model:'property_requested_apartment',
     key:'id'
-  }
+  },
+  onDelete:'CASCADE'
 },{
   freezeTableName: true,
 })

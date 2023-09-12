@@ -111,7 +111,8 @@ function houseModel (sequelize,DataTypes){
        references:{
          model:'user_staff',
          key :'staff_id'
-       }
+       },
+       onDelete: 'SET NULL' 
       
     },
     customer_id:{
@@ -119,14 +120,16 @@ function houseModel (sequelize,DataTypes){
       references:{
         model:'user_customer',
         key :'customer_id'
-      }
+      },
+      onDelete: 'SET NULL' 
     },
     agent_id :{
       type:DataTypes.INTEGER,
       references:{
         model:'user_agent',
         key :'agent_id'
-      }
+      },
+      onDelete: 'SET NULL' 
     },
     views:{
       type:DataTypes.INTEGER,
@@ -266,6 +269,7 @@ function pendingHouseModel (sequelize,DataTypes){
         model:'user_customer',
         key :'customer_id'
       }
+      
     },
     agent_id :{
       type:DataTypes.INTEGER,
@@ -398,7 +402,7 @@ function houseCommentModel(sequelize,DataTypes){
         model: 'user_staff', // replace with your Staff model name
         key: 'staff_id',
       },
-      onDelete: 'CASCADE',
+      onDelete: 'set NULL',
     },
     super_admin_id: {
       type: DataTypes.INTEGER,
@@ -406,7 +410,7 @@ function houseCommentModel(sequelize,DataTypes){
         model: 'user_superAdmin', // replace with your SuperAdmin model name
         key: 'superAdmin_id',
       },
-      onDelete: 'CASCADE',
+      onDelete: 'set NULL',
     },
     comment: {
       type: DataTypes.TEXT,
@@ -439,7 +443,8 @@ function houseViewsModel (sequelize,DataTypes){
       references: {
         model: 'property_house',
         key: 'property_id'
-    }
+    },
+    onDelete: 'CASCADE',
     },
     latitude:{
       type:DataTypes.DECIMAL(9,6)
