@@ -41,13 +41,12 @@ db.sequelize.sync({force:false}); // alter creates duplicates index every time
 
 // synchronizeDatabase();
 
-
+app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json())
 
 
 
 app.use(cors({credentials: true, origin: ['http://nres.com.np','https://nres.com.np', 'PostmanRuntime']}));
-
 
 
 app.use(cookieParser());
@@ -59,7 +58,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
 //form-urlencoded
 
-app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 
 
