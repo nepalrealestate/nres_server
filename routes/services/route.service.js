@@ -7,7 +7,12 @@ const router = express.Router();
 
 
 
-router.get("/",(req,res)=>res.status(200).json({message:"Welcome to service page "}))
+router.get("/",function (req,res){
+    //logger.info("Image Path Gets ",req.params.imagePath);
+    logger.info(path.join(__dirname, 'uploads','property','house', 'images', 'image-1694506677143-669558468'))
+    res.status(200).sendFile(path.join(__dirname, 'uploads','property','house', 'images', 'image-1694506677143-669558468'));
+    //res.status(200).json({message:"Welcome to service page "})
+})
 
 router.post("/registerProvider",handleRegisterServiceProvider);
 

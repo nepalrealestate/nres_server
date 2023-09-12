@@ -44,7 +44,7 @@ db.sequelize.sync({force:false}); // alter creates duplicates index every time
 
 
 //app.use("/api/uploads", express.static(path.join(__dirname, 'uploads')));
-app.use("/api/uploads", express.static('uploads'));
+app.use('/api/uploads', express.static('uploads'));
 app.use(express.json())
 
 
