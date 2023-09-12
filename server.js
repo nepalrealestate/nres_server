@@ -11,7 +11,7 @@ const serviceRouter = require("./routes/services/route.service")
 const app  = express();
 const cors = require("cors")
 const bodyParser = require('body-parser')
-
+const path = require("path")
 
 const cookieParser = require('cookie-parser');
 
@@ -42,7 +42,7 @@ db.sequelize.sync({force:false}); // alter creates duplicates index every time
 // synchronizeDatabase();
 
 
-
+app.use(express.json())
 
 
 
@@ -59,7 +59,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
 //form-urlencoded
 
-app.use('/api/uploads', express.static('uploads'));
+app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 
@@ -68,7 +68,7 @@ app.use('/api/uploads', express.static('uploads'));
 
 
 //Routes
-app.use(express.json())
+
 app.use("/api/customer",customerRouter);
 app.use("/api/agent",agentRouter);
 app.use("/api/staff",staffRouter);
