@@ -43,7 +43,7 @@ db.sequelize.sync({force:false}); // alter creates duplicates index every time
 
 
 
-app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/api/uploads", express.static(path.join(__dirname, 'uploads')));
 app.use(express.json())
 
 
@@ -65,8 +65,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/api/uploads/property/house/images/:imageName', (req, res) => {
   const imageName = req.params.imageName;
-  res.sendFile(path.join(__dirname, 'uploads', 'property', 'house', 'images', imageName));
+
+  const imageLink = (path.join(__dirname, 'uploads', 'property', 'house', 'images', imageName));
+  logger.info(imageLink)
+  res.sendFile(imageLink)
 });
+  
 
 
 
