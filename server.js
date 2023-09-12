@@ -59,7 +59,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
 //form-urlencoded
 
-app.use('/api/uploads', express.static('uploads'));
+app.use('/uploads', express.static('uploads'));
 
 
 
