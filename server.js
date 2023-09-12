@@ -46,7 +46,7 @@ db.sequelize.sync({force:false}); // alter creates duplicates index every time
 
 
 
-app.use(cors({credentials: true, origin: ['http://localhost:3000', 'PostmanRuntime']}));
+app.use(cors({credentials: true, origin: ['http://nres.com.np','https://nres.com.np', 'PostmanRuntime']}));
 
 
 
