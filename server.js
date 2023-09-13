@@ -83,22 +83,12 @@ app.use("/api/service",serviceRouter);
 
 
 
-
-
-
 //chat running
 //chatServer().startServer();
 //notification running
 // socketServer.chat()
 // socketServer.notification();
 // socketServer.startServer();
-
-
-
-
-
-
-
 
 if(process.env.NODE_ENV=='Production'){
   app.listen(()=>{
