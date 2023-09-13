@@ -15,6 +15,7 @@ const path = require("path")
 
 const cookieParser = require('cookie-parser');
 
+const testRouter = require("./routes/route.test")
 
 
 
@@ -45,6 +46,8 @@ db.sequelize.sync({force:false}); // alter creates duplicates index every time
 
 //app.use("/api/uploads", express.static(path.join(__dirname, 'uploads')));
 app.use('/api/uploads', express.static('uploads'));
+
+
 app.use(express.json())
 
 
@@ -80,6 +83,9 @@ app.use ("/api/property/apartment",apartmentRouter);
 // app.use("/property",propertyRouter);
 app.use("/api/property",propertyRouter);
 app.use("/api/service",serviceRouter);
+
+//testing
+app.use("api/test",testRouter)
 
 
 
