@@ -2,26 +2,47 @@
 
 const multer = require("multer");
 const fs = require('fs');
+const path = require("path");
 
+
+
+// Helper function to generate a new name in case of duplicate filenames
+function generateUniqueFilename(directory, originalName) {
+  let baseName = path.basename(originalName, path.extname(originalName));
+  let extension = path.extname(originalName);
+  let newName = originalName;  // start with the original name including its extension
+  let count = 1;
+
+  while (fs.existsSync(path.join(directory, newName))) {
+    newName = `${baseName}_${count}${extension}`;
+    count++;
+  }
+
+  return newName;
+}
 
 
 function UploadImage(folderPath, maxImageSize) {
-  let path = `${folderPath}`;
+  let filePath = `${folderPath}`;
 
-  console.log(path);
+  console.log(filePath);
 
   const storage = multer.diskStorage({
 
     destination: function (req, file, cb) {
-      if (!fs.existsSync(path)) {
-        fs.mkdirSync(path, { recursive: true })
+      if (!fs.existsSync(filePath)) {
+        fs.mkdirSync(filePath, { recursive: true })
       }
-      cb(null, path);
+      cb(null, filePath);
     },
 
     filename: function (req, file, cb) {
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      cb(null, file.fieldname + "-" + uniqueSuffix);
+      // const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      // cb(null, file.fieldname + "-" + uniqueSuffix);
+      const sanitizedFileName = path.basename(file.originalname); // This will include the file's extension
+      const uniqueFileName = generateUniqueFilename(filePath, sanitizedFileName); 
+
+      cb(null,uniqueFileName);
     },
   });
 

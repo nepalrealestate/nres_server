@@ -85,7 +85,7 @@ app.use("/api/property",propertyRouter);
 app.use("/api/service",serviceRouter);
 
 //testing
-app.use("api/test",testRouter)
+app.use("/api/test",testRouter)
 
 
 

@@ -2,7 +2,7 @@ const { UploadImage } = require("../../middlewares/middleware.uploadFile");
 
 const { updatePropertyViews } = require("../../models/property/model.property");
 
-const path = "uploads/property/house/images"; //path from source
+const path = "uploads/property/house"; //path from source
 const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
