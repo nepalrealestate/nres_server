@@ -307,11 +307,11 @@ function pendingApartmentModel (sequelize,DataTypes){
       },
       onDelete: 'CASCADE'
     },
-    customer_id:{
+    user_id:{
       type:DataTypes.INTEGER,
       references:{
-        model:'user_customer',
-        key:'customer_id'
+        model:'user_userAccount',
+        key:'user_id'
       }
     },
 
@@ -348,19 +348,11 @@ function apartmentCommentModel(sequelize,DataTypes){
       },
       onDelete: 'CASCADE'
     },
-    staff_id: {
+    admin_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'user_staff', 
-        key: 'staff_id',
-      },
-      onDelete: 'CASCADE',
-    },
-    super_admin_id: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'user_superAdmin', 
-        key: 'superAdmin_id',
+        model: 'user_adminAccount', 
+        key: 'admin_id',
       },
       onDelete: 'CASCADE',
     },
