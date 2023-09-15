@@ -273,12 +273,12 @@ function propertyFieldVisitRequestModel(sequelize,DataTypes){
       primaryKey: true,
       autoIncrement: true
     },
-    customer_id:{
+    user_id:{
       type:DataTypes.INTEGER,
       allowNull:false,
       references:{
-        model:'user_customer',
-        key:'customer_id'
+        model:'user_userAccount',
+        key:'user_id'
       }
     },
     property_id:{
@@ -343,21 +343,15 @@ function propertyFieldVisitCommentModel(sequelize,DataTypes){
       },
     },
 
-    staff_id:{
+    admin_id:{
       type:DataTypes.INTEGER,
       references:{
-        model:'user_staff',
-        key:'staff_id'
+        model:'user_adminAccount',
+        key:'admin_id'
       }
       
     },
-    superAdmin_id:{
-      type:DataTypes.INTEGER,
-      references:{
-        model:'user_superAdmin',
-        key:'superAdmin_id'
-      }
-    }
+  
 
 
 

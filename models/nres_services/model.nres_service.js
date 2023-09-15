@@ -75,12 +75,12 @@ function serviceProviderRatingModel(sequelize,Datatypes){
         key:'provider_id'
       }
     },
-    customer_id:{
+    user_id:{
       type:Datatypes.INTEGER,
       allowNull:false,
       references:{
-        model:'user_customer',
-        key:'customer_id'
+        model:'user_userAccount',
+        key:'user_id'
       }
     },
     rating:{

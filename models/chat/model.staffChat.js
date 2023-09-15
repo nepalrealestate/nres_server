@@ -24,13 +24,13 @@ function staffChatModel(sequelize,DataTypes){
 
 function staffChatListModel(sequelize,DataTypes){
   return StaffChatList = sequelize.define('chat_staff_list',{
-    staff_id:{
+    admin_id:{
       type:DataTypes.INTEGER,
       allowNull:false,
       unique:true,
       references:{
-        model:'user_staff',
-        key:"staff_id"
+        model:'user_adminAccount',
+        key:"admin_id"
       }
     }
   },{
@@ -40,13 +40,13 @@ function staffChatListModel(sequelize,DataTypes){
 
 function staffChatGroupModel(sequelize,DataTypes){
   return StaffChatGroup = sequelize.define('chat_staff_group',{
-    staff_id:{
+    admin_id:{
       type:DataTypes.INTEGER,
       allowNull:false,
       unique:true,
       references:{
-        model:'user_staff',
-        key:"staff_id"
+        model:'user_adminAccount',
+        key:"admin_id"
       }
     }
   })

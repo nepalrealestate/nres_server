@@ -26,13 +26,13 @@ function customerChatModel(sequelize,DataTypes){
 
 function customerChatListModel (sequelize,DataTypes){
     return CustomerChatList = sequelize.define('chat_customer_list',{
-        customer_id:{
+        user_id:{
             type:DataTypes.INTEGER,
             allowNull:false,
             unique:true,
             references:{
-                model:'user_customer',
-                key:'customer_id'
+                model:'user_userAccount',
+                key:'user_id'
             }
         }
 

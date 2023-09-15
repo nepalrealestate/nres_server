@@ -17,12 +17,12 @@ db.NotificationModel = {
 
 
 db.UserModel = {
-    Agent: require('./users/model.agent').agentModel(sequelize, DataTypes),
-    Staff: require('./users/model.staff').staffModel(sequelize, DataTypes),
-    Customer: require('./users/model.customer').customerModel(sequelize, DataTypes),
-    SuperAdmin:require('./users/model.superAdmin').superAdminModel(sequelize,DataTypes),
-    AgentRating:require('./users/model.agent').agentRatingModel(sequelize,DataTypes),
-    AgentInfo :require('./users/model.agent').agentInfoModel(sequelize,DataTypes),
+    //Agent: require('./users/model.agent').agentModel(sequelize, DataTypes),
+    //Staff: require('./users/model.staff').staffModel(sequelize, DataTypes),
+    //Customer: require('./users/model.customer').customerModel(sequelize, DataTypes),
+    ////SuperAdmin:require('./users/model.superAdmin').superAdminModel(sequelize,DataTypes),
+    //AgentRating:require('./users/model.agent').agentRatingModel(sequelize,DataTypes),
+    //AgentInfo :require('./users/model.agent').agentInfoModel(sequelize,DataTypes),
 
     User : require('./users/model.user').userAccountModel(sequelize,DataTypes),
     Admin : require('./users/model.admin').adminAccountModel(sequelize,DataTypes)
@@ -127,33 +127,33 @@ db.Views={
 
 //-----------------Relation-------------------------------
 
-//agent relation to agent rating
-db.UserModel.Agent.hasMany(db.UserModel.AgentRating,{foreignKey:'agent_id'});
-db.UserModel.AgentRating.belongsTo(db.UserModel.Agent,{foreignKey:'agent_id'});
-//agent relation to agent Info Table
-db.UserModel.Agent.hasOne(db.UserModel.AgentInfo,{as:'agentInfo',foreignKey:'agent_id'});
-db.UserModel.AgentInfo.belongsTo(db.UserModel.Agent,{foreignKey:'agent_id'});
+// //agent relation to agent rating
+// db.UserModel.Agent.hasMany(db.UserModel.AgentRating,{foreignKey:'agent_id'});
+// db.UserModel.AgentRating.belongsTo(db.UserModel.Agent,{foreignKey:'agent_id'});
+// //agent relation to agent Info Table
+// db.UserModel.Agent.hasOne(db.UserModel.AgentInfo,{as:'agentInfo',foreignKey:'agent_id'});
+// db.UserModel.AgentInfo.belongsTo(db.UserModel.Agent,{foreignKey:'agent_id'});
 
-//customer relation to agent rating
-db.UserModel.Customer.hasMany(db.UserModel.AgentRating,{foreignKey:'customer_id'});
-db.UserModel.AgentRating.belongsTo(db.UserModel.Customer,{foreignKey:'customer_id'});
-
-
+// //customer relation to agent rating
+// db.UserModel.Customer.hasMany(db.UserModel.AgentRating,{foreignKey:'customer_id'});
+// db.UserModel.AgentRating.belongsTo(db.UserModel.Customer,{foreignKey:'customer_id'});
 
 
 
 
-// Relations
-// house -> agent,customer,staff
-// house ->agent
-db.PropertyModel.House.belongsTo(db.UserModel.Agent,{foreignKey:'agent_id'});
-db.UserModel.Agent.hasMany(db.PropertyModel.House,{foreignKey:'agent_id'});
-//house ->staff
-db.PropertyModel.House.belongsTo(db.UserModel.Staff,{foreignKey:'staff_id'});
-db.UserModel.Staff.hasMany(db.PropertyModel.House,{foreignKey:'staff_id'});
-// house->customer
-db.PropertyModel.House.belongsTo(db.UserModel.Customer,{foreignKey:'customer_id'});
-db.UserModel.Customer.hasMany(db.PropertyModel.House,{foreignKey:'customer_id'});
+
+
+// // Relations
+// // house -> agent,customer,staff
+// // house ->agent
+// db.PropertyModel.House.belongsTo(db.UserModel.Agent,{foreignKey:'agent_id'});
+// db.UserModel.Agent.hasMany(db.PropertyModel.House,{foreignKey:'agent_id'});
+// //house ->staff
+// db.PropertyModel.House.belongsTo(db.UserModel.Staff,{foreignKey:'staff_id'});
+// db.UserModel.Staff.hasMany(db.PropertyModel.House,{foreignKey:'staff_id'});
+// // house->customer
+// db.PropertyModel.House.belongsTo(db.UserModel.Customer,{foreignKey:'customer_id'});
+// db.UserModel.Customer.hasMany(db.PropertyModel.House,{foreignKey:'customer_id'});
 
 
 

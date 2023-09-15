@@ -23,13 +23,13 @@ function agentChatModel(sequelize,DataTypes){
 
 function agentChatListModel (sequelize,DataTypes){
     return AgentChatListModel =sequelize.define('chat_agent_list',{
-        agent_id:{
+        user_id:{
             type:DataTypes.INTEGER,
             allowNull:false,
             unique:true,
             references:{
-                model:'user_agent',
-                key:'agent_id'
+                model:'user_userAccount',
+                key:'user_id'
             }
         }
     })

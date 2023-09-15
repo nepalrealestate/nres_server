@@ -335,7 +335,7 @@ function houseFeedbackModel(sequelize,DataTypes){
       type:DataTypes.INTEGER,
       references:{
         model:'user_userAccount',
-        key:'customer_id'
+        key:'user_id'
       },
       onDelete: 'CASCADE'
     },
@@ -455,94 +455,6 @@ function houseViewsModel (sequelize,DataTypes){
   )
 }
 
-
-
-function apartmentCommentModel(sequelize,DataTypes){
-  return ApartmentComment = sequelize.define('property_apartment_comment',{
-    comment_id:{
-      type:DataTypes.INTEGER,
-      autoIncrement:true,
-      primaryKey:true
-    },
-    property_id:{
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      references:{
-        model:'property_apartment',
-        key:'property_id'
-      },
-      onDelete: 'CASCADE'
-    },
-    staff_id: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'user_staff', // replace with your Staff model name
-        key: 'staff_id',
-      },
-      onDelete: 'CASCADE',
-    },
-    super_admin_id: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: 'user_superAdmin', // replace with your SuperAdmin model name
-        key: 'superAdmin_id',
-      },
-      onDelete: 'CASCADE',
-    },
-    comment: {
-      type: DataTypes.TEXT,
-      allowNull:false,
-      validate:{
-        notEmpty: true,
-      }
-    },
-    is_private: {
-      type: DataTypes.BOOLEAN,
-    },
-    
-
-  },{
-    freezeTableName: true,
-  },{
-    freezeTableName: true,
-  })
-}
-
-
-
-function apartmentViewsModel (sequelize,DataTypes){
-  return ApartmentViews = sequelize.define('property_apartment_views',{
-    id :{
-      type:DataTypes.INTEGER,
-      autoIncrement:true,
-      primaryKey:true,
-    },
-    property_id:{
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      references: {
-        model: 'property_apartment',
-        key: 'property_id'
-    },
-    onDelete:'CASCADE'
-    },
-    latitude:{
-      type:DataTypes.DECIMAL(9,6)
-    },
-    longitude:{
-      type:DataTypes.DECIMAL(9,6)
-    },
-    date: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue:DataTypes.NOW
-  },
-  },{
-    freezeTableName: true,
-  }
-  
-  )
-}
 
 function houseViewsCountModel(sequelize,DataTypes){
 
