@@ -11,7 +11,11 @@ function apartmentModel (sequelize,DataTypes){
         primaryKey:true,
       
       },
-      property_type :{
+      property_type:{
+        type:DataTypes.ENUM('apartment'),
+        defaultValue:"apartment"
+      },
+      property_for :{
         type:DataTypes.ENUM('commercial','residential','office')
       },
       property_name : {
@@ -22,7 +26,7 @@ function apartmentModel (sequelize,DataTypes){
         }
       },
       listed_for :{
-        type:DataTypes.ENUM('sell','rent')
+        type:DataTypes.ENUM('sale','rent')
       },
      
       property_age:{
@@ -35,7 +39,7 @@ function apartmentModel (sequelize,DataTypes){
         type:DataTypes.INTEGER
      }, 
       facing:{
-        type:DataTypes.ENUM('east','west','north','south','east-north','east-south','west-north','west-south')
+        type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
       },
       province:{
         type:DataTypes.STRING
@@ -46,6 +50,9 @@ function apartmentModel (sequelize,DataTypes){
       municipality:{
         type:DataTypes.STRING
       },
+      area_name:{
+        type:DataTypes.STRING
+      } ,     
       ward:{
         type:DataTypes.INTEGER
       },
@@ -86,10 +93,10 @@ function apartmentModel (sequelize,DataTypes){
       description:{
         type:DataTypes.TEXT
       },
-      property_image:{
+      social_media:{
         type:DataTypes.JSON
       },
-      property_video:{
+      property_image:{
         type:DataTypes.JSON
       },
       staff_id:{
@@ -124,6 +131,7 @@ function apartmentModel (sequelize,DataTypes){
   
     },{
       freezeTableName: true,
+     
     }
     )
   }
@@ -139,7 +147,11 @@ function pendingApartmentModel (sequelize,DataTypes){
       autoIncrement:true,
       primaryKey:true,
     },
-    property_type :{
+    property_type:{
+      type:DataTypes.ENUM('apartment'),
+      defaultValue:"apartment"
+    },
+    property_for :{
       type:DataTypes.ENUM('commercial','residential','office')
     },
     property_name : {
@@ -150,7 +162,7 @@ function pendingApartmentModel (sequelize,DataTypes){
       }
     },
     listed_for :{
-      type:DataTypes.ENUM('sell','rent')
+      type:DataTypes.ENUM('sale','rent')
     },
    
     property_age:{
@@ -163,17 +175,21 @@ function pendingApartmentModel (sequelize,DataTypes){
       type:DataTypes.INTEGER
    }, 
     facing:{
-      type:DataTypes.ENUM('east','west','north','south','east-north','east-south','west-north','west-south')
+      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
     },
     province:{
       type:DataTypes.STRING
     },
+
     district:{
       type:DataTypes.STRING
     },
     municipality:{
       type:DataTypes.STRING
     },
+    area_name:{
+      type:DataTypes.STRING
+    } ,     
     ward:{
       type:DataTypes.INTEGER
     },
@@ -191,10 +207,6 @@ function pendingApartmentModel (sequelize,DataTypes){
     },
     road_size:{
       type:DataTypes.FLOAT
-    },
-    price:{
-      type:DataTypes.DECIMAL(12,2),
-      allowNull:false
     },
     price_type:{
       type:DataTypes.ENUM('fixed','negotiable')
@@ -214,10 +226,10 @@ function pendingApartmentModel (sequelize,DataTypes){
     description:{
       type:DataTypes.TEXT
     },
-    property_image:{
+    social_media:{
       type:DataTypes.JSON
     },
-    property_video:{
+    property_image:{
       type:DataTypes.JSON
     },
     staff_id:{
@@ -268,13 +280,32 @@ function pendingApartmentModel (sequelize,DataTypes){
       },
       onDelete: 'CASCADE'
     },
-    ads_status: {
-      type: DataTypes.ENUM('unplanned','posted','progress','planned'),
+    twitter:{
+      type:DataTypes.ENUM('unplanned','posted','progress','planned'),
       defaultValue: 'unplanned'
-    }
+    },
+    tiktok:{
+      type:DataTypes.ENUM('unplanned','posted','progress','planned'),
+      defaultValue: 'unplanned'
+    },
+    instagram:{
+      type:DataTypes.ENUM('unplanned','posted','progress','planned'),
+      defaultValue: 'unplanned'
+    },
+    facebook:{
+      type:DataTypes.ENUM('unplanned','posted','progress','planned'),
+      defaultValue: 'unplanned'
+    },
+    youtube:{
+      type:DataTypes.ENUM('unplanned','posted','progress','planned'),
+      defaultValue: 'unplanned'
+    },
+
+
 
   },{
     freezeTableName: true,
+  
   })
 }
 
@@ -314,6 +345,7 @@ function pendingApartmentModel (sequelize,DataTypes){
 
   },{
     freezeTableName: true,
+   
   })
 }
 
@@ -330,7 +362,7 @@ function apartmentCommentModel(sequelize,DataTypes){
       type:DataTypes.INTEGER,
       allowNull:false,
       references:{
-        model:'property_apartments',
+        model:'property_apartment',
         key:'property_id'
       },
       onDelete: 'CASCADE'
@@ -338,7 +370,7 @@ function apartmentCommentModel(sequelize,DataTypes){
     staff_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'user_staff', // replace with your Staff model name
+        model: 'user_staff', 
         key: 'staff_id',
       },
       onDelete: 'CASCADE',
@@ -346,7 +378,7 @@ function apartmentCommentModel(sequelize,DataTypes){
     super_admin_id: {
       type: DataTypes.INTEGER,
       references: {
-        model: 'user_superAdmin', // replace with your SuperAdmin model name
+        model: 'user_superAdmin', 
         key: 'superAdmin_id',
       },
       onDelete: 'CASCADE',
@@ -385,7 +417,9 @@ function apartmentViewsModel (sequelize,DataTypes){
       references: {
         model: 'property_apartment',
         key: 'property_id'
-    }
+    },
+    onDelete: 'CASCADE',
+    
     },
     latitude:{
       type:DataTypes.DECIMAL(9,6)
@@ -531,11 +565,15 @@ function requestedApartmentByModel(sequelize,DataTypes){
   references:{
     model:'property_requested_apartment',
     key:'id'
-  }
+  },
+  onDelete:'CASCADE'
 },{
   freezeTableName: true,
 })
 }
+
+
+
 
 
 
@@ -548,5 +586,5 @@ module.exports = {
     apartmentViewsModel,
     requestedApartmentModel,
     requestedApartmentByModel,
-  
+
 };

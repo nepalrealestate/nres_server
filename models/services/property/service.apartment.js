@@ -1,5 +1,8 @@
 
 const db = require("../../model.index");
+const { getPropertyId, updatePropertyId } = require("./service.property");
+
+const propertyService = require("../service.utils").propertyServiceUtility();
 
 const Apartment = db.PropertyModel.Apartment;
 const PendingApartment = db.PropertyModel.PendingApartment;
@@ -7,7 +10,8 @@ const ApartmentAds = db.PropertyModel.ApartmentAds;
 const ApartmentFeedback = db.PropertyModel.ApartmentFeedback;
 const ApartmentComment = db.PropertyModel.ApartmentComment
 const ApartmentViews = db.PropertyModel.ApartmentViews
-
+const ApartmentShootSchedule = db.PropertyModel.ApartmentShootSchedule;
+const RequestedApartment = db.PropertyModel.RequestedApartment;
 
 
 async function insertPendingApartment(apartment){
@@ -16,14 +20,52 @@ async function insertPendingApartment(apartment){
 
 }
 
+async function insertApartment(apartment){
+    
+    
 
-async function getApartment(condition,limit,offset){
-    return await Apartment.findAll({
-        where:condition,
-        attributes:[ 'property_id','property_name','listed_for','price','views'],
-        limit:limit,
-        offset:offset
-    })
+    let transaction ; 
+
+    try {
+        transaction  = await db.sequelize.transaction();
+
+        const property_id = await getPropertyId();
+        
+
+       const createdApartment =  await Apartment.create({
+            property_id:property_id,
+            ...apartment
+        });
+        //insert into apartments ads
+        await ApartmentAds.create({property_id:property_id},{transaction})
+        await updatePropertyId(transaction);
+        transaction.commit();
+        console.log("Commit succesfull");
+        return createdApartment;
+
+    //return await  Apartment.create(apartment);
+}catch(error){
+    console.log(error)
+    transaction.rollback();
+    throw error;
+    
+}
+}
+
+
+async function getApartment(condition){
+
+
+
+    return await propertyService.getProperty(condition,Apartment)
+
+
+    // return await Apartment.findAll({
+    //     where:condition,
+    //     attributes:[ 'property_id','property_name','listed_for','price','views'],
+    //     limit:limit,
+    //     offset:offset
+    // })
 }
 
 async function getApartmentByID(property_id){
@@ -39,7 +81,7 @@ async function getApartmentByID(property_id){
 async function getPendingApartment(condition,limit,offset){
     return await PendingApartment.findAll({
         where : condition,
-        attributes:[ 'property_id','property_name','listed_for','price,views'],
+        attributes:[ 'property_id','property_name','listed_for','price','views'],
         limit:limit,
         offset:offset
     })
@@ -98,8 +140,8 @@ async function insertApartmentFeedback(property_id,customer_id,feedback){
 }
 
 
-async function updateApartmentAds(ads_status,property_id){
-    return await ApartmentAds.update({ads_status:ads_status},{where:{property_id:property_id}})
+async function updateApartmentAds(platform,ads_status,property_id){
+    return await ApartmentAds.update({[platform]:ads_status},{where:{property_id:property_id}})
 }
 
 async function insertApartmentComment(property_id,staff_id,super_admin_id,comment,isPrivate){
@@ -151,13 +193,27 @@ async function insertRequestedApartment(data){
     return await RequestedApartment.create(data)
 }
 
-async function getRequestedApartment(condition,limit,offset){
-    return await RequestedApartment.findAll({
-        where:condition,
-        limit:limit,
-        offset
-    })
+async function getRequestedApartment(condition){
+
+   return await propertyService.getProperty(condition,RequestedApartment)
+    
 }
 
 
-module.exports = {insertPendingApartment,getApartment,getApartmentByID,getPendingApartment,approveApartment,getPendingApartmentByID,insertApartmentFeedback,updateApartmentAds,insertApartmentComment,getApartmentComment,updateApartmentViews,insertRequestedApartment,getRequestedApartment};
+async function insertApartmentShootSchedule(property_id,shootStatus,datetime){
+    return await ApartmentShootSchedule.create({
+        property_id:property_id,
+        shoot_status:shootStatus,
+        date:datetime,
+        
+    })
+}
+
+async function getApartmentShootScheduleById(property_id){
+    
+    
+
+
+}
+
+module.exports = {insertApartment,insertPendingApartment,getApartment,getApartmentByID,getPendingApartment,approveApartment,getPendingApartmentByID,insertApartmentFeedback,updateApartmentAds,insertApartmentComment,getApartmentComment,updateApartmentViews,insertRequestedApartment,getRequestedApartment,insertApartmentShootSchedule};

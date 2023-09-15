@@ -1,5 +1,5 @@
 
-
+const { wrapAwait } = require("../../errorHandling");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
 const { registerServiceProvider, getServiceProvider, getPendingServiceProvider, verifyServiceProvider } = require("../../models/services/nres_service/service.nres_service");
 
@@ -22,13 +22,43 @@ const handleRegisterServiceProvider = async function (req, res,next) {
        async function registration(){
             const { name, phone_number, email, service_type, state, district, city, ward_number } = req.body;
             console.log(req.body)
-            const imagePath = req?.file?.path 
-            utils.isValid.email(res,email);
-            utils.isValid.phoneNumber(res,phone_number)
-    
-            const values =[name,phone_number,email,service_type,state,district,city,ward_number,imagePath];
-        
-            utils.handleRegistration(res,registerServiceProvider,values);
+            const image = JSON.stringify({"identification":req.file.path});
+  
+            const isEmailValid = utils.isValid.email(email);
+            const isPhoneNumberValid = utils.isValid.phoneNumber(phone_number);
+          
+            if( ! isEmailValid ) {
+                return res.status(400).json({message:"Invalid Email"});   
+              }
+              if( ! isPhoneNumberValid){
+                return res.status(400).json({message:"Invalid Phone Number"});   
+              }
+           
+            const values ={
+                name:name,
+                email:email,
+                phone_number:phone_number,
+                service_type:service_type,
+                state:state,
+                district:district,
+                city:city,
+                ward_number:ward_number,
+                profileImage:imagePath
+            };
+            
+            const [response,responseError] = await wrapAwait(registerServiceProvider(values))
+
+            if(responseError){
+                console.log(responseError);
+                if(responseError.name==='SequelizeUniqueConstraintError'){
+                    return res.status(400).json({message:"Service Provider Already Register"})
+                }
+                return res.status(500).json({message:"Internal Error"});
+          
+            }
+            return res.status(200).json({message:"Service Provider Registration success"})
+             
+            }
             
            
         }
@@ -37,19 +67,22 @@ const handleRegisterServiceProvider = async function (req, res,next) {
 
 
 
-}
 
 
-const handleGetServieProvider  = async function (req,res){
 
-    return utility.getSearchData(req,res,getServiceProvider);
+const handleGetServiceProvider  = async function (req,res){
+
+
+    
+
+    return utils.getSearchData(req,res,getServiceProvider);
    
 }
 
 
 const handleGetPendingServiceProvider = async function (req,res){
     
-    return utility.getSearchData(req,res,getPendingServiceProvider);
+    return utils.getSearchData(req,res,getPendingServiceProvider);
 }
 
 
@@ -61,9 +94,7 @@ const handleVerifyServiceProvider = async function(req,res){
 
     try {
         const data = await verifyServiceProvider(status,provider_id);
-        if(data.affectedRows===0){
-            return res.status(404).json({message:"No Data To Update"});
-        }
+       
         return res.status(200).json({message:"Update Successfully"});
     } catch (error) {
         console.log(error)
@@ -74,4 +105,4 @@ const handleVerifyServiceProvider = async function(req,res){
 
 
 
-module.exports = {handleRegisterServiceProvider,handleGetServieProvider,handleVerifyServiceProvider,handleGetPendingServiceProvider}
+module.exports = {handleRegisterServiceProvider,handleGetServiceProvider,handleVerifyServiceProvider,handleGetPendingServiceProvider}

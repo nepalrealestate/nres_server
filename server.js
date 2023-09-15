@@ -11,27 +11,48 @@ const serviceRouter = require("./routes/services/route.service")
 const app  = express();
 const cors = require("cors")
 const bodyParser = require('body-parser')
+const path = require("path")
 
 const cookieParser = require('cookie-parser');
 
-const {logger} = require("./utils/errorLogging/logging")
+const testRouter = require("./routes/route.test")
+
+
 
 const {chatServer, socketServer} = require("./socketConnection");
 
 
 
 const db = require("./models/model.index");
+const logger = require("./utils/errorLogging/logger");
 
 const port = 8000;
 
 // init sequlize;
 
-db.sequelize.sync({force:false});
+db.sequelize.sync({force:false}); // alter creates duplicates index every time
+// async function synchronizeDatabase() {
+//   try {
+//     await db.sequelize.sync({ force: true });
+//     console.log('Database synchronized successfully.');
+//   } catch (error) {
+//     console.error('Error synchronizing the database:', error);
+//   }
+// }
+
+// synchronizeDatabase();
 
 
 
+//app.use("/api/uploads", express.static(path.join(__dirname, 'uploads')));
+app.use('/api/uploads', express.static('uploads'));
 
-app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
+
+app.use(express.json())
+
+
+
+app.use(cors({credentials: true, origin: ['http://nres.com.np','https://nres.com.np', 'PostmanRuntime']}));
 
 
 app.use(cookieParser());
@@ -43,7 +64,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
 //form-urlencoded
 
-app.use('/uploads', express.static('uploads'));
+
 
 
 
@@ -51,34 +72,34 @@ app.use('/uploads', express.static('uploads'));
 
 
 //Routes
-app.use(express.json())
-app.use("/customer",customerRouter);
-app.use("/agent",agentRouter);
-app.use("/staff",staffRouter);
-app.use("/superAdmin",superAdminRouter);
-app.use("/house",houseRouter);
-app.use("/land",landRouter)
-app.use ("/apartment",apartmentRouter);
-// app.use("/property",propertyRouter);
-app.use("/service",serviceRouter)
 
+app.use("/api/customer",customerRouter);
+app.use("/api/agent",agentRouter);
+app.use("/api/staff",staffRouter);
+app.use("/api/admin",superAdminRouter);
+app.use("/api/property/house",houseRouter);
+app.use("/api/property/land",landRouter)
+app.use ("/api/property/apartment",apartmentRouter);
+// app.use("/property",propertyRouter);
+app.use("/api/property",propertyRouter);
+app.use("/api/service",serviceRouter);
+
+//testing
+app.use("/api/test",testRouter)
 
 
 
 //chat running
 //chatServer().startServer();
 //notification running
-socketServer.chat()
-socketServer.notification();
-socketServer.startServer();
+// socketServer.chat()
+// socketServer.notification();
+// socketServer.startServer();
 
-
-
-
-
-
-if(process.env.NODE_ENV=='production'){
-  app.listen();
+if(process.env.NODE_ENV=='Production'){
+  app.listen(()=>{
+   logger.info("Server Started")
+  });
 }else{
   app.listen(port,()=>{
     console.log(` port ${port} is listening.......`)
@@ -86,4 +107,3 @@ if(process.env.NODE_ENV=='production'){
 })
 
 }
-

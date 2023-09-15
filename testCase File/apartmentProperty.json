@@ -1,32 +1,74 @@
       
       
-      
-      
+[      
+  {
+    "property_type": "apartment",
+    "property_for": "residential",
+    "property_name": "Lalitpur Luxe Apartment",
+    "listed_for": "rent",
+    "property_age": 2,
+    "floor": 3.5,
+    "bhk": 3,
+    "facing": "north-east",
+    "province": "Province 3",
+    "district": "Lalitpur",
+    "municipality": "Lalitpur Sub-Metropolitan City",
+    "area_name": "Pulchowk",
+    "ward": 5,
+    "landmark": "Nearby Patan Durbar Square",
+    "latitude": 27.673582,
+    "longitude": 85.325939,
+    "property_area": 1400.0,
+    "road_size": 18.0,
+    "price": 50000.00,
+    "price_type": "negotiable",
+    "furnish": "furnished",
+    "parking_bike": 5,
+    "parking_car": 2,
+    "amenities": {
+      "lift": true,
+      "24hr_water_supply": true,
+      "backup_power": true,
+      "gym": true
+    },
+    "description": "A luxurious apartment situated in the heart of Lalitpur. Close to major landmarks and with all modern amenities.",
+    "social_media": {
+      "facebook": "https://facebook.com/LalitpurLuxeApartment",
+      "instagram": "https://instagram.com/LalitpurLuxe",
+      "youtube":"https://www.youtube.com/watch?v=D4dXCTf4yfA&t=3s&ab_channel=NepalRealEstateSolution-NRES"
+    }
+  },
+  
+
+
+
+
+
+
 {
-        "property_type": "residential",
-        "property_name": "Luxuory Apartments",
-        "listed_for": "sell",
-        "property_age": 17,
-        "floor": 6.5,
-        "bhk": 3,
-        "facing": "west-north",
-        "province": "Ontario",
-        "district": "Toronto",
-        "municipality": "Scarborough",
-        "ward": 25,
-        "landmark": "Near Scarborough Town Center",
-        "latitude": 43.776426,
-        "longitude": -79.231752,
-        "property_area": 1850.25,
-        "road_size": 12.0,
-        "price": 500000.00,
-        "price_type": "negotiable",
-        "furnish": "semi-furnished",
-        "parking_bike": 5,
-        "parking_car": 2,
-        "amenities": { "pool": true, "gym": true, "internet": true, "security": true },
-        "description": "A spacious 5 BHK apartment located in the heart of the city. It includes a gym and a pool. Parking space for 2 cars and 5 bikes is also available. The price is negotiable.",
-        "property_image": { "img1": "image_link1", "img2": "image_link2", "img3": "image_link3" },
-        "property_video": { "video1": "video_link1" }
-      }
-      
+  "property_type": "residential",
+  "property_area": 1400.5,
+  "property_age": 4,
+  "floor": 2.5,
+  "bhk": 3,
+  "facing": "east-north",
+  "road_size": 13.5,
+  "minPrice": "6000000.00",
+  "maxPrice": "6500000.00",
+  "furnish": "semi-furnished",
+  "description": "A comfortable 3BHK residential property located in the heart of the city with a magnificent view of the Himalayas.",
+  "needed": "within 3 months",
+  "province": "Province 2",
+  "zone": "Narayani Zone",
+  "district": "Chitwan",
+  "municipality": "Bharatpur Metropolitan City",
+  "ward": 5,
+  "landmark": "Near Narayani River",
+  "name": "Aarav Tamang",
+  "email": "aarav.tamang@email.np",
+  "phone_number": "98127631498",
+  "address": "Sauraha, Chitwan, Nepal"
+}
+
+
+]

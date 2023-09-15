@@ -1,9 +1,15 @@
 const bcrypt = require('bcrypt');
 
-const {login} = require("./commonAuthCode");
 const { registerSuperAdmin, findSuperAdmin } = require('../../models/services/users/service.superAdmin');
 
+const  utility = require("../controller.utils");
+const { wrapAwait } = require('../../errorHandling');
+
+
 const saltRound = 10;
+const tokenExpireTime = "1hr";
+const JWT_KEY = process.env.JWT_KEY_AGENT
+const auth = utility.authUtility(tokenExpireTime,saltRound,JWT_KEY,"superAdmin");
 
 const handleGetSuperAdmin = async(req,res)=>{
     console.log("Get Super Admin Api Hit Hard!!")
@@ -19,13 +25,16 @@ const handleSuperAdminRegistration = async(req,res)=>{
     console.log(password);
     console.log(confirmPassword)
 
+    if(!name && !email && !password && ! confirmPassword){
+        return res.status(400).json({message:"missing fields"});
+    }
+
     if (password !== confirmPassword) {
         console.log("Password not match  ");
         return res.status(403).json({ message: "Password  not match" });
       }
     try {
 
-        
         const hashPassword  = await bcrypt.hash(password,saltRound);
         //store details in DB
         const result = await registerSuperAdmin(name,email,hashPassword);
@@ -34,17 +43,9 @@ const handleSuperAdminRegistration = async(req,res)=>{
         }
         console.log(result);
 
-
-     
-
-
-
         return res.status(200).json({message:"Registration Succesfull"});
-    } catch (error) {
-        //handle hashing error\
-        console.log(error);
-       
-        return res.status(404).json({message:"Email Already Register"});
+    } catch (error) {   
+        utility.handleErrorResponse(res,error);
     }
    
 
@@ -52,17 +53,33 @@ const handleSuperAdminRegistration = async(req,res)=>{
 
 const handleSuperAdminLogin = async(req,res)=>{
 
-    const {email} = req.body;
+    const {email,password} = req.body;
+
+    if(!email || !password){
+        return res.status(400).json({message:"missing field"})
+    }
   
     //find superAdmin userName in DB
-
-    const superAdmin =  await findSuperAdmin(email);
+    const [superAdmin,superAdminError] =  await wrapAwait(findSuperAdmin(email));
     console.log(superAdmin);
-
+    
+    if(superAdminError){
+        utility.handleErrorResponse()
+    }
     //this login function handle all logic
 
-    return login(req,res,superAdmin);
+    return auth.login(req,res,superAdmin);
 
 }
 
-module.exports = {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin}
+const superAdminVerifyToken = async (req,res,next)=>{
+
+    auth.verifyToken(req,res,next);
+
+}
+
+const superAdminVerifyLogin = async(req,res)=>{
+    return res.status(200).json({message:"Admin Logged In",role:"superAdmin"});
+}
+
+module.exports = {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin,superAdminVerifyToken,superAdminVerifyLogin}

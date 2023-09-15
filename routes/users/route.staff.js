@@ -1,80 +1,87 @@
 const express = require("express");
 
-const {handleGetStaff, handleStaffRegistration, handleStaffLogin, handleAddVideoLink} = require('../../controllers/users/controller.staff');
-const { verifyToken } = require("../../controllers/users/commonAuthCode");
+const {handleGetStaff, handleStaffRegistration, handleStaffLogin, handleAddVideoLink, handleStaffPasswordReset, staffVerifyToken} = require('../../controllers/users/controller.staff');
+
 const { handleAddApartment, handleApproveApartment, handleGetPendingApartment, handleUpdateApartmentAds, handleInsertApartmentComment, handleGetApartment, handleGetApartmentComment, handleInsertRequestedApartment } = require("../../controllers/property/controller.apartment");
 const { handleAddHouse, handleApproveHouse, handleGetPendingHouse, handleUpdateHouseAds, handleGetHouse, handleInsertHouseComment, handleGetHouseComment, handleInsertRequestedHouse } = require("../../controllers/property/controller.house");
 const { handleAddLand, handleApproveLand, handleGetPendingLand, handleUpdateLandAds, handleInsertLandComment, handleGetLandComment, handleInsertRequestedLand } = require("../../controllers/property/controller.land");
 
 const { handleGetAllAgent } = require("../../controllers/users/controller.agent");
 const { insertRequestedLand } = require("../../models/services/property/service.land");
+const { handleGetPropertyWithAds } = require("../../controllers/property/controller.property");
 
 
 
 
 const router  = express.Router();
 
-router.get("/",verifyToken,handleGetStaff);
+router.get("/",staffVerifyToken,handleGetStaff);
 router.post("/register",handleStaffRegistration);
 router.post("/login",handleStaffLogin);
-router.post("/videoLink",handleAddVideoLink);
+
+
+router.put("/resetPassword",handleStaffPasswordReset);
 
 //testing 
+// get latest property for dashboard
+router.get("/property",staffVerifyToken,handleGetPropertyWithAds)
 
 // get property
-router.get("/house",verifyToken,handleGetHouse);
+router.get("/house",staffVerifyToken,handleGetHouse);
+router.get("/apartment",staffVerifyToken,handleGetApartment)
 
 
-router.post("/addApartment",verifyToken,handleAddApartment);
-router.post("/addHouse",verifyToken,handleAddHouse);
-router.post("/addLand",verifyToken,handleAddLand);
+
+router.post("/addApartment",staffVerifyToken,handleAddApartment);
+router.post("/addHouse",staffVerifyToken,handleAddHouse);
+router.post("/addLand",staffVerifyToken,handleAddLand);
 
 
 // get applied property
 
-router.get("/pendingApartment",verifyToken,handleGetPendingApartment);
-router.get("/pendingHouse",verifyToken,handleGetPendingHouse)
-router.get("/pendingLand",verifyToken,handleGetPendingLand)
+router.get("/pendingApartment",staffVerifyToken,handleGetPendingApartment);
+router.get("/pendingHouse",staffVerifyToken,handleGetPendingHouse)
+router.get("/pendingLand",staffVerifyToken,handleGetPendingLand)
 //approved apply for listing apartment
 
-router.put("/approvedApartment/:property_id",verifyToken,handleApproveApartment);
-router.put("/approvedHouse/:property_id",verifyToken,handleApproveHouse);
-router.put("/approvedLand/:property_id",verifyToken,handleApproveLand);
+router.put("/approvedApartment/:property_id",staffVerifyToken,handleApproveApartment);
+router.put("/approvedHouse/:property_id",staffVerifyToken,handleApproveHouse);
+router.put("/approvedLand/:property_id",staffVerifyToken,handleApproveLand);
 
 
 //update property 
 
 
 //update property ads status
-router.put("/house/ads/:property_id",verifyToken,handleUpdateHouseAds);
-router.put("/apartment/ads/:property_id",verifyToken,handleUpdateApartmentAds);
-router.put("/land/ads/:property_id",verifyToken,handleUpdateLandAds);
+router.put("/house/ads/:property_id",staffVerifyToken,handleUpdateHouseAds);
+router.put("/apartment/ads/:property_id",staffVerifyToken,handleUpdateApartmentAds);
+router.put("/land/ads/:property_id",staffVerifyToken,handleUpdateLandAds);
 
 //insert property comments for staff
 
-router.post("/house/comment/:property_id",verifyToken,handleInsertHouseComment);
-router.post("/apartment/comment/:property_id",verifyToken,handleInsertApartmentComment);
-router.post("/land/comment/:property_id",verifyToken,handleInsertLandComment);
+router.post("/house/comment/:property_id",staffVerifyToken,handleInsertHouseComment);
+router.post("/apartment/comment/:property_id",staffVerifyToken,handleInsertApartmentComment);
+router.post("/land/comment/:property_id",staffVerifyToken,handleInsertLandComment);
 
 
 // get property comments by id
 
-router.get("/house/comment/:property_id",verifyToken,handleGetHouseComment)
+router.get("/house/comment/:property_id",staffVerifyToken,handleGetHouseComment)
 
-router.get("/apartment/comment/:property_id",verifyToken,handleGetApartmentComment)
+router.get("/apartment/comment/:property_id",staffVerifyToken,handleGetApartmentComment)
 
-router.get("/land/comment/:property_id",verifyToken,handleGetLandComment)
+router.get("/land/comment/:property_id",staffVerifyToken,handleGetLandComment)
 
 
 //get latest property for dashboard;
-// router.get("/property",verifyToken,handleGetLatestPropertyDashboard);
+// router.get("/property",staffVerifyToken,handleGetLatestPropertyDashboard);
 
 
 
 
 //get all agents
 
-router.get("/agent",verifyToken,handleGetAllAgent)
+router.get("/agent",staffVerifyToken,handleGetAllAgent)
 
 //router.get("/staff");
 //router.get("/user")
@@ -84,8 +91,8 @@ router.get("/agent",verifyToken,handleGetAllAgent)
 
 
 // requested property
-router.post("/requestedApartment",verifyToken,handleInsertRequestedApartment)
-router.post("/requestedHouse",verifyToken,handleInsertRequestedHouse);
-router.post("/requestedLand",verifyToken,handleInsertRequestedLand)
+router.post("/requestedApartment",staffVerifyToken,handleInsertRequestedApartment)
+router.post("/requestedHouse",staffVerifyToken,handleInsertRequestedHouse);
+router.post("/requestedLand",staffVerifyToken,handleInsertRequestedLand)
 
 module.exports = router;

@@ -1,4 +1,8 @@
 const db = require("../../model.index");
+const { getPropertyId, updatePropertyId } = require("./service.property");
+
+const propertyService = require("../service.utils").propertyServiceUtility();
+
 const Land = db.PropertyModel.Land;
 const PendingLand = db.PropertyModel.PendingLand
 const LandAds = db.PropertyModel.LandAds
@@ -12,13 +16,42 @@ async function insertPendingLand(land){
     return await PendingLand.create(land)
 }
 
-async function getLand(condition,limit,offset){
-    return await Land.findAll({
-        where:condition,
-        attributes:[ 'property_id','property_name','listed_for','price','views'],
-        limit:limit,
-        offset:offset
-    })
+async function insertLand(land){
+    let transaction ; 
+
+    try {
+        transaction  = await db.sequelize.transaction();
+
+        const property_id = await getPropertyId();
+        
+
+       const createdLand=  await Land.create({
+            property_id:property_id,
+            ...land
+        });
+        await LandAds.create({property_id:property_id},{transaction});
+        
+        await updatePropertyId(transaction);
+        transaction.commit();
+        return createdLand;
+
+    //return await  Apartment.create(apartment);
+}catch(error){
+    transaction.rollback();
+    throw error;
+    
+}
+}
+
+async function getLand(condition){
+
+    return await propertyService.getProperty(condition,Land)
+    // return await Land.findAll({
+    //     where:condition,
+    //     attributes:[ 'property_id','property_name','listed_for','price','views'],
+    //     limit:limit,
+    //     offset:offset
+    // })
 }
 
 async function getLandByID(property_id){
@@ -94,8 +127,8 @@ async function getPendingLand(condition,limit,offset){
 
 
 
- async function updateLandAds(ads_status,property_id){
-    return await LandAds.update({ads_status:ads_status},{where:{property_id:property_id}})
+ async function updateLandAds(platform,ads_status,property_id){
+    return await LandAds.update({[platform]:ads_status},{where:{property_id:property_id}})
 }
 
 async function insertLandComment(property_id,staff_id,super_admin_id,comment,isPrivate){
@@ -151,9 +184,12 @@ async function insertRequestedLand(data){
     }
 }
     
-
+async function getRequestedLand(condition){
+    return propertyService.getProperty(condition,RequestedLand);
+}
 
 module.exports = {
+    insertLand,
     insertPendingLand,
     getLand,
     getLandByID,
@@ -166,4 +202,5 @@ module.exports = {
     approveLand,
     updateLandViews,
     insertRequestedLand,
+    getRequestedLand
 }

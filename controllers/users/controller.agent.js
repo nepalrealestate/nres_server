@@ -1,25 +1,17 @@
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const {
-  login,
-  verifyToken,
-  passwordReset,
-  passwordUpdate,
-} = require("./commonAuthCode");
-const {
-  getRandomNumber,
-  convertArrayIntoJsonObject,
-} = require("./controller.commonFunction");
+
+
+
 const {
   deleteToken,
   findPasswordResetTokenValue,
   insertUsersRating,
 } = require("../../models/users/model.commonUsersCode");
 const { wrapAwait } = require("../../errorHandling");
-const validator = require("email-validator");
+
 const multer = require("multer");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
-// const { Utility,Auth } = require("../controller.utils");
+
 const { query } = require("express");
 const { registerAgent, findAgent, getAllAgent, updateAgentProfile, getAgent, findAgentPassword, updateAgentPassword, insertAgentRating } = require("../../models/services/users/service.agent");
 const  utility = require("../controller.utils");
@@ -29,6 +21,7 @@ const saltRound = 10;
 const tokenExpireTime = "1hr";
 const JWT_KEY = process.env.JWT_KEY_AGENT
 const auth = utility.authUtility(tokenExpireTime,saltRound,JWT_KEY,"agent");
+const user = utility.userUtility("agent");
 
 const utils = utility.utility() ;
 
@@ -55,7 +48,7 @@ const handleGetAgent = async (req, res) => {
     console.log(data);
     return res.status(200).json( data );
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return res.status(500).json({ message: error });
   }
 
 
@@ -184,10 +177,10 @@ const handleAgentPasswordReset = async (req, res, next) => {
   if (email && token && agent) {
    
     // pass update Password function as parameters;
-    return await auth.passwordUpdate(req, res, agent, updateAgentPassword);
+    return await user.passwordUpdate(req, res, agent, updateAgentPassword);
   }
   // if there is no token - then get token for reset password
-  return await auth.passwordReset(req, res, agent);
+  return await user.passwordReset(req, res, agent);
 };
 
 //this function will shift to user routing
@@ -268,7 +261,7 @@ const handleUpdateAgentPassword = async(req,res)=>{
   return res.status(400).json({message:"Password does not match"})
  }
 
- return auth.updateProfilePassword(req,res,updateAgentPassword);
+ return user.updateProfilePassword(req,res,updateAgentPassword);
 
  
  

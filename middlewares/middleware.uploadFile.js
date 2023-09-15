@@ -1,23 +1,48 @@
 // image upload
 
 const multer = require("multer");
+const fs = require('fs');
+const path = require("path");
 
 
 
+// Helper function to generate a new name in case of duplicate filenames
+function generateUniqueFilename(directory, originalName) {
+  let baseName = path.basename(originalName, path.extname(originalName));
+  let extension = path.extname(originalName);
+  let newName = originalName;  // start with the original name including its extension
+  let count = 1;
 
-function UploadImage(folderPath,maxImageSize) {
-  let path = `${folderPath}`;
+  while (fs.existsSync(path.join(directory, newName))) {
+    newName = `${baseName}_${count}${extension}`;
+    count++;
+  }
 
-  console.log(path);
+  return newName;
+}
+
+
+function UploadImage(folderPath, maxImageSize) {
+  let filePath = `${folderPath}`;
+
+  console.log(filePath);
 
   const storage = multer.diskStorage({
+
     destination: function (req, file, cb) {
-      cb(null, path);
+      if (!fs.existsSync(filePath)) {
+        fs.mkdirSync(filePath, { recursive: true })
+      }
+      cb(null, filePath);
     },
 
     filename: function (req, file, cb) {
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      cb(null, file.fieldname + "-" + uniqueSuffix);
+      // const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      // cb(null, file.fieldname + "-" + uniqueSuffix);
+      const sanitizedFileName = path.basename(file.originalname); // This will include the file's extension
+      const uniqueFileName = generateUniqueFilename(filePath, sanitizedFileName); 
+
+      cb(null,uniqueFileName);
     },
   });
 
@@ -33,30 +58,57 @@ function UploadImage(folderPath,maxImageSize) {
         cb(null, true);
       } else {
         cb(null, false);
-        return  cb(new Error("Only .jpeg, .jpg, .png files are allowed"));
+        return cb(new Error("Only .jpeg, .jpg, .png files are allowed"));
       }
     },
   });
 
-  this.multerError = async function (req,res,next,uploadConfigFunction){
-    uploadConfigFunction(req,res,async function(err){
-      if (err instanceof multer.MulterError) {
-        // A Multer error occurred when uploading.
-        console.log(err)
-        return res.status(400).json({ message: "Error while uploading", err })
-    } else if (err) {
-        // An unknown error occurred when uploading.
-        return res.status(400).json({ message: "Error while uploading", err })
-    }
-    next();
-    })
-  } 
+}
 
+
+
+// UploadImage.prototype.deleteImage = function (imageLink){
+
+//   imageLink.forEach(function(link){
+//     fs.unlink(link),function(err){
+//       if(err){
+//         console.log("Error while Deleting image",err);
+//       }
+//       console.log(link," image deleted")
+//     }
+//   })
+
+
+
+// }
+
+
+// delete from file link or file upload from client 
+
+function extractPathsFromObjects(fileObjects) {
+  return fileObjects.map(fileObject => fileObject.path);
+}
+
+function deleteFiles(input) {
+  // Determine if the input is an array of file objects
+  if (input.length > 0 && typeof input[0] === 'object' && input[0].path) {
+      input = extractPathsFromObjects(input);
+  }
+
+  // At this point, input should be an array of file paths
+  input.forEach(path => {
+      fs.unlink(path, function(err) {
+          if (err) {
+              console.log("Error while Deleting image", err);
+          } else {
+              console.log(path, " image deleted");
+          }
+      });
+  });
 }
 
 
 
 
 
-
-module.exports = { UploadImage };
+module.exports = { UploadImage, deleteFiles };

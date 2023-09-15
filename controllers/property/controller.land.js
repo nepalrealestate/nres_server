@@ -1,13 +1,12 @@
 
 const { updatePropertyViews } = require("../../models/property/model.property");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
-const path = "uploads/property/land/images"; //path from source
+const path = "uploads/property/land"; //path from source
 const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
-const { checkProperties } = require("../requiredObjectProperties");
 const {Utility, utility, propertyUtility} = require("../controller.utils");
-const { insertPendingLand, getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand } = require("../../models/services/property/service.land");
+const { insertPendingLand, getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand, insertLand, getRequestedLand } = require("../../models/services/property/service.land");
 //const utils = new Utility();
 const utils = utility();
 const property = propertyUtility("land");
@@ -17,12 +16,12 @@ const handleAddLand = async (req, res) => {
   
   upload(req, res, async function (err) {
    
-    utils.handleMulterError(req,res,err,addLand,true);
+    utils.handleMulterError(req,res,err,addLand,false);
   });
   
   async function addLand(){
-
-   property.handleAddProperty( req,res,insertPendingLand);
+    property.handleAddProperty(req,res,insertLand)
+   //property.handleAddProperty( req,res,insertPendingLand);
   }
       
     
@@ -78,14 +77,22 @@ const handleApproveLand = async (req, res) => {
 const handleUpdateLandAds = async (req,res)=>{
 
   const {property_id} = req.params;
-  const {ads_status} = req.body;
+  const {platform,ads_status} = req.body;
+
+  ads_statusRequired = ['unplanned','posted','progress','planned'];
+  platformRequired  =['twitter','tiktok','instagram','facebook','youtube']
+
+  if(!ads_statusRequired.includes(ads_status)  || 
+    !platformRequired.includes(platform)){
+      return res.status(400).json({message:"Wrong Input"});
+    }
 
   
   try {
     
-    const response = await updateLandAds(ads_status,property_id)
+    const response = await updateLandAds(platform,ads_status,property_id)
  
-    if(!response ){
+    if(response[0] === 0 ){
       return res.status(400).json({message:"No property to update "})
     }
     return res.status(200).json({message:"Successfully Update ads status"});
@@ -142,6 +149,9 @@ try {
 
 }
 
+const handleGetRequestedLand = async (req,res)=>{
+  property.handleGetProperty(req,res,getRequestedLand)
+}
 
 module.exports = {
   handleAddLand,
@@ -153,5 +163,6 @@ module.exports = {
   handleUpdateLandAds,
   handleInsertLandComment,
   handleGetLandComment,
-  handleInsertRequestedLand
+  handleInsertRequestedLand,
+  handleGetRequestedLand
 };

@@ -11,7 +11,11 @@ function landModel (sequelize,DataTypes){
       unique:true,
       primaryKey:true,
     },
-    property_type :{
+    property_type:{
+      type:DataTypes.ENUM('land'),
+      defaultValue:"land"
+    },
+    property_for :{
       type:DataTypes.ENUM('non-plotted','plotted')
     },
     property_name : {
@@ -22,14 +26,20 @@ function landModel (sequelize,DataTypes){
       }
     },
     listed_for :{
-      type:DataTypes.ENUM('sell','rent')
+      type:DataTypes.ENUM('sale','rent')
+    },
+    twist:{
+      type:DataTypes.FLOAT
+    },
+    property_area:{
+      type:DataTypes.FLOAT
+    },
+    road_size:{
+      type:DataTypes.FLOAT
     },
    
-    property_age:{
-      type:DataTypes.INTEGER
-    },
     facing:{
-      type:DataTypes.ENUM('east','west','north','south','east-north','east-south','west-north','west-south')
+      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
     },
     province:{
       type:DataTypes.STRING
@@ -40,6 +50,9 @@ function landModel (sequelize,DataTypes){
     municipality:{
       type:DataTypes.STRING
     },
+    area_name:{
+      type:DataTypes.STRING
+    } ,     
     ward:{
       type:DataTypes.INTEGER
     },
@@ -51,12 +64,6 @@ function landModel (sequelize,DataTypes){
     },
     longitude:{
       type:DataTypes.DECIMAL(9,6)
-    },
-    property_area:{
-      type:DataTypes.FLOAT
-    },
-    road_size:{
-      type:DataTypes.FLOAT
     },
     price:{
       type:DataTypes.DECIMAL(12,2),
@@ -71,14 +78,11 @@ function landModel (sequelize,DataTypes){
     description:{
       type:DataTypes.TEXT
     },
+    social_media:{
+      type:DataTypes.JSON
+    },
     property_image:{
       type:DataTypes.JSON
-    },
-    property_video:{
-      type:DataTypes.JSON
-    },
-    posted_date:{
-      type:DataTypes.DATE
     },
     staff_id:{
       type:DataTypes.INTEGER,
@@ -125,7 +129,11 @@ function pendingLandModel (sequelize,DataTypes){
       autoIncrement:true,
       primaryKey:true,
     },
-    property_type :{
+    property_type:{
+      type:DataTypes.ENUM('land'),
+      defaultValue:"land"
+    },
+    property_for :{
       type:DataTypes.ENUM('non-plotted','plotted')
     },
     property_name : {
@@ -136,16 +144,24 @@ function pendingLandModel (sequelize,DataTypes){
       }
     },
     listed_for :{
-      type:DataTypes.ENUM('sell','rent')
+      type:DataTypes.ENUM('sale','rent')
     },
-   
-    property_age:{
-      type:DataTypes.INTEGER
+    twist:{
+      type:DataTypes.FLOAT
+    },
+    property_area:{
+      type:DataTypes.FLOAT
+    },
+    road_size:{
+      type:DataTypes.FLOAT
     },
     facing:{
-      type:DataTypes.ENUM('east','west','north','south','east-north','east-south','west-north','west-south')
+      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
     },
     province:{
+      type:DataTypes.STRING
+    },
+    zone:{
       type:DataTypes.STRING
     },
     district:{
@@ -154,6 +170,9 @@ function pendingLandModel (sequelize,DataTypes){
     municipality:{
       type:DataTypes.STRING
     },
+    area_name:{
+      type:DataTypes.STRING
+    } ,     
     ward:{
       type:DataTypes.INTEGER
     },
@@ -165,12 +184,6 @@ function pendingLandModel (sequelize,DataTypes){
     },
     longitude:{
       type:DataTypes.DECIMAL(9,6)
-    },
-    property_area:{
-      type:DataTypes.FLOAT
-    },
-    road_size:{
-      type:DataTypes.FLOAT
     },
     price:{
       type:DataTypes.DECIMAL(12,2),
@@ -185,14 +198,11 @@ function pendingLandModel (sequelize,DataTypes){
     description:{
       type:DataTypes.TEXT
     },
+    social_media:{
+      type:DataTypes.JSON
+    },
     property_image:{
       type:DataTypes.JSON
-    },
-    property_video:{
-      type:DataTypes.JSON
-    },
-    posted_date:{
-      type:DataTypes.DATE
     },
     staff_id:{
       type:DataTypes.INTEGER,
@@ -243,10 +253,26 @@ function landAdsModel (sequelize,DataTypes){
       },
       onDelete: 'CASCADE'
     },
-    ads_status: {
-      type: DataTypes.ENUM('unplanned','posted','progress','planned'),
+    twitter:{
+      type:DataTypes.ENUM('unplanned','posted','progress','planned'),
       defaultValue: 'unplanned'
-    }
+    },
+    tiktok:{
+      type:DataTypes.ENUM('unplanned','posted','progress','planned'),
+      defaultValue: 'unplanned'
+    },
+    instagram:{
+      type:DataTypes.ENUM('unplanned','posted','progress','planned'),
+      defaultValue: 'unplanned'
+    },
+    facebook:{
+      type:DataTypes.ENUM('unplanned','posted','progress','planned'),
+      defaultValue: 'unplanned'
+    },
+    youtube:{
+      type:DataTypes.ENUM('unplanned','posted','progress','planned'),
+      defaultValue: 'unplanned'
+    },
   },{
     freezeTableName: true,
   })
@@ -469,6 +495,7 @@ function requestedLandModel(sequelize,DataTypes){
 
 
 
+
 module.exports = {
   landModel,
   pendingLandModel,
@@ -476,5 +503,5 @@ module.exports = {
   landCommentModel,
   landFeedbackModel,
   landViewsModel,
-  requestedLandModel
+  requestedLandModel,
 };

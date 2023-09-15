@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const {handleAddApartment, handleGetApartment, handleApartmentFeedback, handleGetApartmentByID} = require("../../controllers/property/controller.apartment");
-const { verifyToken } = require("../../controllers/users/commonAuthCode");
+
 
 
 router.post("/",handleAddApartment);// insert apartment property

@@ -31,18 +31,20 @@ const handleCustomerRegistration = async (req,res)=>{
 
     if(hashPasswordError){
         console.log(hashPasswordError);
-        return res.status(500).json({message:"Internal Error !  please try "});
+        
+        return res.status(500).json({error:"hash password error",message:"Internal Error !  please try "});
     }
 
 
     const [response,responseError]= await wrapAwait(registerCustomer({name,email,phoneNumber,hashPassword}));
 
     if(responseError){
-        console.log(responseError);
-        if(responseError.name==='SequelizeUniqueConstraintError'){
-            return res.status(400).json({message:"Customer Already Register"})
-        }
-        return res.status(500).json({message:"Internal Error"});
+        // console.log(responseError);
+        // if(responseError.name==='SequelizeUniqueConstraintError'){
+        //     return res.status(400).json({message:"Customer Already Register"})
+        // }
+        // return res.status(500).json({message:"Internal Error"});
+        utility.handleErrorResponse(res,responseError)
 
     }
     return res.status(200).json({message:"Customer Registration success"})
@@ -64,7 +66,15 @@ const handleCustomerLogin = async (req,res)=>{
 }
 
 const handleGetCustomer = async (req,res)=>{
-    const customer_id = req.id;
+
+
+    let customer_id ;
+    if(req.id){
+        customer_id:req.id;
+    }else if(req.params.customer_id){
+        customer_id = req.params.customer_id
+    }
+
     if(!customer_id){
         return res.status(400).json({message:"You are not authorized"});
     }
@@ -77,6 +87,7 @@ const handleGetCustomer = async (req,res)=>{
         return res.status(500).json({message:"Internal Error"});
     }
 }
+
 
 
 const customerVerifyToken = async(req,res,next)=>{

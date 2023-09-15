@@ -4,14 +4,15 @@ const {
   updatePropertyViews,
 } = require("../../models/property/model.property");
 
-const path = "uploads/property/apartment/images"; //path from source
+const path = "uploads/property/apartment"; //path from source
 const maxImageSize = 2 * 1024 * 1024;
 
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
-const {Utility, propertyUtility, utility} = require("../controller.utils");
-const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment } = require("../../models/services/property/service.apartment");
+const {Utility, propertyUtility, utility, handleErrorResponse} = require("../controller.utils");
+const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment } = require("../../models/services/property/service.apartment");
 const { wrapAwait } = require("../../errorHandling");
+const { apartmentSchema } = require("../validationSchema");
 //const utils = new Utility();
 const utils = utility();
 const property = propertyUtility("apartment");
@@ -21,15 +22,16 @@ const property = propertyUtility("apartment");
 
 const handleAddApartment = async (req, res) => {
 
-  upload(req, res, async function (err) {
-    utils.handleMulterError(req,res,err,addApartment,true);
-  });
-
+    upload(req, res, async function (err) {
+      utils.handleMulterError(req,res,err,addApartment,false);
+    });
   
-  async function addApartment (){
-    property.handleAddProperty(req,res,insertPendingApartment);
-  }
-
+    
+    async function addApartment (){
+      //property.handleAddProperty(req, res, insertPendingApartment);
+      property.handleAddProperty(req,res,insertApartment);
+    }
+    
 };
 
 
@@ -42,8 +44,7 @@ const handleApartmentFeedback = async (req, res) => {
     
     return res.status(200).json({ message: "Feedback Submit" });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: error.sqlMessage });
+   return handleErrorResponse(res,error)
   }
 };
 
@@ -114,14 +115,22 @@ const handleApproveApartment = async (req, res) => {
 const handleUpdateApartmentAds = async (req,res)=>{
 
   const {property_id} = req.params;
-  const {ads_status} = req.body;
+  const {platform,ads_status} = req.body;
+
+  ads_statusRequired = ['unplanned','posted','progress','planned'];
+  platformRequired  =['twitter','tiktok','instagram','facebook','youtube']
+
+  if(!ads_statusRequired.includes(ads_status)  || 
+    !platformRequired.includes(platform)){
+      return res.status(400).json({message:"Wrong Input"});
+    }
 
   
   try {
     
-    const response = await updateApartmentAds(ads_status,property_id)
+    const response = await updateApartmentAds(platform,ads_status,property_id)
  
-    if(response.affectedRows === 0 ){
+    if(response[0] === 0  ){
       return res.status(400).json({message:"No property to update "})
     }
     return res.status(200).json({message:"Successfully Update ads status"});
@@ -157,7 +166,6 @@ const handleInsertRequestedApartment = async (req,res)=>{
     'needed', 'province', 'zone', 'district', 'municipality', 'ward', 
     'landmark', 'name', 'email', 'phone_number', 'address'
 ];
-console.log(req.body);
 
 for (const field of requiredFields) {
   if (!req.body.hasOwnProperty(field)) {
@@ -171,10 +179,19 @@ try {
   const response = await insertRequestedApartment(requestedApartment);
   return res.status(200).json({message:"Requested Apartment Inserted successfully"})
 } catch (error) {
-  return res.status(500).json({message:"Internal Error"})
+
+  return handleErrorResponse(res,error);
+
+  
+
+
 }
 
+}
 
+const handleGetRequestedApartment = async (req,res)=>{
+  
+  property.handleGetProperty(req,res,getRequestedApartment);
 
 }
 
@@ -192,5 +209,6 @@ module.exports = {
   handleUpdateApartmentAds,
   handleInsertApartmentComment,
   handleGetApartmentComment,
-  handleInsertRequestedApartment
+  handleInsertRequestedApartment,
+  handleGetRequestedApartment
 };

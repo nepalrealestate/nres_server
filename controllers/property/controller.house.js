@@ -2,13 +2,13 @@ const { UploadImage } = require("../../middlewares/middleware.uploadFile");
 
 const { updatePropertyViews } = require("../../models/property/model.property");
 
-const path = "uploads/property/house/images"; //path from source
+const path = "uploads/property/house"; //path from source
 const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 
 const {Utility, propertyUtility, utility} = require("../controller.utils");
-const { insertPendingHouse, getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse } = require("../../models/services/property/service.house");
+const { insertPendingHouse, getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse, getRequestedHouse } = require("../../models/services/property/service.house");
 //const utils = new Utility();
 const utils  = utility();
 
@@ -18,11 +18,12 @@ const property = propertyUtility("house");
 const handleAddHouse = async (req, res) => {
   
   upload(req, res, async function (err) {
-    utils.handleMulterError(req,res,err,addHouse,true);
+    utils.handleMulterError(req,res,err,addHouse,false);
   });
   
   async function addHouse (){
-    property.handleAddProperty(req,res,insertPendingHouse);
+    property.handleAddProperty(req,res,insertHouse);
+   // property.handleAddProperty(req,res,insertPendingHouse);
   }
   
 
@@ -101,15 +102,23 @@ const handleApproveHouse = async (req, res) => {
 const handleUpdateHouseAds = async (req,res)=>{
 
   const {property_id} = req.params;
-  const {ads_status} = req.body;
+  const {platform,ads_status} = req.body;
 
+  ads_statusRequired = ['unplanned','posted','progress','planned'];
+  platformRequired  =['twitter','tiktok','instagram','facebook','youtube']
+
+  if(!ads_statusRequired.includes(ads_status)  || 
+    !platformRequired.includes(platform)){
+      return res.status(400).json({message:"Wrong Input"});
+    }
   
   try {
     
-    const response = await updateHouseAds(ads_status,property_id)
+    const response = await updateHouseAds(platform,ads_status,property_id)
+    console.log(response)
  
-    if(response.affectedRows === 0 ){
-      return res.status(400).json({message:"No property to update "})
+    if(response[0] === 0 ){
+      return res.status(404).json({message:"No property to update "})
     }
     return res.status(200).json({message:"Successfully Update ads status"});
 
@@ -126,8 +135,8 @@ const handleUpdateHouseAds = async (req,res)=>{
 
 const handleInsertHouseComment = async (req,res)=>{
 
-  
-  return utils.handleInsertPropertyComment(req,res,insertHouseComment)
+
+  return property.handleInsertPropertyComment(req,res,insertHouseComment)
    
 
 
@@ -136,7 +145,7 @@ const handleInsertHouseComment = async (req,res)=>{
 
 const handleGetHouseComment = async (req,res)=>{
 
-  return utils.handleGetPropertyComment(req,res,getHouseComment)
+  return property.handleGetPropertyComment(req,res,getHouseComment)
 
 }
 
@@ -147,7 +156,7 @@ const handleInsertRequestedHouse = async (req,res)=>{
     'furnish', 'description', 'needed', 'province', 'zone', 'district', 
     'municipality', 'ward', 'landmark', 'name', 'email', 'phone_number', 'address'
 ];
-  console.log(req.body);
+  
   for(const field of requiredHouseFields){
     if(!req.body.hasOwnProperty(field)){
       return res.status(400).json({message:"missing field"})
@@ -159,9 +168,17 @@ const handleInsertRequestedHouse = async (req,res)=>{
     const response = await insertRequestedHouse(requestedHouse);
     return res.status(200).json({message:"Requested House Inserted Successfully"});
   } catch (error) {
+    console.log(error.name);
+    if(error.name === 'SequelizeUniqueConstraintError'){
+      return res.status(400).json({message:error.errors})
+    }
     return res.status(500).json({message:"Internal Error"})
     
   }
+}
+
+const handleGetRequestedHouse = async (req,res)=>{
+  property.handleGetProperty(req,res,getRequestedHouse)
 }
 
 
@@ -178,5 +195,6 @@ module.exports = {
   handleUpdateHouseAds,
   handleInsertHouseComment,
   handleGetHouseComment,
-  handleInsertRequestedHouse
+  handleInsertRequestedHouse,
+  handleGetRequestedHouse
 };

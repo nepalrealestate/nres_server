@@ -1,10 +1,12 @@
 const sequelize = require("../db.config");
-const {DataTypes} = require('sequelize');
+const {DataTypes,Op} = require('sequelize');
+
 
 
 
 db = {};
 db.sequelize = sequelize;
+db.Op  = Op
 
 
 // notification
@@ -66,12 +68,24 @@ db.PropertyModel = {
     HouseViews:require('./property/model.house').houseViewsModel(sequelize,DataTypes),
     LandViews : require('./property/model.land').landViewsModel(sequelize,DataTypes),
 
+    //property shoot schedule
+    // ApartmentShootSchedule   : require('./property/model.apartment').apartmentShootScheduleModel(sequelize,DataTypes),
+    // HouseShootSchedule  : require("./property/model.house").houseShootScheduleModel(sequelize,DataTypes),
+    // LandShootSchedule  : require("./property/model.land").landShootScheduleModel(sequelize,DataTypes),
+
 
     //Requested Property
     RequestedApartment:require('./property/model.apartment').requestedApartmentModel(sequelize,DataTypes),
     //RequestedApartmentBy:require('./property/model.apartment').requestedApartmentByModel(sequelize,DataTypes),
     RequestedHouse : require('./property/model.house').requestedHouseModel(sequelize,DataTypes),
-    RequestedLand : require('./property/model.land').requestedLandModel(sequelize,DataTypes)
+    RequestedLand : require('./property/model.land').requestedLandModel(sequelize,DataTypes),
+
+
+    PropertyShootSchedule : require('./property/model.property').propertyShootScheduleModel(sequelize,DataTypes),
+
+    PropertyFieldVisit : require('./property/model.property').propertyFieldVisitRequestModel(sequelize,DataTypes),
+    PropertyFieldVisitComment : require('./property/model.property').propertyFieldVisitCommentModel(sequelize,DataTypes)
+
 
 };
 
@@ -92,6 +106,15 @@ db.ChatModel={
     StaffChatGroup : require('./chat/model.staffChat').staffChatGroupModel(sequelize,DataTypes)
 
 };
+
+
+// views 
+db.Views={
+
+    PropertyViewAdmin:require("./property/model.property").propertyViewAdminModel(sequelize,DataTypes),
+    PropertyViewClient :require("./property/model.property").propertyViewClientModel(sequelize,DataTypes)
+
+}
 
 
 

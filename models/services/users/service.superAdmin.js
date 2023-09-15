@@ -11,8 +11,11 @@ async function registerSuperAdmin(name,email,password){
 
 async function findSuperAdmin(email){
     return await SuperAdmin.findOne({
-        where:{email:email}
-    })
+        where:{email:email},
+        attributes:[['superAdmin_id','id'],'name','email','password'],
+        raw:true
+    },
+    )
 }
 
 

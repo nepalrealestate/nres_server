@@ -1,5 +1,7 @@
 
 const db = require("../../model.index");
+const { propertyServiceUtility } = require("../service.utils");
+const { updatePropertyId, getPropertyId, getLatestPropertyPriorityLocation } = require("./service.property");
 const House = db.PropertyModel.House
 const PendingHouse = db.PropertyModel.PendingHouse
 const HouseAds = db.PropertyModel.HouseAds
@@ -8,19 +10,55 @@ const HouseComment = db.PropertyModel.HouseComment
 const HouseViews = db.PropertyModel.HouseViews
 const RequestedHouse = db.PropertyModel.RequestedHouse
 
+const propertyService = propertyServiceUtility();
+
  async function insertPendingHouse(house){
     return await PendingHouse.create(house);
  }
 
- async function getHouse(condition,limit,offset){
-    return await House.findAll({
-        where:condition,
-        attributes:[ 'property_id','property_name','listed_for','price','views'],
-        limit:limit,
-        offset:offset
-    })
+ async function insertHouse(house){
+    
+    console.log("Insert model House ",house)
+    let transaction ; 
+
+    try {
+        transaction  = await db.sequelize.transaction();
+
+        const property_id = await getPropertyId();
+        
+
+       const createdHouse =  await House.create({
+            property_id:property_id,
+            ...house
+        });
+        await HouseAds.create({property_id:property_id},{transaction});
+        await updatePropertyId(transaction);
+        transaction.commit();
+        return createdHouse;
+
+    //return await  Apartment.create(apartment);
+}catch(error){
+    transaction.rollback();
+    throw error;
+    
+}
  }
 
+ async function getHouse(condition){
+
+    return await propertyService.getProperty(condition,House);
+
+
+
+    // return await House.findAll({
+    //     where:condition,
+    //     attributes:[ 'property_id','property_name','listed_for','price','views'],
+    //     limit:limit,
+    //     offset:offset
+    // })
+ }
+
+ 
  async function getHouseByID(property_id){
     return await House.findByPk(property_id)
  }
@@ -92,8 +130,8 @@ const RequestedHouse = db.PropertyModel.RequestedHouse
 
 
 
- async function updateHouseAds(ads_status,property_id){
-    return await HouseAds.update({ads_status:ads_status},{where:{property_id:property_id}})
+ async function updateHouseAds(platform,ads_status,property_id){
+    return await HouseAds.update({[platform]:ads_status},{where:{property_id:property_id}})
 }
 
 async function insertHouseComment(property_id,staff_id,super_admin_id,comment,isPrivate){
@@ -144,6 +182,10 @@ async function insertRequestedHouse (data){
     return await RequestedHouse.create(data);
 }
 
+async function getRequestedHouse(condition){
+    propertyService.getProperty(condition,RequestedHouse);
+}
 
 
-module.exports ={insertPendingHouse,getHouse,getHouseByID,getHouseComment,getPendingHouse,getPendingHouseByID,insertHouseFeedback,insertHouseComment,updateHouseAds,approveHouse,updateHouseViews,insertRequestedHouse}
+
+module.exports ={insertHouse,insertPendingHouse,getHouse,getHouseByID,getHouseComment,getPendingHouse,getPendingHouseByID,insertHouseFeedback,insertHouseComment,updateHouseAds,approveHouse,updateHouseViews,insertRequestedHouse,getRequestedHouse}
