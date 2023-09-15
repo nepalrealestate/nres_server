@@ -1,3 +1,4 @@
+const logger = require("../../../utils/errorLogging/logger");
 const db = require("../../model.index");
 const { getPropertyId, updatePropertyId } = require("./service.property");
 
@@ -153,25 +154,29 @@ async function getLandComment(property_id,super_admin_id=null){
 
 async function updateLandViews(property_id,latitude,longitude){
     //update views in Apartment table and Land views  Table
-    let transaction ;
+    // let transaction ;
 
 
-    try {
-        transaction = await db.sequelize.transaction();
-        // create new views 
-        await LandViews.create({property_id,latitude,longitude},{transaction});
+    // try {
+    //     transaction = await db.sequelize.transaction();
+    //     // create new views 
+    //     await LandViews.create({property_id,latitude,longitude},{transaction});
 
-        // update Apartment views
-        await Land.increment('views', { by: 1, where: { property_id: property_id }, transaction });
+    //     // update Apartment views
+    //     await Land.increment('views', { by: 1, where: { property_id: property_id }, transaction });
 
-        await transaction.commit();
-        return;
+    //     await transaction.commit();
+    //     return;
 
-    } catch (error) {
+    // } catch (error) {
 
-        await transaction.rollback();
-        throw error;
-    }
+    //     await transaction.rollback();
+    //     throw error;
+    // }
+
+    LandViews.create({property_id,latitude,longitude}).catch((error)=>{
+        logger.error(`Error while insert Land View Location - ${error}`)
+    });
 
 }
 

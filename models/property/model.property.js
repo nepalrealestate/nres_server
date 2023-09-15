@@ -1,4 +1,6 @@
+
 const { capitalizeFirstLetter } = require("../../utils/helperFunction/helper");
+const logger = require("../../utils/errorLogging/logger");
 require("dotenv").config();
 
 const DB_PREFIX = process.env.DB_PREFIX;
@@ -45,20 +47,20 @@ function propertyViewAdminModel(sequelize, DataTypes) {
   async function createPropertyViewAdmin() {
     const sql = ` CREATE OR REPLACE VIEW ${propertyAdminView} AS
 
-    SELECT    h.property_id,h.property_type, h.property_name,h.listed_for,h.district, h.municipality,h.area_name,h.price,h.property_image,h.views, h.createdAt  ,
+    SELECT    h.property_id,h.property_type, h.property_name,h.listed_for,h.district, h.municipality,h.area_name,h.price,h.property_image, h.createdAt  ,
     ha.twitter,ha.tiktok,ha.instagram,ha.facebook,ha.youtube
    FROM ${DB_NAME}.property_house as h INNER JOIN ${DB_NAME}.property_house_ads as ha ON h.property_id = ha.property_id
   
    UNION 
   
-   SELECT l.property_id,l.property_type, l.property_name,l.listed_for,l.district,l.municipality,l.area_name,l.price,l.property_image,l.views, l.createdAt ,
+   SELECT l.property_id,l.property_type, l.property_name,l.listed_for,l.district,l.municipality,l.area_name,l.price,l.property_image, l.createdAt ,
     la.twitter,la.tiktok,la.instagram,la.facebook,la.youtube
 
    FROM ${DB_NAME}.property_land as l INNER JOIN ${DB_NAME}.property_land_ads as la ON l.property_id = la.property_id
    
    UNION
   
-   SELECT a.property_id,a.property_type, a.property_name, a.listed_for,a.district, a.municipality,a.area_name,a.price,a.property_image,a.views, a.createdAt ,
+   SELECT a.property_id,a.property_type, a.property_name, a.listed_for,a.district, a.municipality,a.area_name,a.price,a.property_image, a.createdAt ,
 
     aa.twitter,aa.tiktok,aa.instagram,aa.facebook,aa.youtube
    FROM ${DB_NAME}.property_apartment as a INNER JOIN ${DB_NAME}.property_apartment_ads as aa ON a.property_id = aa.property_id;`;
@@ -142,29 +144,31 @@ function propertyViewClientModel(sequelize, DataTypes) {
     CREATE OR REPLACE VIEW ${propertyClientView} AS
     
   
-    SELECT   h.property_id,h.property_type, h.property_name,h.listed_for,h.province,h.district, h.municipality,h.area_name,h.price,h.property_image,h.views, h.createdAt 
+    SELECT   h.property_id,h.property_type, h.property_name,h.listed_for,h.province,h.district, h.municipality,h.area_name,h.price,h.social_media,h.property_image, COALESCE(house_views.views, 0) AS views, h.createdAt 
 
-    FROM ${DB_NAME}.property_house  as h
+    FROM ${DB_NAME}.property_house  as h LEFT JOIN ${DB_NAME}.property_house_views_count as house_views ON h.property_id=house_views.property_id
    
     UNION 
    
-    SELECT l.property_id,l.property_type, l.property_name,l.listed_for,l.province,l.district,l.municipality,l.area_name,l.price,l.property_image,l.views, l.createdAt 
+    SELECT l.property_id,l.property_type, l.property_name,l.listed_for,l.province,l.district,l.municipality,l.area_name,l.price,l.social_media,l.property_image, COALESCE(land_views.views, 0) AS views, l.createdAt 
   
   
-    FROM ${DB_NAME}.property_land as l 
+    FROM ${DB_NAME}.property_land as l  LEFT JOIN ${DB_NAME}.property_land_views_count as land_views ON l.property_id=land_views.property_id
     
     UNION
    
-    SELECT a.property_id,a.property_type, a.property_name, a.listed_for,a.province,a.district, a.municipality,a.area_name,a.price,a.property_image,a.views, a.createdAt 
+    SELECT a.property_id,a.property_type, a.property_name, a.listed_for,a.province,a.district, a.municipality,a.area_name,a.price,a.social_media,a.property_image, COALESCE(apartment_views.views, 0) AS views, a.createdAt 
   
-    FROM ${DB_NAME}.property_apartment as a 
+    FROM ${DB_NAME}.property_apartment as a LEFT JOIN ${DB_NAME}.property_apartment_views_count as apartment_views ON a.property_id=apartment_views.property_id 
   `;
 
     try {
       await sequelize.query(sql);
     } catch (error) {
+      logger.error("Error creating the view:", error)
       console.error("Error creating the view:", error);
       if (error.original && error.original.code === "ER_WRONG_OBJECT") {
+        logger.error("property_view_client exists, but it is not a VIEW. Please fix your database schema.")
         console.error(
           "property_view_client exists, but it is not a VIEW. Please fix your database schema."
         );
@@ -199,6 +203,9 @@ function propertyViewClientModel(sequelize, DataTypes) {
       },
       price:{
         type:DataTypes.DECIMAL(12,2),
+      },
+      social_media:{
+        type:DataTypes.JSON
       },
       property_image:{
         type:DataTypes.JSON

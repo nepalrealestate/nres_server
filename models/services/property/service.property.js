@@ -1,3 +1,4 @@
+const sequelize = require("../../../db.config");
 const db = require("../../model.index");
 const PropertyAdminView = db.Views.PropertyViewAdmin;
 const PropertyShootSchedule = db.PropertyModel.PropertyShootSchedule;
@@ -123,7 +124,19 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
   return await PropertyViewClient.findAll({
     where: whereConditions,
    // attributes: { exclude: ["id"] },
-   attributes:['property_id','property_type','property_name','listed_for','price','district','municipality','area_name','property_image','views'],
+   attributes:['property_id',
+   'property_type',
+   'property_name',
+   'listed_for',
+   'price',
+   'district',
+   'municipality',
+   'area_name',
+  //  [sequelize.fn('JSON_PARSE', sequelize.col('social_media')), 'social_media'],
+  //  [sequelize.fn('JSON_PARSE', sequelize.col('property_image')), 'property_image'],
+  'social_media',
+  'property_image',
+   'views'],
     order: orderConditions,
     // replacements: [condition.district],
     // limit: limit,

@@ -8,6 +8,7 @@ const HouseAds = db.PropertyModel.HouseAds
 const HouseFeedback = db.PropertyModel.HouseFeedback
 const HouseComment = db.PropertyModel.HouseComment
 const HouseViews = db.PropertyModel.HouseViews
+const HouseViewsCount = db.PropertyModel.HouseViewsCount
 const RequestedHouse = db.PropertyModel.RequestedHouse
 
 const propertyService = propertyServiceUtility();
@@ -60,7 +61,11 @@ const propertyService = propertyServiceUtility();
 
  
  async function getHouseByID(property_id){
-    return await House.findByPk(property_id)
+    // return await House.findByPk(property_id)
+    return await House.findOne({
+        where:{property_id:property_id},
+        include:[HouseViewsCount]
+    })
  }
 
  async function getPendingHouse(condition,limit,offset){
@@ -156,24 +161,27 @@ async function getHouseComment(property_id,super_admin_id=null){
 
 async  function updateHouseViews(property_id,latitude,longitude){
     //update views in House table and HouseViewsCount Table
-    let transaction ;
+    // let transaction ;
 
-    try {
-        transaction = await db.sequelize.transaction();
-        // create new views 
-        await HouseViews.create({property_id,latitude,longitude},{transaction});
+    // try {
+    //     transaction = await db.sequelize.transaction();
+    //     // create new views 
+    //     await HouseViews.create({property_id,latitude,longitude},{transaction});
 
-        // update House views
-        await House.increment('views',{by:1,where:{property_id:property_id},transaction});
+    //     // update House views
+    //     await House.increment('views',{by:1,where:{property_id:property_id},transaction});
 
-        await transaction.commit();
-        return;
-    } catch (error) {
-        console.log(error)
-        await transaction.rollback();
-        throw error;
-    }
+    //     await transaction.commit();
+    //     return;
+    // } catch (error) {
+    //     console.log(error)
+    //     await transaction.rollback();
+    //     throw error;
+    // }
 
+    HouseViews.create({property_id,latitude,longitude}).catch((error)=>{
+        logger.error(`Error while insert House View Location - ${error}`)
+    });
 }
 
 

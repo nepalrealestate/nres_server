@@ -22,7 +22,10 @@ db.UserModel = {
     Customer: require('./users/model.customer').customerModel(sequelize, DataTypes),
     SuperAdmin:require('./users/model.superAdmin').superAdminModel(sequelize,DataTypes),
     AgentRating:require('./users/model.agent').agentRatingModel(sequelize,DataTypes),
-    AgentInfo :require('./users/model.agent').agentInfoModel(sequelize,DataTypes)
+    AgentInfo :require('./users/model.agent').agentInfoModel(sequelize,DataTypes),
+
+    User : require('./users/model.user').userAccountModel(sequelize,DataTypes),
+    Admin : require('./users/model.admin').adminAccountModel(sequelize,DataTypes)
 };
 
 db.ServiceModel={
@@ -65,8 +68,11 @@ db.PropertyModel = {
 
     //property views count 
     ApartmentViews: require('./property/model.apartment').apartmentViewsModel(sequelize,DataTypes),
+    ApartmentViewsCount:require('./property/model.apartment').apartmentViewsCountModel(sequelize,DataTypes),
     HouseViews:require('./property/model.house').houseViewsModel(sequelize,DataTypes),
+    HouseViewsCount : require("./property/model.house").houseViewsCountModel(sequelize,DataTypes),
     LandViews : require('./property/model.land').landViewsModel(sequelize,DataTypes),
+    LandViewsCount : require('./property/model.land').landViewsCountModel(sequelize,DataTypes),
 
     //property shoot schedule
     // ApartmentShootSchedule   : require('./property/model.apartment').apartmentShootScheduleModel(sequelize,DataTypes),
@@ -148,5 +154,30 @@ db.UserModel.Staff.hasMany(db.PropertyModel.House,{foreignKey:'staff_id'});
 // house->customer
 db.PropertyModel.House.belongsTo(db.UserModel.Customer,{foreignKey:'customer_id'});
 db.UserModel.Customer.hasMany(db.PropertyModel.House,{foreignKey:'customer_id'});
+
+
+
+// property and views Model and views count
+// apartment to views model and views count
+db.PropertyModel.Apartment.hasMany(db.PropertyModel.ApartmentViews,{foreignKey:'property_id'});
+db.PropertyModel.ApartmentViews.belongsTo(db.PropertyModel.Apartment,{foreignKey:'property_id'});
+
+db.PropertyModel.Apartment.hasOne(db.PropertyModel.ApartmentViewsCount,{foreignKey:'property_id'});
+db.PropertyModel.ApartmentViewsCount.belongsTo(db.PropertyModel.Apartment,{foreignKey:'property_id'});
+
+// house to views model and views count
+db.PropertyModel.House.hasMany(db.PropertyModel.HouseViews,{foreignKey:'property_id'});
+db.PropertyModel.HouseViews.belongsTo(db.PropertyModel.House,{foreignKey:'property_id'});
+
+db.PropertyModel.House.hasOne(db.PropertyModel.HouseViewsCount,{foreignKey:'property_id'});
+db.PropertyModel.HouseViewsCount.belongsTo(db.PropertyModel.House,{foreignKey:'property_id'});
+
+//land to views and views count
+db.PropertyModel.Land.hasMany(db.PropertyModel.LandViews,{foreignKey:'property_id'});
+db.PropertyModel.LandViews.belongsTo(db.PropertyModel.Land,{foreignKey:'property_id'});
+
+db.PropertyModel.Land.hasOne(db.PropertyModel.LandViewsCount,{foreignKey:'property_id'});
+db.PropertyModel.LandViewsCount.belongsTo(db.PropertyModel.Land,{foreignKey:'property_id'});
+
 
 module.exports = db;

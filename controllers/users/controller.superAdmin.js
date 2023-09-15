@@ -1,9 +1,10 @@
 const bcrypt = require('bcrypt');
 
-const { registerSuperAdmin, findSuperAdmin } = require('../../models/services/users/service.superAdmin');
+
 
 const  utility = require("../controller.utils");
 const { wrapAwait } = require('../../errorHandling');
+const { registerAdmin, findAdmin } = require('../../models/services/users/service.admin');
 
 
 const saltRound = 10;
@@ -37,7 +38,7 @@ const handleSuperAdminRegistration = async(req,res)=>{
 
         const hashPassword  = await bcrypt.hash(password,saltRound);
         //store details in DB
-        const result = await registerSuperAdmin(name,email,hashPassword);
+        const result = await registerAdmin("superAdmin",name,email,hashPassword);
         if(result===undefined){
             return res.status(403).json({message:"Duplicate Email"});
         }
@@ -60,15 +61,23 @@ const handleSuperAdminLogin = async(req,res)=>{
     }
   
     //find superAdmin userName in DB
-    const [superAdmin,superAdminError] =  await wrapAwait(findSuperAdmin(email));
-    console.log(superAdmin);
-    
-    if(superAdminError){
-        utility.handleErrorResponse()
+    try {
+        const superAdmin = await findAdmin(email,"superAdmin");
+        console.log(superAdmin)
+        return auth.login(req,res,superAdmin);
+    } catch (error) {
+        utility.handleErrorResponse(res,error);
     }
-    //this login function handle all logic
 
-    return auth.login(req,res,superAdmin);
+    // const [superAdmin,superAdminError] =  await wrapAwait(findAdmin(email,"superAdmin"));
+    // console.log(superAdmin);
+    
+    // if(superAdminError){
+    //     utility.handleErrorResponse(res,superAdminError)
+    // }
+    // //this login function handle all logic
+
+    // return auth.login(req,res,superAdmin);
 
 }
 

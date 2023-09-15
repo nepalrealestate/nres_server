@@ -106,38 +106,23 @@ function houseModel (sequelize,DataTypes){
     property_image:{
       type:DataTypes.JSON
     },
-    staff_id:{
+    approved_by:{
       type:DataTypes.INTEGER,
        references:{
-         model:'user_staff',
-         key :'staff_id'
+         model:'user_adminAccount',
+         key :'admin_id'
        },
-       onDelete: 'SET NULL' 
+       onDelete :'SET NULL'
       
     },
-    customer_id:{
+    owner_id:{
       type:DataTypes.INTEGER,
       references:{
-        model:'user_customer',
-        key :'customer_id'
+        model:'user_userAccount',
+        key:'user_id'
       },
-      onDelete: 'SET NULL' 
-    },
-    agent_id :{
-      type:DataTypes.INTEGER,
-      references:{
-        model:'user_agent',
-        key :'agent_id'
-      },
-      onDelete: 'SET NULL' 
-    },
-    views:{
-      type:DataTypes.INTEGER,
-      defaultValue:0
-
+      onDelete:'CASCADE'
     }
-
-
   }
   ,{
     freezeTableName: true,
@@ -255,34 +240,26 @@ function pendingHouseModel (sequelize,DataTypes){
     property_image:{
       type:DataTypes.JSON
     },
-    staff_id:{
+    approved_by:{
       type:DataTypes.INTEGER,
+      default:null,
        references:{
-         model:'user_staff',
-         key :'staff_id'
-       }
+         model:'user_adminAccount',
+         key :'admin_id'
+       },
+       onDelete :'SET NULL'
       
     },
-    customer_id:{
+    owner_id:{
       type:DataTypes.INTEGER,
+      allowNull:false,
       references:{
-        model:'user_customer',
-        key :'customer_id'
-      }
-      
-    },
-    agent_id :{
-      type:DataTypes.INTEGER,
-      references:{
-        model:'user_agent',
-        key :'agent_id'
-      }
-    },
-    views:{
-      type:DataTypes.INTEGER,
-      defaultValue:0
-
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'CASCADE'
     }
+
 
 
   }
@@ -359,7 +336,8 @@ function houseFeedbackModel(sequelize,DataTypes){
       references:{
         model:'user_customer',
         key:'customer_id'
-      }
+      },
+      onDelete: 'CASCADE'
     },
 
     feedback:{
@@ -402,7 +380,7 @@ function houseCommentModel(sequelize,DataTypes){
         model: 'user_staff', // replace with your Staff model name
         key: 'staff_id',
       },
-      onDelete: 'set NULL',
+      onDelete: 'CASCADE'
     },
     super_admin_id: {
       type: DataTypes.INTEGER,
@@ -410,7 +388,7 @@ function houseCommentModel(sequelize,DataTypes){
         model: 'user_superAdmin', // replace with your SuperAdmin model name
         key: 'superAdmin_id',
       },
-      onDelete: 'set NULL',
+      onDelete: 'CASCADE'
     },
     comment: {
       type: DataTypes.TEXT,
@@ -459,7 +437,28 @@ function houseViewsModel (sequelize,DataTypes){
   },
   },{
     freezeTableName: true,
-  }
+    hooks:{
+      afterCreate:async (instance,options)=>{
+
+        const houseViewsCount = sequelize.models.property_house_views_count;
+
+        houseViewsCount.findOrCreate({
+          where: { property_id: instance.property_id },
+          defaults: { views: 0 }
+        }).then(([houseViewCount, created]) => {
+          if (!created) {
+            houseViewCount.increment('views', { by: 1 });
+          }
+        }).catch(error => {
+          // Handle the error if necessary
+          console.error("Error updating views count:", error);
+          logger.error(`Error while update Apartment Views - ${error}`)
+        });
+        
+      }
+    }
+    }
+  
   
   )
 }
@@ -532,7 +531,8 @@ function apartmentViewsModel (sequelize,DataTypes){
       references: {
         model: 'property_apartment',
         key: 'property_id'
-    }
+    },
+    onDelete:'CASCADE'
     },
     latitude:{
       type:DataTypes.DECIMAL(9,6)
@@ -552,6 +552,27 @@ function apartmentViewsModel (sequelize,DataTypes){
   )
 }
 
+function houseViewsCountModel(sequelize,DataTypes){
+
+  return HouseViewsCount  = sequelize.define('property_house_views_count',{
+    property_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'property_house',
+        key:'property_id'
+      },
+      onDelete:'CASCADE'
+    },
+    views:{
+      type:DataTypes.INTEGER,
+      defaultValue:0
+    }
+  },{
+    freezeTableName:true
+  })
+
+}
 
 function requestedHouseModel(sequelize,DataTypes){
   return RequestedHouse = sequelize.define('property_requested_house',{
@@ -665,6 +686,7 @@ module.exports = {
   houseFeedbackModel,
   houseAdsModel,
   houseViewsModel,
+  houseViewsCountModel,
   requestedHouseModel,
   
 };

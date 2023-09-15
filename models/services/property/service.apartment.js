@@ -1,4 +1,5 @@
 
+const logger = require("../../../utils/errorLogging/logger");
 const db = require("../../model.index");
 const { getPropertyId, updatePropertyId } = require("./service.property");
 
@@ -10,6 +11,7 @@ const ApartmentAds = db.PropertyModel.ApartmentAds;
 const ApartmentFeedback = db.PropertyModel.ApartmentFeedback;
 const ApartmentComment = db.PropertyModel.ApartmentComment
 const ApartmentViews = db.PropertyModel.ApartmentViews
+const ApartmentViewsCount = db.PropertyModel.ApartmentViewsCount;
 const ApartmentShootSchedule = db.PropertyModel.ApartmentShootSchedule;
 const RequestedApartment = db.PropertyModel.RequestedApartment;
 
@@ -70,8 +72,13 @@ async function getApartment(condition){
 
 async function getApartmentByID(property_id){
 
-     const data = await Apartment.findByPk(property_id);
-     return data!==null?data.get():null;
+    //  const data = await Apartment.findByPk(property_id);
+    //  return data!==null?data.get():null;
+    const data  = await Apartment.findOne({
+        where:{property_id:property_id},
+        include:[ApartmentViewsCount]
+    })
+    return data;
     // console.log(property_id)
     // const apartment = await Apartment.findOne({where:{property_id}});
     // console.log(apartment)
@@ -166,25 +173,28 @@ async function getApartmentComment(property_id,super_admin_id=null){
 
 async function updateApartmentViews(property_id,latitude,longitude){
     //update views in Apartment table and ApartmentViewsCount Table
-    let transaction ;
+    // let transaction ;
 
 
-    try {
-        transaction = await db.sequelize.transaction();
-        // create new views 
-        await ApartmentViews.create({property_id,latitude,longitude},{transaction});
+    // try {
+    //     transaction = await db.sequelize.transaction();
+    //     // create new views 
+    //     await ApartmentViews.create({property_id,latitude,longitude},{transaction});
 
-        // update Apartment views
-        await Apartment.increment('views', { by: 1, where: { property_id: property_id }, transaction });
+    //     // update Apartment views
+    //     await Apartment.increment('views', { by: 1, where: { property_id: property_id }, transaction });
 
-        await transaction.commit();
-        return;
+    //     await transaction.commit();
+    //     return;
 
-    } catch (error) {
+    // } catch (error) {
 
-        await transaction.rollback();
-        throw error;
-    }
+    //     await transaction.rollback();
+    //     throw error;
+    // }
+    ApartmentViews.create({property_id,latitude,longitude}).catch((error)=>{
+        logger.error(`Error while insert Apartment View Location - ${error}`)
+    });
 
 }
 

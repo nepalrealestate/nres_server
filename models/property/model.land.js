@@ -2,6 +2,8 @@
 
 // Create Land Table
 
+const logger = require("../../utils/errorLogging/logger")
+
 // sequlize
 function landModel (sequelize,DataTypes){
   return Land = sequelize.define('property_land',{
@@ -84,38 +86,33 @@ function landModel (sequelize,DataTypes){
     property_image:{
       type:DataTypes.JSON
     },
-    staff_id:{
+    approved_by:{
       type:DataTypes.INTEGER,
+      
        references:{
-         model:'user_staff',
-         key :'staff_id'
-       }
+         model:'user_adminAccount',
+         key :'admin_id'
+       },
+       onDelete :'SET NULL'
       
     },
-    customer_id:{
+    owner_id:{
       type:DataTypes.INTEGER,
       references:{
-        model:'user_customer',
-        key :'customer_id'
-      }
-    },
-    agent_id :{
-      type:DataTypes.INTEGER,
-      references:{
-        model:'user_agent',
-        key :'agent_id'
-      }
-    },
-    views:{
-      type:DataTypes.INTEGER,
-      defaultValue:0
-
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'CASCADE'
     }
+  
     
 
 
   },{
     freezeTableName: true,
+    hooks:{
+      
+    }
   })
 }
 
@@ -204,33 +201,26 @@ function pendingLandModel (sequelize,DataTypes){
     property_image:{
       type:DataTypes.JSON
     },
-    staff_id:{
+    approved_by:{
       type:DataTypes.INTEGER,
+      default:null,
        references:{
-         model:'user_staff',
-         key :'staff_id'
-       }
+         model:'user_adminAccount',
+         key :'admin_id'
+       },
+       onDelete :'SET NULL'
       
     },
-    customer_id:{
+    owner_id:{
       type:DataTypes.INTEGER,
+      allowNull:false,
       references:{
-        model:'user_customer',
-        key :'customer_id'
-      }
-    },
-    agent_id :{
-      type:DataTypes.INTEGER,
-      references:{
-        model:'user_agent',
-        key :'agent_id'
-      }
-    },
-    views:{
-      type:DataTypes.INTEGER,
-      defaultValue:0
-
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'CASCADE'
     }
+   
   },{
     freezeTableName: true,
   })
@@ -365,8 +355,10 @@ function landCommentModel (sequelize,DataTypes){
 }
 
 
-function landViewsModel (sequelize,DataTypes){
-  return LandViews = sequelize.define('property_land_views',{
+
+
+function landViewsModel(sequelize,DataTypes){
+  const LandViews = sequelize.define('property_land_views',{
     id :{
       type:DataTypes.INTEGER,
       autoIncrement:true,
@@ -378,7 +370,8 @@ function landViewsModel (sequelize,DataTypes){
       references: {
         model: 'property_land',
         key: 'property_id'
-    }
+    },
+    onDelete:'CASCADE'
     },
     latitude:{
       type:DataTypes.DECIMAL(9,6)
@@ -393,10 +386,56 @@ function landViewsModel (sequelize,DataTypes){
   },
   },{
     freezeTableName: true,
+
+    hooks:{
+      afterCreate:async (instance,options)=>{
+
+    
+        const LandViewsCount = sequelize.models.property_land_views_count;
+      
+        LandViewsCount.findOrCreate({
+          where: { property_id: instance.property_id },
+          defaults: { views: 0 }
+        }).then(([landViewCount, created]) => {
+          if (!created) {
+            landViewCount.increment('views', { by: 1 });
+          }
+        }).catch(error => {
+          // Handle the error if necessary
+          console.error("Error updating views count:", error);
+          logger.error(`Error while update Land Views - ${error}`)
+        });
+        
+      }
+    }
   }
+ 
   
   ) 
+  return LandViews;
 }
+
+function landViewsCountModel(sequelize,DataTypes){
+  return LandViewsCount = sequelize.define('property_land_views_count',{
+    property_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references: {
+        model: 'property_land',
+        key: 'property_id'
+    },
+    onDelete:'CASCADE'
+    },
+    views:{
+      type:DataTypes.INTEGER,
+      defaultValue:0
+    }
+  },{
+    freezeTableName:true
+  })
+}
+
+
 
 function requestedLandModel(sequelize,DataTypes){
   return RequestedLand = sequelize.define('property_requested_land',{
@@ -503,5 +542,6 @@ module.exports = {
   landCommentModel,
   landFeedbackModel,
   landViewsModel,
+  landViewsCountModel,
   requestedLandModel,
 };

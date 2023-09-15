@@ -10,7 +10,7 @@ if (fs.existsSync(filePath)) {
 
 
 const jsonFormat = winston.format.printf(({ level, message, timestamp }) => {
-    return JSON.stringify({ timestamp, level, message });
+    return ({ timestamp, level, message });
 });
 
 const customLevels = {

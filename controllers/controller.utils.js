@@ -226,6 +226,8 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
       console.log(user.id);
       //set request id
       req.id = user?.id;
+      req.user_type = user_type;
+      console.log(req.id,req.user_type)
       console.log("Token Verify !!!");
       next();
     });
@@ -268,6 +270,7 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
 
       //set request id to user id
       req.id = decode.id;
+      req.user_type = user_type;
       console.log("Refresh TOken Successfull  ");
       next();
     });
@@ -1002,26 +1005,23 @@ function propertyUtility(property_type) {
   async function handleAddProperty(req, res, addPropertyCB) {
 
     let property = JSON.parse(req.body.property);
-  
-    // get user id from req.id i.e we set req.id when verify token
-    let customer_id = null;
-    let agent_id = null;
-    let staff_id = null;
-    // baseUrl provide us from where request coming from ex. /agent,/staff,/customer
-   //const user_type = req.baseUrl.split('/')[2];
-    //console.log(user_type)
-    // if (user_type === "customer") {
-    //   customer_id = req.id;
-    // } else if (user_type === "agent") {
-    //   agent_id = req.id;
-    // } else if (user_type === "staff") {
-    //   staff_id = req.id
-    // } else if(user_type === "admin"){
-    //   //do nothing
-    // }else{
-    //   return res.status(400).json({ message: "bad request" });
-    // }
+    
+    let owner_id = null;
+    let admin_id = null;
 
+    if(!req.id || !req.user_type){
+      return res.status(401).json({message:"unauthorized"});
+    }
+    //property added by admin
+    if(req.user_type === 'staff' || req.user_type==='superAdmin'){
+      admin_id = req.id;
+    }
+    // property added for listing
+    if(req.user_type === 'customer' || req.user_type === 'agent'){
+      owner_id = req.id;
+    }
+
+  
     let images;
     if(req.file){
       images = req.file;
@@ -1033,21 +1033,20 @@ function propertyUtility(property_type) {
 
     let imageObject;
     if(images){
-       imageObject = JSON.stringify(
+       imageObject = 
         images.reduce(
           (acc, value, index) => ({ ...acc, [index]: value.path }),
           {}
-        )
-      );
+        );
     }
     // update object - store some value
    let updatedProperty = {
       ...property,
       property_image: imageObject,
-      staff_id: staff_id,
-      customer_id: customer_id,
-      agent_id: agent_id,
+      approved_by: admin_id,
+      owner_id : owner_id
     };
+
 
     //console.log(property,imageObject)
     try {
@@ -1084,31 +1083,40 @@ function propertyUtility(property_type) {
     req,
     res,
     getPropertyById,
-    updatePropertyViews
+    updatePropertyViewsCB
   ) {
     const { property_id } = req.params;
     console.log(property_id);
     let latitude = 28.434883;
     let longitude = 85.72859;
 
+   
+
     try {
       const result = await getPropertyById(property_id); // get single  apartment by property
       // if there is apartment then also update views
+      
       if (!result) {
         return res.status(400).json({ message: `No ${propertyType}` });
       }
+
+      updatePropertyViewsCB(property_id,latitude,longitude).catch((err)=>{
+        logger.error(`Error update ${propertyType} Views - ${err}`);
+      });
+
       // update views
-      const [updateViews, updateViewsError] = await wrapAwait(
-        updatePropertyViews(property_id, latitude, longitude)
-      );
-      if (updateViewsError) {
-        return res.status(500).json({ message: "Error while getting Data" });
-      }
+      // const [updateViews, updateViewsError] = await wrapAwait(
+      //   updatePropertyViews(property_id, latitude, longitude)
+      // );
+      // if (updateViewsError) {
+      //   return res.status(500).json({ message: "Error while getting Data" });
+      // }
 
       return res.status(200).json(result);
     } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: "Internal Error" });
+      
+      handleErrorResponse(res,error);
+      //return res.status(500).json({ message: "Internal Error" });
     }
   }
 
@@ -1291,7 +1299,6 @@ function handleErrorResponse(res,error){
   //log error
   // logger.error(error)
   
-  console.log(error.name)
   console.log(error)
 
 

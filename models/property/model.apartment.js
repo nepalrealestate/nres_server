@@ -99,36 +99,24 @@ function apartmentModel (sequelize,DataTypes){
       property_image:{
         type:DataTypes.JSON
       },
-      staff_id:{
+      approved_by:{
         type:DataTypes.INTEGER,
+        
          references:{
-           model:'user_staff',
-           key :'staff_id'
-         }
+           model:'user_adminAccount',
+           key :'admin_id'
+         },
+         onDelete:'SET NULL'
         
       },
-      customer_id:{
+      owner_id:{
         type:DataTypes.INTEGER,
         references:{
-          model:'user_customer',
-          key :'customer_id'
-        }
-      },
-      agent_id :{
-        type:DataTypes.INTEGER,
-        references:{
-          model:'user_agent',
-          key :'agent_id'
-        }
-      },
-      views:{
-        type:DataTypes.INTEGER,
-        defaultValue:0
-  
+          model:'user_userAccount',
+          key:'user_id'
+        },
+        onDelete:'CASCADE'
       }
-      
-  
-  
     },{
       freezeTableName: true,
      
@@ -232,31 +220,24 @@ function pendingApartmentModel (sequelize,DataTypes){
     property_image:{
       type:DataTypes.JSON
     },
-    staff_id:{
+    approved_by:{
       type:DataTypes.INTEGER,
-      references:{
-        model:'user_staff',
-        key :'staff_id'
-      } 
+      default:null,
+       references:{
+         model:'user_adminAccount',
+         key :'admin_id'
+       },
+       onDelete :'SET NULL'
+      
     },
-    customer_id:{
+    owner_id:{
       type:DataTypes.INTEGER,
+      allowNull:false,
       references:{
-        model:'user_customer',
-        key :'customer_id'
-      }
-    },
-    agent_id :{
-      type:DataTypes.INTEGER,
-      references:{
-        model:'user_agent',
-        key :'agent_id'
-      }
-    },
-    views:{
-      type:DataTypes.INTEGER,
-      defaultValue:0
-
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'CASCADE'
     }
   },{
     freezeTableName: true,
@@ -434,9 +415,49 @@ function apartmentViewsModel (sequelize,DataTypes){
   },
   },{
     freezeTableName: true,
+    afterCreate:async (instance,options)=>{
+
+      const apartmentViewsCount = sequelize.models.property_apartment_views_count;
+
+      apartmentViewsCount.findOrCreate({
+        where: { property_id: instance.property_id },
+        defaults: { views: 0 }
+      }).then(([apartmentViewCount, created]) => {
+        if (!created) {
+          apartmentViewCount.increment('views', { by: 1 });
+        }
+      }).catch(error => {
+        // Handle the error if necessary
+        console.error("Error updating views count:", error);
+        logger.error(`Error while update Apartment Views - ${error}`)
+      });
+      
+    }
   }
   
   )
+}
+
+function apartmentViewsCountModel(sequelize,DataTypes){
+
+  return ApartmentViewsCount  = sequelize.define('property_apartment_views_count',{
+    property_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'property_apartment',
+        key:'property_id'
+      },
+      onDelete:'CASCADE'
+    },
+    views:{
+      type:DataTypes.INTEGER,
+      defaultValue:0
+    }
+  },{
+    freezeTableName:true
+  })
+
 }
 
 
@@ -584,6 +605,7 @@ module.exports = {
     apartmentCommentModel,
     pendingApartmentModel,
     apartmentViewsModel,
+    apartmentViewsCountModel,
     requestedApartmentModel,
     requestedApartmentByModel,
 
