@@ -84,6 +84,175 @@
     "instagram": "",
     "youtube":"https://www.youtube.com/watch?v=DNYz40afT44&ab_channel=NepalRealEstateSolution-NRES"
   }
+},
+
+{
+  "property_type": "house",
+  "property_for": "residential",
+  "property_name": "House For Sale, Balaju, Kathmandu",
+  "listed_for": "sale",
+  "property_age": 0,
+  "floor": 2.5,
+  "bedrooms": 6,
+  "kitchen": 1,
+  "bathrooms_attached": 1,
+  "bathrooms_common": 2,
+  "facing": "east",
+  "province": "Bagmati",
+  "district": "Kathmandu",
+  "municipality": "Tarkeshwor",
+  "area_name": "Bhairabsthan",
+  "ward": 3,
+  "landmark": " Lolang Bus Stop",
+  "latitude": 27.728134,
+  "longitude":85.304877,
+  "property_area": 11,
+  "road_size": 12,
+  "price": 55000000,
+  "price_type": "negotiable",
+  "furnish": "furnished",
+  "parking_bike": 5,
+  "parking_car": 3,
+  "amenities": {
+    "internet": true,
+    "garden":true,
+    "peaceful area":true,
+    "24/7 water supply":true
+  },
+  "description": "The bungalow for rent is in Rudreshwor, Budhanilkantha, Kathmandu. The bungalow has a land area of 2 ropani featuring 5 bedrooms (3 master bedrooms), 6 bathrooms, 1 modular kitchen, 1 living room, multiple small areas for rest, and 1 store room. The tenant will get more features with the bungalow such as jacuzzi room, bar, solar heating, guard room, well maintained, and more. So, Don’t miss out on an opportunity to reside in the bungalow.",
+  "social_media": {
+    "facebook": "",
+    "twitter": "",
+    "instagram": "",
+    "youtube":""
+  }
+},
+
+{
+  "property_type": "house",
+  "property_for": "residential",
+  "property_name": "2.5 Ropani Full Furnished House For Rent in Gokarna, Kathmandu",
+  "listed_for": "rent",
+  "property_age": 0,
+  "floor": 2.5,
+  "bedrooms": 4,
+  "kitchen": 1,
+  "bathrooms_attached": 2,
+  "bathrooms_common": 2,
+  "facing": "east",
+  "province": "Bagmati",
+  "district": "Kathmandu",
+  "municipality": "Tarkeshwor",
+  "area_name": "Bhairabsthan",
+  "ward": 3,
+  "landmark": " Lolang Bus Stop",
+  "latitude": 27.728134,
+  "longitude":85.304877,
+  "property_area": 11,
+  "road_size": 12,
+  "price": 55000000,
+  "price_type": "negotiable",
+  "furnish": "furnished",
+  "parking_bike": 5,
+  "parking_car": 3,
+  "amenities": {
+    "internet": true,
+    "garden":true,
+    "peaceful area":true,
+    "24/7 water supply":true
+  },
+  "description": "The bungalow for rent is in Rudreshwor, Budhanilkantha, Kathmandu. The bungalow has a land area of 2 ropani featuring 5 bedrooms (3 master bedrooms), 6 bathrooms, 1 modular kitchen, 1 living room, multiple small areas for rest, and 1 store room. The tenant will get more features with the bungalow such as jacuzzi room, bar, solar heating, guard room, well maintained, and more. So, Don’t miss out on an opportunity to reside in the bungalow.",
+  "social_media": {
+    "facebook": "",
+    "twitter": "",
+    "instagram": "",
+    "youtube":""
+  }
+},
+
+{
+  "property_type": "house",
+  "property_for": "residential",
+  "property_name": "House For Rent, Gokarna, Kathmandu",
+  "listed_for": "rent",
+  "property_age": 0,
+  "floor": 2.5,
+  "bedrooms": 4,
+  "kitchen": 1,
+  "bathrooms_attached": 3,
+  "bathrooms_common": 2,
+  "facing": "east",
+  "province": "Bagmati",
+  "district": "Kathmandu",
+  "municipality": "Gokarneshwor",
+  "area_name": "Gokarna",
+  "ward": 3,
+  "landmark": "30 mins driving distance from Tribhuwan International Airport",
+  "latitude": 27.728134,
+  "longitude":85.304877,
+  "property_area": 11,
+  "road_size": 12,
+  "price":  180000,
+  "price_type": "negotiable",
+  "furnish": "furnished",
+  "parking_bike": 5,
+  "parking_car": 3,
+  "amenities": {
+    "internet": true,
+    "garden":true,
+    "peaceful area":true,
+    "24/7 water supply":true
+  },
+  "description": "House for rent in Gokarna, Kathmandu. This elegant and sophisticated property is build up in an enormous land area of 2.5 Ropani. The exterior of this property will leave you speechless with its richness and elegance at the same time and its interior is just simply very elegant and classy. Every bit of exterior and interior reflects our beautiful and fine Nepalese and Newari art and architecture. you will get 4 bedrooms, 5 bathrooms, 1 kitchen and dining area, 1 living room, 1 store and 1 puja room. So grab the opportunity to reside in this beautiful property.",
+  "social_media": {
+    "facebook": "",
+    "twitter": "",
+    "instagram": "",
+    "youtube":"https://www.youtube.com/watch?v=u9Z5XWgrTTk&ab_channel=NepalRealEstateSolution-NRES"
+  }
+},
+
+{
+  "property_type": "house",
+  "property_for": "residential",
+  "property_name": "House For Sale, Sitapaila, Kathmandu",
+  "listed_for": "sale",
+  "property_age": 0,
+  "floor": 3.5,
+  "bedrooms": 7,
+  "kitchen": 1,
+  "bathrooms_attached": 4,
+  "bathrooms_common": 4,
+  "facing": "east",
+  "province": "Bagmati",
+  "district": "Kathmandu",
+  "municipality": "Nagarjun",
+  "area_name": "Sitapaila",
+  "ward": 3,
+  "landmark": ".5 km from Sitapaila Chowk",
+  "latitude": 27.728134,
+  "longitude":85.304877,
+  "property_area": 8,
+  "road_size": 20,
+  "price":  49500000,
+  "price_type": "negotiable",
+  "furnish": "furnished",
+  "parking_bike": 4,
+  "parking_car": 2,
+  "amenities": {
+    "internet": true,
+    "garden":true,
+    "peaceful area":true,
+    "24/7 water supply":true
+  },
+  "description": "The beautiful Bungalow  house for sale is in Sitapaila, Ramkot. The house was built on the land area of 8 aana. The house is a standard bungalow featuring 7 bedrooms, 8 bathrooms, 1 kitchens, and 2 living rooms. You can get the pitched road access of 13-20 feet in this property. The buyer will get all the basic facilities such as electricity, water supply, peaceful neighborhood, and others. So, Please visit the property and grab this opportunity to own this beautiful house.",
+  "social_media": {
+    "facebook": "",
+    "twitter": "",
+    "instagram": "",
+    "youtube":"https://www.youtube.com/watch?v=G4o-d8fgfEs&ab_channel=NepalRealEstateSolution-NRES"
+  }
 }
+
 ]
 

@@ -6,7 +6,7 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const {Utility, utility, propertyUtility} = require("../controller.utils");
-const { insertPendingLand, getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand, insertLand, getRequestedLand } = require("../../models/services/property/service.land");
+const { insertPendingLand, getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand, insertLand, getRequestedLand, updateLand, deleteLand } = require("../../models/services/property/service.land");
 //const utils = new Utility();
 const utils = utility();
 const property = propertyUtility("land");
@@ -26,6 +26,22 @@ const handleAddLand = async (req, res) => {
       
     
 };
+const handleUpdateLand = async (req,res)=>{
+
+  upload(req,res,async function (err){
+    utils.handleMulterError(req,res,err,update,false);
+  })
+
+  async function update(){
+    property.handleUpdateProperty(req,res,updateLand)
+  }
+
+}
+
+const handleDeleteLand = async (req,res)=>{
+  property.handleDeleteProperty(req,res,deleteLand)
+}
+
 
 const handleGetLand = async (req, res) => {
 
@@ -155,6 +171,8 @@ const handleGetRequestedLand = async (req,res)=>{
 
 module.exports = {
   handleAddLand,
+  handleUpdateLand,
+  handleDeleteLand,
   handleGetLand,
   handleLandFeedback,
   handleGetLandByID,

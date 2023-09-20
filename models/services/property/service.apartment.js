@@ -54,6 +54,21 @@ async function insertApartment(apartment){
 }
 }
 
+async function updateApartment(property_id,updateData){
+
+   return await Apartment.update(updateData,
+        {
+            where:{property_id:property_id}
+        })
+
+}
+
+async function deleteApartment(property_id){
+    return await Apartment.destroy({
+        where:{property_id:property_id}
+    })
+}
+
 
 async function getApartment(condition){
 
@@ -226,4 +241,20 @@ async function getApartmentShootScheduleById(property_id){
 
 }
 
-module.exports = {insertApartment,insertPendingApartment,getApartment,getApartmentByID,getPendingApartment,approveApartment,getPendingApartmentByID,insertApartmentFeedback,updateApartmentAds,insertApartmentComment,getApartmentComment,updateApartmentViews,insertRequestedApartment,getRequestedApartment,insertApartmentShootSchedule};
+module.exports = {insertApartment,
+    insertPendingApartment,
+    updateApartment,
+    deleteApartment,
+    getApartment,
+    getApartmentByID,
+    getPendingApartment,
+    approveApartment,
+    getPendingApartmentByID,
+    insertApartmentFeedback,
+    updateApartmentAds,
+    insertApartmentComment,
+    getApartmentComment,
+    updateApartmentViews,
+    insertRequestedApartment,
+    getRequestedApartment,
+    insertApartmentShootSchedule};

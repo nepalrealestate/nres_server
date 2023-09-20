@@ -45,6 +45,20 @@ const propertyService = propertyServiceUtility();
 }
  }
 
+ async function updateHouse(property_id,updateData){
+    return await House.update(updateData,{
+        where:{property_id:property_id}
+    })
+ }
+
+
+async function deleteHouse(property_id){
+    return await House.destroy({
+        where:{property_id:property_id}
+    })
+}
+
+
  async function getHouse(condition){
 
     return await propertyService.getProperty(condition,House);
@@ -196,4 +210,19 @@ async function getRequestedHouse(condition){
 
 
 
-module.exports ={insertHouse,insertPendingHouse,getHouse,getHouseByID,getHouseComment,getPendingHouse,getPendingHouseByID,insertHouseFeedback,insertHouseComment,updateHouseAds,approveHouse,updateHouseViews,insertRequestedHouse,getRequestedHouse}
+module.exports ={insertHouse,
+    insertPendingHouse,
+    updateHouse,
+    deleteHouse,
+    getHouse,
+    getHouseByID,
+    getHouseComment,
+    getPendingHouse,
+    getPendingHouseByID,
+    insertHouseFeedback,
+    insertHouseComment,
+    updateHouseAds,
+    approveHouse,
+    updateHouseViews,
+    insertRequestedHouse,
+    getRequestedHouse}

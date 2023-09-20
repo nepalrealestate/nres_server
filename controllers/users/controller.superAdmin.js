@@ -90,5 +90,8 @@ const superAdminVerifyToken = async (req,res,next)=>{
 const superAdminVerifyLogin = async(req,res)=>{
     return res.status(200).json({message:"Admin Logged In",role:"superAdmin"});
 }
+const superAdminLogout = async (req,res)=>{
+    auth.logout(req,res);
+}
 
-module.exports = {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin,superAdminVerifyToken,superAdminVerifyLogin}
+module.exports = {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin,superAdminVerifyToken,superAdminVerifyLogin,superAdminLogout}

@@ -44,6 +44,12 @@ async function insertLand(land){
 }
 }
 
+async function updateLand(property_id,updateData){
+    return await Land.update(updateData,{
+        where:{property_id:property_id}
+    })
+}
+
 async function getLand(condition){
 
     return await propertyService.getProperty(condition,Land)
@@ -132,6 +138,12 @@ async function getPendingLand(condition,limit,offset){
     return await LandAds.update({[platform]:ads_status},{where:{property_id:property_id}})
 }
 
+async function deleteLand(property_id){
+    return await Land.destroy({
+        where:{property_id:property_id}
+    })
+}
+
 async function insertLandComment(property_id,staff_id,super_admin_id,comment,isPrivate){
     return await LandComment.create({
         property_id:property_id,
@@ -195,6 +207,8 @@ async function getRequestedLand(condition){
 
 module.exports = {
     insertLand,
+    updateLand,
+    deleteLand,
     insertPendingLand,
     getLand,
     getLandByID,

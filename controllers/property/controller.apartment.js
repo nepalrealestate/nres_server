@@ -10,7 +10,7 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const {Utility, propertyUtility, utility, handleErrorResponse} = require("../controller.utils");
-const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment } = require("../../models/services/property/service.apartment");
+const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment, updateApartment, deleteApartment } = require("../../models/services/property/service.apartment");
 const { wrapAwait } = require("../../errorHandling");
 const { apartmentSchema } = require("../validationSchema");
 //const utils = new Utility();
@@ -33,6 +33,22 @@ const handleAddApartment = async (req, res) => {
     }
     
 };
+
+const handleUpdateApartment = async (req,res)=>{
+
+  upload(req,res,async function (err){
+    utils.handleMulterError(req,res,err,update,false);
+  })
+
+  async function update(){
+    property.handleUpdateProperty(req,res,updateApartment)
+  }
+
+}
+
+const handleDeleteApartment = async (req,res)=>{
+  property.handleDeleteProperty(req,res,deleteApartment);
+}
 
 
 
@@ -200,6 +216,8 @@ const handleGetRequestedApartment = async (req,res)=>{
 
 module.exports = {
   handleAddApartment,
+  handleUpdateApartment,
+  handleDeleteApartment,
   handleGetApartment,
   handleApartmentFeedback,
   handleUpdateApartmentViews,

@@ -4,32 +4,33 @@
 {
     "property_type": "land",
     "property_for": "plotted",
-    "property_name": "Kathmandu Premium Land",
+    "property_name": "Plotted Land For Sale in Bageshwori, Bhaktapur",
     "listed_for": "sale",
     "twist": 3.5,
-    "property_area": 500.0,
+    "property_area":6,
     "road_size": 20.0,
-    "facing": "east",
-    "province": "Province 3",
-    "district": "Kathmandu",
-    "municipality": "Kathmandu Metropolitan City",
-    "area_name": "Thamel",
-    "ward": 10,
-    "landmark": "Nearby Kathmandu Durbar Square",
-    "latitude": 27.700769,
-    "longitude": 85.300140,
-    "price": 15000000.00,
+    "facing": "north-west",
+    "province": "Bagmati",
+    "district": "Bhaktpur",
+    "municipality": "Changunarayan Municipality ",
+    "area_name": "Bageshwori",
+    "ward": 7,
+    "landmark": "100m from Changunarayan Ward Office",
+    "latitude": 27.702259, 
+    "longitude": 85.476505,
+    "price": 1500000,
     "price_type": "negotiable",
     "amenities": {
-      "water_supply": true,
-      "electricity": true,
-      "parking": true
+      "Road Access": true,
+      "Electricity": true,
+      "Water Supply": true
     },
-    "description": "A beautiful piece of land located in the heart of Kathmandu, perfect for both residential and commercial purposes.",
+    "description": "The land for sale is in Bageshwori, Bhaktapur. The plotted land has 5 plots left with land area of 4 to 6 aana. The land is perfect for the residential area because it is close to greenery and peaceful surrounding. The land also has facility of electricity, water line, and drainage system. So, please do not miss this opportunity to own these lands.",
     "social_media": {
-      "facebook": "https://facebook.com/kathmanduProperty",
-      "instagram": "https://instagram.com/kathmanduLand",
-      "youtube":"https://www.youtube.com/watch?v=WG-8F6UaB8M&t=132s&ab_channel=NepalRealEstateSolution-NRES"
+      "facebook": "",
+      "instagram": "",
+      "youtube":"https://www.youtube.com/watch?v=WG-8F6UaB8M&ab_channel=NepalRealEstateSolution-NRES",
+      "tiktok":"https://www.tiktok.com/@nepalrealestatesolution/video/7243594236594031874?fbclid=IwAR0M_8mHR9Jbu6ORzlhEj13Ks29cT_Tn3ndFSJpRCLd4b2EhznzTf0VUTvk"
     }
   }
   

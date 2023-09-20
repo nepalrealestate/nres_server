@@ -19,8 +19,23 @@ const handleGetPropertyWithAds = async function (req,res){
 
     offSet = (page - 1) * limit;
 
+    let condition = {};
+    
+    if(req.query.property_type){
+      condition.property_type = req.query.property_type
+    }
+    if(req.query.listed_for){
+      condition.listed_for = req.query.listed_for;
+    }
+    if(req.query.location){
+      condition.location = req.query.location;
+    }
+
+
+    console.log(condition)
+
     try {
-      const data = await getPropertyWithAds(req.query, limit, offSet);
+      const data = await getPropertyWithAds(condition, limit, offSet);
       console.log(data);
       //update views of property
       //await updateViewsCount()

@@ -8,7 +8,7 @@ const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 
 const {Utility, propertyUtility, utility} = require("../controller.utils");
-const { insertPendingHouse, getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse, getRequestedHouse } = require("../../models/services/property/service.house");
+const { insertPendingHouse, getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse, getRequestedHouse, updateHouse, deleteHouse } = require("../../models/services/property/service.house");
 //const utils = new Utility();
 const utils  = utility();
 
@@ -29,6 +29,25 @@ const handleAddHouse = async (req, res) => {
 
 
 };
+
+
+const handleUpdateHouse = async (req,res)=>{
+
+  upload(req,res,async function (err){
+    utils.handleMulterError(req,res,err,update,false);
+  })
+
+  async function update(){
+    property.handleUpdateProperty(req,res,updateHouse)
+  }
+
+}
+
+const handleDeleteHouse = async (req,res)=>{
+
+  property.handleDeleteProperty(req,res,deleteHouse)
+}
+
 
 const handleGetHouse = async (req, res) => {
   
@@ -186,6 +205,8 @@ const handleGetRequestedHouse = async (req,res)=>{
 
 module.exports = {
   handleAddHouse,
+  handleUpdateHouse,
+  handleDeleteHouse,
   handleGetHouse,
   handleHouseFeedback,
   handleUpdateHouseViews,

@@ -201,8 +201,8 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
   const verifyToken = async function (req, res, next) {
     //in req.headers we get cookie in array
      const cookies = req.headers.cookie;
-     console.log(req.headers)
-     console.log(req.cookies)
+    //  console.log(req.headers)
+    //  console.log(req.cookies)
    
     //const cookies = req.cookies;
    // console.log(cookies);
@@ -275,6 +275,28 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
       next();
     });
   };
+
+  const logout = async (req,res)=>{
+
+  const cookies = req.headers.cookie;
+  if (!cookies) {
+    return res.status(401).json({ message: "You Are Not Authorized" });
+  }
+  const token = cookies.split("=")[1];
+  if (!token) {
+    return res.status(400).json({ message: "No Token" });
+  }
+  jwt.verify(token,JWT_KEY, (err, decode) => {
+    if (err) {
+      console.log(err)
+      return res.status(403).json({ message: "Unable to Logout" });
+    }
+    res.clearCookie(`${decode.id}`);
+    req.cookies[`${decode.id}`] = "";
+    console.log("Logout Succesfully");
+    return res.status(200).json({ message: "Successfully Logout" });
+  });
+  }
 
   //   const passwordReset = async function (req, res, user) {
   //     if (!user) {
@@ -421,6 +443,7 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
     login,
     verifyToken,
     refreshToken,
+    logout,
     // passwordReset,
     // passwordUpdate,
     // updateProfilePassword,
@@ -1005,6 +1028,7 @@ function propertyUtility(property_type) {
   async function handleAddProperty(req, res, addPropertyCB) {
 
     let property = JSON.parse(req.body.property);
+    console.log(property)
     
     let owner_id = null;
     let admin_id = null;
@@ -1076,6 +1100,55 @@ function propertyUtility(property_type) {
     
       return handleErrorResponse(res,error);
 
+    }
+  }
+
+   async function handleUpdateProperty (req,res,updatePropertyCallback){
+
+    const updateProperty = req.body
+    if(!updateProperty){
+      return res.status(400).json({message:"Please Provide Update Data"});
+    }
+  
+    const property_id = req.params.property_id;
+    // property_type , property_id 
+
+    if(updateProperty?.property_type){
+      delete updateProperty.property_type;
+    }
+    if(updateProperty?.property_id){
+      delete updateProperty.property_id
+    }
+    console.log(updateProperty)
+    try {
+      const response = await updatePropertyCallback(property_id,updateProperty);
+      console.log(response)
+      console.log(Object.keys(response))
+      console.log(response['0'])
+      console.log(typeof response)
+      if(response['0']===0){
+        return res.status(404).json({message:`${propertyType} unable to update`})
+      }
+      return res.status(200).json({message:`${propertyType} update`})
+    } catch (error) {
+      handleErrorResponse(res,error)
+    }
+
+  }
+
+  async function handleDeleteProperty(req,res,deletePropertyCallabck){
+    const property_id = req.params.property_id;
+
+    try {
+      const response = await deletePropertyCallabck(property_id);
+      if(response===0){
+        return res.status(404).json({message:`${propertyType} not found`})
+      }
+      return res.status(200).json({message:`${propertyType} deleted`})
+    } catch (error) {
+
+      handleErrorResponse(res,error);
+      
     }
   }
 
@@ -1286,6 +1359,8 @@ function propertyUtility(property_type) {
 
   return {
     handleAddProperty,
+    handleUpdateProperty,
+    handleDeleteProperty,
     handleGetPropertyByID,
     handleGetProperty,
     handleInsertPropertyComment,

@@ -32,10 +32,29 @@ async function updatePropertyId(transaction) {
 }
 
 async function getPropertyWithAds(condition, limit, offset) {
+  let orderConditions = [["createdAt", "DESC"]];
+  let whereConditions = {};
+  let location;
+  if (condition.location) {
+    location = condition.location;
+    whereConditions[db.Op.or] = [
+      { province: { [db.Op.like]: `%${location}%` } },
+      { district: { [db.Op.like]: `%${location}%` } },
+      { municipality: { [db.Op.like]: `%${location}%` } },
+      {area_name : {[db.Op.like] : `%${location}`}}
+    ];
+  }
+  if(condition.property_type){
+    whereConditions.property_type = condition.property_type
+  }
+  if(condition.listed_for){
+    whereConditions.listed_for = condition.listed_for
+    }
+
   return await PropertyAdminView.findAll({
-    where: condition,
+    where: whereConditions,
     attributes: { exclude: ["id"] },
-    order: ["property_id"],
+    order: orderConditions,
     limit: limit,
     offset: offset,
   });
@@ -93,6 +112,7 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
       { province: { [db.Op.like]: `%${location}%` } },
       { district: { [db.Op.like]: `%${location}%` } },
       { municipality: { [db.Op.like]: `%${location}%` } },
+      {area_name : {[db.Op.like] : `%${location}`}}
     ];
   }
 

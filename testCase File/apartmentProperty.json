@@ -38,6 +38,45 @@
       "youtube":"https://www.youtube.com/watch?v=D4dXCTf4yfA&t=3s&ab_channel=NepalRealEstateSolution-NRES"
     }
   },
+
+  {
+    "property_type": "apartment",
+    "property_for": "residential",
+    "property_name": "Indreni Luxurious Apartment Baluwatar",
+    "listed_for": "rent",
+    "property_age": 0,
+    "floor": 2,
+    "bhk": 3,
+    "facing": "north-east",
+    "province": "Bagmati",
+    "district": "Kathmandu",
+    "municipality": "Kathmandu Metropolitan City",
+    "area_name": "Baluwatar",
+    "ward": 9,
+    "landmark": "Chinese Embassy",
+    "latitude": 27.721472, 
+    "longitude": 85.333384,
+    "property_area": 1400.0,
+    "road_size": 18.0,
+    "price": 238699.26,
+    "price_type": "negotiable",
+    "furnish": "furnished",
+    "parking_bike": 5,
+    "parking_car": 5,
+    "amenities": {
+      "Swimming Pool": true,
+      "24hr Water": true,
+      "Gym": true
+    },
+    "description": " one of the very peaceful and luxurious apartments with gym , swimming pool in Baluwatar, Now available for rent",
+    "social_media": {
+      "facebook": "",
+      "instagram": "",
+      "youtube":"https://www.youtube.com/watch?v=IIfCLmO7M6c&ab_channel=NepalRealEstateSolution-NRES",
+      "tiktok":"https://www.tiktok.com/@nepalrealestatesolution/video/7278652164438871314?fbclid=IwAR0M_8mHR9Jbu6ORzlhEj13Ks29cT_Tn3ndFSJpRCLd4b2EhznzTf0VUTvk"
+    }
+  }
+  
   
 
 
@@ -45,30 +84,6 @@
 
 
 
-{
-  "property_type": "residential",
-  "property_area": 1400.5,
-  "property_age": 4,
-  "floor": 2.5,
-  "bhk": 3,
-  "facing": "east-north",
-  "road_size": 13.5,
-  "minPrice": "6000000.00",
-  "maxPrice": "6500000.00",
-  "furnish": "semi-furnished",
-  "description": "A comfortable 3BHK residential property located in the heart of the city with a magnificent view of the Himalayas.",
-  "needed": "within 3 months",
-  "province": "Province 2",
-  "zone": "Narayani Zone",
-  "district": "Chitwan",
-  "municipality": "Bharatpur Metropolitan City",
-  "ward": 5,
-  "landmark": "Near Narayani River",
-  "name": "Aarav Tamang",
-  "email": "aarav.tamang@email.np",
-  "phone_number": "98127631498",
-  "address": "Sauraha, Chitwan, Nepal"
-}
 
 
 ]
