@@ -1,6 +1,8 @@
 
 const db  = require('../../model.index');
-const Staff = db.UserModel.Staff
+const Admin = db.UserModel.Admin
+const StaffProfile = db.UserModel.StaffProfile;
+
 
 
 async function registerStaff(data){
@@ -17,23 +19,24 @@ async function findStaff(email){
     return data?data.dataValues:data;
 }
 
-async function getStaff(id){
-    return await Staff.findOne({
-        where:{staff_id:id},
-        attributes:{exclude: ['password']}
+async function getStaffProfile(id){
+    return await StaffProfile.findOne({
+        where:{admin_id:id},
+        attributes:{exclude: ['id']}
     })
 }
 
-async function getAllStaff(searchName){
+async function getAllStaff(condition){
     const whereCondition = {};
-    if(searchName){
+    if(condition?.name){
         whereCondition.name={
-            [db.Op.substring]:searchName
+            [db.Op.substring]:condition.name
         }
     }
-    return await Staff.findAll({
+    return await StaffProfile.findAll({
         where:whereCondition,
-        attributes:{exclude:['password']}
+        attributes: {exclude:['id']}
+       
     });
 }
 
@@ -48,17 +51,17 @@ async function updateStaffPassword(id,hashPassword){
 
 async function updateStaff(id,updateData){
     if(updateData.password)delete updateData.password;
-    return await Staff.update(updateData,{
-        where:{staff_id:id}
+    return await StaffProfile.update(updateData,{
+        where:{admin_id:id}
     })
 }
 
 async function deleteStaff(id){
-    return await Staff.destroy({
-        where:{staff_id:id}
+    return await StaffProfile.destroy({
+        where:{admin_id:id}
     })
 }
 
 
 
-module.exports = {registerStaff,findStaff,getStaff,getAllStaff,updateStaffPassword,updateStaff,deleteStaff}
+module.exports = {registerStaff,findStaff,getStaffProfile,getAllStaff,updateStaffPassword,updateStaff,deleteStaff}

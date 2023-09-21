@@ -1,6 +1,6 @@
 const express = require("express");
 
-const {handleGetStaff, handleStaffRegistration, handleStaffLogin, handleAddVideoLink, handleStaffPasswordReset, staffVerifyToken} = require('../../controllers/users/controller.staff');
+const {handleGetStaff, handleStaffRegistration, handleStaffLogin, handleAddVideoLink, handleStaffPasswordReset, staffVerifyToken, handleGetStaffByID} = require('../../controllers/users/controller.staff');
 
 const { handleAddApartment, handleApproveApartment, handleGetPendingApartment, handleUpdateApartmentAds, handleInsertApartmentComment, handleGetApartment, handleGetApartmentComment, handleInsertRequestedApartment } = require("../../controllers/property/controller.apartment");
 const { handleAddHouse, handleApproveHouse, handleGetPendingHouse, handleUpdateHouseAds, handleGetHouse, handleInsertHouseComment, handleGetHouseComment, handleInsertRequestedHouse } = require("../../controllers/property/controller.house");
@@ -15,7 +15,7 @@ const { handleGetPropertyWithAds } = require("../../controllers/property/control
 
 const router  = express.Router();
 
-router.get("/",staffVerifyToken,handleGetStaff);
+router.get("/",staffVerifyToken,handleGetStaffByID);
 router.post("/register",handleStaffRegistration);
 router.post("/login",handleStaffLogin);
 

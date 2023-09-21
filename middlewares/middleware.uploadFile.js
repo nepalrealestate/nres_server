@@ -95,16 +95,33 @@ function deleteFiles(input) {
       input = extractPathsFromObjects(input);
   }
 
-  // At this point, input should be an array of file paths
-  input.forEach(path => {
+  // if we have in json format - most likely fetched from db;
+  if(typeof input ==='object'){
+    let images = Object.values(input);
+    console.log(images)
+    images.forEach((path)=>{
       fs.unlink(path, function(err) {
-          if (err) {
-              console.log("Error while Deleting image", err);
-          } else {
-              console.log(path, " image deleted");
-          }
-      });
-  });
+        if (err) {
+            console.log("Error while Deleting image", err);
+        } else {
+            console.log(path, " image deleted");
+        }
+    });
+    })
+  }else{
+    // At this point, input should be an array of file paths
+  input.forEach(path => {
+    fs.unlink(path, function(err) {
+        if (err) {
+            console.log("Error while Deleting image", err);
+        } else {
+            console.log(path, " image deleted");
+        }
+    });
+});
+  }
+
+  
 }
 
 

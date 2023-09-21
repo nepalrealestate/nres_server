@@ -1,15 +1,21 @@
 const db = require("../../model.index");
 
 const Admin = db.UserModel.Admin;
+const StaffProfile = db.UserModel.StaffProfile;
 
 
-async function registerAdmin(admin_type,name,email,password){
+
+async function registerAdmin(admin_type,name,email,password,options ={}){
     return await Admin.create({
         admin_type:admin_type,
         name:name,
         email:email,
         password:password
-    })
+    },options)
+}
+
+async function insertStaffProfile(staffProfile,options={}){
+    return await StaffProfile.create(staffProfile,options);
 }
 
 
@@ -22,6 +28,15 @@ async function findAdmin(email,admin_type){
     )
 }
 
+async function deleteAdmin(admin_id){
+    return await Admin.destroy({
+        where:{admin_id:admin_id,admin_type:"staff"},
+    })
+}
+
 module.exports = {
-    registerAdmin,findAdmin
+    registerAdmin,
+    insertStaffProfile,
+    findAdmin,
+    deleteAdmin
 }

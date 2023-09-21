@@ -4,24 +4,18 @@ const express = require("express");
 const {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin, superAdminVerifyToken, superAdminVerifyLogin, superAdminLogout} = require('../../controllers/users/controller.superAdmin');
 const { handleGetCustomerChatList } = require("../../controllers/chat/controller.customerChat");
 const { handleGetStaffChatList, handleInsertStaffGroup, handleDeleteStaffFromGroup } = require("../../controllers/chat/controller.staffChat");
-const { handleStaffRegistration, handleGetAllStaff, handleStaffUpdate, handleStaffDelete, handleGetStaff } = require("../../controllers/users/controller.staff");
+const { handleStaffRegistration, handleGetAllStaff, handleStaffUpdate, handleStaffDelete, handleGetStaffByID } = require("../../controllers/users/controller.staff");
 const { handleGetAllAgent } = require("../../controllers/users/controller.agent");
 const { handleGetServiceProvider } = require("../../controllers/nres_services/controller.nres_service");
 const { handleGetCustomer } = require("../../controllers/users/controller.customer");
-const { handleAddApartment, handleGetApartment, handleInsertRequestedApartment, handleGetRequestedApartment, handleUpdateApartmentAds, handleUpdateApartment, handleDeleteApartment } = require("../../controllers/property/controller.apartment");
-const { handleAddHouse, handleGetHouse, handleInsertRequestedHouse, handleGetRequestedHouse, handleUpdateHouse, handleDeleteHouse } = require("../../controllers/property/controller.house");
-const { handleAddLand, handleGetLand, handleInsertRequestedLand, handleGetRequestedLand, handleUpdateLand, handleDeleteLand } = require("../../controllers/property/controller.land");
+const { handleAddApartment, handleGetApartment, handleInsertRequestedApartment, handleGetRequestedApartment, handleUpdateApartmentAds, handleUpdateApartment, handleDeleteApartment, handleGetApartmentByID, handleInsertApartmentComment, handleGetApartmentComment } = require("../../controllers/property/controller.apartment");
+const { handleAddHouse, handleGetHouse, handleInsertRequestedHouse, handleGetRequestedHouse, handleUpdateHouse, handleDeleteHouse, handleGetHouseByID, handleInsertHouseComment, handleGetHouseComment } = require("../../controllers/property/controller.house");
+const { handleAddLand, handleGetLand, handleInsertRequestedLand, handleGetRequestedLand, handleUpdateLand, handleDeleteLand, handleGetLandByID, handleInsertLandComment, handleGetLandComment } = require("../../controllers/property/controller.land");
 const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds } = require("../../controllers/property/controller.property");
 
 const router = express.Router();
 
 
-
-router.get("/",handleGetSuperAdmin);
-router.post("/register",handleSuperAdminRegistration)
-router.post("/login",handleSuperAdminLogin)
-router.get("/isLoggedIn",superAdminVerifyToken,superAdminVerifyLogin)
-router.post("/logout",superAdminLogout)
 
 
 // chat 
@@ -38,10 +32,10 @@ router.delete("/chat/staffGroup/:staffID",handleDeleteStaffFromGroup);
 
 
 // staff related apis 
-router.post("/register/staff",handleStaffRegistration);
+router.post("/staff/register",handleStaffRegistration);
 router.get("/staff",handleGetAllStaff);
-router.get("/staff/:staff_id",handleGetStaff)
-router.put("/staff/:staff_id",handleStaffUpdate)
+router.get("/staff/:staff_id",handleGetStaffByID)
+router.patch("/staff/:staff_id",handleStaffUpdate)
 router.delete("/staff/:staff_id",handleStaffDelete);
 
 
@@ -59,23 +53,35 @@ router.get("/customer/:customer_id",handleGetCustomer)
 
 // property Related Routes
 router.get("/property",superAdminVerifyToken,handleGetPropertyWithAds);
-
-
+// apartment
+router.get("/property/apartment/property_id",superAdminVerifyToken,handleGetApartmentByID)
 router.get("/property/apartment",superAdminVerifyToken,handleGetApartment)
 router.post("/property/apartment",superAdminVerifyToken,handleAddApartment)
 router.patch("/property/apartment/:property_id",superAdminVerifyToken,handleUpdateApartment)
 router.delete("/property/apartment/:property_id",superAdminVerifyToken,handleDeleteApartment);
 
-router.post("/property/house",superAdminVerifyToken,handleAddHouse)
+router.post("/property/apartment/comment/:property_id",superAdminVerifyToken,handleInsertApartmentComment)
+router.get("/property/apartment/comment/:property_id",superAdminVerifyToken,handleGetApartmentComment)
+
+//house
+router.get("/property/house/:property_id",superAdminVerifyToken,handleGetHouseByID)
 router.get("/property/house",superAdminVerifyToken,handleGetHouse)
+router.post("/property/house",superAdminVerifyToken,handleAddHouse)
 router.patch("/property/house/:property_id",superAdminVerifyToken,handleUpdateHouse)
 router.delete("/property/house/:property_id",superAdminVerifyToken,handleDeleteHouse)
 
-router.post("/property/land",superAdminVerifyToken,handleAddLand)
+router.post("/property/house/comment/:property_id",superAdminVerifyToken,handleInsertHouseComment)
+router.get("/property/house/comment/:property_id",superAdminVerifyToken,handleGetHouseComment)
+
+//land
+router.get("/property/land/:property_id",superAdminVerifyToken,handleGetLandByID)
 router.get("/property/land",superAdminVerifyToken,handleGetLand)
+router.post("/property/land",superAdminVerifyToken,handleAddLand)
 router.patch("/property/land/:property_id",superAdminVerifyToken,handleUpdateLand)
 router.delete("/property/land/:property_id",superAdminVerifyToken,handleDeleteLand)
 
+router.post("/property/land/comment/:property_id",superAdminVerifyToken,handleInsertLandComment);
+router.get("/property/land/comment/:property_id",superAdminVerifyToken,handleGetLandComment)
 
 
 

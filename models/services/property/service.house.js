@@ -153,21 +153,19 @@ async function deleteHouse(property_id){
     return await HouseAds.update({[platform]:ads_status},{where:{property_id:property_id}})
 }
 
-async function insertHouseComment(property_id,staff_id,super_admin_id,comment,isPrivate){
+async function insertHouseComment(property_id,admin_id,comment,isPrivate){
     return await HouseComment.create({
         property_id:property_id,
-        staff_id:staff_id,
-        super_admin_id:super_admin_id,
+        admin_id:admin_id,
         comment:comment,
         is_private:isPrivate
     })
 }
 
-async function getHouseComment(property_id,super_admin_id=null){
+async function getHouseComment(property_id){
     return await HouseComment.findAll({
         where:{
-            property_id:property_id,
-            super_admin_id:super_admin_id
+            property_id:property_id    
         }
     })
 }

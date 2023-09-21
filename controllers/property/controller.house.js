@@ -45,7 +45,7 @@ const handleUpdateHouse = async (req,res)=>{
 
 const handleDeleteHouse = async (req,res)=>{
 
-  property.handleDeleteProperty(req,res,deleteHouse)
+  property.handleDeleteProperty(req,res,getHouseByID,deleteHouse)
 }
 
 

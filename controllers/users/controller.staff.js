@@ -11,6 +11,7 @@ const {
   getAllStaff,
   updateStaff,
   deleteStaff,
+  getStaffProfile,
 } = require("../../models/services/users/service.staff");
 const { wrapAwait } = require("../../errorHandling");
 
@@ -23,28 +24,28 @@ const auth = utility.authUtility(tokenExpireTime, saltRound, JWT_KEY, "staff");
 
 const utils = utility.utility();
 const user = utility.userUtility("staff");
-const { UploadImage } = require("../../middlewares/middleware.uploadFile");
+const { UploadImage, deleteFiles } = require("../../middlewares/middleware.uploadFile");
 const { sendPasswordToStaff } = require("../../middlewares/middleware.sendEmail");
+const { insertStaffProfile, registerAdmin, findAdmin, deleteAdmin } = require("../../models/services/users/service.admin");
+const { sequelize } = require("../../models/model.index");
 
 const imageFolderPath = "uploads/users/staff/";
 const maxImageSize = "";
 const { upload } = new UploadImage(imageFolderPath, maxImageSize);
 
-const handleGetStaff = async function (req, res) {
-  
+const handleGetStaffByID = async function (req, res) {
   let staff_id;
-  if(req.id){
-    staff_id=req.id
-}else{
-    staff_id=req.params.staff_id;
-}
-
-
-
-  
-
+  if(req.params.staff_id){
+    staff_id = req.params.staff_id;
+  }else{
+    staff_id = req.id;
+  }
+   
   try {
-    const data = await getStaff(staff_id);
+    const data = await getStaffProfile(staff_id);
+    if(!data){
+      return res.status(404).json({message:"Staff Not Found"})
+    }
     return res.status(200).json(data);
   } catch (error) {
     console.log(error)
@@ -58,7 +59,7 @@ const handleStaffRegistration = async (req, res) => {
   });
 
   async function registration() {
-    
+
     const {
       name,
       gender,
@@ -76,8 +77,8 @@ const handleStaffRegistration = async (req, res) => {
     const isEmailValid = utils.isValid.email(email);
     const isPhoneNumberValid = utils.isValid.phoneNumber(contact)
 
-    if(!isEmailValid || !isPhoneNumberValid){
-        return res.status(400).json({message:"Invalid Input fields"})
+    if (!isEmailValid || !isPhoneNumberValid) {
+      return res.status(400).json({ message: "Invalid Input fields" })
     }
 
 
@@ -93,18 +94,18 @@ const handleStaffRegistration = async (req, res) => {
         .status(500)
         .json({ message: "Internal Error ! please try again" });
     }
-    let documentsObject = JSON.stringify(
-        req.files.reduce(
-          (acc, value, index) => ({ ...acc, [index]: value.path }),
-          {}
-        )
-      );;
-   
+    let documentsObject = (
+      req.files.reduce(
+        (acc, value, index) => ({ ...acc, [index]: value.path }),
+        {}
+      )
+    );;
 
-    const staffData = {
+
+    const staffProfile = {
       name,
-      gender,
       email,
+      gender,
       address,
       contact,
       responsibility,
@@ -114,85 +115,103 @@ const handleStaffRegistration = async (req, res) => {
       salary,
       qualification,
       pan_no,
-      documents:documentsObject,  
-      password:hashPassword
+      documents: documentsObject,
+    }
+
+    const staffAccount = {
+      admin_type: "staff",
+      name: name,
+      email: email,
+      password: hashPassword
     }
 
 
-    console.log(staffData)
     //store details in DB
+    const transaction = await sequelize.transaction() ;
     try {
-      const result = await registerStaff(staffData);
-      console.log(result);
+      const accountResponse = await registerAdmin("staff", name, email, hashPassword,{transaction});
+      const profileResponse = await insertStaffProfile({ admin_id: accountResponse.admin_id, ...staffProfile },{transaction});
+      if(!profileResponse){
+        console.log(profileResponse,"Roll back Commit")
+        transaction.rollback();
+      }
 
-      sendPasswordToStaff(email,password).catch((err)=>console.log(err));
+      await transaction.commit();
+
+      sendPasswordToStaff(email, password).catch((err) => console.log(err));
 
       return res.status(200).json({ message: "Registration Succesfully" });
     } catch (error) {
-      console.log(error)
-      return res.status(500).json({message:error.errors[0].message})
+      await transaction.rollback();
+      if (req.files) {
+        deleteFiles(req.files)
+      }
+      utility.handleErrorResponse(res, error)
     }
   }
 };
 
-const handleStaffUpdate = async (req,res)=>{
-    const staff_id = req.params.staff_id;
-    
+const handleStaffUpdate = async (req, res) => {
+  const staff_id = req.params.staff_id;
 
-    try {
-        const response = await updateStaff(staff_id,req.body);
-        console.log(response)
-        return res.status(200).json({message:"Update Successfully"});
-    } catch (error) {
-        return res.status(500).json({message:"Internal Error"});
+  const updateData = req.body;
+  console.log(updateData)
+
+
+  try {
+    const response = await updateStaff(staff_id, updateData);
+    if(response['0']===0){
+      return res.status(400).json({message:"unable to update"})
     }
+    return res.status(200).json({ message: "Update Successfully" });
+  } catch (error) {
+    utility.handleErrorResponse(res,error)
+  }
 }
 
-const handleStaffDelete = async (req,res)=>{
-    const staff_id  = req.params.staff_id;
+const handleStaffDelete = async (req, res) => {
+  const staff_id = req.params.staff_id;
 
-    try {
-        const response = await deleteStaff(staff_id)
-        return res.status(200).json({message:"Delete Successfully"});
-    } catch (error) {
-        return res.status(500).json({message:"Internal Error"})
-        
+  try {
+    const response = await deleteAdmin(staff_id)
+    if(response===0){
+      return res.status(400).json({message:"Unable to delete"})
     }
+    return res.status(200).json({ message: "Delete Successfully" });
+  } catch (error) {
+    utility.handleErrorResponse(res,error)
+  }
 }
 
 const handleStaffLogin = async (req, res) => {
   const { email } = req.body;
-
-  //find staff userName in DB
-  console.log(email);
-  const [staff, staffError] = await wrapAwait(findStaff(email));
-  console.log(staff);
-  if (staffError) {
-    return res.status(500).json({ message: "Internal Error" });
+  try {
+    const staff = await findAdmin(email,"staff");
+    console.log(staff)
+    if(!staff){
+      return res.status(404).json({message:"Staff Not Found"})
+    }
+    return auth.login(req, res, staff);
+  } catch (error) {
+    utility.handleErrorResponse(res, error);
   }
-
-  //this login function handle all logic
-
-  return auth.login(req, res, staff);
 };
 
 
-const handleGetAllStaff = async (req,res)=>{
-    let searchName  = req.query.name?req.query.name:null;
-    console.log(searchName)
+const handleGetAllStaff = async (req, res) => {
+  
 
-    
-    try {
-        const data = await getAllStaff(searchName);
-        return res.status(200).json(data)
-    } catch (error) {
+  let condition = {};
+  if (req.query?.name) {
+    condition.name = req.query.name;
+  }
+  try {
+    const data = await getAllStaff(condition);
+    return res.status(200).json(data)
+  } catch (error) {
 
-        if(error?.errors){
-            return res.status(500).json({message:error?.errors[0]?.message})
-        }
-        console.log(error)
-        return res.status(500).json({message:"Internal Error"})
-    }
+    utility.handleErrorResponse(res, error)
+  }
 
 }
 
@@ -225,7 +244,7 @@ const staffVerifyToken = async (req, res, next) => {
 };
 
 module.exports = {
-  handleGetStaff,
+  handleGetStaffByID,
   handleStaffRegistration,
   handleStaffLogin,
   handleStaffPasswordReset,

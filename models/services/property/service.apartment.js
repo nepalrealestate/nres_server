@@ -166,22 +166,25 @@ async function updateApartmentAds(platform,ads_status,property_id){
     return await ApartmentAds.update({[platform]:ads_status},{where:{property_id:property_id}})
 }
 
-async function insertApartmentComment(property_id,staff_id,super_admin_id,comment,isPrivate){
+async function insertApartmentComment(property_id,admin_id,comment,isPrivate){
     return await ApartmentComment.create({
         property_id:property_id,
-        staff_id:staff_id,
-        super_admin_id:super_admin_id,
+        admin_id:admin_id,
         comment:comment,
         is_private:isPrivate
     })
 }
 
-async function getApartmentComment(property_id,super_admin_id=null){
+async function getApartmentComment(property_id){
     return await ApartmentComment.findAll({
         where:{
             property_id:property_id,
-            super_admin_id:super_admin_id
-        }
+            
+        },
+        include:[{
+            model:db.UserModel.Admin,
+            attributes:['name']
+        }]
     })
 }
 

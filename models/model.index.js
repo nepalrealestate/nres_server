@@ -25,7 +25,8 @@ db.UserModel = {
     //AgentInfo :require('./users/model.agent').agentInfoModel(sequelize,DataTypes),
 
     User : require('./users/model.user').userAccountModel(sequelize,DataTypes),
-    Admin : require('./users/model.admin').adminAccountModel(sequelize,DataTypes)
+    Admin : require('./users/model.admin').adminAccountModel(sequelize,DataTypes),
+    StaffProfile : require('./users/model.admin').staffProfileModel(sequelize,DataTypes)
 };
 
 db.ServiceModel={
@@ -178,6 +179,24 @@ db.PropertyModel.LandViews.belongsTo(db.PropertyModel.Land,{foreignKey:'property
 
 db.PropertyModel.Land.hasOne(db.PropertyModel.LandViewsCount,{foreignKey:'property_id'});
 db.PropertyModel.LandViewsCount.belongsTo(db.PropertyModel.Land,{foreignKey:'property_id'});
+
+
+// Admin Account Relation With Property Comment;
+db.UserModel.Admin.hasMany(db.PropertyModel.ApartmentComment,{foreignKey:'admin_id'});
+db.PropertyModel.ApartmentComment.belongsTo(db.UserModel.Admin,{foreignKey:'admin_id'});
+
+db.UserModel.Admin.hasMany(db.PropertyModel.HouseComment,{foreignKey:'admin_id'});
+db.PropertyModel.HouseComment.belongsTo(db.UserModel.Admin,{foreignKey:'admin_id'});
+
+db.UserModel.Admin.hasMany(db.PropertyModel.LandComment,{foreignKey:'admin_id'});
+db.PropertyModel.LandComment.belongsTo(db.UserModel.Admin,{foreignKey:'admin_id'});
+
+
+
+// User - Admin / user Relation their profile data;
+db.UserModel.Admin.hasOne(db.UserModel.StaffProfile,{foreignKey:'admin_id'});
+db.UserModel.StaffProfile.belongsTo(db.UserModel.Admin,{foreignKey:'admin_id'});
+
 
 
 module.exports = db;

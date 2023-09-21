@@ -144,21 +144,20 @@ async function deleteLand(property_id){
     })
 }
 
-async function insertLandComment(property_id,staff_id,super_admin_id,comment,isPrivate){
+async function insertLandComment(property_id,admin_id,comment,isPrivate){
     return await LandComment.create({
         property_id:property_id,
-        staff_id:staff_id,
-        super_admin_id:super_admin_id,
+        admin_id:admin_id,
         comment:comment,
         is_private:isPrivate
     })
 }
 
-async function getLandComment(property_id,super_admin_id=null){
+async function getLandComment(property_id){
     return await  LandComment.findAll({
         where:{
             property_id:property_id,
-            super_admin_id:super_admin_id
+            
         }
     })
 }

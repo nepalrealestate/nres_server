@@ -1032,7 +1032,7 @@ function propertyUtility(property_type) {
     
     let owner_id = null;
     let admin_id = null;
-
+    console.log(req.id,req.user_type)
     if(!req.id || !req.user_type){
       return res.status(401).json({message:"unauthorized"});
     }
@@ -1045,7 +1045,7 @@ function propertyUtility(property_type) {
       owner_id = req.id;
     }
 
-  
+
     let images;
     if(req.file){
       images = req.file;
@@ -1103,9 +1103,9 @@ function propertyUtility(property_type) {
     }
   }
 
-   async function handleUpdateProperty (req,res,updatePropertyCallback){
+   async function handleUpdateProperty(req,res,updatePropertyCallback){
 
-    const updateProperty = req.body
+    const updateProperty = JSON.parse(req.body.property);
     if(!updateProperty){
       return res.status(400).json({message:"Please Provide Update Data"});
     }
@@ -1136,13 +1136,18 @@ function propertyUtility(property_type) {
 
   }
 
-  async function handleDeleteProperty(req,res,deletePropertyCallabck){
+  async function handleDeleteProperty(req,res,getPropertyCallback,deletePropertyCallabck){
     const property_id = req.params.property_id;
 
     try {
+      const property = await getPropertyCallback(property_id);
+      
       const response = await deletePropertyCallabck(property_id);
       if(response===0){
         return res.status(404).json({message:`${propertyType} not found`})
+      }
+      if(property?.property_image){
+        deleteFiles(property.property_image)
       }
       return res.status(200).json({message:`${propertyType} deleted`})
     } catch (error) {
@@ -1155,7 +1160,7 @@ function propertyUtility(property_type) {
   async function handleGetPropertyByID(
     req,
     res,
-    getPropertyById,
+    getPropertyByIDCallback,
     updatePropertyViewsCB
   ) {
     const { property_id } = req.params;
@@ -1166,8 +1171,9 @@ function propertyUtility(property_type) {
    
 
     try {
-      const result = await getPropertyById(property_id); // get single  apartment by property
+      const result = await getPropertyByIDCallback(property_id); // get single  apartment by property
       // if there is apartment then also update views
+      console.log(result)
       
       if (!result) {
         return res.status(400).json({ message: `No ${propertyType}` });
@@ -1195,29 +1201,16 @@ function propertyUtility(property_type) {
 
   async function handleInsertPropertyComment(req, res, callbackProperty) {
     const { property_id } = req.params;
-    let staff_id;
-    let super_admin_id;
-
-    const user_type = req.baseUrl.substring(1);
-
-    let comment = req.body.comment;
-    let private = req.body.private || false;
+    let admin_id = req.id;
+    
+    let comment = req.body?.comment;
+    let private = req.body?.private || false;
 
     if (!comment) {
       return res.status(400).json({ message: "Please Submit Your Comment" });
     }
 
-    if (user_type === "staff") {
-      staff_id = req.id;
-      super_admin_id = null;
-      private = false;
-    } else if (user_type === "superAdmin") {
-      super_admin_id = req.id;
-      if (req.body.private === true) {
-        private = true;
-      }
-      staff_id = null;
-    } else {
+    if(!admin_id) {
       return res
         .status(400)
         .json({ message: "You are not Authorize to Comment" });
@@ -1226,18 +1219,17 @@ function propertyUtility(property_type) {
     try {
       const response = await callbackProperty(
         property_id,
-        staff_id,
-        super_admin_id,
+        admin_id,
         comment,
         private
       );
+      console.log(response)
       if (response.affectedRows === 0) {
         return response.status(500).json({ message: "No property to comment" });
       }
       return res.status(200).json({ message: "comment submit successfully" });
     } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: "Unable to submit comment" });
+      handleErrorResponse(res,error)
     }
   }
 
@@ -1305,11 +1297,10 @@ function propertyUtility(property_type) {
   async function handleGetPropertyComment(req, res, getPropertyComment) {
     let { property_id } = req.params;
 
-    let super_admin_id =
-      req.baseUrl.substring(1) === "superAdmin" ? req.id : null;
+   //let admin_id = req.id;
 
     try {
-      const data = await getPropertyComment(property_id, super_admin_id);
+      const data = await getPropertyComment(property_id);
       return res.status(200).json(data);
     } catch (error) {
       console.error(error);

@@ -39,7 +39,7 @@ const handleUpdateLand = async (req,res)=>{
 }
 
 const handleDeleteLand = async (req,res)=>{
-  property.handleDeleteProperty(req,res,deleteLand)
+  property.handleDeleteProperty(req,res,getLandByID,deleteLand)
 }
 
 
@@ -126,13 +126,13 @@ const handleUpdateLandAds = async (req,res)=>{
 
 const handleInsertLandComment = async function (req,res){
 
-  return utils.handleInsertPropertyComment(req,res,insertLandComment);
+  return property.handleInsertPropertyComment(req,res,insertLandComment);
 
 }
 
 const handleGetLandComment = async (req,res)=>{
 
-  return utils.handleGetPropertyComment(req,res,getLandComment)
+  return property.handleGetPropertyComment(req,res,getLandComment)
 
 }
 

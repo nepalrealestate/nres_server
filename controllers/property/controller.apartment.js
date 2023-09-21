@@ -10,7 +10,7 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const {Utility, propertyUtility, utility, handleErrorResponse} = require("../controller.utils");
-const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment, updateApartment, deleteApartment } = require("../../models/services/property/service.apartment");
+const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment, updateApartment, deleteApartment, insertApartmentComment, getApartmentComment } = require("../../models/services/property/service.apartment");
 const { wrapAwait } = require("../../errorHandling");
 const { apartmentSchema } = require("../validationSchema");
 //const utils = new Utility();
@@ -47,8 +47,13 @@ const handleUpdateApartment = async (req,res)=>{
 }
 
 const handleDeleteApartment = async (req,res)=>{
-  property.handleDeleteProperty(req,res,deleteApartment);
+
+  
+
+  property.handleDeleteProperty(req,res,getApartmentByID,deleteApartment);
 }
+
+
 
 
 
@@ -164,13 +169,13 @@ const handleUpdateApartmentAds = async (req,res)=>{
 
 const handleInsertApartmentComment = async function (req,res){
 
-    return utils.handleInsertPropertyComment(req,res,insertApartmentComment);
+    return property.handleInsertPropertyComment(req,res,insertApartmentComment);
 
 }
 
 const handleGetApartmentComment = async (req,res)=>{
 
-  return utils.handleGetPropertyComment(req,res,getApartmentComment)
+  return property.handleGetPropertyComment(req,res,getApartmentComment)
 
 }
 

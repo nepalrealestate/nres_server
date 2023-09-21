@@ -38,7 +38,77 @@ function adminAccountModel(sequelize,DataTypes){
 
 }
 
+function staffProfileModel (sequelize,DataTypes){
+  return Staff = sequelize.define('user_admin_staff_profile',{
+    admin_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'user_adminAccount',
+        key:'admin_id'
+      },
+      onDelete: 'SET NULL'
+      
+    },
+    name:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate:{
+        notEmpty:true
+      }
+    },
+    gender:{
+      type:DataTypes.ENUM('male','female','other')
+    },
+    email:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      unique:true,
+      validate:{
+          isEmail:true,
+          notEmpty:true
+      }
+    },
+    address:{
+      type:DataTypes.STRING
+    },
+    contact:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate:{
+        notEmpty:true
+      }
+    },
+    responsibility:{
+      type:DataTypes.STRING
+    },
+    date_of_birth:{
+      type:DataTypes.DATEONLY,
+    },
+    recruited_date:{
+      type:DataTypes.DATEONLY
+    },
+    tenure:{
+      type:DataTypes.STRING
+    },
+    salary:{
+      type:DataTypes.DECIMAL(12,2),
+      allowNull:false
+    },
+    qualification:{
+      type:DataTypes.STRING
+    },
+    pan_no:{
+      type:DataTypes.STRING
+    },
+    documents:{
+      type:DataTypes.JSON
+    }
+  },{
+    freezeTableName:true
+  })
+}
 
 module.exports = {
-    adminAccountModel
+    adminAccountModel,
+    staffProfileModel
 }
