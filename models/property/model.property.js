@@ -229,43 +229,67 @@ function propertyViewClientModel(sequelize, DataTypes) {
 }
 
 function propertyShootScheduleModel(sequelize, DataTypes) {
-  return (propertyShootSchedule = sequelize.define(
-    "property_shoot_schedule",
-    {
-      property_id: {
-        type: DataTypes.INTEGER,
-        unique: true,
-      },
-      property_type: {
-        type: DataTypes.ENUM("apartment", "land", "house"),
-      },
-      shoot_status: {
-        type: DataTypes.ENUM("scheduled", "completed", "read_to_post"),
-      },
-      date: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
+  
+  return PropertyShootSchedule = sequelize.define('property_shoot_schedule',{
+    
+    property_type:{
+        type:DataTypes.ENUM('apartment','land','house')
+     },
+     listed_for:{
+        type:DataTypes.ENUM('sale','rent')
+     },
+     location:{
+      type:DataTypes.STRING,
+     },
+     owner:{
+      type:DataTypes.STRING
+     },
+     contact:{
+      type:DataTypes.STRING,
+     },
+     scheduled_date:{
+       type:DataTypes.DATE,
+       allowNull:false
+     },
+     shoot_status:{
+      type:DataTypes.ENUM("scheduled","completed","read_to_post"),
+      defaultValue:"scheduled"
     },
-    {
-      freezeTableName: true,
+    },{
+      freezeTableName:true
     }
-  ));
+  )
+}
 
-  // return PropertyShootSchedule = sequelize.define('property_shoot_schedule',{
-  //   property_type:{
-  //      property_type:{
-  //       type:DataTypes.ENUM('apartment','land','house')
-  //    },
-  //    shoot_status:{
-  //      type:DataTypes.ENUM("scheduled","completed","read_to_post")
-  //    },
-  //    scheduled_date:{
-  //      type:DataTypes.DATE,
-  //      allowNull:false
-  //    }
-  //   }
-  // })
+function propertyShootScheduleCommentModel(sequelize,DataTypes){
+  return PropertyShootScheduleComment = sequelize.define('property_shoot_schedule_comment',{
+    shoot_schedule_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'property_shoot_schedule',
+        key:'id'
+      }
+    },
+    admin_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'user_adminAccount',
+        key:'admin_id'
+      }
+    },
+    comment:{
+      type:DataTypes.TEXT,
+      allowNull:false,
+      validate:{
+        notEmpty:true
+      } 
+    }
+
+  },{
+    freezeTableName:true
+  })
 }
 
 function propertyFieldVisitRequestModel(sequelize,DataTypes){
@@ -380,6 +404,7 @@ module.exports = {
   propertyIdTrackerModel,
   propertyViewAdminModel,
   propertyShootScheduleModel,
+  propertyShootScheduleCommentModel,
   propertyViewClientModel,
   propertyFieldVisitRequestModel, 
   propertyFieldVisitCommentModel

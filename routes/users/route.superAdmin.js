@@ -11,11 +11,17 @@ const { handleGetCustomer } = require("../../controllers/users/controller.custom
 const { handleAddApartment, handleGetApartment, handleInsertRequestedApartment, handleGetRequestedApartment, handleUpdateApartmentAds, handleUpdateApartment, handleDeleteApartment, handleGetApartmentByID, handleInsertApartmentComment, handleGetApartmentComment } = require("../../controllers/property/controller.apartment");
 const { handleAddHouse, handleGetHouse, handleInsertRequestedHouse, handleGetRequestedHouse, handleUpdateHouse, handleDeleteHouse, handleGetHouseByID, handleInsertHouseComment, handleGetHouseComment } = require("../../controllers/property/controller.house");
 const { handleAddLand, handleGetLand, handleInsertRequestedLand, handleGetRequestedLand, handleUpdateLand, handleDeleteLand, handleGetLandByID, handleInsertLandComment, handleGetLandComment } = require("../../controllers/property/controller.land");
-const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds } = require("../../controllers/property/controller.property");
+const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment } = require("../../controllers/property/controller.property");
 
 const router = express.Router();
 
 
+
+router.get("/",handleGetSuperAdmin);
+router.post("/register",handleSuperAdminRegistration)
+router.post("/login",handleSuperAdminLogin)
+router.get("/isLoggedIn",superAdminVerifyToken,superAdminVerifyLogin)
+router.post("/logout",superAdminLogout)
 
 
 // chat 
@@ -96,5 +102,13 @@ router.get("/property/land/request",superAdminVerifyToken,handleGetRequestedLand
 
 // field visit 
 router.post("/property/field-visit-request",superAdminVerifyToken,handleInsertPropertyFieldVisitRequest)
+
+//shoot schedule
+router.post("/property/shoot-schedule",superAdminVerifyToken,handleInsertPropertyShootSchedule)
+router.get("/property/shoot-schedule",superAdminVerifyToken,handleGetPropertyShootSchedule)
+
+// shoot schedule comment 
+router.post("/property/shoot-schedule-comment/:shoot_schedule_id",superAdminVerifyToken,handleInsertPropertyShootScheduleComment);
+router.get("/property/shoot-schedule-comment/:shoot_schedule_id",superAdminVerifyToken,handleGetPropertyShootScheduleComment);
 
 module.exports  = router;

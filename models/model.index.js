@@ -89,6 +89,7 @@ db.PropertyModel = {
 
 
     PropertyShootSchedule : require('./property/model.property').propertyShootScheduleModel(sequelize,DataTypes),
+    PropertyShootScheduleComment: require("./property/model.property").propertyShootScheduleCommentModel(sequelize,DataTypes),
 
     PropertyFieldVisit : require('./property/model.property').propertyFieldVisitRequestModel(sequelize,DataTypes),
     PropertyFieldVisitComment : require('./property/model.property').propertyFieldVisitCommentModel(sequelize,DataTypes)

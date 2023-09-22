@@ -6,6 +6,7 @@ const PropertyViewClient = db.Views.PropertyViewClient;
 const PropertyIdTracker = db.PropertyModel.PropertyIdTracker;
 const PropertyFieldVisit = db.PropertyModel.PropertyFieldVisit;
 const PropertyFieldVisitComment = db.PropertyModel.PropertyFieldVisitComment;
+const PropertyShootScheduleComment = db.PropertyModel.PropertyShootScheduleComment;
 
 // get latest property insert id
 async function getPropertyId() {
@@ -25,7 +26,7 @@ async function updatePropertyId(transaction) {
     console.log("propertyIdUpdate")
     return;
   } catch (error) {
-    console.log("Error in update propertyId",error)
+    console.log("Error in update propertyId", error)
     transaction.rollback();
     throw error;
   }
@@ -41,15 +42,15 @@ async function getPropertyWithAds(condition, limit, offset) {
       { province: { [db.Op.like]: `%${location}%` } },
       { district: { [db.Op.like]: `%${location}%` } },
       { municipality: { [db.Op.like]: `%${location}%` } },
-      {area_name : {[db.Op.like] : `%${location}`}}
+      { area_name: { [db.Op.like]: `%${location}` } }
     ];
   }
-  if(condition.property_type){
+  if (condition.property_type) {
     whereConditions.property_type = condition.property_type
   }
-  if(condition.listed_for){
+  if (condition.listed_for) {
     whereConditions.listed_for = condition.listed_for
-    }
+  }
 
   return await PropertyAdminView.findAll({
     where: whereConditions,
@@ -60,18 +61,8 @@ async function getPropertyWithAds(condition, limit, offset) {
   });
 }
 
-async function insertPropertyShootSchedule(
-  property_id,
-  property_type,
-  shoot_status,
-  shoot_date
-) {
-  return await PropertyShootSchedule.create({
-    property_id: property_id,
-    property_type: property_type,
-    shoot_status: shoot_status,
-    date: shoot_date,
-  });
+async function insertPropertyShootSchedule(shootData) {
+  return await PropertyShootSchedule.create(shootData);
 }
 
 async function getPropertyShootSchedule(condition, limit, offset) {
@@ -80,6 +71,17 @@ async function getPropertyShootSchedule(condition, limit, offset) {
     limit: limit,
     offset: offset,
   });
+}
+
+async function insertPropertyShootScheduleComment(shoot_schedule_id,admin_id,comment){
+  return PropertyShootScheduleComment.create({shoot_schedule_id,admin_id,comment});
+}
+async function getPropertyShootScheduleComment(shoot_schedule_id,limit,offset){
+  return PropertyShootScheduleComment.findAll({
+    where:{shoot_schedule_id:shoot_schedule_id},
+    limit:limit,
+    offset:offset
+  })
 }
 
 async function getProperty(condition, limit, offset) {
@@ -112,7 +114,7 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
       { province: { [db.Op.like]: `%${location}%` } },
       { district: { [db.Op.like]: `%${location}%` } },
       { municipality: { [db.Op.like]: `%${location}%` } },
-      {area_name : {[db.Op.like] : `%${location}`}}
+      { area_name: { [db.Op.like]: `%${location}` } }
     ];
   }
 
@@ -135,7 +137,7 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
       };
     }
 
-   
+
   }
 
   delete condition.location;
@@ -143,20 +145,20 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
   console.log(condition);
   return await PropertyViewClient.findAll({
     where: whereConditions,
-   // attributes: { exclude: ["id"] },
-   attributes:['property_id',
-   'property_type',
-   'property_name',
-   'listed_for',
-   'price',
-   'district',
-   'municipality',
-   'area_name',
-  //  [sequelize.fn('JSON_PARSE', sequelize.col('social_media')), 'social_media'],
-  //  [sequelize.fn('JSON_PARSE', sequelize.col('property_image')), 'property_image'],
-  'social_media',
-  'property_image',
-   'views'],
+    // attributes: { exclude: ["id"] },
+    attributes: ['property_id',
+      'property_type',
+      'property_name',
+      'listed_for',
+      'price',
+      'district',
+      'municipality',
+      'area_name',
+      //  [sequelize.fn('JSON_PARSE', sequelize.col('social_media')), 'social_media'],
+      //  [sequelize.fn('JSON_PARSE', sequelize.col('property_image')), 'property_image'],
+      'social_media',
+      'property_image',
+      'views'],
     order: orderConditions,
     // replacements: [condition.district],
     // limit: limit,
@@ -165,11 +167,11 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
 }
 
 
-async function insertPropertyFieldVisit(data){
+async function insertPropertyFieldVisit(data) {
   return await PropertyFieldVisit.create(data);
 }
 
-async function insertPropertyFieldVisitComment(data){
+async function insertPropertyFieldVisitComment(data) {
   return await PropertyIdTracker.create(data);
 }
 
@@ -182,5 +184,7 @@ module.exports = {
   getPropertyId,
   updatePropertyId,
   insertPropertyFieldVisit,
-  insertPropertyFieldVisitComment
+  insertPropertyFieldVisitComment,
+  insertPropertyShootScheduleComment,
+  getPropertyShootScheduleComment
 };

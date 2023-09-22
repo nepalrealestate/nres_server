@@ -1,5 +1,5 @@
-const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyFieldVisit } = require("../../models/services/property/service.property");
-const { handleErrorResponse } = require("../controller.utils");
+const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyFieldVisit, insertPropertyShootSchedule, getPropertyShootSchedule, insertPropertyShootScheduleComment, getPropertyShootScheduleComment } = require("../../models/services/property/service.property");
+const { handleErrorResponse, handleLimitOffset } = require("../controller.utils");
 
 
 
@@ -151,6 +151,73 @@ const handleInsertPropertyFieldVisitRequest = async function (req,res){
 
 }
 
+const handleInsertPropertyShootSchedule = async function (req,res){
+  const {property_type,listed_for,location,owner,contact,scheduled_date}  = req.body;
+
+  try {
+    const response = await insertPropertyShootSchedule({property_type,listed_for,location,owner,contact,scheduled_date});
+    console.log(response);
+    return res.status(200).json({message:"Insert Property Shoot Schedule"});
+  } catch (error) {
+    handleErrorResponse(res,error);
+  }
+}
+
+const handleGetPropertyShootSchedule = async function(req,res){
+  const [limit,offset] = handleLimitOffset(req);
+  let condition = {};
+
+  try {
+    const response =await getPropertyShootSchedule(condition,limit,offset);
+
+    return res.status(200).json(response)
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+const handleInsertPropertyShootScheduleComment = async function(req,res){
+  let admin_id = req.id;
+  let shoot_schedule_id = req.params.shoot_schedule_id;
+  let {comment}  = req.body;
+
+  console.log(admin_id,shoot_schedule_id,comment);
+
+  try {
+    const response = await insertPropertyShootScheduleComment(shoot_schedule_id,admin_id,comment);
+    return res.status(200).json({message:"Comment Insert Successfull"});
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+const handleGetPropertyShootScheduleComment = async function(req,res){
+  const [limit,offset] = handleLimitOffset(req);
+  let shoot_schedule_id = req.params.shoot_schedule_id;
+  if(!shoot_schedule_id){
+    return res.status(400).json({message:"Please Select Shoot Schedule"});
+  }
+  try {
+    const response = await getPropertyShootScheduleComment(shoot_schedule_id,limit,offset);
+    console.log(response) // response in array
+    if(response.length ===0 ){
+      return res.status(400).json({message:"Bad Request"})
+    }
+    return res.status(200).json(response)
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
 
 
-module.exports = {handleGetPropertyWithAds,handleGetProperty,handleGetPropertyPriorityLocation,handleInsertPropertyFieldVisitRequest}
+
+
+
+module.exports = {handleGetPropertyWithAds,
+  handleGetProperty,
+  handleGetPropertyPriorityLocation,
+  handleInsertPropertyFieldVisitRequest,
+  handleInsertPropertyShootSchedule,
+  handleGetPropertyShootSchedule,
+  handleInsertPropertyShootScheduleComment,
+  handleGetPropertyShootScheduleComment
+}
