@@ -4,9 +4,12 @@ const PropertyAdminView = db.Views.PropertyViewAdmin;
 const PropertyShootSchedule = db.PropertyModel.PropertyShootSchedule;
 const PropertyViewClient = db.Views.PropertyViewClient;
 const PropertyIdTracker = db.PropertyModel.PropertyIdTracker;
-const PropertyFieldVisit = db.PropertyModel.PropertyFieldVisit;
+const PropertyFieldVisitRequest = db.PropertyModel.PropertyFieldVisitRequest;
 const PropertyFieldVisitComment = db.PropertyModel.PropertyFieldVisitComment;
+const PropertyFieldVisitOTP = db.PropertyModel.PropertyFieldVisitOTP;
+const PropertyFieldVisit = db.PropertyModel.PropertyFieldVisit;
 const PropertyShootScheduleComment = db.PropertyModel.PropertyShootScheduleComment;
+
 
 // get latest property insert id
 async function getPropertyId() {
@@ -167,12 +170,82 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
 }
 
 
-async function insertPropertyFieldVisit(data) {
-  return await PropertyFieldVisit.create(data);
+async function insertPropertyFieldVisitRequest(data) {
+  return await PropertyFieldVisitRequest.create(data);
+}
+
+async function getPropertyFieldVisitRequest(condition,limit,offset){
+  let whereConditions = {};
+  if(condition){
+    whereConditions[db.Op.or] = [
+      {name:{[db.Op.like]:`%${condition}`}},
+      {property_type:{[db.Op.like]:`%${condition}`}}
+    ]
+  }
+
+
+  return await PropertyFieldVisitRequest.findAll({
+    where:whereConditions,
+    limit:limit,
+    offset:offset,
+    include: [{
+      model:db.UserModel.User,
+      required: false  // This ensures that the join is a LEFT OUTER JOIN, not an INNER JOIN
+    }],
+   
+  })
+}
+
+async function getPropertyFieldVisitRequestByID(field_visit_id,attributes=[]){
+
+  return await PropertyFieldVisitRequest.findOne({
+    where:{field_visit_id:field_visit_id},
+    include:[{
+      model:db.UserModel.User,
+      required:false,
+    }],
+    attributes:attributes
+  })
+
+}
+
+
+async function updatePropertyFieldVisitRequest(updateCondition,field_visit_id){
+  return await PropertyFieldVisitRequest.update(updateCondition,{
+    where: {field_visit_id:field_visit_id}
+  })
+}
+
+
+async function deletePropertyFieldVisitRequest(field_visit_id){
+  return await PropertyFieldVisitRequest.destroy({
+    where:{field_visit_id:field_visit_id}
+  })
 }
 
 async function insertPropertyFieldVisitComment(data) {
-  return await PropertyIdTracker.create(data);
+  return await PropertyFieldVisitComment.create(data);
+}
+
+async function insertPropertyFieldVisitOTP(data){
+  return await PropertyFieldVisitOTP.create(data)
+}
+async function getPropertyFieldVisitOTP(field_visit_id){
+  return await PropertyFieldVisitOTP.findOne({where:{
+    field_visit_id:field_visit_id
+  }})
+}
+
+async function deletePropertyFieldVisitOTP(field_visit_id){
+  return await PropertyFieldVisitOTP.destroy({where:{field_visit_id:field_visit_id}})
+}
+
+async function insertPropertyFieldVisit(data){
+  return await PropertyFieldVisit.create(data);
+}
+
+async function getPropertyFieldVisit(){
+
 }
 
 module.exports = {
@@ -183,8 +256,16 @@ module.exports = {
   getLatestPropertyPriorityLocation,
   getPropertyId,
   updatePropertyId,
-  insertPropertyFieldVisit,
+  insertPropertyFieldVisitRequest,
+  updatePropertyFieldVisitRequest,
+  deletePropertyFieldVisitRequest,
   insertPropertyFieldVisitComment,
+  insertPropertyFieldVisitOTP,
+  getPropertyFieldVisitOTP,
+  deletePropertyFieldVisitOTP,
+  insertPropertyFieldVisit,
+  getPropertyFieldVisitRequest,
+  getPropertyFieldVisitRequestByID,
   insertPropertyShootScheduleComment,
   getPropertyShootScheduleComment
 };

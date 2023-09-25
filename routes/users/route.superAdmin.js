@@ -9,9 +9,9 @@ const { handleGetAllAgent } = require("../../controllers/users/controller.agent"
 const { handleGetServiceProvider } = require("../../controllers/nres_services/controller.nres_service");
 const { handleGetCustomer } = require("../../controllers/users/controller.customer");
 const { handleAddApartment, handleGetApartment, handleInsertRequestedApartment, handleGetRequestedApartment, handleUpdateApartmentAds, handleUpdateApartment, handleDeleteApartment, handleGetApartmentByID, handleInsertApartmentComment, handleGetApartmentComment } = require("../../controllers/property/controller.apartment");
-const { handleAddHouse, handleGetHouse, handleInsertRequestedHouse, handleGetRequestedHouse, handleUpdateHouse, handleDeleteHouse, handleGetHouseByID, handleInsertHouseComment, handleGetHouseComment } = require("../../controllers/property/controller.house");
-const { handleAddLand, handleGetLand, handleInsertRequestedLand, handleGetRequestedLand, handleUpdateLand, handleDeleteLand, handleGetLandByID, handleInsertLandComment, handleGetLandComment } = require("../../controllers/property/controller.land");
-const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment } = require("../../controllers/property/controller.property");
+const { handleAddHouse, handleGetHouse, handleInsertRequestedHouse, handleGetRequestedHouse, handleUpdateHouse, handleDeleteHouse, handleGetHouseByID, handleInsertHouseComment, handleGetHouseComment, handleUpdateHouseAds } = require("../../controllers/property/controller.house");
+const { handleAddLand, handleGetLand, handleInsertRequestedLand, handleGetRequestedLand, handleUpdateLand, handleDeleteLand, handleGetLandByID, handleInsertLandComment, handleGetLandComment, handleUpdateLandAds } = require("../../controllers/property/controller.land");
+const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleDeletePropertyFieldVisiteRequest, handleUpdatePropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP } = require("../../controllers/property/controller.property");
 
 const router = express.Router();
 
@@ -69,6 +69,8 @@ router.delete("/property/apartment/:property_id",superAdminVerifyToken,handleDel
 router.post("/property/apartment/comment/:property_id",superAdminVerifyToken,handleInsertApartmentComment)
 router.get("/property/apartment/comment/:property_id",superAdminVerifyToken,handleGetApartmentComment)
 
+router.patch("/property/apartment/ads/:property_id",superAdminVerifyToken,handleUpdateApartmentAds)
+
 //house
 router.get("/property/house/:property_id",superAdminVerifyToken,handleGetHouseByID)
 router.get("/property/house",superAdminVerifyToken,handleGetHouse)
@@ -78,6 +80,9 @@ router.delete("/property/house/:property_id",superAdminVerifyToken,handleDeleteH
 
 router.post("/property/house/comment/:property_id",superAdminVerifyToken,handleInsertHouseComment)
 router.get("/property/house/comment/:property_id",superAdminVerifyToken,handleGetHouseComment)
+
+router.patch("/property/house/ads/:property_id",superAdminVerifyToken,handleUpdateHouseAds)
+
 
 //land
 router.get("/property/land/:property_id",superAdminVerifyToken,handleGetLandByID)
@@ -89,6 +94,7 @@ router.delete("/property/land/:property_id",superAdminVerifyToken,handleDeleteLa
 router.post("/property/land/comment/:property_id",superAdminVerifyToken,handleInsertLandComment);
 router.get("/property/land/comment/:property_id",superAdminVerifyToken,handleGetLandComment)
 
+router.patch("/property/land/ads/:property_id",superAdminVerifyToken,handleUpdateLandAds)
 
 
 router.post("/property/apartment/request",superAdminVerifyToken,handleInsertRequestedApartment)
@@ -102,6 +108,17 @@ router.get("/property/land/request",superAdminVerifyToken,handleGetRequestedLand
 
 // field visit 
 router.post("/property/field-visit-request",superAdminVerifyToken,handleInsertPropertyFieldVisitRequest)
+
+router.get("/property/field-visit-request",superAdminVerifyToken,handleGetPropertyFieldVisitRequest)
+
+router.get("/property/field-visit-request/:field_visit_id",superAdminVerifyToken,handleGetPropertyFieldVisitRequestByID);
+
+router.patch("/property/field-visit-request/:field_visit_id",superAdminVerifyToken,handleUpdatePropertyFieldVisitRequest)
+
+router.delete("/property/field-visit-request/:field_visit_id",superAdminVerifyToken,handleDeletePropertyFieldVisiteRequest)
+
+router.get("/property/field-visit-request-otp/:field_visit_id",superAdminVerifyToken,handleGetPropertyFieldVisitOTP)
+router.post("/property/field-visit-request-otp/:field_visit_id",superAdminVerifyToken,)
 
 //shoot schedule
 router.post("/property/shoot-schedule",superAdminVerifyToken,handleInsertPropertyShootSchedule)

@@ -61,8 +61,11 @@ async function getLand(condition){
     // })
 }
 
-async function getLandByID(property_id){
-    return await Land.findByPk(property_id);
+async function getLandByID(property_id,requiredAttributes=[]){
+    return await Land.findOne({
+        where:{property_id:property_id},
+        attributes: requiredAttributes
+    });
 }
 
 async function getPendingLand(condition,limit,offset){
@@ -158,7 +161,13 @@ async function getLandComment(property_id){
         where:{
             property_id:property_id,
             
-        }
+        },
+        attributes:{exclude:['is_private','updatedAt',
+        'property_id']},
+        include:[{
+            model:db.UserModel.Admin,
+            attributes:['name']
+        }]
     })
 }
 

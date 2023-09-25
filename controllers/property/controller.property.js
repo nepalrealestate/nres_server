@@ -1,4 +1,8 @@
-const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyFieldVisit, insertPropertyShootSchedule, getPropertyShootSchedule, insertPropertyShootScheduleComment, getPropertyShootScheduleComment } = require("../../models/services/property/service.property");
+const { getApartmentByID } = require("../../models/services/property/service.apartment");
+const { getHouseByID } = require("../../models/services/property/service.house");
+const { getLandByID } = require("../../models/services/property/service.land");
+const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyShootSchedule, getPropertyShootSchedule,insertPropertyShootScheduleComment, getPropertyShootScheduleComment,  insertPropertyFieldVisitRequest, getPropertyFieldVisitRequest, getPropertyFieldVisitRequestByID, updatePropertyFieldVisitRequest, insertPropertyFieldVisitOTP, getPropertyFieldVisitOTP, insertPropertyFieldVisit } = require("../../models/services/property/service.property");
+const { getRandomNumber } = require("../../utils/helperFunction/helper");
 const { handleErrorResponse, handleLimitOffset } = require("../controller.utils");
 
 
@@ -6,18 +10,7 @@ const { handleErrorResponse, handleLimitOffset } = require("../controller.utils"
 
 const handleGetPropertyWithAds = async function (req,res){
 
-    let page, limit, offSet;
-
-    // if page and limit not set then defualt is 1 and 20 .
-    page = req.query.page || 1;
-
-    limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
-    // if page and limit present in query then delete it
-    if (req.query.page) delete req.query.page;
-
-    if (req.query.limit) delete req.query.limit;
-
-    offSet = (page - 1) * limit;
+    const [limit,offset] = handleLimitOffset(req)
 
     let condition = {};
     
@@ -35,11 +28,29 @@ const handleGetPropertyWithAds = async function (req,res){
     console.log(condition)
 
     try {
-      const data = await getPropertyWithAds(condition, limit, offSet);
+      const data = await getPropertyWithAds(condition, limit, offset);
+      const modifiedData = data.map(item => {
+        return {
+            ...item.dataValues,
+            ads: {
+                twitter: item.twitter,
+                tiktok: item.tiktok,
+                instagram: item.instagram,
+                facebook: item.facebook,
+                youtube: item.youtube
+            },
+            twitter: undefined,       // These lines will essentially remove the original properties
+            tiktok: undefined,        // from the outer object
+            instagram: undefined,
+            facebook: undefined,
+            youtube: undefined
+        };
+    });
+      
+
       console.log(data);
-      //update views of property
-      //await updateViewsCount()
-      return res.status(200).json(data);
+
+      return res.status(200).json(modifiedData);
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: "Internal Error " });
@@ -48,18 +59,8 @@ const handleGetPropertyWithAds = async function (req,res){
 
 const handleGetProperty = async function(req,res){
 
-  let page, limit, offSet;
 
-  // if page and limit not set then defualt is 1 and 20 .
-  page = req.query.page || 1;
-
-  limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
-  // if page and limit present in query then delete it
-  if (req.query.page) delete req.query.page;
-
-  if (req.query.limit) delete req.query.limit;
-
-  offSet = (page - 1) * limit;
+  const [limit,offSet] = handleLimitOffset(req);
 
   try {
     const data = await getProperty(req.query, limit, offSet);
@@ -77,18 +78,7 @@ const handleGetProperty = async function(req,res){
 const handleGetPropertyPriorityLocation = async function (req,res){
 
 
-  let page, limit, offSet;
-
-  // if page and limit not set then defualt is 1 and 20 .
-  page = req.query.page || 1;
-
-  limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
-  // if page and limit present in query then delete it
-  if (req.query.page) delete req.query.page;
-
-  if (req.query.limit) delete req.query.limit;
-
-  offSet = (page - 1) * limit;
+  const [limit,offSet] = handleLimitOffset(req);
 
   // get condition
   let district  = req.body?.district?req.body.district:null;
@@ -132,11 +122,14 @@ const handleGetPropertyPriorityLocation = async function (req,res){
 
 const handleInsertPropertyFieldVisitRequest = async function (req,res){
 
-    const {customer_id,property_id,property_type,request_date}  = req.body;
+    const {user_id,name,email,contact,property_id,property_type,request_date}  = req.body;
 
     try {
-      const data  = await insertPropertyFieldVisit({
-        customer_id,
+      const data  = await insertPropertyFieldVisitRequest({
+        user_id,
+        name,
+        email,
+        contact,
         property_id,
         property_type,
         request_date
@@ -147,8 +140,180 @@ const handleInsertPropertyFieldVisitRequest = async function (req,res){
       handleErrorResponse(res,error);
     }
 
+}
+
+const handleGetPropertyFieldVisitRequest = async function (req,res){
+  
+  const [limit,offset] = handleLimitOffset(req);
+
+  let searchQuery = req?.query?.search;
+
+  try {
+    const response = await getPropertyFieldVisitRequest(searchQuery,limit,offset);
+    console.log(response)
+    return res.status(200).json(response);
+  } catch (error) {
+    handleErrorResponse(res,error) 
+  }
+
+}
+
+const handleGetPropertyFieldVisitRequestByID = async function (req,res){
+  const field_visit_id = req.params?.field_visit_id;
+
+  const propertyRequest={
+    house:getHouseByID,
+    land:getLandByID,
+    apartment:getApartmentByID,
+  }
+
+  try{
+    const response = await getPropertyFieldVisitRequestByID(field_visit_id);
+    
+    console.log(response.dataValues)
+    let propertyResponse = {};
+    let ownerResponse = {};
+    if(response?.dataValues){
+      const getProperty =  propertyRequest[`${response.dataValues?.property_type}`];
+      propertyResponse   = await getProperty(response.dataValues.property_id,['area_name','ward','municipality','owner_id']);
+      if(propertyResponse?.dataValues){
+        // write code for get User / owner
+      }
+    }
+    const finalResponse =Object.assign({},response?.dataValues,propertyResponse?.dataValues)
+    console.log(finalResponse)
+    return res.status(200).json(finalResponse);
+  }catch(error){
+    handleErrorResponse(res,error)
+  }
+}
+
+const handleUpdatePropertyFieldVisitRequest = async function(req,res){
+
+  const field_visit_id = req.params?.field_visit_id;
+
+  
+  
+  console.log(req.body)
+
+  const updateCondition = {};
+
+  if(req.body?.status){
+    updateCondition.status = req.body.status;
+  }
+  if(req.body?.visit_status ){
+    updateCondition.visit_status = req.body.visit_status
+  }
+  if(req.body?.schedule_date){
+    updateCondition.schedule_date = req.body.schedule_date;
+  }
+
+  if(Object.keys(updateCondition).length ===0 ){
+    return res.status(400).json({message:"Bad Request"});
+  }
+
+  try {
+    const response = await updatePropertyFieldVisitRequest(updateCondition,field_visit_id)
+    if(response['0']===1){
+      if(updateCondition?.visit_status === 'schedule'){
+        console.log(updateCondition)
+        const updateRequest = await getPropertyFieldVisitRequestByID(field_visit_id,['user_id','property_id','property_type','visit_status']);
+
+        
+        console.log(updateRequest)
+        if(updateRequest?.dataValues?.visit_status==='schedule'){
+          const otp  = getRandomNumber(100000,999999);
+          console.log(otp)
+          const otpInsert = {
+            field_visit_id:field_visit_id,
+            customer_id:updateRequest.dataValues.user_id,
+            otp:otp,
+            property_id:updateRequest.dataValues.property_id,
+            property_type:updateRequest.dataValues.property_type
+            }
+  
+          const insertOTPResponse = await insertPropertyFieldVisitOTP(otpInsert)
+        }
+
+      }
+ 
+    }
+  
+    return res.status(200).json({message:"Update Successfull"});
+    
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+  
 
 
+}
+
+const handleDeletePropertyFieldVisiteRequest = async function (req,res){
+    const field_visit_id = req.params?.field_visit_id;
+
+    try {
+      const response = await deletePropertyFieldVisit(field_visit_id);
+      if (response === 0) {
+        return res.status(404).json({ message: `Field Visit Request Not Found` })
+      }
+      return res.status(200).json({message:"Delete Successfull"})
+    } catch (error) {
+      handleErrorResponse(res,error)
+    }
+}
+
+
+const handleGetPropertyFieldVisitOTP = async function(req,res){
+  const field_visit_id = req.params?.field_visit_id;
+
+  try {
+    const response = await getPropertyFieldVisitOTP(field_visit_id);
+    return res.status(200).json(response)
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+const handleMatchPropertyFieldVisitOTP = async function (req,res){
+  const field_visit_id = req.params?.field_visit_id;
+  const otp = req.body?.otp;
+  if(!otp){
+    return res.status(400).json({message:"Please Provide OTP"})
+  }
+  
+  try {
+    const response = await getPropertyFieldVisitOTP(field_visit_id);
+    if(Array.isArray(response)){
+      if(response.length===0){
+        return res.status(400).json({message:"OTP not found"})
+      }
+    }
+    if(!response){
+      return res.status(400).json({message:"OTP not found"})
+    }
+
+    if(response.dataValues.otp !== otp){
+      return res.status(400).json({message:"Invalid OTP"})
+    }
+
+    const fieldVisit = {
+      field_visit_id:response.dataValues.field_visit_id,
+      customer_id : response.dataValues.customer_id,
+      property_id:response.dataValues.property_id,
+      property_type:response.dataValues.property_type
+    }
+
+    insertPropertyFieldVisit(fieldVisit).then((instance)=>{
+      
+    });
+   
+    return response.status(200).json({message:"OTP Match"})
+
+    
+  } catch (error) {
+    
+  }
 }
 
 const handleInsertPropertyShootSchedule = async function (req,res){
@@ -169,6 +334,7 @@ const handleGetPropertyShootSchedule = async function(req,res){
 
   try {
     const response =await getPropertyShootSchedule(condition,limit,offset);
+
 
     return res.status(200).json(response)
   } catch (error) {
@@ -216,6 +382,11 @@ module.exports = {handleGetPropertyWithAds,
   handleGetProperty,
   handleGetPropertyPriorityLocation,
   handleInsertPropertyFieldVisitRequest,
+  handleUpdatePropertyFieldVisitRequest,
+  handleGetPropertyFieldVisitRequest,
+  handleGetPropertyFieldVisitRequestByID,
+  handleDeletePropertyFieldVisiteRequest,
+  handleGetPropertyFieldVisitOTP,
   handleInsertPropertyShootSchedule,
   handleGetPropertyShootSchedule,
   handleInsertPropertyShootScheduleComment,

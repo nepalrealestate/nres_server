@@ -74,11 +74,12 @@ async function deleteHouse(property_id){
  }
 
  
- async function getHouseByID(property_id){
+ async function getHouseByID(property_id,requiredAttributes=[]){
     // return await House.findByPk(property_id)
     return await House.findOne({
         where:{property_id:property_id},
-        include:[HouseViewsCount]
+        include:[HouseViewsCount],
+        attributes :  requiredAttributes
     })
  }
 
@@ -166,7 +167,13 @@ async function getHouseComment(property_id){
     return await HouseComment.findAll({
         where:{
             property_id:property_id    
-        }
+        },
+        attributes:{exclude:['is_private','updatedAt',
+        'property_id']},
+        include:[{
+            model:db.UserModel.Admin,
+            attributes:['name']
+        }]
     })
 }
 

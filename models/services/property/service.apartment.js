@@ -85,13 +85,14 @@ async function getApartment(condition){
     // })
 }
 
-async function getApartmentByID(property_id){
+async function getApartmentByID(property_id,requiredAttributes=[]){
 
     //  const data = await Apartment.findByPk(property_id);
     //  return data!==null?data.get():null;
     const data  = await Apartment.findOne({
         where:{property_id:property_id},
-        include:[ApartmentViewsCount]
+        include:[ApartmentViewsCount],
+        attributes:requiredAttributes
     })
     return data;
     // console.log(property_id)
@@ -181,6 +182,8 @@ async function getApartmentComment(property_id){
             property_id:property_id,
             
         },
+        attributes:{exclude:['is_private','updatedAt',
+        'property_id']},
         include:[{
             model:db.UserModel.Admin,
             attributes:['name']

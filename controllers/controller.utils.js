@@ -30,11 +30,11 @@ function userUtility(user_type) {
       return res.status(404).json({ message: "User Not Found!" });
     }
 
-    const randomToken = Math.floor(Math.random()*(9999-1000)+1000)
+    const randomToken = Math.floor(Math.random() * (9999 - 1000) + 1000)
     const expireTime = Date.now() + 5 * 60 * 1000
-   
+
     console.log(passwordToken)
-    passwordToken.set(user_id, {token:randomToken,expireTime:expireTime});
+    passwordToken.set(user_id, { token: randomToken, expireTime: expireTime });
 
     sendPasswordResetTokenMail(user.email, randomToken)
       .then(function (data) {
@@ -71,24 +71,24 @@ function userUtility(user_type) {
         return res.status(403).json({ message: " New Password  not match" });
       }
 
-      
 
-     const storeToken = passwordToken.get(user_id);
-     console.log(storeToken)
 
-     if(!storeToken){
-      return res.status(200).json({message:"Please generate token again"});
-     }
-     if(storeToken.token !== Number(token)){
-      return res.status(400).json({ message: "No Token Match" });
-     }
+      const storeToken = passwordToken.get(user_id);
+      console.log(storeToken)
+
+      if (!storeToken) {
+        return res.status(200).json({ message: "Please generate token again" });
+      }
+      if (storeToken.token !== Number(token)) {
+        return res.status(400).json({ message: "No Token Match" });
+      }
 
       // check expire date
-      if(Date.now>storeToken.expireTime){
+      if (Date.now > storeToken.expireTime) {
         return res.status(400).json({ message: "Token Expire ! please generate New Token" });
       }
-    
-  
+
+
       const [hashPassword, hashPasswordError] = await wrapAwait(
         bcrypt.hash(password, saltRound)
       );
@@ -99,7 +99,7 @@ function userUtility(user_type) {
           updatePasswordCB(user.id, hashPassword)
         );
         if (passwordUpdate) {
-          passwordToken.delete(user_id); 
+          passwordToken.delete(user_id);
           return res
             .status(200)
             .json({ message: "Password Update succesfuly" });
@@ -145,16 +145,16 @@ function userUtility(user_type) {
 function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
   //const tokenExpireTime = "1hr";
 
-  const login = async function (req, res, user,path="/") {
+  const login = async function (req, res, user, path = "/") {
     const { password } = req.body;
 
     if (!user) {
       console.log("No User Found");
-      return res.status(401).send({message:"Invalid Email or Password"});
+      return res.status(401).send({ message: "Invalid Email or Password" });
     }
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).send({message:"Invalid Email or Password"});
+      return res.status(401).send({ message: "Invalid Email or Password" });
     }
 
     const token = jwt.sign({ id: user.id }, JWT_KEY, {
@@ -166,7 +166,7 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
       console.log("THe cookies from inside");
       console.log(req.cookies[`${user.id}`]);
       req.cookies[`${user.id}`] = ""; // set null if already present
-      res.clearCookie(`${user.id}`,{path:path});// if already set on response
+      res.clearCookie(`${user.id}`, { path: path });// if already set on response
     }
 
     // //if there are two or more than different users login cookies then remove it from loop
@@ -185,35 +185,47 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
     //     }
     //   });
     // }
-    console.log(String(user.id));
+    // console.log(String(user.id));
     console.log(token)
 
-    res.cookie(String(user.id), token, {
+    res.cookie("id", token, {
       path: "/",
       expires: new Date(Date.now() + 1000 * 1000 * 60),
       httpOnly: true,
       sameSite: "lax",
     });
-  
-    return res.status(200).json({ message: "Successfully Logged In", token ,role:user_type});
+
+    return res.status(200).json({ message: "Successfully Logged In", user_id: user.id, role: user_type });
   };
 
   const verifyToken = async function (req, res, next) {
     //in req.headers we get cookie in array
-     const cookies = req.headers.cookie;
+    const cookies = req.headers.cookie;
     //  console.log(req.headers)
     //  console.log(req.cookies)
-   
+
     //const cookies = req.cookies;
-   // console.log(cookies);
+    // console.log(cookies);
     console.log("THIS IS COOKIES", cookies);
     if (!cookies) {
       console.log("No cookies Bro !!!!!!!");
       return res.status(401).json({ message: "Unauthorized" });
     }
+    let token;
+    const cookieArray = cookies.split(';'); // Split into individual cookies
+    // Loop through each cookie to find the token
+    for (let i = 0; i < cookieArray.length; i++) {
+      const cookie = cookieArray[i].trim().split('=');
+      if (cookie[0] === 'id') {
+        token = cookie[1];
+        break;
+      }
+    }
 
-    const token = cookies.split("=")[1];
-    console.log(token);
+
+
+    // const token = cookies.split("=")[1];
+    // console.log(token);
     if (!token) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -227,7 +239,7 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
       //set request id
       req.id = user?.id;
       req.user_type = user_type;
-      console.log(req.id,req.user_type)
+      console.log(req.id, req.user_type)
       console.log("Token Verify !!!");
       next();
     });
@@ -276,26 +288,26 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
     });
   };
 
-  const logout = async (req,res)=>{
+  const logout = async (req, res) => {
 
-  const cookies = req.headers.cookie;
-  if (!cookies) {
-    return res.status(401).json({ message: "You Are Not Authorized" });
-  }
-  const token = cookies.split("=")[1];
-  if (!token) {
-    return res.status(400).json({ message: "No Token" });
-  }
-  jwt.verify(token,JWT_KEY, (err, decode) => {
-    if (err) {
-      console.log(err)
-      return res.status(403).json({ message: "Unable to Logout" });
+    const cookies = req.headers.cookie;
+    if (!cookies) {
+      return res.status(401).json({ message: "You Are Not Authorized" });
     }
-    res.clearCookie(`${decode.id}`);
-    req.cookies[`${decode.id}`] = "";
-    console.log("Logout Succesfully");
-    return res.status(200).json({ message: "Successfully Logout" });
-  });
+    const token = cookies.split("=")[1];
+    if (!token) {
+      return res.status(400).json({ message: "No Token" });
+    }
+    jwt.verify(token, JWT_KEY, (err, decode) => {
+      if (err) {
+        console.log(err)
+        return res.status(403).json({ message: "Unable to Logout" });
+      }
+      res.clearCookie(`${decode.id}`);
+      req.cookies[`${decode.id}`] = "";
+      console.log("Logout Succesfully");
+      return res.status(200).json({ message: "Successfully Logout" });
+    });
   }
 
   //   const passwordReset = async function (req, res, user) {
@@ -470,8 +482,8 @@ function utility() {
       return res.status(400).json(err);
     }
 
-    console.log("This is Single Image",req.file);
-    console.log("This is double Image",req.files);
+    console.log("This is Single Image", req.file);
+    console.log("This is double Image", req.files);
     //console.log(req?.files[0]?.path);
 
     if (isImageRequired) {
@@ -1029,61 +1041,60 @@ function propertyUtility(property_type) {
 
     let property = JSON.parse(req.body.property);
     console.log(property)
-    
+
     let owner_id = null;
     let admin_id = null;
-    console.log(req.id,req.user_type)
-    if(!req.id || !req.user_type){
-      return res.status(401).json({message:"unauthorized"});
+    console.log(req.id, req.user_type)
+    if (!req.id || !req.user_type) {
+      return res.status(401).json({ message: "unauthorized" });
     }
     //property added by admin
-    if(req.user_type === 'staff' || req.user_type==='superAdmin'){
+    if (req.user_type === 'staff' || req.user_type === 'superAdmin') {
       admin_id = req.id;
     }
     // property added for listing
-    if(req.user_type === 'customer' || req.user_type === 'agent'){
+    if (req.user_type === 'customer' || req.user_type === 'agent') {
       owner_id = req.id;
     }
 
 
     let images;
-    if(req.file){
+    if (req.file) {
       images = req.file;
-    }else if(req.files){
+    } else if (req.files) {
       images = req.files;
-    }else{
+    } else {
       images = null
     }
 
     let imageObject;
-    if(images){
-       imageObject = 
+    if (images) {
+      imageObject =
         images.reduce(
           (acc, value, index) => ({ ...acc, [index]: value.path }),
           {}
         );
     }
     // update object - store some value
-   let updatedProperty = {
+    let updatedProperty = {
       ...property,
       property_image: imageObject,
       approved_by: admin_id,
-      owner_id : owner_id
+      owner_id: owner_id
     };
 
 
     //console.log(property,imageObject)
     try {
       const value = await validateSchema[property_type](property);
-      console.log("Validate schema",value);
-    
+      console.log("Validate schema", value);
+
       const response = await addPropertyCB(updatedProperty); // callback
       // data for notification
       const data = {};
       (data.notification = `New ${propertyType} Upload`),
-        (data.url = `/pending${
-          propertyType.charAt(0).toUpperCase() + propertyType.slice(1)
-        }/${response.get().property_id}`);
+        (data.url = `/pending${propertyType.charAt(0).toUpperCase() + propertyType.slice(1)
+          }/${response.get().property_id}`);
 
       pushNotification(data);
 
@@ -1091,69 +1102,69 @@ function propertyUtility(property_type) {
 
     } catch (error) {
       //delete uploaded images
-      if(images){
-        
+      if (images) {
+
         deleteFiles(images)
-        
+
       }
 
-    
-      return handleErrorResponse(res,error);
+
+      return handleErrorResponse(res, error);
 
     }
   }
 
-   async function handleUpdateProperty(req,res,updatePropertyCallback){
+  async function handleUpdateProperty(req, res, updatePropertyCallback) {
 
     const updateProperty = JSON.parse(req.body.property);
-    if(!updateProperty){
-      return res.status(400).json({message:"Please Provide Update Data"});
+    if (!updateProperty) {
+      return res.status(400).json({ message: "Please Provide Update Data" });
     }
-  
+
     const property_id = req.params.property_id;
     // property_type , property_id 
 
-    if(updateProperty?.property_type){
+    if (updateProperty?.property_type) {
       delete updateProperty.property_type;
     }
-    if(updateProperty?.property_id){
+    if (updateProperty?.property_id) {
       delete updateProperty.property_id
     }
     console.log(updateProperty)
     try {
-      const response = await updatePropertyCallback(property_id,updateProperty);
+      const response = await updatePropertyCallback(property_id, updateProperty);
       console.log(response)
       console.log(Object.keys(response))
       console.log(response['0'])
       console.log(typeof response)
-      if(response['0']===0){
-        return res.status(404).json({message:`${propertyType} unable to update`})
+      if (response['0'] === 0) {
+        return res.status(404).json({ message: `${propertyType} unable to update` })
       }
-      return res.status(200).json({message:`${propertyType} update`})
+      return res.status(200).json({ message: `${propertyType} update` })
     } catch (error) {
-      handleErrorResponse(res,error)
+      handleErrorResponse(res, error)
     }
 
   }
 
-  async function handleDeleteProperty(req,res,getPropertyCallback,deletePropertyCallabck){
+  async function handleDeleteProperty(req, res, getPropertyCallback, deletePropertyCallabck) {
     const property_id = req.params.property_id;
 
     try {
       const property = await getPropertyCallback(property_id);
-      
+
       const response = await deletePropertyCallabck(property_id);
-      if(response===0){
-        return res.status(404).json({message:`${propertyType} not found`})
+      if (response === 0) {
+        return res.status(404).json({ message: `${propertyType} not found` })
       }
-      if(property?.property_image){
+      if (property?.property_image) {
         deleteFiles(property.property_image)
       }
-      return res.status(200).json({message:`${propertyType} deleted`})
+      return res.status(200).json({ message: `${propertyType} deleted` })
     } catch (error) {
 
-      handleErrorResponse(res,error);
-      
+      handleErrorResponse(res, error);
+
     }
   }
 
@@ -1168,18 +1179,18 @@ function propertyUtility(property_type) {
     let latitude = 28.434883;
     let longitude = 85.72859;
 
-   
+
 
     try {
       const result = await getPropertyByIDCallback(property_id); // get single  apartment by property
       // if there is apartment then also update views
       console.log(result)
-      
+
       if (!result) {
         return res.status(400).json({ message: `No ${propertyType}` });
       }
 
-      updatePropertyViewsCB(property_id,latitude,longitude).catch((err)=>{
+      updatePropertyViewsCB(property_id, latitude, longitude).catch((err) => {
         logger.error(`Error update ${propertyType} Views - ${err}`);
       });
 
@@ -1193,8 +1204,8 @@ function propertyUtility(property_type) {
 
       return res.status(200).json(result);
     } catch (error) {
-      
-      handleErrorResponse(res,error);
+
+      handleErrorResponse(res, error);
       //return res.status(500).json({ message: "Internal Error" });
     }
   }
@@ -1202,7 +1213,7 @@ function propertyUtility(property_type) {
   async function handleInsertPropertyComment(req, res, callbackProperty) {
     const { property_id } = req.params;
     let admin_id = req.id;
-    
+
     let comment = req.body?.comment;
     let private = req.body?.private || false;
 
@@ -1210,7 +1221,7 @@ function propertyUtility(property_type) {
       return res.status(400).json({ message: "Please Submit Your Comment" });
     }
 
-    if(!admin_id) {
+    if (!admin_id) {
       return res
         .status(400)
         .json({ message: "You are not Authorize to Comment" });
@@ -1229,58 +1240,58 @@ function propertyUtility(property_type) {
       }
       return res.status(200).json({ message: "comment submit successfully" });
     } catch (error) {
-      handleErrorResponse(res,error)
+      handleErrorResponse(res, error)
     }
   }
 
   async function handleGetProperty(req, res, getPropertyCallBack) {
-    
+
     let page, limit, offSet;
 
-  // if page and limit not set then defualt is 1 and 20 .
-  page = req.query.page || 1;
+    // if page and limit not set then defualt is 1 and 20 .
+    page = req.query.page || 1;
 
-  limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
-  // if page and limit present in query then delete it
-  if (req.query.page) delete req.query.page;
+    limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
+    // if page and limit present in query then delete it
+    if (req.query.page) delete req.query.page;
 
-  if (req.query.limit) delete req.query.limit;
+    if (req.query.limit) delete req.query.limit;
 
-  offSet = (page - 1) * limit;
+    offSet = (page - 1) * limit;
 
-  // get condition
-  let  condition = req.query?req.query:{};
-  let district  = req.body?.district?req.body.district:null;
-
-
-
-  // district for location based search
-  if(district){
-    condition.district = district;
-  }
-
-  
-
-  if(condition?.minPrice || condition?.maxPrice){
-    condition.priceRange = {};
-  }
-  if(condition?.minPrice){
-    condition.priceRange.minPrice = minPrice;
-    delete condition.minPrice;
-  }
-  if(condition?.maxPrice){
-    condition.priceRange.maxPrice = maxPrice;
-    delete condition.maxPrice;
-  }
+    // get condition
+    let condition = req.query ? req.query : {};
+    let district = req.body?.district ? req.body.district : null;
 
 
 
-  ///
-  condition.limit = limit;
-  condition.offset = offSet;
+    // district for location based search
+    if (district) {
+      condition.district = district;
+    }
 
-  console.log(condition);
-  
+
+
+    if (condition?.minPrice || condition?.maxPrice) {
+      condition.priceRange = {};
+    }
+    if (condition?.minPrice) {
+      condition.priceRange.minPrice = minPrice;
+      delete condition.minPrice;
+    }
+    if (condition?.maxPrice) {
+      condition.priceRange.maxPrice = maxPrice;
+      delete condition.maxPrice;
+    }
+
+
+
+    ///
+    condition.limit = limit;
+    condition.offset = offSet;
+
+    console.log(condition);
+
 
     try {
       const data = await getPropertyCallBack(condition);
@@ -1289,15 +1300,15 @@ function propertyUtility(property_type) {
       //await updateViewsCount()
       return res.status(200).json(data);
     } catch (error) {
-      handleErrorResponse(res,error)
-     
+      handleErrorResponse(res, error)
+
     }
   }
 
   async function handleGetPropertyComment(req, res, getPropertyComment) {
     let { property_id } = req.params;
 
-   //let admin_id = req.id;
+    //let admin_id = req.id;
 
     try {
       const data = await getPropertyComment(property_id);
@@ -1361,66 +1372,66 @@ function propertyUtility(property_type) {
 }
 
 
-function handleErrorResponse(res,error){
+function handleErrorResponse(res, error) {
   //log error
   // logger.error(error)
-  
+
   console.log(error)
 
 
-  const errorType  = {
-      "SequelizeUniqueConstraintError":{
-        //"email must be unique":{status:409,message:"Email Already Register"}
-        status:409,
-        error:"UniqueConstraintError",
-        message:`${error?.errors?.[0]?.message}`,
-        logLevel:'info'
-      },
-      "SequelizeForeignKeyConstraintError":{
-        status:400,
-        error:"ForeignKeyConstraintError",
-        message:"The provided foreign key does not match any existing record.",
-        logLevel:'info'
-      },
-      "SequelizeValidationError":{
-        status:400,
-        error:"SequelizeValidationError",
-        message:error?.message,
-        logLevel:'info'
-      },
-      "ValidationError":{
-        status:400,
-        error:"ValidationError",
-        message:`${error?.details?.[0]?.message}`,
-        logLevel:'info'
-      },
-      
+  const errorType = {
+    "SequelizeUniqueConstraintError": {
+      //"email must be unique":{status:409,message:"Email Already Register"}
+      status: 409,
+      error: "UniqueConstraintError",
+      message: `${error?.errors?.[0]?.message}`,
+      logLevel: 'info'
+    },
+    "SequelizeForeignKeyConstraintError": {
+      status: 400,
+      error: "ForeignKeyConstraintError",
+      message: "The provided foreign key does not match any existing record.",
+      logLevel: 'info'
+    },
+    "SequelizeValidationError": {
+      status: 400,
+      error: "SequelizeValidationError",
+      message: error?.message,
+      logLevel: 'info'
+    },
+    "ValidationError": {
+      status: 400,
+      error: "ValidationError",
+      message: `${error?.details?.[0]?.message}`,
+      logLevel: 'info'
+    },
+
   }
-  
+
   const validResponse = errorType[error?.name];
 
   console.log(validResponse)
 
-  if(validResponse){
+  if (validResponse) {
     // logger.error(`originalError:${error}, responseError: ${validResponse}`);
     logger.log({
-      level:validResponse.logLevel,
-      message:validResponse.message
+      level: validResponse.logLevel,
+      message: validResponse.message
     })
     return res.status(validResponse.status).json
-    ({
-      error:validResponse.error,
-      message:validResponse.message
-    })
+      ({
+        error: validResponse.error,
+        message: validResponse.message
+      })
   }
   // logger.error(`originalError:${error}, responseError: ${validResponse}`);
   logger.error(error);
-  return res.status(500).json({message:"Internal Error"})
+  return res.status(500).json({ message: "Internal Error" })
 
 }
 
 
-function handleLimitOffset(req){
+function handleLimitOffset(req) {
   let page, limit, offset;
 
   // if page and limit not set then defualt is 1 and 20 .
@@ -1433,10 +1444,10 @@ function handleLimitOffset(req){
   if (req.query.limit) delete req.query.limit;
 
   offset = (page - 1) * limit;
-  return [limit,offset];
+  return [limit, offset];
 }
 
 
 
 
-module.exports = { propertyUtility, utility, authUtility, userUtility,handleErrorResponse, handleLimitOffset };
+module.exports = { propertyUtility, utility, authUtility, userUtility, handleErrorResponse, handleLimitOffset };

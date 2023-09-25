@@ -88,7 +88,7 @@ const superAdminVerifyToken = async (req,res,next)=>{
 }
 
 const superAdminVerifyLogin = async(req,res)=>{
-    return res.status(200).json({message:"Admin Logged In",role:"superAdmin"});
+    return res.status(200).json({message:"Admin Logged In",user_id:req.id,"role":"superAdmin"});
 }
 const superAdminLogout = async (req,res)=>{
     auth.logout(req,res);

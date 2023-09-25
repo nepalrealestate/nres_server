@@ -143,7 +143,7 @@ const handleUpdateApartmentAds = async (req,res)=>{
 
   if(!ads_statusRequired.includes(ads_status)  || 
     !platformRequired.includes(platform)){
-      return res.status(400).json({message:"Wrong Input"});
+      return res.status(400).json({message:"Bad Request"});
     }
 
   

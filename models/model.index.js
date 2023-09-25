@@ -91,8 +91,10 @@ db.PropertyModel = {
     PropertyShootSchedule : require('./property/model.property').propertyShootScheduleModel(sequelize,DataTypes),
     PropertyShootScheduleComment: require("./property/model.property").propertyShootScheduleCommentModel(sequelize,DataTypes),
 
-    PropertyFieldVisit : require('./property/model.property').propertyFieldVisitRequestModel(sequelize,DataTypes),
-    PropertyFieldVisitComment : require('./property/model.property').propertyFieldVisitCommentModel(sequelize,DataTypes)
+    PropertyFieldVisitRequest : require('./property/model.property').propertyFieldVisitRequestModel(sequelize,DataTypes),
+    PropertyFieldVisitComment : require('./property/model.property').propertyFieldVisitCommentModel(sequelize,DataTypes),
+    PropertyFieldVisitOTP : require('./property/model.property').propertyFieldVisitOTPModel(sequelize,DataTypes),
+    PropertyFieldVisit : require('./property/model.property').propertyFieldVisit(sequelize,DataTypes)
 
 
 };
@@ -159,6 +161,15 @@ db.Views={
 
 
 
+// user and admin relation with property table;
+// user relation with house
+db.UserModel.User.hasMany(db.PropertyModel.House,{foreignKey:'owner_id'});
+db.PropertyModel.House.belongsTo(db.UserModel.User,{foreignKey:'owner_id'})
+
+//admin relation with house
+db.UserModel.Admin.hasMany(db.PropertyModel.House,{foreignKey:'approved_by'});
+db.PropertyModel.House.belongsTo(db.UserModel.Admin,{foreignKey:'approved_by'});
+
 // property and views Model and views count
 // apartment to views model and views count
 db.PropertyModel.Apartment.hasMany(db.PropertyModel.ApartmentViews,{foreignKey:'property_id'});
@@ -180,6 +191,10 @@ db.PropertyModel.LandViews.belongsTo(db.PropertyModel.Land,{foreignKey:'property
 
 db.PropertyModel.Land.hasOne(db.PropertyModel.LandViewsCount,{foreignKey:'property_id'});
 db.PropertyModel.LandViewsCount.belongsTo(db.PropertyModel.Land,{foreignKey:'property_id'});
+
+// property field visit request with user_userAccount;
+db.UserModel.User.hasMany(db.PropertyModel.PropertyFieldVisitRequest,{foreignKey:'user_id'});
+db.PropertyModel.PropertyFieldVisitRequest.belongsTo(db.UserModel.User,{foreignKey:'user_id'})
 
 
 // Admin Account Relation With Property Comment;

@@ -302,11 +302,20 @@ function propertyFieldVisitRequestModel(sequelize,DataTypes){
     },
     user_id:{
       type:DataTypes.INTEGER,
-      allowNull:false,
       references:{
         model:'user_userAccount',
         key:'user_id'
-      }
+      },
+      ondelete:'CASCADE'
+    },
+    name:{
+      type:DataTypes.STRING,
+    },
+    email:{
+      type:DataTypes.STRING,
+    },
+    contact:{
+      type:DataTypes.STRING,
     },
     property_id:{
       type:DataTypes.INTEGER,
@@ -318,10 +327,17 @@ function propertyFieldVisitRequestModel(sequelize,DataTypes){
     request_date:{
       type:DataTypes.DATE
     },
+    schedule_date:{
+      type:DataTypes.DATE,
+    },
     visit_status:{
-      type:DataTypes.ENUM('not schedule','schedule')
+      type:DataTypes.ENUM('not-schedule','schedule'),
+      defaultValue:'not-schedule'
+    },
+    status:{
+      type:DataTypes.ENUM('pending','approve'),
+      defaultValue:'pending'
     }
-
 
   },
   { 
@@ -360,45 +376,118 @@ function propertyFieldVisitCommentModel(sequelize,DataTypes){
       references:{
         model:'property_field_visit_request',
         key:'field_visit_id'
-      }
+      },
+      ondelete:'CASCADE'
     },
     comment:{
-      type:DataTypes.STRING,
+      type:DataTypes.TEXT,
       allowNull:false,
       validate: {
         notEmpty: true,
       },
     },
 
-    admin_id:{
+    user_id:{
       type:DataTypes.INTEGER,
       references:{
-        model:'user_adminAccount',
-        key:'admin_id'
-      }
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'CASCADE'
       
     },
   
 
-
-
   },{
-    hooks:{
-      beforeValidate: (instance)=>{
-        if(instance.staff_id && instance.superAdmin_id){
-          throw new sequelize.ValidationError('Only one of staff_id or superAdmin_id can be set.')
-        }
-        if (!instance.staff_id && !instance.superAdmin_id) {
-          throw new sequelize.ValidationError('Either staff_id or superAdmin_id must be set.');
-        }
-      }
-    },
+    // hooks:{
+    //   beforeValidate: (instance)=>{
+    //     if(instance.staff_id && instance.superAdmin_id){
+    //       throw new sequelize.ValidationError('Only one of staff_id or superAdmin_id can be set.')
+    //     }
+    //     if (!instance.staff_id && !instance.superAdmin_id) {
+    //       throw new sequelize.ValidationError('Either staff_id or superAdmin_id must be set.');
+    //     }
+    //   }
+    // },
       freezeTableName:true
     
   })
   
 }
 
+function propertyFieldVisitOTPModel(sequelize,DataTypes){
+  return sequelize.define('property_field_visit_otp',{
+
+    field_visit_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'property_field_visit_request',
+        key:'field_visit_id'
+      },
+      onDelete:'CASCADE'
+    },
+    customer_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'CASCADE',
+    },
+    otp:{
+      type:DataTypes.INTEGER,
+      allowNull:false
+    },
+    property_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+    },
+    property_type:{
+      type:DataTypes.ENUM('house','apartment','land') 
+    }
+    
+
+  },{
+    freezeTableName:true,
+    indexes: [{
+      unique: true,
+      fields: ['property_id', 'customer_id']
+  }]
+  })
+}
+
+
+function propertyFieldVisit(sequelize,DataTypes){
+  return sequelize.define('property_field_visit',{
+    field_visit_id:{
+      type:DataTypes.INTEGER,
+      primaryKey:true,
+      references:{
+        model:'property_field_visit_request',
+        key:'field_visit_id'
+      },
+      onDelete:'CASCADE'
+    },
+    customer_id:{
+        type:DataTypes.INTEGER,
+        references:{
+          model:'user_userAccount',
+          key:'user_id'
+        },
+        onDelete:'CASCADE',
+      },
+      property_id:{
+        type:DataTypes.INTEGER,
+        allowNull:false,
+      },
+      property_type:{
+        type:DataTypes.ENUM('house','apartment','land') 
+      }
+    },{
+      freezeTableName:true,
+    })
+
+}
 
 module.exports = {
   propertyIdTrackerModel,
@@ -407,5 +496,8 @@ module.exports = {
   propertyShootScheduleCommentModel,
   propertyViewClientModel,
   propertyFieldVisitRequestModel, 
-  propertyFieldVisitCommentModel
+  propertyFieldVisitCommentModel,
+  propertyFieldVisitOTPModel,
+  propertyFieldVisit
+
 };
