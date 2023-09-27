@@ -34,9 +34,14 @@ const handleCustomerRegistration = async (req,res)=>{
         
         return res.status(500).json({error:"hash password error",message:"Internal Error !  please try "});
     }
+    const customer = {
+        name:name,
+        email:email,
+        phone_number:phoneNumber,
+        password:hashPassword
+    }
 
-
-    const [response,responseError]= await wrapAwait(registerCustomer({name,email,phoneNumber,hashPassword}));
+    const [response,responseError]= await wrapAwait(registerCustomer(customer));
 
     if(responseError){
         // console.log(responseError);
@@ -61,8 +66,8 @@ const handleCustomerLogin = async (req,res)=>{
         console.log(customerError);
         return res.status(500).json({message:"Internal Error"})
     }
-    
-    return auth.login(req,res,customer);
+    console.log(customer)
+    return auth.login(req,res,customer.dataValues);
 }
 
 const handleGetCustomer = async (req,res)=>{

@@ -39,7 +39,7 @@ let transporter = nodemailer.createTransport({
   }
 
 
-    async function sendPasswordToStaff(email,password){
+    async function sendPasswordEmail(email,password){
       return new Promise((resolve,reject)=>{
         transporter.sendMail({
           from:'test@nres.com',
@@ -64,4 +64,4 @@ let transporter = nodemailer.createTransport({
   
 
 
- module.exports = {sendPasswordResetTokenMail,sendPasswordToStaff};
+ module.exports = {sendPasswordResetTokenMail,sendPasswordEmail};

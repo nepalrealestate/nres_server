@@ -1,29 +1,31 @@
 const db = require('../../model.index');
-const Customer = db.UserModel.Customer;
+
+const User = db.UserModel.User;
 
 
 
 async function registerCustomer(data){
     console.log(data)
-    return await Customer.create({
+    return await User.create({
+        user_type:"customer",
         name:data.name,
         email:data.email,
-        phone_number:data.phoneNumber,
-        password:data.hashPassword
+        phone_number:data.phone_number,
+        password:data.password
     });
 }
 
 
 async function findCustomer(email){
-    const data = await Customer.findOne({
+    return  await User.findOne({
         where:{email:email},
-        attributes:[['customer_id','id'],'name','email','password']
+        attributes:[['user_id','id'],'name','email','password']
     });
-    return data?data.get():data;
+   
 }
 
 async function findCustomerPassword(id){
-    return await Customer.findOne({
+    return await User.findOne({
         where:{
             agent_id:id
         },
@@ -32,8 +34,7 @@ async function findCustomerPassword(id){
 }
 
 async function getCustomer(id){
-    const data =  await Customer.findByPk(id);
-    return data?data.get():data;
+    return  await User.findByPk(id);
 }
 
 

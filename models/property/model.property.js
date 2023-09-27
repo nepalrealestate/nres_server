@@ -302,20 +302,12 @@ function propertyFieldVisitRequestModel(sequelize,DataTypes){
     },
     user_id:{
       type:DataTypes.INTEGER,
+      allowNull:false,
       references:{
         model:'user_userAccount',
         key:'user_id'
       },
       ondelete:'CASCADE'
-    },
-    name:{
-      type:DataTypes.STRING,
-    },
-    email:{
-      type:DataTypes.STRING,
-    },
-    contact:{
-      type:DataTypes.STRING,
     },
     property_id:{
       type:DataTypes.INTEGER,
@@ -438,20 +430,12 @@ function propertyFieldVisitOTPModel(sequelize,DataTypes){
       type:DataTypes.INTEGER,
       allowNull:false
     },
-    property_id:{
-      type:DataTypes.INTEGER,
-      allowNull:false,
-    },
-    property_type:{
-      type:DataTypes.ENUM('house','apartment','land') 
-    }
-    
-
+   
   },{
     freezeTableName:true,
     indexes: [{
       unique: true,
-      fields: ['property_id', 'customer_id']
+      fields: ['field_visit_id', 'customer_id']
   }]
   })
 }
@@ -461,12 +445,11 @@ function propertyFieldVisit(sequelize,DataTypes){
   return sequelize.define('property_field_visit',{
     field_visit_id:{
       type:DataTypes.INTEGER,
-      primaryKey:true,
       references:{
         model:'property_field_visit_request',
         key:'field_visit_id'
       },
-      onDelete:'CASCADE'
+      onDelete:'SET NULL'
     },
     customer_id:{
         type:DataTypes.INTEGER,
@@ -474,7 +457,7 @@ function propertyFieldVisit(sequelize,DataTypes){
           model:'user_userAccount',
           key:'user_id'
         },
-        onDelete:'CASCADE',
+        onDelete:'SET NULL',
       },
       property_id:{
         type:DataTypes.INTEGER,

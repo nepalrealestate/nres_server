@@ -25,7 +25,7 @@ const auth = utility.authUtility(tokenExpireTime, saltRound, JWT_KEY, "staff");
 const utils = utility.utility();
 const user = utility.userUtility("staff");
 const { UploadImage, deleteFiles } = require("../../middlewares/middleware.uploadFile");
-const { sendPasswordToStaff } = require("../../middlewares/middleware.sendEmail");
+const { sendPasswordToStaff, sendPasswordEmail } = require("../../middlewares/middleware.sendEmail");
 const { insertStaffProfile, registerAdmin, findAdmin, deleteAdmin } = require("../../models/services/users/service.admin");
 const { sequelize } = require("../../models/model.index");
 
@@ -131,14 +131,18 @@ const handleStaffRegistration = async (req, res) => {
     try {
       const accountResponse = await registerAdmin("staff", name, email, hashPassword,{transaction});
       const profileResponse = await insertStaffProfile({ admin_id: accountResponse.admin_id, ...staffProfile },{transaction});
-      if(!profileResponse){
-        console.log(profileResponse,"Roll back Commit")
-        transaction.rollback();
-      }
+      console.log("accountResponse",accountResponse)
+      console.log("profileResponse",profileResponse)
+      // if(!profileResponse){
+      //   console.log(profileResponse,"Roll back Commit")
+      //   transaction.rollback();
+      // }
+
+      
+
+      sendPasswordEmail(email, password).catch((err) => console.log(err));
 
       await transaction.commit();
-
-      sendPasswordToStaff(email, password).catch((err) => console.log(err));
 
       return res.status(200).json({ message: "Registration Succesfully" });
     } catch (error) {

@@ -11,7 +11,7 @@ const serviceRouter = require("./routes/services/route.service")
 const app  = express();
 const cors = require("cors")
 const bodyParser = require('body-parser')
-const path = require("path")
+
 
 const cookieParser = require('cookie-parser');
 

@@ -16,7 +16,6 @@ const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleI
 const router = express.Router();
 
 
-
 router.get("/",handleGetSuperAdmin);
 router.post("/register",handleSuperAdminRegistration)
 router.post("/login",handleSuperAdminLogin)

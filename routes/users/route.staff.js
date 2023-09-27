@@ -16,7 +16,7 @@ const { handleGetPropertyWithAds } = require("../../controllers/property/control
 const router  = express.Router();
 
 router.get("/",staffVerifyToken,handleGetStaffByID);
-router.post("/register",handleStaffRegistration);
+//router.post("/register",handleStaffRegistration);
 router.post("/login",handleStaffLogin);
 
 

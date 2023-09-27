@@ -91,8 +91,8 @@ function staffProfileModel (sequelize,DataTypes){
       type:DataTypes.STRING
     },
     salary:{
-      type:DataTypes.DECIMAL(12,2),
-      allowNull:false
+      type:DataTypes.STRING,
+  
     },
     qualification:{
       type:DataTypes.STRING
