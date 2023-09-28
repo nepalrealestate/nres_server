@@ -92,9 +92,9 @@ app.use("/api/test",testRouter)
 //chat running
 //chatServer().startServer();
 //notification running
-// socketServer.chat()
+socketServer.chat()
 // socketServer.notification();
-// socketServer.startServer();
+socketServer.startServer();
 
 if(process.env.NODE_ENV=='Production'){
   app.listen(()=>{

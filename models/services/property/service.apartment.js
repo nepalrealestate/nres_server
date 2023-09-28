@@ -85,7 +85,7 @@ async function getApartment(condition){
     // })
 }
 
-async function getApartmentByID(property_id,requiredAttributes=[]){
+async function getApartmentByID(property_id,requiredAttributes=null){
 
     //  const data = await Apartment.findByPk(property_id);
     //  return data!==null?data.get():null;

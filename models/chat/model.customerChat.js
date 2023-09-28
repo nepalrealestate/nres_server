@@ -11,13 +11,23 @@ function customerChatModel(sequelize,DataTypes){
             allowNull:false
         },
         message:{
+            type:DataTypes.TEXT,
+            allowNull:true,
+            validate:{
+                len:{
+                    args:[0,1000],
+                    msg:"Message length should be less than 1000 characters"
+                },
+                notEmpty:{
+                    args:true,
+                    msg:"Message cannot be empty"
+                }
+            }
+        },
+        imageURL:{
             type:DataTypes.STRING,
             allowNull:true
-        },
-        // imageLink:{
-        //     type:DataTypes.STRING,
-        //     allowNull:true
-        // }
+        }
 
     },{
         freezeTableName:true
@@ -33,7 +43,8 @@ function customerChatListModel (sequelize,DataTypes){
             references:{
                 model:'user_userAccount',
                 key:'user_id'
-            }
+            },
+            onDelete:'CASCADE',
         }
 
     },{

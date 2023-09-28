@@ -22,19 +22,20 @@ async function getSingleCustomerChat(id){
 
 
 
-async function insertCustomerChat(sender_id,receiver_id,message){
+async function insertCustomerChat(sender_id,receiver_id,message,imageUrl){
 
     return await CustomerChat.create({
         sender_id:sender_id,
         receiver_id:receiver_id,
-        message:message
+        message:message,
+        imageUrl:imageUrl,
     })
 
 }
 
-async function insertCustomerChatList(customer_id){
-    return await CustomerChatList.create({
-        customer_id:customer_id
+async function findOrCreateCustomerChatList(user_id){
+    return await CustomerChatList.findOrCreate({
+        where:{user_id:user_id}
     })
 }
 
@@ -43,6 +44,6 @@ async function getCustomerChatList(){
     return await CustomerChatList.findAll({raw:true});
 }
 
- module.exports = {insertCustomerChat,insertCustomerChatList,getCustomerChatList,getSingleCustomerChat};
+ module.exports = {insertCustomerChat,findOrCreateCustomerChatList,getCustomerChatList,getSingleCustomerChat};
 
 

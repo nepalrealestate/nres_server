@@ -74,7 +74,7 @@ async function deleteHouse(property_id){
  }
 
  
- async function getHouseByID(property_id,requiredAttributes=[]){
+ async function getHouseByID(property_id,requiredAttributes=null){
     // return await House.findByPk(property_id)
     return await House.findOne({
         where:{property_id:property_id},

@@ -117,7 +117,8 @@ router.patch("/property/field-visit-request/:field_visit_id",superAdminVerifyTok
 router.delete("/property/field-visit-request/:field_visit_id",superAdminVerifyToken,handleDeletePropertyFieldVisiteRequest)
 
 router.get("/property/field-visit-request-otp/:field_visit_id",superAdminVerifyToken,handleGetPropertyFieldVisitOTP)
-router.post("/property/field-visit-request-otp/:field_visit_id",superAdminVerifyToken,)
+
+// router.post("/property/field-visit-request-otp/:field_visit_id",superAdminVerifyToken,)
 
 //shoot schedule
 router.post("/property/shoot-schedule",superAdminVerifyToken,handleInsertPropertyShootSchedule)
