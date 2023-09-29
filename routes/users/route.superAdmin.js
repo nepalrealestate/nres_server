@@ -12,6 +12,7 @@ const { handleAddApartment, handleGetApartment, handleInsertRequestedApartment, 
 const { handleAddHouse, handleGetHouse, handleInsertRequestedHouse, handleGetRequestedHouse, handleUpdateHouse, handleDeleteHouse, handleGetHouseByID, handleInsertHouseComment, handleGetHouseComment, handleUpdateHouseAds } = require("../../controllers/property/controller.house");
 const { handleAddLand, handleGetLand, handleInsertRequestedLand, handleGetRequestedLand, handleUpdateLand, handleDeleteLand, handleGetLandByID, handleInsertLandComment, handleGetLandComment, handleUpdateLandAds } = require("../../controllers/property/controller.land");
 const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleDeletePropertyFieldVisiteRequest, handleUpdatePropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP } = require("../../controllers/property/controller.property");
+const { handleInsertBlog, handleGetBlog, handleGetBlogById, handleDeleteBlog } = require("../../controllers/blog/controller.blog");
 
 const router = express.Router();
 
@@ -127,5 +128,15 @@ router.get("/property/shoot-schedule",superAdminVerifyToken,handleGetPropertySho
 // shoot schedule comment 
 router.post("/property/shoot-schedule-comment/:shoot_schedule_id",superAdminVerifyToken,handleInsertPropertyShootScheduleComment);
 router.get("/property/shoot-schedule-comment/:shoot_schedule_id",superAdminVerifyToken,handleGetPropertyShootScheduleComment);
+
+
+
+
+//blogs 
+router.post("/blog",superAdminVerifyToken,handleInsertBlog);
+router.get("/blog",superAdminVerifyToken,handleGetBlog);
+router.get("/blog/:id",superAdminVerifyToken,handleGetBlogById);
+router.delete("/blog/:id",superAdminVerifyToken,handleDeleteBlog);
+
 
 module.exports  = router;

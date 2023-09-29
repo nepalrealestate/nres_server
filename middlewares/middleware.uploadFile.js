@@ -3,6 +3,7 @@
 const multer = require("multer");
 const fs = require('fs');
 const path = require("path");
+const logger = require("../utils/errorLogging/logger");
 
 
 
@@ -103,6 +104,7 @@ function deleteFiles(input) {
       fs.unlink(path, function(err) {
         if (err) {
             console.log("Error while Deleting image", err);
+            logger.error("Error while Deleting image", err);
         } else {
             console.log(path, " image deleted");
         }
@@ -114,18 +116,29 @@ function deleteFiles(input) {
     fs.unlink(path, function(err) {
         if (err) {
             console.log("Error while Deleting image", err);
+            logger.error("Error while Deleting image", err);
         } else {
             console.log(path, " image deleted");
         }
     });
 });
   }
+ 
+}
 
-  
+function deleteSingleImage(path){
+  fs.unlink(path, function(err) {
+    if (err) {
+        console.log("Error while Deleting image", err);
+        logger.error("Error while Deleting image", err);
+    } else {
+        console.log(path, " image deleted");
+    }
+});
 }
 
 
 
 
 
-module.exports = { UploadImage, deleteFiles };
+module.exports = { UploadImage, deleteFiles,deleteSingleImage };

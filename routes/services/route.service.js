@@ -25,6 +25,7 @@ router.put("/provider/:status/:provider_id",handleVerifyServiceProvider);
 
 router.get("/getPendingProvider/",handleGetPendingServiceProvider);
 
+
 router.get("/images/:imagePath",(req,res)=>{
     logger.info("Image Path Gets ",req.params.imagePath);
     logger.info(path.join(__dirname, 'uploads','property','house', 'images', imagePath))

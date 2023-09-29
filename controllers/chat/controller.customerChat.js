@@ -121,7 +121,7 @@ const handleUserChat = async function (userChat, socket) {
         sender_id,
         receiver_id,
         message,
-        imageUrl
+         
       );
       console.log(response);
       

@@ -117,6 +117,11 @@ db.ChatModel={
 
 };
 
+db.BlogModel = {
+    Blog : require('./blog/model.blog').blogModel(sequelize,DataTypes),
+}
+
+
 
 // views 
 db.Views={
