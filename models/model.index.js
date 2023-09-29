@@ -121,6 +121,9 @@ db.BlogModel = {
     Blog : require('./blog/model.blog').blogModel(sequelize,DataTypes),
 }
 
+db.AdsModel = {
+    Ads:require('./ads/model.ads').adsModel(sequelize,DataTypes)
+}
 
 
 // views 

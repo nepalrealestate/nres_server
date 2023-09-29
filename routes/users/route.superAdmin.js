@@ -13,6 +13,7 @@ const { handleAddHouse, handleGetHouse, handleInsertRequestedHouse, handleGetReq
 const { handleAddLand, handleGetLand, handleInsertRequestedLand, handleGetRequestedLand, handleUpdateLand, handleDeleteLand, handleGetLandByID, handleInsertLandComment, handleGetLandComment, handleUpdateLandAds } = require("../../controllers/property/controller.land");
 const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleDeletePropertyFieldVisiteRequest, handleUpdatePropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP } = require("../../controllers/property/controller.property");
 const { handleInsertBlog, handleGetBlog, handleGetBlogById, handleDeleteBlog } = require("../../controllers/blog/controller.blog");
+const { handleInsertOrUpdateAds, handleGetAds } = require("../../controllers/ads/controller.ads");
 
 const router = express.Router();
 
@@ -137,6 +138,11 @@ router.post("/blog",superAdminVerifyToken,handleInsertBlog);
 router.get("/blog",superAdminVerifyToken,handleGetBlog);
 router.get("/blog/:id",superAdminVerifyToken,handleGetBlogById);
 router.delete("/blog/:id",superAdminVerifyToken,handleDeleteBlog);
+
+
+//ads
+router.post("/ads",superAdminVerifyToken,handleInsertOrUpdateAds);
+router.get("/ads",superAdminVerifyToken,handleGetAds);
 
 
 module.exports  = router;
