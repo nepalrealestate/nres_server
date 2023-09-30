@@ -49,7 +49,7 @@ const handleCustomerRegistration = async (req,res)=>{
         //     return res.status(400).json({message:"Customer Already Register"})
         // }
         // return res.status(500).json({message:"Internal Error"});
-        utility.handleErrorResponse(res,responseError)
+        return utility.handleErrorResponse(res,responseError)
 
     }
     return res.status(200).json({message:"Customer Registration success"})
@@ -66,7 +66,9 @@ const handleCustomerLogin = async (req,res)=>{
         console.log(customerError);
         return res.status(500).json({message:"Internal Error"})
     }
-    console.log(customer)
+    if(!customer){
+        return res.status(400).json({message:"User not found"})
+    }
     return auth.login(req,res,customer.dataValues);
 }
 
@@ -98,6 +100,7 @@ const handleGetCustomer = async (req,res)=>{
 const customerVerifyToken = async(req,res,next)=>{
     auth.verifyToken(req,res,next)
 }
+
 
 
 

@@ -11,6 +11,8 @@ const propertyAdminView = DB_PREFIX?`${DB_PREFIX}_nres.property_view_admin`:'nre
 
 const propertyClientView = DB_PREFIX?`${DB_PREFIX}_nres.property_view_client`:'property_view_client'
 
+const requestedPropertyView = DB_PREFIX?`${DB_PREFIX}_nres.requested_property_view`:'requested_property_view';
+
 function propertyIdTrackerModel(sequelize, DataTypes) {
   const PropertyIdTracker = sequelize.define(
     "property_id_tracker",
@@ -147,20 +149,20 @@ function propertyViewClientModel(sequelize, DataTypes) {
     CREATE OR REPLACE VIEW ${propertyClientView} AS
     
   
-    SELECT   h.property_id,h.property_type, h.property_name,h.listed_for,h.province,h.district, h.municipality,h.area_name,h.price,h.social_media,h.property_image, COALESCE(house_views.views, 0) AS views, h.createdAt 
+    SELECT   h.property_id,h.property_type, h.property_name,h.listed_for,h.province,h.district, h.municipality,h.area_name,h.price,h.social_media,h.property_image, COALESCE(house_views.views, 0) AS views,h.owner_id, h.createdAt 
 
     FROM ${DB_NAME}.property_house  as h LEFT JOIN ${DB_NAME}.property_house_views_count as house_views ON h.property_id=house_views.property_id
    
     UNION 
    
-    SELECT l.property_id,l.property_type, l.property_name,l.listed_for,l.province,l.district,l.municipality,l.area_name,l.price,l.social_media,l.property_image, COALESCE(land_views.views, 0) AS views, l.createdAt 
+    SELECT l.property_id,l.property_type, l.property_name,l.listed_for,l.province,l.district,l.municipality,l.area_name,l.price,l.social_media,l.property_image, COALESCE(land_views.views, 0) AS views, l.owner_id,l.createdAt 
   
   
     FROM ${DB_NAME}.property_land as l  LEFT JOIN ${DB_NAME}.property_land_views_count as land_views ON l.property_id=land_views.property_id
     
     UNION
    
-    SELECT a.property_id,a.property_type, a.property_name, a.listed_for,a.province,a.district, a.municipality,a.area_name,a.price,a.social_media,a.property_image, COALESCE(apartment_views.views, 0) AS views, a.createdAt 
+    SELECT a.property_id,a.property_type, a.property_name, a.listed_for,a.province,a.district, a.municipality,a.area_name,a.price,a.social_media,a.property_image, COALESCE(apartment_views.views, 0) AS views,a.owner_id, a.createdAt 
   
     FROM ${DB_NAME}.property_apartment as a LEFT JOIN ${DB_NAME}.property_apartment_views_count as apartment_views ON a.property_id=apartment_views.property_id 
   `;
@@ -214,6 +216,9 @@ function propertyViewClientModel(sequelize, DataTypes) {
         type:DataTypes.JSON
       },
       views:{
+        type:DataTypes.INTEGER
+      },
+      owner_id:{
         type:DataTypes.INTEGER
       },
 
@@ -472,6 +477,50 @@ function propertyFieldVisit(sequelize,DataTypes){
 
 }
 
+
+
+function requestedPropertyModel(sequelize,DataTypes){
+  return RequestedProperty = sequelize.define('property_requested_property',{
+    id:{
+      type:DataTypes.INTEGER,
+      primaryKey:true,
+      autoIncrement:true
+    },
+    property_type:{
+      type:DataTypes.ENUM('house','apartment','land')
+    },
+    province:{
+      type:DataTypes.STRING
+    },
+    district:{
+      type:DataTypes.STRING
+    },
+    municipality:{
+      type:DataTypes.STRING
+    },
+    area_name:{
+      type:DataTypes.STRING
+    },
+    ward:{
+      type:DataTypes.STRING
+    },
+    property_details:{
+      type:DataTypes.JSON
+    },
+    user_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'SET NULL'
+    }
+  },{
+    freezeTableName:true
+  })
+  }
+
 module.exports = {
   propertyIdTrackerModel,
   propertyViewAdminModel,
@@ -481,6 +530,7 @@ module.exports = {
   propertyFieldVisitRequestModel, 
   propertyFieldVisitCommentModel,
   propertyFieldVisitOTPModel,
-  propertyFieldVisit
+  propertyFieldVisit,
+  requestedPropertyModel
 
 };

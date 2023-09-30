@@ -23,7 +23,7 @@ async function findAdmin(email,admin_type){
     return await Admin.findOne({
         where:{email:email,admin_type:admin_type},
         attributes:[['admin_id','id'],'admin_type','name','email','password'],
-        raw:true
+        
     },
     )
 }

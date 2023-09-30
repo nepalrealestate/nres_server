@@ -13,6 +13,7 @@ const {Utility, propertyUtility, utility, handleErrorResponse} = require("../con
 const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment, updateApartment, deleteApartment, insertApartmentComment, getApartmentComment } = require("../../models/services/property/service.apartment");
 const { wrapAwait } = require("../../errorHandling");
 const { apartmentSchema } = require("../validationSchema");
+const { findCustomer } = require("../../models/services/users/service.customer");
 //const utils = new Utility();
 const utils = utility();
 const property = propertyUtility("apartment");
@@ -181,34 +182,13 @@ const handleGetApartmentComment = async (req,res)=>{
 
 
 const handleInsertRequestedApartment = async (req,res)=>{
-  const requiredFields = [
-    'property_type', 'property_area', 'property_age', 'floor', 'bhk', 
-    'facing', 'road_size', 'minPrice', 'maxPrice', 'furnish', 'description',
-    'needed', 'province', 'zone', 'district', 'municipality', 'ward', 
-    'landmark', 'name', 'email', 'phone_number', 'address'
-];
-
-for (const field of requiredFields) {
-  if (!req.body.hasOwnProperty(field)) {
-      return res.status(400).json({message:"missing field"})
-  }
-}
-
-const requestedApartment = req.body;
-
-try {
-  const response = await insertRequestedApartment(requestedApartment);
-  return res.status(200).json({message:"Requested Apartment Inserted successfully"})
-} catch (error) {
-
-  return handleErrorResponse(res,error);
-
-  
+ 
+  property.handleInsertRequestedProperty(req,res,insertRequestedApartment)
 
 
 }
 
-}
+
 
 const handleGetRequestedApartment = async (req,res)=>{
   

@@ -455,15 +455,18 @@ function apartmentViewsCountModel(sequelize,DataTypes){
 
 function requestedApartmentModel(sequelize,DataTypes){
   return RequestedApartment = sequelize.define('property_requested_apartment',{
-    
-    property_type :{
+    property_type:{
+      type:DataTypes.ENUM('apartment'),
+      defaultValue:'apartment'
+    },
+    property_for :{
       type:DataTypes.ENUM('commercial','residential','office')
+    },
+    listed_for:{
+      type:DataTypes.ENUM('sale','rent')
     },
     property_area:{
       type:DataTypes.FLOAT
-    },
-    property_age:{
-      type:DataTypes.INTEGER
     },
     floor:{
       type:DataTypes.FLOAT
@@ -505,9 +508,6 @@ function requestedApartmentModel(sequelize,DataTypes){
     province:{
       type:DataTypes.STRING
     },
-    zone:{
-      type:DataTypes.STRING
-    },
     district:{
       type:DataTypes.STRING
     },
@@ -517,73 +517,24 @@ function requestedApartmentModel(sequelize,DataTypes){
     ward:{
       type:DataTypes.INTEGER
     },
+    area_name:{
+      type:DataTypes.STRING
+    },
     landmark:{
       type:DataTypes.STRING
     },
-    name:{
-      type:DataTypes.STRING,
+    user_id:{
+      type:DataTypes.INTEGER,
       allowNull:false,
-      validate:{
-        notEmpty:true
-      }
+      references:{
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'CASCADE'
     },
-    email:{
-      type:DataTypes.STRING,
-      unique:true,
-      validate:{
-          isEmail:true,
-          notEmpty:true
-      }
-    },
-    phone_number:{
-    type:DataTypes.STRING,
-    unique:true,
-    validate:{
-      notEmpty:true
-    },
-  },
-  address:{
-    type:DataTypes.STRING
-  },
   },{freezeTableName:true})
 }
 
-function requestedApartmentByModel(sequelize,DataTypes){
-  return RequestedApartmentBy = sequelize.define('property_requested_apartment_by',{
-    name:{
-      type:DataTypes.STRING,
-      allowNull:false,
-      validate:{
-        notEmpty:true
-      }
-    },
-    email:{
-      type:DataTypes.STRING,
-      unique:true,
-      validate:{
-          isEmail:true,
-          notEmpty:true
-      }
-    },
-    phone_number:{
-    type:DataTypes.STRING,
-    unique:true,
-    validate:{
-      notEmpty:true
-    },
-  },
-  address:{
-    type:DataTypes.STRING
-  },
-  references:{
-    model:'property_requested_apartment',
-    key:'id'
-  },
-  onDelete:'CASCADE'
-},{
-  freezeTableName: true,
-})
-}
 
 
 
@@ -599,6 +550,6 @@ module.exports = {
     apartmentViewsModel,
     apartmentViewsCountModel,
     requestedApartmentModel,
-    requestedApartmentByModel,
+    
 
 };

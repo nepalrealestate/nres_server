@@ -1,9 +1,10 @@
 const multer = require("multer");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const generator = require('generate-password')
 
 const {
-  sendPasswordResetTokenMail,
+  sendPasswordResetTokenMail, sendPasswordEmail,
 } = require("../middlewares/middleware.sendEmail");
 const { wrapAwait } = require("../errorHandling");
 
@@ -11,6 +12,7 @@ const { pushNotification } = require("./notification/controller.notification");
 const { apartmentSchema, validateSchema } = require("./validationSchema");
 const { deleteFiles } = require("../middlewares/middleware.uploadFile");
 const logger = require("../utils/errorLogging/logger");
+const { findUser, findUserByEmail, registerUser } = require("../models/services/users/service.user");
 
 
 const saltRound = 10;
@@ -1247,18 +1249,7 @@ function propertyUtility(property_type) {
 
   async function handleGetProperty(req, res, getPropertyCallBack) {
 
-    let page, limit, offSet;
-
-    // if page and limit not set then defualt is 1 and 20 .
-    page = req.query.page || 1;
-
-    limit = req.query.limit < 20 ? req.query.limit : 20 || 20;
-    // if page and limit present in query then delete it
-    if (req.query.page) delete req.query.page;
-
-    if (req.query.limit) delete req.query.limit;
-
-    offSet = (page - 1) * limit;
+    const [limit,offSet] = handleLimitOffset(req.query)
 
     // get condition
     let condition = req.query ? req.query : {};
@@ -1342,12 +1333,12 @@ function propertyUtility(property_type) {
     }
   }
 
-  async function handleUpdatePropertyAds(req, res, updatePropertyAds) {
+  async function handleUpdatePropertyAds(req, res, updatePropertyAdsCallBack) {
     const { property_id } = req.params;
     const { ads_status } = req.body;
 
     try {
-      const response = await updatePropertyAds(ads_status, property_id);
+      const response = await updatePropertyAdsCallBack(ads_status, property_id);
 
       if (response.affectedRows === 0) {
         return res.status(400).json({ message: "No property to update " });
@@ -1360,6 +1351,8 @@ function propertyUtility(property_type) {
     }
   }
 
+  
+
   return {
     handleAddProperty,
     handleUpdateProperty,
@@ -1369,8 +1362,10 @@ function propertyUtility(property_type) {
     handleInsertPropertyComment,
     handleGetPropertyComment,
     handleInsertPropertyFeedback,
+    handleUpdatePropertyAds,
   };
 }
+
 
 
 function handleErrorResponse(res, error) {
@@ -1432,6 +1427,7 @@ function handleErrorResponse(res, error) {
 }
 
 
+
 function handleLimitOffset(req) {
   let page, limit, offset;
 
@@ -1450,5 +1446,4 @@ function handleLimitOffset(req) {
 
 
 
-
-module.exports = { propertyUtility, utility, authUtility, userUtility, handleErrorResponse, handleLimitOffset };
+module.exports = { propertyUtility, utility, authUtility, userUtility, handleErrorResponse, handleLimitOffset }

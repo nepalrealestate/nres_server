@@ -432,9 +432,15 @@ function landViewsCountModel(sequelize,DataTypes){
 
 function requestedLandModel(sequelize,DataTypes){
   return RequestedLand = sequelize.define('property_requested_land',{
-    
-    property_type :{
+    property_type:{
+      type:DataTypes.ENUM('land'),
+      defaultValue:"land",
+    },
+    property_for :{
       type:DataTypes.ENUM('non-plotted','plotted')
+    },
+    listed_for:{
+      type:DataTypes.ENUM('sale','rent')
     },
     property_area:{
       type:DataTypes.FLOAT
@@ -444,10 +450,6 @@ function requestedLandModel(sequelize,DataTypes){
     },
     sewage:{
       type:DataTypes.BOOLEAN
-    },
-      
-    furnish:{
-    type:DataTypes.ENUM('non-furnished','furnished','semi-furnished')
     },
     drinking_water:{
       type:DataTypes.BOOLEAN
@@ -480,9 +482,7 @@ function requestedLandModel(sequelize,DataTypes){
     province:{
       type:DataTypes.STRING
     },
-    zone:{
-      type:DataTypes.STRING
-    },
+    
     district:{
       type:DataTypes.STRING
     },
@@ -492,34 +492,22 @@ function requestedLandModel(sequelize,DataTypes){
     ward:{
       type:DataTypes.INTEGER
     },
+    area_name:{
+      type:DataTypes.STRING
+    },
     landmark:{
       type:DataTypes.STRING
     },
-    name:{
-      type:DataTypes.STRING,
+    user_id:{
+      type:DataTypes.INTEGER,
       allowNull:false,
-      validate:{
-        notEmpty:true
-      }
+      references:{
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'CASCADE'
     },
-    email:{
-      type:DataTypes.STRING,
-      unique:true,
-      validate:{
-          isEmail:true,
-          notEmpty:true
-      }
-    },
-    phone_number:{
-    type:DataTypes.STRING,
-    unique:true,
-    validate:{
-      notEmpty:true
-    },
-  },
-  address:{
-    type:DataTypes.STRING
-  },
+  
   },{freezeTableName:true})
 }
 

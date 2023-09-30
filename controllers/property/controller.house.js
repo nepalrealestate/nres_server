@@ -7,7 +7,7 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 
-const {Utility, propertyUtility, utility} = require("../controller.utils");
+const {Utility, propertyUtility, utility, handleErrorResponse} = require("../controller.utils");
 const { insertPendingHouse, getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse, getRequestedHouse, updateHouse, deleteHouse } = require("../../models/services/property/service.house");
 //const utils = new Utility();
 const utils  = utility();
@@ -169,31 +169,8 @@ const handleGetHouseComment = async (req,res)=>{
 }
 
 const handleInsertRequestedHouse = async (req,res)=>{
-  const requiredHouseFields = [
-    'property_type', 'property_area', 'property_age', 'floor', 'bedrooms', 
-    'kitchen', 'living_rooms', 'facing', 'road_size', 'minPrice', 'maxPrice', 
-    'furnish', 'description', 'needed', 'province', 'zone', 'district', 
-    'municipality', 'ward', 'landmark', 'name', 'email', 'phone_number', 'address'
-];
-  
-  for(const field of requiredHouseFields){
-    if(!req.body.hasOwnProperty(field)){
-      return res.status(400).json({message:"missing field"})
-    }
-  }
-
-  const requestedHouse = req.body;
-  try {
-    const response = await insertRequestedHouse(requestedHouse);
-    return res.status(200).json({message:"Requested House Inserted Successfully"});
-  } catch (error) {
-    console.log(error.name);
-    if(error.name === 'SequelizeUniqueConstraintError'){
-      return res.status(400).json({message:error.errors})
-    }
-    return res.status(500).json({message:"Internal Error"})
-    
-  }
+ 
+  return property.handleInsertRequestedProperty(req,res,insertRequestedHouse)
 }
 
 const handleGetRequestedHouse = async (req,res)=>{

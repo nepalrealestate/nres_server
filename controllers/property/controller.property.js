@@ -2,7 +2,7 @@ const { wrapAwait } = require("../../errorHandling");
 const { getApartmentByID } = require("../../models/services/property/service.apartment");
 const { getHouseByID } = require("../../models/services/property/service.house");
 const { getLandByID } = require("../../models/services/property/service.land");
-const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyShootSchedule, getPropertyShootSchedule, insertPropertyShootScheduleComment, getPropertyShootScheduleComment, insertPropertyFieldVisitRequest, getPropertyFieldVisitRequest, getPropertyFieldVisitRequestByID, updatePropertyFieldVisitRequest, insertPropertyFieldVisitOTP, getPropertyFieldVisitOTP, insertPropertyFieldVisit } = require("../../models/services/property/service.property");
+const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyShootSchedule, getPropertyShootSchedule, insertPropertyShootScheduleComment, getPropertyShootScheduleComment, insertPropertyFieldVisitRequest, getPropertyFieldVisitRequest, getPropertyFieldVisitRequestByID, updatePropertyFieldVisitRequest, insertPropertyFieldVisitOTP, getPropertyFieldVisitOTP, insertPropertyFieldVisit, countListingProperty, getRequestProperty, insertRequestedProperty } = require("../../models/services/property/service.property");
 const { findCustomer, registerCustomer } = require("../../models/services/users/service.customer");
 const { getRandomNumber } = require("../../utils/helperFunction/helper");
 const { handleErrorResponse, handleLimitOffset } = require("../controller.utils");
@@ -11,6 +11,7 @@ const generator = require("generate-password");
 const bcrypt = require("bcrypt");
 const { sendPasswordToStaff, sendPasswordEmail } = require("../../middlewares/middleware.sendEmail");
 const logger = require("../../utils/errorLogging/logger");
+const { findUserByEmail, registerUser } = require("../../models/services/users/service.user");
 
 const handleGetPropertyWithAds = async function (req, res) {
 
@@ -126,7 +127,7 @@ const handleGetPropertyPriorityLocation = async function (req, res) {
 
 const handleInsertPropertyFieldVisitRequest = async function (req, res) {
 
-  let {name, email, contact, property_id, property_type, request_date } = req.body;
+  let { name, email, contact, property_id, property_type, request_date } = req.body;
 
   let user = null;
   if (req.id && req.user_type === 'agent' || req.user_type === 'customer') {
@@ -164,7 +165,7 @@ const handleInsertPropertyFieldVisitRequest = async function (req, res) {
         console.log("Account Created", accountResponse);
         if (accountResponse?.dataValues) {
           user = accountResponse.dataValues;
-          sendPasswordEmail(accountResponse.dataValues.email,password).catch((err) => {
+          sendPasswordEmail(accountResponse.dataValues.email, password).catch((err) => {
             logger.error("Error While Send Email ", err)
             console.log("Error while send Email ", email)
           })
@@ -266,7 +267,7 @@ const handleUpdatePropertyFieldVisitRequest = async function (req, res) {
   try {
     const response = await updatePropertyFieldVisitRequest(updateCondition, field_visit_id)
     if (response['0'] === 1) {
-      if (updateCondition?.visit_status === 'schedule' ) {
+      if (updateCondition?.visit_status === 'schedule') {
         console.log(updateCondition)
         const updateRequest = await getPropertyFieldVisitRequestByID(field_visit_id, ['user_id', 'property_id', 'property_type', 'visit_status']);
 
@@ -318,7 +319,7 @@ const handleDeletePropertyFieldVisiteRequest = async function (req, res) {
 
 const handleGetPropertyFieldVisitOTP = async function (req, res) {
   const field_visit_id = req.params?.field_visit_id;
-  
+
   try {
     const response = await getPropertyFieldVisitOTP(field_visit_id);
     return res.status(200).json(response)
@@ -429,6 +430,129 @@ const handleGetPropertyShootScheduleComment = async function (req, res) {
 }
 
 
+const handleCountLisitingProperty = async function (req, res) {
+  const condition = {};
+  if (req.id && req.user_type === 'customer' || req.user_type === 'agent') {
+    condition.owner_id = req.id;
+  }
+  try {
+    const response = await countListingProperty(condition);
+    return res.status(200).json(response);
+  } catch (error) {
+    handleErrorResponse(res, error);
+  }
+
+}
+
+const handleInsertRequestedProperty = async function (req, res) {
+
+  const {
+    property_type,
+    province,
+    district,
+    municipality,
+    area_name,
+    ward,
+    name,
+    email,
+    contact,
+    ...otherDetails // This will contain all properties not listed above
+  } = req.body;
+
+  const requestedProperty = {
+    property_type,
+    province,
+    district,
+    municipality,
+    area_name,
+    ward,
+    name,
+    email,
+    contact,
+    property_details:otherDetails
+  }
+
+  let user = null;
+  // requested by user 
+  if (req.id && req.user_type === 'agent' || req.user_type === 'customer') {
+    user.user_id = req.id;
+  } else if (!req.id) { // this handle customer without login and admin
+    if (!requestedProperty.email || !requestedProperty.name || !requestedProperty.contact) {
+      return res.status(400).json({ message: "Bad Request" })
+    }
+  }
+  try {
+    if (!user) {
+      //find user or  create user
+      const customer = await findUserByEmail(requestedProperty.email);
+      
+      if (!customer) {
+        const password = generator.generate({ length: 10, numbers: true });
+        const [hashPassword, hashPasswordError] = await wrapAwait(
+          bcrypt.hash(password, 10)
+        );
+        if (hashPasswordError) {
+          handleErrorResponse(res, hashPasswordError)
+        }
+
+        const customerData = {
+          user_type: "customer",
+          name: requestedProperty.name,
+          email: requestedProperty.email,
+          phone_number: requestedProperty.contact,
+          password: hashPassword
+        }
+        console.log(customerData)
+        const accountResponse = await registerUser("customer", customerData.name, customerData.email, customerData.phone_number, customerData.password);
+        console.log("Account Created", accountResponse);
+        if (accountResponse?.dataValues) {
+          user = accountResponse.dataValues;
+          sendPasswordEmail(accountResponse.dataValues.email, password).catch((err) => {
+            logger.error("Error While Send Email ", err)
+            console.log("Error while send Email ", email)
+          })
+        }
+      }else{
+        user = customer.dataValues;
+      }
+    }
+  } catch (error) {
+    return handleErrorResponse(res,error);
+  }
+  console.log("User Found Or create",user)
+  if(!user)return res.status(500).json({message:"Unable Process Request"})
+  // delete name , email ,contact from requested Proeprty
+  delete requestedProperty.name;
+  delete requestedProperty.email;
+  delete requestedProperty.contact;
+  // add user id to requested property
+  requestedProperty.user_id = user.id;
+  try {
+    const data = await insertRequestedProperty(requestedProperty);
+    return res.status(200).json({ message: "Successfully Inserted" });
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+
+
+
+
+}
+
+const handleGetRequestProperty = async function (req, res) {
+  const [limit, offset] = handleLimitOffset(req);
+
+  let searchQuery = {};
+
+  try {
+    const response = await getRequestProperty(searchQuery, limit, offset);
+    console.log(response)
+    return res.status(200).json(response);
+  } catch (error) {
+    handleErrorResponse(res, error)
+  }
+}
+
 
 
 
@@ -447,4 +571,7 @@ module.exports = {
   handleGetPropertyShootSchedule,
   handleInsertPropertyShootScheduleComment,
   handleGetPropertyShootScheduleComment,
+  handleCountLisitingProperty,
+  handleGetRequestProperty,
+  handleInsertRequestedProperty
 }

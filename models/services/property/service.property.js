@@ -9,7 +9,11 @@ const PropertyFieldVisitComment = db.PropertyModel.PropertyFieldVisitComment;
 const PropertyFieldVisitOTP = db.PropertyModel.PropertyFieldVisitOTP;
 const PropertyFieldVisit = db.PropertyModel.PropertyFieldVisit;
 const PropertyShootScheduleComment = db.PropertyModel.PropertyShootScheduleComment;
-
+const RequestedPropertyView = db.Views.RequestedPropertyView
+const RequestHouse = db.PropertyModel.RequestedHouse;
+const RequestLand = db.PropertyModel.RequestedLand;
+const RequestApartment = db.PropertyModel.RequestedApartment;
+const RequestedProperty = db.PropertyModel.RequestedProperty;
 
 // get latest property insert id
 async function getPropertyId() {
@@ -248,6 +252,78 @@ async function getPropertyFieldVisit(){
 
 }
 
+async function countListingProperty(condition){
+  return await PropertyViewClient.count({
+    where:condition
+  })
+
+}
+
+async function getRequestProperty(condition,limit,offset){
+  return await RequestedProperty.findAll({
+    where:condition,
+    order: [['createdAt', 'DESC']],
+    include:[{
+      model:db.UserModel.User,
+      attributes: ['name', 'email', 'phone_number']
+    }],
+    limit:limit,
+    offset:offset
+  })
+ 
+  
+    // // Fetch data for each property type
+    // const requestHousePromise = RequestHouse.findAll({
+    //     where: condition,
+    //     include: [{
+    //         model: db.UserModel.User,
+    //         attributes: ['name', 'email', 'phone_number']
+    //     }],
+    //     order: [['createdAt', 'DESC']],
+    //   //  attributes: { exclude: ['columnToExclude'] }, // Modify as necessary
+    //     limit: Math.ceil(limit / 3),
+    //     offset: offset
+    // });
+
+    // const requestLandPromise = RequestLand.findAll({
+    //     where: condition,
+    //     include: [{
+    //         model: db.UserModel.User,
+    //         attributes: ['name', 'email', 'phone_number']
+    //     }],
+    //     order: [['createdAt', 'DESC']],
+    //     //attributes: { exclude: ['columnToExclude'] }, // Modify as necessary
+    //     limit: Math.ceil(limit / 3),
+    //     offset: offset
+    // });
+
+    // const requestApartmentPromise = RequestApartment.findAll({
+    //     where: condition,
+    //     include: [{
+    //         model: db.UserModel.User,
+    //         attributes: ['name', 'email', 'phone_number']
+    //     }],
+    //     order: [['createdAt', 'DESC']],
+    //    // attributes: { exclude: [''] }, // Modify as necessary
+    //     limit: Math.ceil(limit / 3),
+    //     offset: offset
+    // });
+
+    // // Resolve all promises
+    // const [requestHouses, requestLands, requestApartments] = await Promise.all([requestHousePromise, requestLandPromise, requestApartmentPromise]);
+
+    // // Combine and sort the results
+    // const combinedResults = [...requestHouses, ...requestLands, ...requestApartments];
+    // combinedResults.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    // // Limit the results if combined results exceed the original limit
+    // return combinedResults.slice(0, limit);
+}
+
+async function insertRequestedProperty(data){
+  return await  RequestedProperty.create(data);
+}
+
 module.exports = {
   getPropertyWithAds,
   insertPropertyShootSchedule,
@@ -267,5 +343,8 @@ module.exports = {
   getPropertyFieldVisitRequest,
   getPropertyFieldVisitRequestByID,
   insertPropertyShootScheduleComment,
-  getPropertyShootScheduleComment
+  getPropertyShootScheduleComment,
+  countListingProperty,
+  getRequestProperty,
+  insertRequestedProperty
 };

@@ -226,8 +226,18 @@ async function insertRequestedApartment(data){
 
 async function getRequestedApartment(condition){
 
-   return await propertyService.getProperty(condition,RequestedApartment)
-    
+   //return await propertyService.getProperty(condition,RequestedApartment)
+   delete condition.limit;
+   delete condition.offset;
+   return await RequestedApartment.findAll({
+         where:condition,
+         attributes:{exclude:['updatedAt']},
+         include:[{
+              model:db.UserModel.User,
+              attributes:['name','email','phone_number']
+         }]
+   })
+  
 }
 
 

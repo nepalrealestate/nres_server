@@ -480,16 +480,21 @@ function houseViewsCountModel(sequelize,DataTypes){
 
 function requestedHouseModel(sequelize,DataTypes){
   return RequestedHouse = sequelize.define('property_requested_house',{
-    
-    property_type :{
+    property_type:{
+      type:DataTypes.ENUM('house'),
+      defaultValue:"house"
+    },
+    property_for:{
       type:DataTypes.ENUM('commercial','residential','office')
     },
+    listed_for:{
+      type:DataTypes.ENUM('sale','rent')
+    },
+    
     property_area:{
       type:DataTypes.FLOAT
     },
-    property_age:{
-      type:DataTypes.INTEGER
-    },
+  
     floor:{
       type:DataTypes.FLOAT
     },
@@ -536,9 +541,7 @@ function requestedHouseModel(sequelize,DataTypes){
     province:{
       type:DataTypes.STRING
     },
-    zone:{
-      type:DataTypes.STRING
-    },
+   
     district:{
       type:DataTypes.STRING
     },
@@ -548,34 +551,22 @@ function requestedHouseModel(sequelize,DataTypes){
     ward:{
       type:DataTypes.INTEGER
     },
+    area_name:{
+      type:DataTypes.STRING
+    },
     landmark:{
       type:DataTypes.STRING
     },
-    name:{
-      type:DataTypes.STRING,
+    user_id:{
+      type:DataTypes.INTEGER,
       allowNull:false,
-      validate:{
-        notEmpty:true
-      }
+      references:{
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'CASCADE'
     },
-    email:{
-      type:DataTypes.STRING,
-      unique:true,
-      validate:{
-          isEmail:true,
-          notEmpty:true
-      }
-    },
-    phone_number:{
-    type:DataTypes.STRING,
-    unique:true,
-    validate:{
-      notEmpty:true
-    },
-  },
-  address:{
-    type:DataTypes.STRING
-  },
+  
   },{freezeTableName:true})
 }
 

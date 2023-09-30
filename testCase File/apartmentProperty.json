@@ -87,3 +87,32 @@
 
 
 ]
+
+
+
+[
+  {
+    "property_for": "commercial",
+    "listed_for": "sale",
+    "property_area": 1000.5,
+    "floor": 2,
+    "bhk": 3,
+    "facing": "east-north",
+    "road_size": 14.5,
+    "minPrice": "100000.00",
+    "maxPrice": "150000.00",
+    "furnish": "furnished",
+    "description": "Beautiful property located near the central marketplace.",
+    "needed": "within 3 months",
+    "province": "Province 1",
+    "district": "SomeDistrict",
+    "municipality": "SomeMunicipality",
+    "ward": 5,
+    "area_name": "CentralArea",
+    "landmark": "Near Central Park",
+    "name":"Rakshya Gauli",
+    "email":"rakshyagauli123@gmail.com",
+    "contact":"9841234567"
+    
+  }
+]

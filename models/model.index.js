@@ -82,6 +82,7 @@ db.PropertyModel = {
 
 
     //Requested Property
+    RequestedProperty:require('./property/model.property').requestedPropertyModel(sequelize,DataTypes),
     RequestedApartment:require('./property/model.apartment').requestedApartmentModel(sequelize,DataTypes),
     //RequestedApartmentBy:require('./property/model.apartment').requestedApartmentByModel(sequelize,DataTypes),
     RequestedHouse : require('./property/model.house').requestedHouseModel(sequelize,DataTypes),
@@ -130,7 +131,8 @@ db.AdsModel = {
 db.Views={
 
     PropertyViewAdmin:require("./property/model.property").propertyViewAdminModel(sequelize,DataTypes),
-    PropertyViewClient :require("./property/model.property").propertyViewClientModel(sequelize,DataTypes)
+    PropertyViewClient :require("./property/model.property").propertyViewClientModel(sequelize,DataTypes),
+   
 
 }
 
@@ -215,6 +217,10 @@ db.PropertyModel.HouseComment.belongsTo(db.UserModel.Admin,{foreignKey:'admin_id
 db.UserModel.Admin.hasMany(db.PropertyModel.LandComment,{foreignKey:'admin_id'});
 db.PropertyModel.LandComment.belongsTo(db.UserModel.Admin,{foreignKey:'admin_id'});
 
+
+// User Account Associate with Requested Property;
+db.UserModel.User.hasMany(db.PropertyModel.RequestedProperty,{foreignKey:'user_id'});
+db.PropertyModel.RequestedProperty.belongsTo(db.UserModel.User,{foreignKey:'user_id'});
 
 
 // User - Admin / user Relation their profile data;
