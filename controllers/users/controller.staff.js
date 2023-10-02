@@ -130,6 +130,7 @@ const handleStaffRegistration = async (req, res) => {
     const transaction = await sequelize.transaction() ;
     try {
       const accountResponse = await registerAdmin("staff", name, email, hashPassword,{transaction});
+      
       const profileResponse = await insertStaffProfile({ admin_id: accountResponse.admin_id, ...staffProfile },{transaction});
       console.log("accountResponse",accountResponse)
       console.log("profileResponse",profileResponse)

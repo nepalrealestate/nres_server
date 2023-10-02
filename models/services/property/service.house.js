@@ -83,6 +83,19 @@ async function deleteHouse(property_id){
     })
  }
 
+ async function getHouseWithOwnerByID(property_id){
+    return await House.findOne({
+        where:{property_id:property_id},
+        include:[{
+            model:db.UserModel.User,
+            as:'owner',
+            attributes:['name','email','phone_number']
+        }],
+        attributes:['property_id','property_type','province','district','municipality','area_name','ward']
+
+    })
+ }
+
  async function getPendingHouse(condition,limit,offset){
     return await PendingHouse.findAll({
         where : condition,
@@ -221,6 +234,7 @@ module.exports ={insertHouse,
     deleteHouse,
     getHouse,
     getHouseByID,
+    getHouseWithOwnerByID,
     getHouseComment,
     getPendingHouse,
     getPendingHouseByID,

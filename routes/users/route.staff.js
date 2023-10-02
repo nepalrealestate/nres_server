@@ -1,6 +1,6 @@
 const express = require("express");
 
-const {handleGetStaff, handleStaffRegistration, handleStaffLogin, handleAddVideoLink, handleStaffPasswordReset, staffVerifyToken, handleGetStaffByID} = require('../../controllers/users/controller.staff');
+const { handleStaffRegistration, handleStaffLogin, handleStaffPasswordReset, staffVerifyToken, handleGetStaffByID} = require('../../controllers/users/controller.staff');
 
 const { handleAddApartment, handleApproveApartment, handleGetPendingApartment, handleUpdateApartmentAds, handleInsertApartmentComment, handleGetApartment, handleGetApartmentComment, handleInsertRequestedApartment } = require("../../controllers/property/controller.apartment");
 const { handleAddHouse, handleApproveHouse, handleGetPendingHouse, handleUpdateHouseAds, handleGetHouse, handleInsertHouseComment, handleGetHouseComment, handleInsertRequestedHouse } = require("../../controllers/property/controller.house");

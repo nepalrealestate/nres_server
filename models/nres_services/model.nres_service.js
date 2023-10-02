@@ -54,7 +54,7 @@ function serviceProviderModel(sequelize,DataTypes){
       type:DataTypes.STRING
     },
     status:{
-      type:DataTypes.ENUM('pending','approved','rejected'),
+      type:DataTypes.ENUM('pending','approved'),
       defaultValue:'pending'
     }
 

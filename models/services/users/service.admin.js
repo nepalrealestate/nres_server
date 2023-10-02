@@ -20,12 +20,13 @@ async function insertStaffProfile(staffProfile,options={}){
 
 
 async function findAdmin(email,admin_type){
-    return await Admin.findOne({
+    const data=  await Admin.findOne({
         where:{email:email,admin_type:admin_type},
         attributes:[['admin_id','id'],'admin_type','name','email','password'],
         
     },
     )
+    return data?data.dataValues:data;
 }
 
 async function deleteAdmin(admin_id){

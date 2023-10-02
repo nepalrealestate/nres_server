@@ -174,7 +174,13 @@ db.Views={
 // user and admin relation with property table;
 // user relation with house
 db.UserModel.User.hasMany(db.PropertyModel.House,{foreignKey:'owner_id'});
-db.PropertyModel.House.belongsTo(db.UserModel.User,{foreignKey:'owner_id'})
+db.PropertyModel.House.belongsTo(db.UserModel.User,{as:'owner',foreignKey:'owner_id'})
+
+db.UserModel.User.hasMany(db.PropertyModel.Apartment,{foreignKey:'owner_id'});
+db.PropertyModel.Apartment.belongsTo(db.UserModel.User,{as:'owner',foreignKey:'owner_id'});
+
+db.UserModel.User.hasMany(db.PropertyModel.Land,{foreignKey:'owner_id'});
+db.PropertyModel.Land.belongsTo(db.UserModel.User,{as:'owner',foreignKey:'owner_id'});
 
 //admin relation with house
 db.UserModel.Admin.hasMany(db.PropertyModel.House,{foreignKey:'approved_by'});
@@ -204,7 +210,7 @@ db.PropertyModel.LandViewsCount.belongsTo(db.PropertyModel.Land,{foreignKey:'pro
 
 // property field visit request with user_userAccount;
 db.UserModel.User.hasMany(db.PropertyModel.PropertyFieldVisitRequest,{foreignKey:'user_id'});
-db.PropertyModel.PropertyFieldVisitRequest.belongsTo(db.UserModel.User,{foreignKey:'user_id'})
+db.PropertyModel.PropertyFieldVisitRequest.belongsTo(db.UserModel.User,{as:'user',foreignKey:'user_id'})
 
 
 // Admin Account Relation With Property Comment;
@@ -220,12 +226,16 @@ db.PropertyModel.LandComment.belongsTo(db.UserModel.Admin,{foreignKey:'admin_id'
 
 // User Account Associate with Requested Property;
 db.UserModel.User.hasMany(db.PropertyModel.RequestedProperty,{foreignKey:'user_id'});
-db.PropertyModel.RequestedProperty.belongsTo(db.UserModel.User,{foreignKey:'user_id'});
+db.PropertyModel.RequestedProperty.belongsTo(db.UserModel.User,{as:'user',foreignKey:'user_id'});
 
 
 // User - Admin / user Relation their profile data;
 db.UserModel.Admin.hasOne(db.UserModel.StaffProfile,{foreignKey:'admin_id'});
 db.UserModel.StaffProfile.belongsTo(db.UserModel.Admin,{foreignKey:'admin_id'});
+
+//  Admin Relation with property shoot shoot schedule comment;
+db.UserModel.Admin.hasMany(db.PropertyModel.PropertyShootScheduleComment,{foreignKey:'admin_id'});
+db.PropertyModel.PropertyShootScheduleComment.belongsTo(db.UserModel.Admin,{as: 'admin',foreignKey:'admin_id'});
 
 
 

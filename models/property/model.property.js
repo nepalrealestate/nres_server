@@ -236,6 +236,11 @@ function propertyViewClientModel(sequelize, DataTypes) {
 function propertyShootScheduleModel(sequelize, DataTypes) {
   
   return PropertyShootSchedule = sequelize.define('property_shoot_schedule',{
+    id:{
+      type:DataTypes.INTEGER,
+      primaryKey:true,
+      autoIncrement:true
+    },
     
     property_type:{
         type:DataTypes.ENUM('apartment','land','house')
@@ -255,6 +260,12 @@ function propertyShootScheduleModel(sequelize, DataTypes) {
      scheduled_date:{
        type:DataTypes.DATE,
        allowNull:false
+     },
+     longitude:{
+        type:DataTypes.DECIMAL(9,6),
+     },
+     latitude:{
+        type:DataTypes.DECIMAL(9,6),
      },
      shoot_status:{
       type:DataTypes.ENUM("scheduled","completed","read_to_post"),

@@ -1,8 +1,8 @@
 const { wrapAwait } = require("../../errorHandling");
-const { getApartmentByID } = require("../../models/services/property/service.apartment");
-const { getHouseByID } = require("../../models/services/property/service.house");
-const { getLandByID } = require("../../models/services/property/service.land");
-const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyShootSchedule, getPropertyShootSchedule, insertPropertyShootScheduleComment, getPropertyShootScheduleComment, insertPropertyFieldVisitRequest, getPropertyFieldVisitRequest, getPropertyFieldVisitRequestByID, updatePropertyFieldVisitRequest, insertPropertyFieldVisitOTP, getPropertyFieldVisitOTP, insertPropertyFieldVisit, countListingProperty, getRequestProperty, insertRequestedProperty } = require("../../models/services/property/service.property");
+const { getApartmentByID, getApartmentWithOwnerByID } = require("../../models/services/property/service.apartment");
+const { getHouseByID, getHouseWithOwnerByID } = require("../../models/services/property/service.house");
+const { getLandByID, getLandWithOwnerByID } = require("../../models/services/property/service.land");
+const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyShootSchedule, getPropertyShootSchedule, insertPropertyShootScheduleComment, getPropertyShootScheduleComment, insertPropertyFieldVisitRequest, getPropertyFieldVisitRequest, getPropertyFieldVisitRequestByID, updatePropertyFieldVisitRequest, insertPropertyFieldVisitOTP, getPropertyFieldVisitOTP, insertPropertyFieldVisit, countListingProperty, getRequestProperty, insertRequestedProperty, deleteRequestedProperty, deletePropertyShootSchedule, insertPropertyFieldVisitComment, deletePropertyFieldVisitRequest } = require("../../models/services/property/service.property");
 const { findCustomer, registerCustomer } = require("../../models/services/users/service.customer");
 const { getRandomNumber } = require("../../utils/helperFunction/helper");
 const { handleErrorResponse, handleLimitOffset } = require("../controller.utils");
@@ -138,29 +138,31 @@ const handleInsertPropertyFieldVisitRequest = async function (req, res) {
     }
 
     try {
-      const findUser = await findCustomer(email);
+      const findUser = await findUserByEmail(email);
       if (findUser) {
         user = findUser.dataValues;
       }
 
       if (!findUser) {
         //create user
+        console.log("User Not Found",findUser)
         const password = generator.generate({ length: 10, numbers: true });
 
         const [hashPassword, hashPasswordError] = await wrapAwait(
           bcrypt.hash(password, 10)
         );
         if (hashPasswordError) {
-          handleErrorResponse(res, hashPasswordError)
+         return handleErrorResponse(res, hashPasswordError)
         }
-        const userData = {
+        const customerData = {
           user_type: "customer",
           name: name,
           email: email,
           phone_number: contact,
           password: hashPassword
         }
-        const accountResponse = await registerCustomer(userData);
+        console.log(customerData)
+        const accountResponse = await registerUser("customer", customerData.name, customerData.email, customerData.phone_number, customerData.password);
 
         console.log("Account Created", accountResponse);
         if (accountResponse?.dataValues) {
@@ -173,14 +175,15 @@ const handleInsertPropertyFieldVisitRequest = async function (req, res) {
       }
 
     } catch (error) {
-      handleErrorResponse(res, error)
+      return handleErrorResponse(res, error)
     }
 
 
 
     try {
+      console.log(user)
       const data = await insertPropertyFieldVisitRequest({
-        user_id: user.user_id,
+        user_id: user.id,
         property_id,
         property_type,
         request_date
@@ -213,28 +216,29 @@ const handleGetPropertyFieldVisitRequest = async function (req, res) {
 const handleGetPropertyFieldVisitRequestByID = async function (req, res) {
   const field_visit_id = req.params?.field_visit_id;
 
-  const propertyRequest = {
-    house: getHouseByID,
-    land: getLandByID,
-    apartment: getApartmentByID,
+  if(!field_visit_id){
+    return res.status(400).json({message:"Bad Request"})
+  }
+
+  //get property function
+  const getProperty  = {
+    apartment: getApartmentWithOwnerByID,
+    house: getHouseWithOwnerByID,
+    land: getLandWithOwnerByID,
   }
 
   try {
-    const response = await getPropertyFieldVisitRequestByID(field_visit_id);
-
-    console.log(response.dataValues)
-    let propertyResponse = {};
-    let ownerResponse = {};
-    if (response?.dataValues) {
-      const getProperty = propertyRequest[`${response.dataValues?.property_type}`];
-      propertyResponse = await getProperty(response.dataValues.property_id, ['area_name', 'ward', 'municipality', 'owner_id']);
-      if (propertyResponse?.dataValues) {
-        // write code for get User / owner
-      }
+    const result = await getPropertyFieldVisitRequestByID(field_visit_id);
+    console.log(result)
+    if (!result) {
+      return res.status(404).json({ message: "Field Visit Request Not Found" })
     }
-    const finalResponse = Object.assign({}, response?.dataValues, propertyResponse?.dataValues)
-    console.log(finalResponse)
-    return res.status(200).json(finalResponse);
+    const property = await getProperty[result.dataValues.property_type](result.dataValues.property_id);
+    if(!property){
+      return res.status(404).json({message:"Property Not Found"})
+    }
+    const response = {...result.dataValues,...property.dataValues};
+    return res.status(200).json(response);
   } catch (error) {
     handleErrorResponse(res, error)
   }
@@ -253,13 +257,10 @@ const handleUpdatePropertyFieldVisitRequest = async function (req, res) {
   if (req.body?.status) {
     updateCondition.status = req.body.status;
   }
-  if (req.body?.visit_status) {
-    updateCondition.visit_status = req.body.visit_status
-  }
   if (req.body?.schedule_date) {
     updateCondition.schedule_date = req.body.schedule_date;
+    updateCondition.visit_status = 'schedule';
   }
-
   if (Object.keys(updateCondition).length === 0) {
     return res.status(400).json({ message: "Bad Request" });
   }
@@ -302,11 +303,27 @@ const handleUpdatePropertyFieldVisitRequest = async function (req, res) {
 
 }
 
+const handleInsertPropertyFieldVisitRequestComment = async function (req, res) {
+  let user_id = req.id; // user will only comment
+  let field_visit_id = req.params.field_visit_id;
+  let { comment } = req.body;
+
+  console.log(user_id, field_visit_id, comment);
+
+  try {
+    const response = await insertPropertyFieldVisitComment(field_visit_id, user_id, comment);
+    console.log(response)
+    return res.status(200).json({ message: "Comment Insert Successfull" });
+  } catch (error) {
+    handleErrorResponse(res, error)
+  }
+}
+
 const handleDeletePropertyFieldVisiteRequest = async function (req, res) {
   const field_visit_id = req.params?.field_visit_id;
 
   try {
-    const response = await deletePropertyFieldVisit(field_visit_id);
+    const response = await deletePropertyFieldVisitRequest(field_visit_id);
     if (response === 0) {
       return res.status(404).json({ message: `Field Visit Request Not Found` })
     }
@@ -319,9 +336,15 @@ const handleDeletePropertyFieldVisiteRequest = async function (req, res) {
 
 const handleGetPropertyFieldVisitOTP = async function (req, res) {
   const field_visit_id = req.params?.field_visit_id;
+  if(!field_visit_id){
+    return res.status(400).json({message:"Bad Request"})
+  }
 
   try {
     const response = await getPropertyFieldVisitOTP(field_visit_id);
+    if(!response){
+      return res.status(404).json({message:"OTP Not Found"})
+    }
     return res.status(200).json(response)
   } catch (error) {
     handleErrorResponse(res, error)
@@ -370,10 +393,10 @@ const handleMatchPropertyFieldVisitOTP = async function (req, res) {
 }
 
 const handleInsertPropertyShootSchedule = async function (req, res) {
-  const { property_type, listed_for, location, owner, contact, scheduled_date } = req.body;
+  const { property_type, listed_for, location, owner, contact, scheduled_date,longitude,latitude } = req.body;
 
   try {
-    const response = await insertPropertyShootSchedule({ property_type, listed_for, location, owner, contact, scheduled_date });
+    const response = await insertPropertyShootSchedule({ property_type, listed_for, location, owner, contact, scheduled_date,longitude,latitude });
     console.log(response);
     return res.status(200).json({ message: "Insert Property Shoot Schedule" });
   } catch (error) {
@@ -384,6 +407,9 @@ const handleInsertPropertyShootSchedule = async function (req, res) {
 const handleGetPropertyShootSchedule = async function (req, res) {
   const [limit, offset] = handleLimitOffset(req);
   let condition = {};
+  if(req.query?.search){
+    condition.search = req.query.search.trim();
+  }
 
   try {
     const response = await getPropertyShootSchedule(condition, limit, offset);
@@ -392,6 +418,22 @@ const handleGetPropertyShootSchedule = async function (req, res) {
     return res.status(200).json(response)
   } catch (error) {
     handleErrorResponse(res, error)
+  }
+}
+
+const handleDeletePropertyShootSchedule = async function (req, res) {
+  const shoot_schedule_id = req.params?.shoot_schedule_id;
+  if(!shoot_schedule_id){
+    return res.status(400).json({message:"Bad Request"})
+  }
+  try {
+    const response = await deletePropertyShootSchedule(shoot_schedule_id);
+    if(response === 0){
+      return res.status(404).json({message:"Shoot Schedule Not Found"})
+    }
+    return res.status(200).json({message:"Delete Successfull"})
+  } catch (error) {
+    handleErrorResponse(res,error)
   }
 }
 
@@ -404,6 +446,7 @@ const handleInsertPropertyShootScheduleComment = async function (req, res) {
 
   try {
     const response = await insertPropertyShootScheduleComment(shoot_schedule_id, admin_id, comment);
+    console.log(response)
     return res.status(200).json({ message: "Comment Insert Successfull" });
   } catch (error) {
     handleErrorResponse(res, error)
@@ -554,6 +597,20 @@ const handleGetRequestProperty = async function (req, res) {
 }
 
 
+const handleDeleteRequestedProperty = async function (req, res) {
+  const request_id = req.params?.request_id;
+  
+  try {
+    const deleteResponse = await deleteRequestedProperty(request_id);
+    if(deleteResponse === 0){
+      return res.status(404).json({message:"Request Not Found"})
+    }
+    return res.status(200).json({message:"Delete Successfull"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
 
 
 module.exports = {
@@ -569,9 +626,11 @@ module.exports = {
   handleMatchPropertyFieldVisitOTP,
   handleInsertPropertyShootSchedule,
   handleGetPropertyShootSchedule,
+  handleDeletePropertyShootSchedule,
   handleInsertPropertyShootScheduleComment,
   handleGetPropertyShootScheduleComment,
   handleCountLisitingProperty,
   handleGetRequestProperty,
-  handleInsertRequestedProperty
+  handleInsertRequestedProperty,
+  handleDeleteRequestedProperty
 }

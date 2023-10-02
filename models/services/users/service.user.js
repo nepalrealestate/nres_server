@@ -4,13 +4,19 @@ const User = db.UserModel.User;
 
 async function registerUser(user_type,name,email,phone_number,password,options={}){
 
-    return await User.create({
+    const user =  await User.create({
         user_type:user_type,
         name:name,
         email:email,
         phone_number:phone_number,
         password:password
     },options)
+    if(user){
+        user.id = user.user_id;
+        
+    }
+    
+    return user;
 }
 
 async function insertUserProfile(userProfile,options={}){

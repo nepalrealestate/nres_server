@@ -101,6 +101,18 @@ async function getApartmentByID(property_id,requiredAttributes=null){
     // return apartment;
 }
 
+async function getApartmentWithOwnerByID(property_id){
+    return await Apartment.findOne({
+        where:{property_id:property_id},
+        include:[{
+            model:db.UserModel.User,
+            as:'owner',
+            attributes:['name','email','phone_number']
+        }],
+        attributes:['property_id','property_type','province','district','municipality','area_name','ward']
+    })
+}
+
 async function getPendingApartment(condition,limit,offset){
     return await PendingApartment.findAll({
         where : condition,
@@ -263,6 +275,7 @@ module.exports = {insertApartment,
     deleteApartment,
     getApartment,
     getApartmentByID,
+    getApartmentWithOwnerByID,
     getPendingApartment,
     approveApartment,
     getPendingApartmentByID,

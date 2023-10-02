@@ -8,10 +8,11 @@ const utils = utility();
 
 const handleInsertBlog = async (req, res) => {
     upload(req,res,async function(err){
-        utils.handleMulterError(req,res,err,postBlog,false);
+        utils.handleMulterError(req,res,err,postBlog,true);
     })
    
     async function postBlog(){
+        
         const {title,body} = JSON.parse(req.body.blog);
         console.log(req.body.blog)
 

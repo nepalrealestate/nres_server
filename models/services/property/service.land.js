@@ -68,6 +68,18 @@ async function getLandByID(property_id,requiredAttributes=[]){
     });
 }
 
+async function getLandWithOwnerByID(property_id){
+    return await Land.findOne({
+        where:{property_id:property_id},
+        include:[{
+            model:db.UserModel.User,
+            as:'owner',
+            attributes:['name','email','phone_number']
+        }],
+        attributes:['property_id','property_type','province','district','municipality','area_name','ward']
+    })
+}
+
 async function getPendingLand(condition,limit,offset){
     return await PendingLand.findAll({
         where : condition,
@@ -220,6 +232,7 @@ module.exports = {
     insertPendingLand,
     getLand,
     getLandByID,
+    getLandWithOwnerByID,
     getLandComment,
     getPendingLand,
     getPendingLandByID,

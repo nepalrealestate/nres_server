@@ -73,10 +73,25 @@ async function insertPropertyShootSchedule(shootData) {
 }
 
 async function getPropertyShootSchedule(condition, limit, offset) {
+  if(condition?.search){
+    console.log(condition.search)
+    condition[db.Op.or] = [
+      { location: { [db.Op.like]: `%${condition.search}%` } },
+      { property_type: { [db.Op.like]: `%${condition.search}%` } }
+    ]
+    delete condition.search;
+  }
+  console.log(condition)
   return PropertyShootSchedule.findAll({
     where: condition,
     limit: limit,
     offset: offset,
+  });
+}
+
+async function deletePropertyShootSchedule(shoot_schedule_id) {
+  return PropertyShootSchedule.destroy({
+    where: { shoot_schedule_id: shoot_schedule_id },
   });
 }
 
@@ -86,6 +101,12 @@ async function insertPropertyShootScheduleComment(shoot_schedule_id,admin_id,com
 async function getPropertyShootScheduleComment(shoot_schedule_id,limit,offset){
   return PropertyShootScheduleComment.findAll({
     where:{shoot_schedule_id:shoot_schedule_id},
+    include:[{
+      model:db.UserModel.Admin,
+      as:'admin',
+      attributes: ['name']
+  
+    }],
     limit:limit,
     offset:offset
   })
@@ -194,19 +215,22 @@ async function getPropertyFieldVisitRequest(condition,limit,offset){
     offset:offset,
     include: [{
       model:db.UserModel.User,
+      as:'user',
+      attributes:['name','email','phone_number'],
       required: false  // This ensures that the join is a LEFT OUTER JOIN, not an INNER JOIN
     }],
    
   })
 }
 
-async function getPropertyFieldVisitRequestByID(field_visit_id,attributes=[]){
+async function getPropertyFieldVisitRequestByID(field_visit_id,attributes=null){
 
   return await PropertyFieldVisitRequest.findOne({
     where:{field_visit_id:field_visit_id},
     include:[{
       model:db.UserModel.User,
-      required:false,
+      as:'user',
+      attributes:['name','email','phone_number'],
     }],
     attributes:attributes
   })
@@ -240,6 +264,7 @@ async function getPropertyFieldVisitOTP(field_visit_id){
   }})
 }
 
+
 async function deletePropertyFieldVisitOTP(field_visit_id){
   return await PropertyFieldVisitOTP.destroy({where:{field_visit_id:field_visit_id}})
 }
@@ -259,6 +284,10 @@ async function countListingProperty(condition){
 
 }
 
+async function insertRequestedProperty(data){
+  return await  RequestedProperty.create(data);
+}
+
 async function getRequestProperty(condition,limit,offset){
   return await RequestedProperty.findAll({
     where:condition,
@@ -271,58 +300,12 @@ async function getRequestProperty(condition,limit,offset){
     offset:offset
   })
  
-  
-    // // Fetch data for each property type
-    // const requestHousePromise = RequestHouse.findAll({
-    //     where: condition,
-    //     include: [{
-    //         model: db.UserModel.User,
-    //         attributes: ['name', 'email', 'phone_number']
-    //     }],
-    //     order: [['createdAt', 'DESC']],
-    //   //  attributes: { exclude: ['columnToExclude'] }, // Modify as necessary
-    //     limit: Math.ceil(limit / 3),
-    //     offset: offset
-    // });
-
-    // const requestLandPromise = RequestLand.findAll({
-    //     where: condition,
-    //     include: [{
-    //         model: db.UserModel.User,
-    //         attributes: ['name', 'email', 'phone_number']
-    //     }],
-    //     order: [['createdAt', 'DESC']],
-    //     //attributes: { exclude: ['columnToExclude'] }, // Modify as necessary
-    //     limit: Math.ceil(limit / 3),
-    //     offset: offset
-    // });
-
-    // const requestApartmentPromise = RequestApartment.findAll({
-    //     where: condition,
-    //     include: [{
-    //         model: db.UserModel.User,
-    //         attributes: ['name', 'email', 'phone_number']
-    //     }],
-    //     order: [['createdAt', 'DESC']],
-    //    // attributes: { exclude: [''] }, // Modify as necessary
-    //     limit: Math.ceil(limit / 3),
-    //     offset: offset
-    // });
-
-    // // Resolve all promises
-    // const [requestHouses, requestLands, requestApartments] = await Promise.all([requestHousePromise, requestLandPromise, requestApartmentPromise]);
-
-    // // Combine and sort the results
-    // const combinedResults = [...requestHouses, ...requestLands, ...requestApartments];
-    // combinedResults.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-    // // Limit the results if combined results exceed the original limit
-    // return combinedResults.slice(0, limit);
 }
 
-async function insertRequestedProperty(data){
-  return await  RequestedProperty.create(data);
+async function deleteRequestedProperty(request_id){
+  return await RequestedProperty.destroy({where:{id:request_id}})
 }
+
 
 module.exports = {
   getPropertyWithAds,
@@ -344,7 +327,9 @@ module.exports = {
   getPropertyFieldVisitRequestByID,
   insertPropertyShootScheduleComment,
   getPropertyShootScheduleComment,
+  deletePropertyShootSchedule,
   countListingProperty,
   getRequestProperty,
-  insertRequestedProperty
+  insertRequestedProperty,
+  deleteRequestedProperty
 };

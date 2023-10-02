@@ -20,6 +20,16 @@ async function getServiceProvider(condition, limit, offset) {
 
 }
 
+async function getServiceProviderByID(provider_id) {
+    const data = await ServiceProvider.findOne({
+        where: {
+            provider_id: provider_id
+        },
+       // raw: true
+    })
+    return data;
+}
+
 
 async function getPendingServiceProvider(condition, limit, offset) {
     condition.status = "pending"
@@ -44,6 +54,14 @@ async function verifyServiceProvider(status, provider_id) {
 
 }
 
+async function deleteServiceProvider(provider_id) {
+    return await ServiceProvider.destroy({
+        where: {
+            provider_id: provider_id
+        }
+    })
+}
+
 async function insertServiceProviderRating(data) {
     return await ServiceProviderRating.create(data);
 }
@@ -53,7 +71,9 @@ async function insertServiceProviderRating(data) {
 module.exports = {
     registerServiceProvider,
     getServiceProvider,
+    getServiceProviderByID,
     getPendingServiceProvider,
     verifyServiceProvider,
+    deleteServiceProvider,
     insertServiceProviderRating
 };

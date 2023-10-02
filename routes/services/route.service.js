@@ -23,7 +23,6 @@ router.get("/getProvider",handleGetServiceProvider);
 
 router.put("/provider/:status/:provider_id",handleVerifyServiceProvider);
 
-router.get("/getPendingProvider/",handleGetPendingServiceProvider);
 
 
 router.get("/images/:imagePath",(req,res)=>{
