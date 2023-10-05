@@ -52,7 +52,7 @@ app.use(express.json())
 
 
 
-app.use(cors({credentials: true, origin: ['https://admin.nres.com.np','http://admin.nres.com.np','http://nres.com.np','https://nres.com.np','http://localhost:3000','https://localhost:3000', 'PostmanRuntime']}));
+app.use(cors({credentials: true, origin: ['https://blackmoon.com.np','http://blackmoon.com.np','https://admin.nres.com.np','http://admin.nres.com.np','http://nres.com.np','https://nres.com.np','http://localhost:3000','https://localhost:3000', 'PostmanRuntime']}));
 
 
 app.use(cookieParser());
