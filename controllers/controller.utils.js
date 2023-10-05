@@ -195,7 +195,7 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
       path: "/",
       expires: new Date(Date.now() + 1000 * 1000 * 60),
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "None",
     });
 
     return res.status(200).json({ message: "Successfully Logged In", user_id: user.id, role: user_type });
@@ -280,7 +280,7 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
         path: "/",
         expires: new Date(Date.now() + 1000 * 1000 * 60),
         httpOnly: true,
-        sameSite: "lax",
+        sameSite: "None",
       });
 
       //set request id to user id
