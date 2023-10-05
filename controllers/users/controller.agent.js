@@ -71,7 +71,7 @@ const handleAgentRegistration = async (req, res) => {
     
   
       const {name,email,phone_number,identification_type,identification_number,password,confirm_password} = req.body;
-      const image = JSON.stringify({"identification":req.file.path});
+      const image ={identification:req.file.path}
   
       const isEmailValid = utils.isValid.email(email);
       const isPhoneNumberValid = utils.isValid.phoneNumber(phone_number);

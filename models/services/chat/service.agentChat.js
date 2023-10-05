@@ -26,6 +26,12 @@ async function insertAgentChat(sender_id,receiver_id,message){
     })
 }
 
+async function findOrCreateAgentChatList(user_id){
+    return await AgentChatList.findOrCreate({
+        where:{user_id:user_id}
+    })
+}
+
 
 async function insertAgentChatList(agent_id){
     return await AgentChatList.create({
@@ -37,5 +43,10 @@ async function getAgentChatList(){
     return await AgentChatList.findAll({raw:true});
 }
 
-module.exports = {getSingleAgentChat,insertAgentChat,insertAgentChatList,getAgentChatList}
+module.exports = {getSingleAgentChat,
+    insertAgentChat,
+    insertAgentChatList,
+    getAgentChatList,
+    findOrCreateAgentChatList
+}
 

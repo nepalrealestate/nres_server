@@ -61,9 +61,10 @@ async function getLand(condition){
     // })
 }
 
-async function getLandByID(property_id,requiredAttributes=[]){
+async function getLandByID(property_id,requiredAttributes=null){
     return await Land.findOne({
         where:{property_id:property_id},
+        
         attributes: requiredAttributes
     });
 }

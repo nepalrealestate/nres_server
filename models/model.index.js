@@ -83,11 +83,7 @@ db.PropertyModel = {
 
     //Requested Property
     RequestedProperty:require('./property/model.property').requestedPropertyModel(sequelize,DataTypes),
-    RequestedApartment:require('./property/model.apartment').requestedApartmentModel(sequelize,DataTypes),
-    //RequestedApartmentBy:require('./property/model.apartment').requestedApartmentByModel(sequelize,DataTypes),
-    RequestedHouse : require('./property/model.house').requestedHouseModel(sequelize,DataTypes),
-    RequestedLand : require('./property/model.land').requestedLandModel(sequelize,DataTypes),
-
+  
 
     PropertyShootSchedule : require('./property/model.property').propertyShootScheduleModel(sequelize,DataTypes),
     PropertyShootScheduleComment: require("./property/model.property").propertyShootScheduleCommentModel(sequelize,DataTypes),
@@ -95,7 +91,8 @@ db.PropertyModel = {
     PropertyFieldVisitRequest : require('./property/model.property').propertyFieldVisitRequestModel(sequelize,DataTypes),
     PropertyFieldVisitComment : require('./property/model.property').propertyFieldVisitCommentModel(sequelize,DataTypes),
     PropertyFieldVisitOTP : require('./property/model.property').propertyFieldVisitOTPModel(sequelize,DataTypes),
-    PropertyFieldVisit : require('./property/model.property').propertyFieldVisit(sequelize,DataTypes)
+    PropertyFieldVisit : require('./property/model.property').propertyFieldVisit(sequelize,DataTypes),
+
 
 
 };
@@ -182,6 +179,16 @@ db.PropertyModel.Apartment.belongsTo(db.UserModel.User,{as:'owner',foreignKey:'o
 db.UserModel.User.hasMany(db.PropertyModel.Land,{foreignKey:'owner_id'});
 db.PropertyModel.Land.belongsTo(db.UserModel.User,{as:'owner',foreignKey:'owner_id'});
 
+// user relation with requested property
+db.UserModel.User.hasMany(db.PropertyModel.RequestedProperty,{foreignKey:'user_id'});
+db.PropertyModel.RequestedProperty.belongsTo(db.UserModel.User,{as:'request_by',foreignKey:'user_id'});
+
+//user/seller relation with property;
+db.UserModel.User.hasMany(db.Views.PropertyViewClient,{foreignKey: 'owner_id', 
+sourceKey: 'user_id'});
+db.Views.PropertyViewClient.belongsTo(db.UserModel.User,{foreignKey: 'owner_id',
+targetKey: 'user_id'});
+
 //admin relation with house
 db.UserModel.Admin.hasMany(db.PropertyModel.House,{foreignKey:'approved_by'});
 db.PropertyModel.House.belongsTo(db.UserModel.Admin,{foreignKey:'approved_by'});
@@ -237,6 +244,16 @@ db.UserModel.StaffProfile.belongsTo(db.UserModel.Admin,{foreignKey:'admin_id'});
 db.UserModel.Admin.hasMany(db.PropertyModel.PropertyShootScheduleComment,{foreignKey:'admin_id'});
 db.PropertyModel.PropertyShootScheduleComment.belongsTo(db.UserModel.Admin,{as: 'admin',foreignKey:'admin_id'});
 
+
+// user/admin relation to chat
+db.UserModel.User.hasMany(db.ChatModel.CustomerChatList, {foreignKey: 'user_id'});
+db.ChatModel.CustomerChatList.belongsTo(db.UserModel.User, {as: 'customer', foreignKey: 'user_id'});
+
+
+
+// chat list relation to chat
+// db.ChatModel.CustomerChatList.hasMany(db.ChatModel.CustomerChat,{foreignKey:'user_id'})
+// db.ChatModel.CustomerChat.belongsTo(db.ChatModel.CustomerChatList,{as:'chat_customers',foreignKey:'user_id'})
 
 
 module.exports = db;

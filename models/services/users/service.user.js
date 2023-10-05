@@ -23,6 +23,15 @@ async function insertUserProfile(userProfile,options={}){
     return await UserProfile
 }
 
+async function getUser(user_type){
+    return await User.findAll({
+        where:{user_type:user_type},
+        attributes:['user_id','name','email','phone_number']
+    })
+}
+
+
+
 async function findUserByEmail(email){
     return await User.findOne({
         where:{email:email},
@@ -30,11 +39,75 @@ async function findUserByEmail(email){
     })
 }
 
-async function deleteUser(user_id,){
+// first object where condition - second attributes array
+async function findUserByID(condition,attributes=null){
+    return await User.findOne({
+        where:condition,
+        attributes:attributes
+    })
+}
+
+async function deleteUser(user_id){
     return await User.destroy({
         where:{user_id:user_id}
     })
 }
 
+async function getBuyer(condition,attributes=null){
+    return await User.findAll({
+        where:condition,
+        attributes:attributes,
+        include:[{
+            model:db.PropertyModel.RequestedProperty,
+            required:true,
+            attributes:['property_type']
+            
+        }]
+    })  
+}
+async function getBuyerByID(user_id){
+    return await User.findOne({
+        where:{user_id:user_id},
+        attributes:['user_id','name','email','phone_number'],
+        include:[{
+            model:db.PropertyModel.RequestedProperty,
+            required:true,
+            //attributes:['property_type']
+            
+        }]
+    })
+}
 
-module.exports ={registerUser,findUserByEmail}
+async function getSeller(condition){
+    return await User.findAll({
+       where:condition,
+       include:[{
+        model:db.Views.PropertyViewClient,
+        required:true,
+        attributes:['property_type']
+    }]
+    })
+}
+
+async function getSellerByID(user_id){
+    return await User.findOne({
+        where:{user_id:user_id},
+        attributes:['user_id','name','email','phone_number'],
+        include:[{
+            model:db.Views.PropertyViewClient,
+            required:true,
+            attributes:['property_type','property_id','listed_for','price','province','district','municipality','area_name']
+            
+        }]
+    })
+}
+
+
+module.exports ={registerUser,
+    findUserByEmail,
+    findUserByID,
+    getUser,
+    getBuyer,
+    getSeller,
+    getSellerByID
+}

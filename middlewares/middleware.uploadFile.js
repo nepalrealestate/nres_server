@@ -19,7 +19,7 @@ function generateUniqueFilename(directory, originalName) {
     count++;
   }
 
-  return newName;
+  return newName.split(" ").join("");
 }
 
 

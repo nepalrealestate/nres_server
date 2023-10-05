@@ -2,16 +2,16 @@
 const express = require("express");
 
 const {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin, superAdminVerifyToken, superAdminVerifyLogin, superAdminLogout} = require('../../controllers/users/controller.superAdmin');
-const { handleGetCustomerChatList } = require("../../controllers/chat/controller.customerChat");
+const { handleGetCustomerChatList, handleGetSingleCustomerChat } = require("../../controllers/chat/controller.customerChat");
 const { handleGetStaffChatList, handleInsertStaffGroup, handleDeleteStaffFromGroup } = require("../../controllers/chat/controller.staffChat");
 const { handleStaffRegistration, handleGetAllStaff, handleStaffUpdate, handleStaffDelete, handleGetStaffByID } = require("../../controllers/users/controller.staff");
 const { handleGetAllAgent } = require("../../controllers/users/controller.agent");
 const { handleGetServiceProvider, handleVerifyServiceProvider, handleDeleteServiceProvider, handleGetServiceProviderByID } = require("../../controllers/nres_services/controller.nres_service");
-const { handleGetCustomer } = require("../../controllers/users/controller.customer");
+const { handleGetCustomer, handleGetCustomerByID, handleGetBuyer, handleGetSeller, handleGetSellerByID } = require("../../controllers/users/controller.customer");
 const { handleAddApartment, handleGetApartment, handleInsertRequestedApartment, handleGetRequestedApartment, handleUpdateApartmentAds, handleUpdateApartment, handleDeleteApartment, handleGetApartmentByID, handleInsertApartmentComment, handleGetApartmentComment } = require("../../controllers/property/controller.apartment");
 const { handleAddHouse, handleGetHouse, handleInsertRequestedHouse, handleGetRequestedHouse, handleUpdateHouse, handleDeleteHouse, handleGetHouseByID, handleInsertHouseComment, handleGetHouseComment, handleUpdateHouseAds } = require("../../controllers/property/controller.house");
 const { handleAddLand, handleGetLand, handleInsertRequestedLand, handleGetRequestedLand, handleUpdateLand, handleDeleteLand, handleGetLandByID, handleInsertLandComment, handleGetLandComment, handleUpdateLandAds } = require("../../controllers/property/controller.land");
-const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleDeletePropertyFieldVisiteRequest, handleUpdatePropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP, handleGetRequestProperty, handleInsertRequestedProperty, handleDeleteRequestedProperty, handleDeletePropertyShootSchedule } = require("../../controllers/property/controller.property");
+const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleDeletePropertyFieldVisiteRequest, handleUpdatePropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP, handleGetRequestProperty, handleInsertRequestedProperty, handleDeleteRequestedProperty, handleDeletePropertyShootSchedule, handleGetRequestPropertyByID } = require("../../controllers/property/controller.property");
 const { handleInsertBlog, handleGetBlog, handleGetBlogById, handleDeleteBlog } = require("../../controllers/blog/controller.blog");
 const { handleInsertOrUpdateAds, handleGetAds } = require("../../controllers/ads/controller.ads");
 
@@ -28,10 +28,11 @@ router.post("/logout",superAdminLogout)
 // chat 
 //router.post("chat/add")
 
-router.get("/chat/customerList",handleGetCustomerChatList);
-router.get("/chat/staffList",handleGetStaffChatList);
-router.post("/chat/staffGroup/:staffID",handleInsertStaffGroup);
-router.delete("/chat/staffGroup/:staffID",handleDeleteStaffFromGroup);
+router.get("/chat/customer/list",handleGetCustomerChatList);
+router.get("/chat/:customer_id",handleGetSingleCustomerChat)
+router.get("/chat/staff/list",handleGetStaffChatList);
+router.post("/chat/staff/group/:staffID",handleInsertStaffGroup);
+router.delete("/chat/staff/group/:staffID",handleDeleteStaffFromGroup);
 
 
 // agent chat
@@ -39,16 +40,23 @@ router.delete("/chat/staffGroup/:staffID",handleDeleteStaffFromGroup);
 
 
 // staff related apis 
-router.post("/staff/register",handleStaffRegistration);
-router.get("/staff",handleGetAllStaff);
-router.get("/staff/:staff_id",handleGetStaffByID)
-router.patch("/staff/:staff_id",handleStaffUpdate)
-router.delete("/staff/:staff_id",handleStaffDelete);
+router.post("/staff/register",superAdminVerifyToken,handleStaffRegistration);
+router.get("/staff",superAdminVerifyToken,handleGetAllStaff);
+router.get("/staff/:staff_id",superAdminVerifyToken,handleGetStaffByID)
+router.patch("/staff/:staff_id",superAdminVerifyToken,handleStaffUpdate)
+router.delete("/staff/:staff_id",superAdminVerifyToken,handleStaffDelete);
 
 
 // agent related routes
-router.get("/agent",handleGetAllAgent);
+router.get("/agent",handleSuperAdminLogin,handleGetAllAgent);
 
+
+//customer 
+router.get("/customer",superAdminVerifyToken,handleGetCustomer);
+// router.get("/customer/:customer_id",superAdminVerifyToken,handleGetCustomerByID);
+router.get("/customer/buyer",superAdminVerifyToken,handleGetBuyer)
+router.get("/customer/seller",superAdminVerifyToken,handleGetSeller)
+router.get("/customer/seller/:seller_id",superAdminVerifyToken,handleGetSellerByID)
 
 //service provider related routes
 router.get("/service/provider",superAdminVerifyToken,handleGetServiceProvider)
@@ -103,17 +111,8 @@ router.patch("/property/land/ads/:property_id",superAdminVerifyToken,handleUpdat
 //property request
 router.post("/property/request",superAdminVerifyToken,handleInsertRequestedProperty)
 router.get("/property/request",superAdminVerifyToken,handleGetRequestProperty)
+router.get("/property/request/:request_id",superAdminVerifyToken,handleGetRequestPropertyByID)
 router.delete("/property/request/:request_id",superAdminVerifyToken,handleDeleteRequestedProperty)
-
-
-router.post("/property/apartment/request",superAdminVerifyToken,handleInsertRequestedApartment)
-router.get("/property/apartment/request",superAdminVerifyToken,handleGetRequestedApartment)
-
-router.post("/property/house/request",superAdminVerifyToken,handleInsertRequestedHouse)
-router.get("/property/house/request",superAdminVerifyToken,handleGetRequestedHouse)
-
-router.post("/property/land/request",superAdminVerifyToken,handleInsertRequestedLand)
-router.get("/property/land/request",superAdminVerifyToken,handleGetRequestedLand)
 
 // field visit 
 router.post("/property/field-visit-request",superAdminVerifyToken,handleInsertPropertyFieldVisitRequest)

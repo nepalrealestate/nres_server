@@ -288,18 +288,46 @@ async function insertRequestedProperty(data){
   return await  RequestedProperty.create(data);
 }
 
-async function getRequestProperty(condition,limit,offset){
+async function getRequestProperty(condition, limit, offset) {
+  const whereConditions = {};
+
+  if (condition?.search) {
+      whereConditions[db.Op.or] = [
+          { province: { [db.Op.like]: `%${condition.search}%` } },
+          { district: { [db.Op.like]: `%${condition.search}%` } },
+          { municipality: { [db.Op.like]: `%${condition.search}%` } },
+          { area_name: { [db.Op.like]: `%${condition.search}%` } },
+          { property_type: { [db.Op.like]: `%${condition.search}%` } },
+          //{ '$User.name$': { [db.Op.like]: `%${condition.search}%` } } // Note this line
+      ];
+
+      delete condition.search;
+  }
+
+  console.log(whereConditions);
+
   return await RequestedProperty.findAll({
-    where:condition,
-    order: [['createdAt', 'DESC']],
+      where: whereConditions,
+      order: [['createdAt', 'DESC']],
+      include: [{
+          model: db.UserModel.User,
+          as:'request_by',
+          attributes: ['name', 'email', 'phone_number']
+      }],
+      limit: limit,
+      offset: offset
+  });
+}
+
+async function getRequestPropertyByID(request_id){
+  return await RequestedProperty.findOne({
+    where:{id:request_id},
     include:[{
       model:db.UserModel.User,
-      attributes: ['name', 'email', 'phone_number']
-    }],
-    limit:limit,
-    offset:offset
+      as:'request_by',
+      attributes:['user_id','name','email','phone_number']
+    }]
   })
- 
 }
 
 async function deleteRequestedProperty(request_id){
@@ -330,6 +358,7 @@ module.exports = {
   deletePropertyShootSchedule,
   countListingProperty,
   getRequestProperty,
+  getRequestPropertyByID,
   insertRequestedProperty,
   deleteRequestedProperty
 };

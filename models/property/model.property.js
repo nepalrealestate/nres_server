@@ -187,6 +187,7 @@ function propertyViewClientModel(sequelize, DataTypes) {
     {
       property_id: {
         type: DataTypes.INTEGER,
+        primaryKey:true
       },
       property_type: {
         type: DataTypes.STRING,
@@ -525,7 +526,7 @@ function requestedPropertyModel(sequelize,DataTypes){
         model:'user_userAccount',
         key:'user_id'
       },
-      onDelete:'SET NULL'
+      onDelete:'CASCADE'
     }
   },{
     freezeTableName:true

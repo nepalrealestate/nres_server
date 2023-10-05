@@ -1155,6 +1155,8 @@ function propertyUtility(property_type) {
 
     try {
       const property = await getPropertyCallback(property_id);
+      console.log("This is Property",property);
+    
 
       const response = await deletePropertyCallabck(property_id);
       if (response === 0) {

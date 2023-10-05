@@ -12,16 +12,11 @@ function customerChatModel(sequelize,DataTypes){
         },
         message:{
             type:DataTypes.TEXT,
-            allowNull:true,
             validate:{
                 len:{
                     args:[0,1000],
                     msg:"Message length should be less than 1000 characters"
                 },
-                notEmpty:{
-                    args:true,
-                    msg:"Message cannot be empty"
-                }
             }
         },
         imageURL:{
@@ -30,7 +25,14 @@ function customerChatModel(sequelize,DataTypes){
         }
 
     },{
-        freezeTableName:true
+        freezeTableName:true,
+        validate:{
+            eitherMessageOrImageURL(){
+                if (!this.message && !this.imageURL) {
+                    throw new Error('Either message or imageURL must be present');
+                }  
+            }
+        }
     })
 }
 

@@ -22,7 +22,7 @@ async function findStaff(email){
 async function getStaffProfile(id){
     return await StaffProfile.findOne({
         where:{admin_id:id},
-        attributes:{exclude: ['id']}
+      //  attributes:{exclude: ['id']}
     })
 }
 
@@ -35,7 +35,7 @@ async function getAllStaff(condition){
     }
     return await StaffProfile.findAll({
         where:whereCondition,
-        attributes: {exclude:['id']}
+        //attributes: {exclude:['id']}
        
     });
 }
@@ -61,6 +61,8 @@ async function deleteStaff(id){
         where:{admin_id:id}
     })
 }
+
+
 
 
 

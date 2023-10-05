@@ -1,6 +1,7 @@
 // const {  insertStaffChatList, insertStaffChat, getStaffChatList, insertStaffGroup, deleteStaffFromGroup, getStaffFromGroupByID, insertStaffGroupChat } = require("../../models/chat/model.staffChat");
 
 const { insertStaffChatList, getStaffFromGroupById, insertStaffChat, insertStaffGroupChat, getStaffChatList, getSingleStaffChat, insertStaffGroup, deleteStaffFromGroup } = require("../../models/services/chat/service.staffChat");
+const { findAdmin, findAdminByID } = require("../../models/services/users/service.admin");
 
 const userToSocket = new Map();
 
@@ -16,6 +17,12 @@ const handleStaffChat = async function (staffChat, socket) {
   // i.e user register as customer then only allow to chat
 
   try {
+    //find staff/admin
+    const adminResponse = await findAdminByID(userID);
+    if(!adminResponse){
+      socket.send("Admin Not Found");
+      socket.disconnect(true)
+    }
     const chatListResponse = await insertStaffChatList(userID);
     console.log(chatListResponse);
   } catch (error) {

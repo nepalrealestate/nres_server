@@ -4,6 +4,7 @@ require("dotenv").config();
 const { wrapAwait } = require("../../errorHandling");
 const  utility = require("../controller.utils");
 const { registerCustomer, findCustomer, getCustomer } = require("../../models/services/users/service.customer");
+const { getUser, findUserByID, getBuyer, getSeller, getSellerByID } = require("../../models/services/users/service.user");
 
 const saltRound = 10;
 const tokenExpireTime = "1hr";
@@ -73,25 +74,62 @@ const handleCustomerLogin = async (req,res)=>{
 }
 
 const handleGetCustomer = async (req,res)=>{
-
-
-    let customer_id ;
-    if(req.id){
-        customer_id:req.id;
-    }else if(req.params.customer_id){
-        customer_id = req.params.customer_id
-    }
-
-    if(!customer_id){
-        return res.status(400).json({message:"You are not authorized"});
-    }
-
     try {
-        const data = await getCustomer(customer_id);
+        const data = await getUser("customer");
         console.log(data)
         return res.status(200).json(data);
     } catch (error) {
-        return res.status(500).json({message:"Internal Error"});
+        utility.handleErrorResponse(res,error)
+    }
+}
+
+const handleGetCustomerByID = async (req,res)=>{
+    const {customer_id} = req.params;
+
+    try {
+        const data = await findUserByID({
+            user_type:"customer",
+            user_id:customer_id
+        });
+        return res.status(200).json(data);
+    } catch (error) {
+        utility.handleErrorResponse(error)
+    }
+}
+
+
+// this function doesnot return any value
+const handleGetBuyer = async (req,res)=>{
+    console.log("Hello Iam here")
+    try {
+        const data = await getBuyer({});
+        return res.status(200).json(data);
+    } catch (error) {
+        utility.handleErrorResponse(res,error)
+    }
+
+}
+
+const handleGetSeller = async (req,res)=>{
+    console.log("Hello Iam here");
+    let condition = {}
+    try {
+        const data = await getSeller(condition);
+        return res.status(200).json(data);
+    } catch (error) {
+        utility.handleErrorResponse(res,error)
+    }
+}
+
+
+const handleGetSellerByID = async (req,res)=>{
+    const {seller_id} = req.params;
+    console.log("This is For Single Seller")
+    try {
+        const data = await getSellerByID(seller_id);
+        return res.status(200).json(data);
+    } catch (error) {
+        utility.handleErrorResponse(res,error)
     }
 }
 
@@ -104,4 +142,4 @@ const customerVerifyToken = async(req,res,next)=>{
 
 
 
-module.exports = {handleCustomerRegistration,handleCustomerLogin,handleGetCustomer,customerVerifyToken}
+module.exports = {handleCustomerRegistration,handleCustomerLogin,handleGetCustomer,customerVerifyToken,handleGetCustomerByID,handleGetBuyer,handleGetSeller,handleGetSellerByID}

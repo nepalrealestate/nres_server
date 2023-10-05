@@ -2,7 +2,7 @@ const { wrapAwait } = require("../../errorHandling");
 const { getApartmentByID, getApartmentWithOwnerByID } = require("../../models/services/property/service.apartment");
 const { getHouseByID, getHouseWithOwnerByID } = require("../../models/services/property/service.house");
 const { getLandByID, getLandWithOwnerByID } = require("../../models/services/property/service.land");
-const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyShootSchedule, getPropertyShootSchedule, insertPropertyShootScheduleComment, getPropertyShootScheduleComment, insertPropertyFieldVisitRequest, getPropertyFieldVisitRequest, getPropertyFieldVisitRequestByID, updatePropertyFieldVisitRequest, insertPropertyFieldVisitOTP, getPropertyFieldVisitOTP, insertPropertyFieldVisit, countListingProperty, getRequestProperty, insertRequestedProperty, deleteRequestedProperty, deletePropertyShootSchedule, insertPropertyFieldVisitComment, deletePropertyFieldVisitRequest } = require("../../models/services/property/service.property");
+const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyShootSchedule, getPropertyShootSchedule, insertPropertyShootScheduleComment, getPropertyShootScheduleComment, insertPropertyFieldVisitRequest, getPropertyFieldVisitRequest, getPropertyFieldVisitRequestByID, updatePropertyFieldVisitRequest, insertPropertyFieldVisitOTP, getPropertyFieldVisitOTP, insertPropertyFieldVisit, countListingProperty, getRequestProperty, insertRequestedProperty, deleteRequestedProperty, deletePropertyShootSchedule, insertPropertyFieldVisitComment, deletePropertyFieldVisitRequest, getRequestPropertyByID } = require("../../models/services/property/service.property");
 const { findCustomer, registerCustomer } = require("../../models/services/users/service.customer");
 const { getRandomNumber } = require("../../utils/helperFunction/helper");
 const { handleErrorResponse, handleLimitOffset } = require("../controller.utils");
@@ -586,6 +586,9 @@ const handleGetRequestProperty = async function (req, res) {
   const [limit, offset] = handleLimitOffset(req);
 
   let searchQuery = {};
+  if(req.query?.search){
+    searchQuery.search = req.query.search.trim();
+  }
 
   try {
     const response = await getRequestProperty(searchQuery, limit, offset);
@@ -593,6 +596,20 @@ const handleGetRequestProperty = async function (req, res) {
     return res.status(200).json(response);
   } catch (error) {
     handleErrorResponse(res, error)
+  }
+}
+
+const handleGetRequestPropertyByID = async function(req,res){
+  const request_id = req.params?.request_id;
+
+  try {
+    const response = await getRequestPropertyByID(request_id);
+    if(!response){
+      return res.status(404).json({message:"Request Not Found"})
+    }
+    return res.status(200).json(response);
+  } catch (error) {
+    handleErrorResponse(res,error)
   }
 }
 
@@ -631,6 +648,7 @@ module.exports = {
   handleGetPropertyShootScheduleComment,
   handleCountLisitingProperty,
   handleGetRequestProperty,
+  handleGetRequestPropertyByID,
   handleInsertRequestedProperty,
   handleDeleteRequestedProperty
 }

@@ -29,6 +29,13 @@ async function findAdmin(email,admin_type){
     return data?data.dataValues:data;
 }
 
+async function findAdminByID(admin_id,attributes=null){
+    return await Admin.findOne({
+        where:{admin_id:admin_id},
+        attributes:attributes
+    })
+}
+
 async function deleteAdmin(admin_id){
     return await Admin.destroy({
         where:{admin_id:admin_id,admin_type:"staff"},
@@ -39,5 +46,6 @@ module.exports = {
     registerAdmin,
     insertStaffProfile,
     findAdmin,
+    findAdminByID,
     deleteAdmin
 }

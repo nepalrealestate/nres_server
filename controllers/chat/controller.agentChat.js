@@ -1,6 +1,7 @@
 // const { insertAgentList, getSingleAgentChat, insertAgentChat, getAgentChatList } = require("../../models/chat/model.agentChat");
 
-const { insertAgentChatList, getSingleAgentChat, getAgentChatList } = require("../../models/services/chat/service.agentChat");
+const { insertAgentChatList, getSingleAgentChat, getAgentChatList, findOrCreateAgentChatList } = require("../../models/services/chat/service.agentChat");
+const { findUserByID } = require("../../models/services/users/service.user");
 
 
 const userToSocket = new Map();
@@ -13,9 +14,16 @@ const handleAgentChat = async function (userChat, socket) {
   //  if user present in nres_chat.customer_list or
   //  user successfully insert in nres_chat.customer_list
   // i.e user register as customer then only allow to chat
-
+  if(Number(userID) !== 0){
   try {
-   const chatListResponse = await insertAgentChatList(userID);
+    //find agent;
+    const agentResponse = await findUserByID({user_id:userID,user_type:"agent"},['user_id','name']);
+    if(!agentResponse){
+      socket.send("Agent Not Found");
+      socket.disconnect(true)
+    }
+
+   const chatListResponse = await findOrCreateAgentChatList(userID);
     console.log(chatListResponse)
   } catch (error) {
     console.log(error)
@@ -25,6 +33,7 @@ const handleAgentChat = async function (userChat, socket) {
     return;
 
   }
+}
 
   //mapping user id to socket id;
 
@@ -43,14 +52,14 @@ const handleAgentChat = async function (userChat, socket) {
   //  // socket.send(error);
   // }
 
-  socket.on("previousMessage", async function () {
-    try {
-      const chat = await getSingleAgentChat(userID);
-      socket.emit("previousMessage", chat);
-    } catch (error) {
-      //socket.send(error);
-    }
-  });
+  // socket.on("previousMessage", async function () {
+  //   try {
+  //     const chat = await getSingleAgentChat(userID);
+  //     socket.emit("previousMessage", chat);
+  //   } catch (error) {
+  //     //socket.send(error);
+  //   }
+  // });
 
   socket.on("message", async function (payload) {
     //save all chats to database;
@@ -73,7 +82,7 @@ const handleAgentChat = async function (userChat, socket) {
         message
       );
 
-      if (response.affectedRows !== 0) {
+      if (response) {
         // if receiver_id present in online User then  send message
         //send to sender
         userToSocket.get(sender_id.toString()).forEach(function (socketID) {
@@ -123,10 +132,10 @@ const handleGetAgentChatList = async function (req, res) {
 };
 
 const handleGetSingleAgentChat = async function (req, res) {
-  const { agentID } = req.params;
+  const { user_id } = req.params;
 
   try {
-    const data = await getSingleAgentChat(agentID);
+    const data = await getSingleAgentChat(user_id);
     return res.status(200).json(data);
   } catch (error) {
     return res.status(500).json("Internal Error");
