@@ -95,6 +95,15 @@ db.PropertyModel = {
 
 
 
+    // sold property
+    ApartmentSold : require('../models/property/model.apartment').apartmentSoldModel(sequelize,DataTypes),
+    
+    HouseSold : require('../models/property/model.house').houseSoldModel(sequelize,DataTypes),
+
+    LandSold : require('../models/property/model.land').landSoldModel(sequelize,DataTypes),
+
+
+
 };
 
 
@@ -129,6 +138,8 @@ db.Views={
 
     PropertyViewAdmin:require("./property/model.property").propertyViewAdminModel(sequelize,DataTypes),
     PropertyViewClient :require("./property/model.property").propertyViewClientModel(sequelize,DataTypes),
+
+    SoldPropertyView : require("./property/model.property").soldPropertyViewModel(sequelize,DataTypes),
    
 
 }
@@ -173,11 +184,22 @@ db.Views={
 db.UserModel.User.hasMany(db.PropertyModel.House,{foreignKey:'owner_id'});
 db.PropertyModel.House.belongsTo(db.UserModel.User,{as:'owner',foreignKey:'owner_id'})
 
+
 db.UserModel.User.hasMany(db.PropertyModel.Apartment,{foreignKey:'owner_id'});
 db.PropertyModel.Apartment.belongsTo(db.UserModel.User,{as:'owner',foreignKey:'owner_id'});
 
 db.UserModel.User.hasMany(db.PropertyModel.Land,{foreignKey:'owner_id'});
 db.PropertyModel.Land.belongsTo(db.UserModel.User,{as:'owner',foreignKey:'owner_id'});
+
+//user relation with pending property
+db.UserModel.User.hasMany(db.PropertyModel.PendingApartment,{foreignKey:'owner_id'});
+db.PropertyModel.PendingApartment.belongsTo(db.UserModel.User,{as:'owner',foreignKey:'owner_id'});
+
+db.UserModel.User.hasMany(db.PropertyModel.PendingHouse,{foreignKey:'owner_id'});
+db.PropertyModel.PendingHouse.belongsTo(db.UserModel.User,{as:'owner',foreignKey:'owner_id'});
+
+db.UserModel.User.hasMany(db.PropertyModel.PendingLand,{foreignKey:'owner_id'});
+db.PropertyModel.PendingLand.belongsTo(db.UserModel.User,{as:'owner',foreignKey:'owner_id'});
 
 // user relation with requested property
 db.UserModel.User.hasMany(db.PropertyModel.RequestedProperty,{foreignKey:'user_id'});
@@ -218,6 +240,11 @@ db.PropertyModel.LandViewsCount.belongsTo(db.PropertyModel.Land,{foreignKey:'pro
 // property field visit request with user_userAccount;
 db.UserModel.User.hasMany(db.PropertyModel.PropertyFieldVisitRequest,{foreignKey:'user_id'});
 db.PropertyModel.PropertyFieldVisitRequest.belongsTo(db.UserModel.User,{as:'user',foreignKey:'user_id'})
+//property field visit rquest relation with field visit otp;
+db.PropertyModel.PropertyFieldVisitRequest.hasOne(db.PropertyModel.PropertyFieldVisitOTP,{foreignKey:'field_visit_id'});
+db.PropertyModel.PropertyFieldVisitOTP.belongsTo(db.PropertyModel.PropertyFieldVisitRequest,{foreignKey:'field_visit_id'});
+
+
 
 
 // Admin Account Relation With Property Comment;

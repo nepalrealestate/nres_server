@@ -14,6 +14,7 @@ const ApartmentViews = db.PropertyModel.ApartmentViews
 const ApartmentViewsCount = db.PropertyModel.ApartmentViewsCount;
 const ApartmentShootSchedule = db.PropertyModel.ApartmentShootSchedule;
 const RequestedApartment = db.PropertyModel.RequestedApartment;
+const ApartmentSold = db.PropertyModel.ApartmentSold;
 
 
 async function insertPendingApartment(apartment){
@@ -114,19 +115,46 @@ async function getApartmentWithOwnerByID(property_id){
 }
 
 async function getPendingApartment(condition,limit,offset){
-    return await PendingApartment.findAll({
+    
+    const [pendingApartment,totalCount]  = await Promise.all([PendingApartment.findAll({
         where : condition,
-        attributes:[ 'property_id','property_name','listed_for','price','views'],
+        attributes:[ 'property_id','property_type','property_name','listed_for','province','district','municipality','ward','area_name'],
+        include:[
+            {
+                model:db.UserModel.User,
+                as:'owner',
+                attributes:['name','email','phone_number']
+            }
+        ],
+        order:[['createdAt','DESC']],
         limit:limit,
         offset:offset
-    })
+    }),PendingApartment.count({where:condition})]);
+
+
+    return {pendingApartment,totalCount};
+
+
 }
 
 
 async function getPendingApartmentByID(property_id){
     return await PendingApartment.findOne({
-        where:{property_id:property_id}
+        where:{property_id:property_id},
+        include:[
+            {
+                model:db.UserModel.User,
+                as:'owner',
+                attributes:['name','email','phone_number']
+            }
+        ],
 
+    })
+}
+
+async function deletePendingApartment(property_id){
+    return await PendingApartment.destroy({
+        where:{property_id:property_id}
     })
 }
 
@@ -232,42 +260,30 @@ async function updateApartmentViews(property_id,latitude,longitude){
 }
 
 
-async function insertRequestedApartment(data){
-    return await RequestedApartment.create(data)
-}
+async function soldApartment(property_id){
+    let transaction;
+    try {
+        transaction = await db.sequelize.transaction();
+        const apartment = await Apartment.findOne({where:{property_id:property_id},transaction});
+        await ApartmentSold.create({...apartment.get()},{transaction});
+        await Apartment.destroy({where:{property_id:property_id},transaction});
+        return await transaction.commit();
 
-async function getRequestedApartment(condition){
 
-   //return await propertyService.getProperty(condition,RequestedApartment)
-   delete condition.limit;
-   delete condition.offset;
-   return await RequestedApartment.findAll({
-         where:condition,
-         attributes:{exclude:['updatedAt']},
-         include:[{
-              model:db.UserModel.User,
-              attributes:['name','email','phone_number']
-         }]
-   })
-  
+    } catch (error) {
+        if(transaction) await transaction.rollback();
+        throw error;
+    }
 }
 
 
-async function insertApartmentShootSchedule(property_id,shootStatus,datetime){
-    return await ApartmentShootSchedule.create({
-        property_id:property_id,
-        shoot_status:shootStatus,
-        date:datetime,
-        
+async function getSoldApartmentByID(property_id){
+    return await ApartmentSold.findOne({
+        where:{property_id:property_id}
     })
 }
 
-async function getApartmentShootScheduleById(property_id){
-    
-    
 
-
-}
 
 module.exports = {insertApartment,
     insertPendingApartment,
@@ -284,6 +300,7 @@ module.exports = {insertApartment,
     insertApartmentComment,
     getApartmentComment,
     updateApartmentViews,
-    insertRequestedApartment,
-    getRequestedApartment,
-    insertApartmentShootSchedule};
+    soldApartment,
+    getSoldApartmentByID,
+    deletePendingApartment
+    };

@@ -149,20 +149,20 @@ function propertyViewClientModel(sequelize, DataTypes) {
     CREATE OR REPLACE VIEW ${propertyClientView} AS
     
   
-    SELECT   h.property_id,h.property_type, h.property_name,h.listed_for,h.province,h.district, h.municipality,h.area_name,h.price,h.social_media,h.property_image, COALESCE(house_views.views, 0) AS views,h.owner_id, h.createdAt 
+    SELECT   h.property_id,h.property_type, h.property_name,h.property_for,h.listed_for,h.province,h.district, h.municipality,h.area_name,h.latitude,h.longitude,h.price,h.social_media,h.property_image, COALESCE(house_views.views, 0) AS views,h.owner_id, h.createdAt 
 
     FROM ${DB_NAME}.property_house  as h LEFT JOIN ${DB_NAME}.property_house_views_count as house_views ON h.property_id=house_views.property_id
    
     UNION 
    
-    SELECT l.property_id,l.property_type, l.property_name,l.listed_for,l.province,l.district,l.municipality,l.area_name,l.price,l.social_media,l.property_image, COALESCE(land_views.views, 0) AS views, l.owner_id,l.createdAt 
+    SELECT l.property_id,l.property_type, l.property_name,l.property_for,l.listed_for,l.province,l.district,l.municipality,l.area_name,l.latitude,l.longitude,l.price,l.social_media,l.property_image, COALESCE(land_views.views, 0) AS views, l.owner_id,l.createdAt 
   
   
     FROM ${DB_NAME}.property_land as l  LEFT JOIN ${DB_NAME}.property_land_views_count as land_views ON l.property_id=land_views.property_id
     
     UNION
    
-    SELECT a.property_id,a.property_type, a.property_name, a.listed_for,a.province,a.district, a.municipality,a.area_name,a.price,a.social_media,a.property_image, COALESCE(apartment_views.views, 0) AS views,a.owner_id, a.createdAt 
+    SELECT a.property_id,a.property_type, a.property_name,a.property_for, a.listed_for,a.province,a.district, a.municipality,a.area_name,a.latitude,a.longitude,a.price,a.social_media,a.property_image, COALESCE(apartment_views.views, 0) AS views,a.owner_id, a.createdAt 
   
     FROM ${DB_NAME}.property_apartment as a LEFT JOIN ${DB_NAME}.property_apartment_views_count as apartment_views ON a.property_id=apartment_views.property_id 
   `;
@@ -195,6 +195,9 @@ function propertyViewClientModel(sequelize, DataTypes) {
       property_name: {
         type: DataTypes.STRING,
       },
+      property_for: {
+        type: DataTypes.STRING,
+      },
       listed_for: {
         type: DataTypes.STRING,
       },
@@ -209,6 +212,12 @@ function propertyViewClientModel(sequelize, DataTypes) {
       },
       price:{
         type:DataTypes.DECIMAL(12,2),
+      },
+      latitude:{
+        type:DataTypes.DECIMAL(9,6)
+      },
+      longitude:{
+        type:DataTypes.DECIMAL(9,6)
       },
       social_media:{
         type:DataTypes.JSON
@@ -286,7 +295,8 @@ function propertyShootScheduleCommentModel(sequelize,DataTypes){
       references:{
         model:'property_shoot_schedule',
         key:'id'
-      }
+      },
+      onDelete:'CASCADE'
     },
     admin_id:{
       type:DataTypes.INTEGER,
@@ -533,6 +543,105 @@ function requestedPropertyModel(sequelize,DataTypes){
   })
   }
 
+
+
+  function soldPropertyViewModel(sequelize,DataTypes){
+    async function createSoldPropertyView(){
+      const sql =`
+      CREATE OR REPLACE VIEW ${DB_NAME}.sold_property_view AS
+
+      SELECT h.property_id,h.property_type, h.property_name,h.property_for,h.listed_for,h.province,h.district, h.municipality,h.area_name,h.latitude,h.longitude,h.price,h.social_media,h.property_image,h.owner_id, h.createdAt,h.updatedAt 
+
+      FROM ${DB_NAME}.property_house_sold as h
+
+      UNION
+
+      SELECT l.property_id,l.property_type, l.property_name,l.property_for,l.listed_for,l.province,l.district,l.municipality,l.area_name,l.latitude,l.longitude,l.price,l.social_media,l.property_image, l.owner_id,l.createdAt,l.updatedAt 
+
+      FROM ${DB_NAME}.property_land_sold as l
+ 
+      UNION
+
+      SELECT a.property_id,a.property_type, a.property_name,a.property_for, a.listed_for,a.province,a.district, a.municipality,a.area_name,a.latitude,a.longitude,a.price,a.social_media,a.property_image,a.owner_id, a.createdAt,a.updatedAt 
+
+      FROM ${DB_NAME}.property_apartment_sold as a
+      `;
+
+      try {
+        await sequelize.query(sql);
+      } catch (error) {
+        logger.error("Error creating the view:", error)
+        console.error("Error creating the view:", error);
+        if (error.original && error.original.code === "ER_WRONG_OBJECT") {
+          logger.error("sold_property_view exists, but it is not a VIEW. Please fix your database schema.")
+          console.error(
+            "sold_property_view exists, but it is not a VIEW. Please fix your database schema."
+          );
+        }
+      }
+    }
+
+    createSoldPropertyView();
+
+    return SoldPropertyView = sequelize.define('sold_property_view',{
+      property_id:{
+        type:DataTypes.INTEGER,
+        primaryKey:true
+      },
+      property_type:{
+        type:DataTypes.STRING
+      },
+      property_name:{
+        type:DataTypes.STRING
+      },
+      property_for:{
+        type:DataTypes.STRING
+      },
+      listed_for:{
+        type:DataTypes.STRING
+      },
+      district:{
+        type:DataTypes.STRING
+      },
+      municipality:{
+        type:DataTypes.STRING
+      },
+      area_name:{
+        type:DataTypes.STRING
+      },
+      price:{
+        type:DataTypes.DECIMAL(12,2)
+      },
+      latitude:{
+        type:DataTypes.DECIMAL(9,6)
+      },
+      longitude:{
+        type:DataTypes.DECIMAL(9,6)
+      },
+      social_media:{
+        type:DataTypes.JSON
+      },
+      property_image:{
+        type:DataTypes.JSON
+      },
+      owner_id:{
+        type:DataTypes.INTEGER
+      },
+      createdAt:{
+        type:DataTypes.DATE
+      },
+      updatedAt:{
+        type:DataTypes.DATE
+      }
+    },{
+      freezeTableName:true,
+      timestamps:false
+    })
+
+    
+  }
+
+
 module.exports = {
   propertyIdTrackerModel,
   propertyViewAdminModel,
@@ -543,6 +652,7 @@ module.exports = {
   propertyFieldVisitCommentModel,
   propertyFieldVisitOTPModel,
   propertyFieldVisit,
-  requestedPropertyModel
+  requestedPropertyModel,
+  soldPropertyViewModel
 
 };

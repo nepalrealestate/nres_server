@@ -90,9 +90,6 @@ router.get("/agent",staffVerifyToken,handleGetAllAgent)
 
 
 
-// requested property
-router.post("/requestedApartment",staffVerifyToken,handleInsertRequestedApartment)
-router.post("/requestedHouse",staffVerifyToken,handleInsertRequestedHouse);
-router.post("/requestedLand",staffVerifyToken,handleInsertRequestedLand)
+
 
 module.exports = router;

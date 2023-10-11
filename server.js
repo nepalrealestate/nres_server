@@ -50,9 +50,32 @@ app.use('/api/uploads', express.static('uploads'));
 
 app.use(express.json())
 
+app.use(cors({
+  credentials: true,
+  origin: function (origin, callback) {
+    const whitelist = [
+      'https://blackmoon.com.np',
+      'http://blackmoon.com.np',
+      'https://admin.nres.com.np',
+      'http://admin.nres.com.np',
+      'http://nres.com.np',
+      'https://nres.com.np',
+      'http://localhost:3000',
+      'https://localhost:3000',
+      'PostmanRuntime'
+      // ... (your other domains)
+    ];
+    
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
 
 
-app.use(cors({credentials: true, origin: ['https://blackmoon.com.np','http://blackmoon.com.np','https://admin.nres.com.np','http://admin.nres.com.np','http://nres.com.np','https://nres.com.np','http://localhost:3000','https://localhost:3000', 'PostmanRuntime']}));
+// app.use(cors({credentials: true, origin: ['https://blackmoon.com.np','http://blackmoon.com.np','https://admin.nres.com.np','http://admin.nres.com.np','http://nres.com.np','https://nres.com.np','http://localhost:3000','https://localhost:3000', 'PostmanRuntime']}));
 
 
 app.use(cookieParser());
@@ -63,10 +86,6 @@ app.use(bodyParser.json());
 // for parsing application/xwww-
 app.use(bodyParser.urlencoded({ extended: true })); 
 //form-urlencoded
-
-
-
-
 
 
 

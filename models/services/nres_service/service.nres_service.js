@@ -8,8 +8,19 @@ async function registerServiceProvider(data) {
 }
 
 async function getServiceProvider(condition, limit, offset) {
+    let whereConditions = {};
+    if(condition.search){
+        whereConditions[db.Op.or] = [
+            {
+                name:{[db.Op.like]:condition.search},
+                service_type:{[db.Op.like]:condition.search},
+
+            }
+        ]
+
+    }
     const data = await ServiceProvider.findAll({
-        where: condition,
+        where: whereConditions,
         limit: limit,
         offset: offset,
         raw: true

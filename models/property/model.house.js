@@ -478,97 +478,137 @@ function houseViewsCountModel(sequelize,DataTypes){
 
 }
 
-function requestedHouseModel(sequelize,DataTypes){
-  return RequestedHouse = sequelize.define('property_requested_house',{
+
+async function houseSoldModel(sequelize,DataTypes){
+  return HouseSold = sequelize.define('property_house_sold',{
+    property_id :{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      unique:true,
+      primaryKey:true,
+    },
     property_type:{
       type:DataTypes.ENUM('house'),
       defaultValue:"house"
     },
-    property_for:{
+    property_for :{
       type:DataTypes.ENUM('commercial','residential','office')
     },
-    listed_for:{
+    property_name : {
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate:{
+        notEmpty: true, 
+      }
+    },
+    listed_for :{
       type:DataTypes.ENUM('sale','rent')
     },
-    
-    property_area:{
-      type:DataTypes.FLOAT
+   
+    property_age:{
+      type:DataTypes.INTEGER
     },
-  
     floor:{
       type:DataTypes.FLOAT
     },
     bedrooms:{
       type:DataTypes.INTEGER
-   }, 
-   kitchen:{
-    type:DataTypes.INTEGER
-   },
-   living_rooms:{
-    type:DataTypes.INTEGER
-   },
+    },
+    kitchen:{
+      type:DataTypes.INTEGER
+    },
+    bathrooms_attached:{
+      type:DataTypes.INTEGER
+    },
+    bathrooms_common:{
+      type:DataTypes.INTEGER
+    },
     facing:{
-      type:DataTypes.ENUM('east','west','north','south','east-north','east-south','west-north','west-south')
+      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
     },
-    road_size:{
-      type:DataTypes.FLOAT
-    },
-   minPrice:{
-    type:DataTypes.DECIMAL(12,2),
-    allowNull:false
-   },
-   maxPrice:{
-    type:DataTypes.DECIMAL(12,2),
-    allowNull:false
-   },
-    
-  furnish:{
-    type:DataTypes.ENUM('non-furnished','furnished','semi-furnished')
-  },
-  description:{
-    type:DataTypes.TEXT
-  },
-  needed:{
-    type: DataTypes.ENUM(
-      'urgent',
-      'within a month',
-      'within 3 months',
-      'within a year',
-      'after a year'
-    ),
-    
-  },
     province:{
       type:DataTypes.STRING
     },
-   
+  
     district:{
       type:DataTypes.STRING
     },
     municipality:{
       type:DataTypes.STRING
     },
-    ward:{
-      type:DataTypes.INTEGER
-    },
     area_name:{
       type:DataTypes.STRING
+    } ,     
+    ward:{
+      type:DataTypes.INTEGER
     },
     landmark:{
       type:DataTypes.STRING
     },
-    user_id:{
+    latitude:{
+      type:DataTypes.DECIMAL(9,6)
+    },
+    longitude:{
+      type:DataTypes.DECIMAL(9,6)
+    },
+    property_area:{
+      type:DataTypes.FLOAT
+    },
+    road_size:{
+      type:DataTypes.FLOAT
+    },
+    price:{
+      type:DataTypes.DECIMAL(12,2),
+      allowNull:false
+    },
+    price_type:{
+      type:DataTypes.ENUM('fixed','negotiable')
+    },
+    furnish:{
+      type:DataTypes.ENUM('non-furnished','furnished','semi-furnished')
+    },
+    parking_bike:{
+      type:DataTypes.INTEGER
+    },
+    parking_car:{
+      type:DataTypes.INTEGER
+    },
+    amenities:{
+      type:DataTypes.JSON
+    },
+    description:{
+      type:DataTypes.TEXT
+    },
+    social_media:{
+      type:DataTypes.JSON
+    },
+    property_image:{
+      type:DataTypes.JSON
+    },
+    approved_by:{
       type:DataTypes.INTEGER,
-      allowNull:false,
+       references:{
+         model:'user_adminAccount',
+         key :'admin_id'
+       },
+       onDelete :'SET NULL'
+      
+    },
+    owner_id:{
+      type:DataTypes.INTEGER,
       references:{
         model:'user_userAccount',
         key:'user_id'
       },
-      onDelete:'CASCADE'
-    },
-  
-  },{freezeTableName:true})
+      onDelete:'SET NULL'
+    }
+  }
+  ,{
+    freezeTableName: true,
+  }
+  )
 }
+
 
 
 
@@ -582,6 +622,7 @@ module.exports = {
   houseAdsModel,
   houseViewsModel,
   houseViewsCountModel,
-  requestedHouseModel,
+  houseSoldModel
+  
   
 };

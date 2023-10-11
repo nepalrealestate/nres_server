@@ -11,6 +11,7 @@ const LandComment = db.PropertyModel.LandComment
 const LandFeedback = db.PropertyModel.LandFeedback
 const LandViews = db.PropertyModel.LandViews
 const RequestedLand = db.PropertyModel.RequestedLand
+const LandSold = db.PropertyModel.LandSold;
 
 
 async function insertPendingLand(land){
@@ -82,22 +83,44 @@ async function getLandWithOwnerByID(property_id){
 }
 
 async function getPendingLand(condition,limit,offset){
-    return await PendingLand.findAll({
+    const [pendingLand,totalCount] = await Promise.all([PendingLand.findAll({
         where : condition,
-        attributes:[ 'property_id','property_name','listed_for','price','views'],
+        attributes:[ 'property_id','property_type','property_name','listed_for','province','district','municipality','ward','area_name','createdAt'],
+        include:[
+            {
+                model:db.UserModel.User,
+                as:'owner',
+                attributes:['name','email','phone_number']
+            }
+        ],
+        order:[['createdAt','DESC']],
         limit:limit,
         offset:offset
-    })
+    }),PendingLand.count({where:condition})])
+
+    return {pendingLand,totalCount};
  }
 
 
  async function getPendingLandByID(property_id){
     return await PendingLand.findOne({
-        where:{property_id:property_id}
+        where:{property_id:property_id},
+        include:[
+            {
+                model:db.UserModel.User,
+                as:'owner',
+                attributes:['name','email','phone_number']
+            }
+        ],
 
     })
  }
 
+ async function deletePendingLand(property_id){
+    return await PendingLand.destroy({
+        where:{property_id:property_id}
+    })
+ }
 
 
  async function approveLand(staff_id,property_id){
@@ -213,17 +236,25 @@ async function updateLandViews(property_id,latitude,longitude){
 
 }
 
-async function insertRequestedLand(data){
+async function soldLand(property_id){
+    let transaction;
     try {
-        return await RequestedLand.create(data);
+        
+        transaction = await db.sequelize.transaction();
+        const land = await Land.findOne({where:{property_id:property_id},transaction});
+        await LandSold.create({...land.get()},{transaction});
+        await Land.destroy({where:{property_id:property_id},transaction});
+        return await transaction.commit();
     } catch (error) {
-        console.log(error)
-        throw error
+        if(transaction) await transaction.rollback();
+        throw error;
     }
 }
-    
-async function getRequestedLand(condition){
-    return propertyService.getProperty(condition,RequestedLand);
+
+async function getSoldLandByID(property_id){
+    return await LandSold.findOne({
+        where:{property_id:property_id}
+    })
 }
 
 module.exports = {
@@ -242,6 +273,8 @@ module.exports = {
     updateLandAds,
     approveLand,
     updateLandViews,
-    insertRequestedLand,
-    getRequestedLand
+    soldLand,
+    getSoldLandByID,
+    deletePendingLand
+    
 }

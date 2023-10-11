@@ -22,7 +22,7 @@ async function getBlogById(id){
 async function deleteBlog(id){
     return await Blog.destroy({
         where:{
-            id:id
+            blog_id:id
         }
     })
 }

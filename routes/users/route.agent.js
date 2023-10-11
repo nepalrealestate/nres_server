@@ -9,6 +9,7 @@ const router  = express.Router();
 
 
 
+
 router.get("/",agentVerifyToken,handleGetAgent);
 router.post("/register",handleAgentRegistration);
 router.post("/login",handleAgentLogin);

@@ -37,9 +37,22 @@ async function getCustomer(id){
     return  await User.findByPk(id);
 }
 
+async function getCustomerProfile(id){
+    return await User.findOne({
+        where:{
+            user_id:id
+        },
+        attributes:['name','email','phone_number']
+    })
+}
+
+async function updateCustomerProfile(id){
+    
+}
 
 
 
-module.exports ={registerCustomer,findCustomer,findCustomerPassword,getCustomer};
+
+module.exports ={registerCustomer,findCustomer,findCustomerPassword,getCustomer,getCustomerProfile};
 
 

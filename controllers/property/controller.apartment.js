@@ -10,7 +10,7 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const {Utility, propertyUtility, utility, handleErrorResponse} = require("../controller.utils");
-const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment, updateApartment, deleteApartment, insertApartmentComment, getApartmentComment } = require("../../models/services/property/service.apartment");
+const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment, updateApartment, deleteApartment, insertApartmentComment, getApartmentComment, soldApartment, getSoldApartmentByID, deletePendingApartment } = require("../../models/services/property/service.apartment");
 const { wrapAwait } = require("../../errorHandling");
 const { apartmentSchema } = require("../validationSchema");
 const { findCustomer } = require("../../models/services/users/service.customer");
@@ -181,22 +181,67 @@ const handleGetApartmentComment = async (req,res)=>{
 }
 
 
-const handleInsertRequestedApartment = async (req,res)=>{
- 
-  property.handleInsertRequestedProperty(req,res,insertRequestedApartment)
 
 
+
+const handleSoldApartment = async (req,res)=>{
+  const {property_id} = req.params;
+
+  if(!property_id){
+    return res.status(400).json({message:"Bad Request"})
+  }
+
+  try {
+    const response = await soldApartment(property_id);
+    console.log("Response from sold",response)
+    return res.status(200).json({message:"Successfully Sold"});
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
 }
 
+const handleGetSoldApartmentByID = async (req,res)=>{
+  const {property_id} = req.params;
+  if(!property_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
 
-
-const handleGetRequestedApartment = async (req,res)=>{
-  
-  property.handleGetProperty(req,res,getRequestedApartment);
-
+  try {
+    const response = await getSoldApartmentByID(property_id)
+    return res.status(200).json(response)
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
 }
 
+const handleGetPendingApartmentByID =async (req,res)=>{
+  const {property_id} = req.params;
 
+  if(!property_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+
+  try {
+    const response = await getPendingApartmentByID(property_id);
+    return res.status(200).json(response)
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+const handleDeletePendingApartment = async (req,res)=>{
+  const {property_id} = req.params;
+  if(!property_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+
+  try {
+    const response = await deletePendingApartment(property_id);
+    return res.status(200).json({message:"Successfully Deleted"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
 
 
 module.exports = {
@@ -212,6 +257,8 @@ module.exports = {
   handleUpdateApartmentAds,
   handleInsertApartmentComment,
   handleGetApartmentComment,
-  handleInsertRequestedApartment,
-  handleGetRequestedApartment
+  handleSoldApartment,
+  handleGetSoldApartmentByID,
+  handleGetPendingApartmentByID,
+  handleDeletePendingApartment
 };

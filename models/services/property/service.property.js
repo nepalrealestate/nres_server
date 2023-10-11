@@ -9,11 +9,8 @@ const PropertyFieldVisitComment = db.PropertyModel.PropertyFieldVisitComment;
 const PropertyFieldVisitOTP = db.PropertyModel.PropertyFieldVisitOTP;
 const PropertyFieldVisit = db.PropertyModel.PropertyFieldVisit;
 const PropertyShootScheduleComment = db.PropertyModel.PropertyShootScheduleComment;
-const RequestedPropertyView = db.Views.RequestedPropertyView
-const RequestHouse = db.PropertyModel.RequestedHouse;
-const RequestLand = db.PropertyModel.RequestedLand;
-const RequestApartment = db.PropertyModel.RequestedApartment;
 const RequestedProperty = db.PropertyModel.RequestedProperty;
+const SoldPropertyView = db.Views.SoldPropertyView;
 
 // get latest property insert id
 async function getPropertyId() {
@@ -91,7 +88,7 @@ async function getPropertyShootSchedule(condition, limit, offset) {
 
 async function deletePropertyShootSchedule(shoot_schedule_id) {
   return PropertyShootSchedule.destroy({
-    where: { shoot_schedule_id: shoot_schedule_id },
+    where: {id: shoot_schedule_id },
   });
 }
 
@@ -122,9 +119,25 @@ async function getProperty(condition, limit, offset) {
   });
 }
 
+async function countListingProperty(condition){
+  return await PropertyViewClient.count({
+    where:condition
+  })
+
+}
+
 async function getLatestPropertyPriorityLocation(condition, limit, offset) {
-  let orderConditions = [["createdAt", "DESC"]];
+  let orderConditions = [];
   let whereConditions = {};
+
+  // sorting 
+  if(condition.sort){
+    let order = condition.order?condition.order : "DESC";
+    console.log("THis is order sort sort sort",condition.sort)
+    orderConditions.push([condition.sort, order]);
+  }else{
+    orderConditions.push(["createdAt", "DESC"])
+  }
 
   if (condition.district) {
     orderConditions.unshift([
@@ -170,28 +183,30 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
 
   delete condition.location;
   delete condition.priceRange;
-  console.log(condition);
-  return await PropertyViewClient.findAll({
-    where: whereConditions,
-    // attributes: { exclude: ["id"] },
-    attributes: ['property_id',
-      'property_type',
-      'property_name',
-      'listed_for',
-      'price',
-      'district',
-      'municipality',
-      'area_name',
-      //  [sequelize.fn('JSON_PARSE', sequelize.col('social_media')), 'social_media'],
-      //  [sequelize.fn('JSON_PARSE', sequelize.col('property_image')), 'property_image'],
-      'social_media',
-      'property_image',
-      'views'],
-    order: orderConditions,
-    // replacements: [condition.district],
-    // limit: limit,
-    // offset: offset,
-  });
+  delete condition.district;
+  delete condition.sort;
+  delete condition.order;
+  console.log("THis is condition ,",condition)
+  console.log("This is order order order",orderConditions)
+  
+
+  whereConditions = {...condition,...whereConditions}
+  console.log(whereConditions)
+  const [properties, totalCount] = await Promise.all([
+    PropertyViewClient.findAll({
+        where: whereConditions,
+        attributes: [
+            'property_id', 'property_type', 'property_for', 'property_name',
+            'listed_for', 'price', 'district', 'municipality', 'area_name',
+            'latitude', 'longitude', 'social_media', 'property_image', 'views'
+        ],
+        order: orderConditions,
+        limit: limit,
+        offset: offset,
+    }),
+    PropertyViewClient.count({ where: whereConditions })
+]);
+return {properties,totalCount};
 }
 
 
@@ -231,7 +246,11 @@ async function getPropertyFieldVisitRequestByID(field_visit_id,attributes=null){
       model:db.UserModel.User,
       as:'user',
       attributes:['name','email','phone_number'],
-    }],
+    },
+  {
+    model:db.PropertyModel.PropertyFieldVisitOTP,
+    attributes:['otp']
+  }],
     attributes:attributes
   })
 
@@ -277,12 +296,7 @@ async function getPropertyFieldVisit(){
 
 }
 
-async function countListingProperty(condition){
-  return await PropertyViewClient.count({
-    where:condition
-  })
 
-}
 
 async function insertRequestedProperty(data){
   return await  RequestedProperty.create(data);
@@ -290,6 +304,10 @@ async function insertRequestedProperty(data){
 
 async function getRequestProperty(condition, limit, offset) {
   const whereConditions = {};
+
+  if(condition?.user_id){
+    whereConditions.user_id = condition.user_id;
+  }
 
   if (condition?.search) {
       whereConditions[db.Op.or] = [
@@ -303,6 +321,8 @@ async function getRequestProperty(condition, limit, offset) {
 
       delete condition.search;
   }
+
+
 
   console.log(whereConditions);
 
@@ -334,6 +354,27 @@ async function deleteRequestedProperty(request_id){
   return await RequestedProperty.destroy({where:{id:request_id}})
 }
 
+async function getSoldProperty(condition,limit,offset){
+  if(condition?.search){
+    console.log(condition.search)
+    condition[db.Op.or] = [
+      { province: { [db.Op.like]: `%${condition.search}%` } },
+      { district: { [db.Op.like]: `%${condition.search}%` } },
+      { municipality: { [db.Op.like]: `%${condition.search}%` } },
+      { area_name: { [db.Op.like]: `%${condition.search}%` } },
+    ]
+    delete condition.search;
+  }
+  const [properties,totalCount] = await Promise.all([SoldPropertyView.findAll({
+    where:condition,
+    order:[['updatedAt','DESC']],
+    limit:limit,
+    offset:offset
+  }),SoldPropertyView.count({where:condition})]);
+
+  return {properties,totalCount};
+
+}
 
 module.exports = {
   getPropertyWithAds,
@@ -360,5 +401,6 @@ module.exports = {
   getRequestProperty,
   getRequestPropertyByID,
   insertRequestedProperty,
-  deleteRequestedProperty
+  deleteRequestedProperty,
+  getSoldProperty
 };

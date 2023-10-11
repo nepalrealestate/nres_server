@@ -66,6 +66,17 @@ const handleRegisterServiceProvider = async function (req, res,next) {
 
 
 const handleGetServiceProvider  = async function (req,res){
+    const [limit,offset] = utility.handleLimitOffset(req);
+    const condition  = {};
+    if(req.query?.search){
+        condition.search = req.query.search;
+    }
+    try {
+        const response = await getServiceProvider(condition,limit,offset);
+        return res.status(200).json(response);
+    } catch (error) {
+        utility.handleErrorResponse(res,error)
+    }
     return utils.getSearchData(req,res,getServiceProvider);
 }
 const handleGetServiceProviderByID  = async function(req,res){

@@ -92,6 +92,7 @@
 
 [
   {
+    "property_type": "apartment",
     "property_for": "commercial",
     "listed_for": "sale",
     "property_area": 1000.5,
@@ -112,7 +113,6 @@
     "landmark": "Near Central Park",
     "name":"Rakshya Gauli",
     "email":"rakshyagauli123@gmail.com",
-    "contact":"9841234567"
-    
+    "contact":"9841234567" 
   }
 ]

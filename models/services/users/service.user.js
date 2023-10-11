@@ -19,9 +19,7 @@ async function registerUser(user_type,name,email,phone_number,password,options={
     return user;
 }
 
-async function insertUserProfile(userProfile,options={}){
-    return await UserProfile
-}
+
 
 async function getUser(user_type){
     return await User.findAll({
@@ -40,9 +38,9 @@ async function findUserByEmail(email){
 }
 
 // first object where condition - second attributes array
-async function findUserByID(condition,attributes=null){
+async function findUserByID(id,attributes=null){
     return await User.findOne({
-        where:condition,
+        where:{user_id:id},
         attributes:attributes
     })
 }
@@ -101,6 +99,8 @@ async function getSellerByID(user_id){
         }]
     })
 }
+
+
 
 
 module.exports ={registerUser,

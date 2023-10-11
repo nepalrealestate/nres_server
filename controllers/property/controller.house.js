@@ -8,7 +8,7 @@ const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 
 const {Utility, propertyUtility, utility, handleErrorResponse} = require("../controller.utils");
-const { insertPendingHouse, getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse, getRequestedHouse, updateHouse, deleteHouse } = require("../../models/services/property/service.house");
+const { insertPendingHouse, getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse, getRequestedHouse, updateHouse, deleteHouse, soldHouse, getSoldHouseByID, deletePendingHouse } = require("../../models/services/property/service.house");
 //const utils = new Utility();
 const utils  = utility();
 
@@ -25,10 +25,20 @@ const handleAddHouse = async (req, res) => {
     property.handleAddProperty(req,res,insertHouse);
    // property.handleAddProperty(req,res,insertPendingHouse);
   }
-  
-
 
 };
+
+const handleAddPendingHouse = async (req,res)=>{
+    
+  upload(req, res, async function (err) {
+    utils.handleMulterError(req,res,err,addPendingHouse,true);
+  });
+  
+  async function addPendingHouse (){
+    property.handleAddProperty(req,res,insertPendingHouse);
+   // property.handleAddProperty(req,res,insertPendingHouse);
+  }
+}
 
 
 const handleUpdateHouse = async (req,res)=>{
@@ -168,13 +178,61 @@ const handleGetHouseComment = async (req,res)=>{
 
 }
 
-const handleInsertRequestedHouse = async (req,res)=>{
- 
-  return property.handleInsertRequestedProperty(req,res,insertRequestedHouse)
+
+const handleSoldHouse = async (req,res)=>{
+  const {property_id} = req.params;
+  if(!property_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+
+  try {
+    const response = await soldHouse(property_id);
+    return res.status(200).json({message:"Successfully Sold"});
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
 }
 
-const handleGetRequestedHouse = async (req,res)=>{
-  property.handleGetProperty(req,res,getRequestedHouse)
+const handleGetSoldHouseByID = async (req,res)=>{
+  const {property_id} = req.params;
+  if(!property_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+  try {
+    const response = await getSoldHouseByID(property_id)
+    return res.status(200).json({message:"Successfully Sold "})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+const handleGetPendingHouseByID = async (req,res)=>{
+  const {property_id} = req.params;
+  if(!property_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+
+  try {
+    const response = await getPendingHouseByID(property_id)
+    return res.status(200).json(response)
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+
+const handleDeletePendingHouse = async (req,res)=>{
+  const {property_id} = req.params;
+  if(!property_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+
+  try {
+    const response = await deletePendingHouse(property_id)
+    return res.status(200).json({message:"Successfully Deleted"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
 }
 
 
@@ -182,6 +240,7 @@ const handleGetRequestedHouse = async (req,res)=>{
 
 module.exports = {
   handleAddHouse,
+  handleAddPendingHouse,
   handleUpdateHouse,
   handleDeleteHouse,
   handleGetHouse,
@@ -193,6 +252,9 @@ module.exports = {
   handleUpdateHouseAds,
   handleInsertHouseComment,
   handleGetHouseComment,
-  handleInsertRequestedHouse,
-  handleGetRequestedHouse
+  handleSoldHouse,
+  handleGetSoldHouseByID,
+  handleGetPendingHouseByID,
+  handleDeletePendingHouse
+  
 };

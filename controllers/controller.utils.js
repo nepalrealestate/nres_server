@@ -12,7 +12,8 @@ const { pushNotification } = require("./notification/controller.notification");
 const { apartmentSchema, validateSchema } = require("./validationSchema");
 const { deleteFiles } = require("../middlewares/middleware.uploadFile");
 const logger = require("../utils/errorLogging/logger");
-const { findUser, findUserByEmail, registerUser } = require("../models/services/users/service.user");
+const { findUser, findUserByEmail, registerUser, findUserByID } = require("../models/services/users/service.user");
+const { findAdminByID } = require("../models/services/users/service.admin");
 
 
 const saltRound = 10;
@@ -144,7 +145,7 @@ function userUtility(user_type) {
   };
 }
 
-function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
+function  authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
   //const tokenExpireTime = "1hr";
 
   const login = async function (req, res, user, path = "/") {
@@ -189,15 +190,16 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
     //   });
     // }
     // console.log(String(user.id));
-    console.log(token)
+    console.log('this is token ',token)
 
     res.cookie("id", token, {
       path: "/",
       expires: new Date(Date.now() + 1000 * 1000 * 60),
       httpOnly: true,
       sameSite: "None",
+      secure:true,
     });
-
+   
     return res.status(200).json({ message: "Successfully Logged In", user_id: user.id, role: user_type });
   };
 
@@ -433,26 +435,42 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
   //   }
   // };
 
-  // const updateProfilePassword = async function (req, res, userPasswordUpdate) {
-  //   const newPassword = req.body.new_password;
-  //   const confirmPassword = req.body.confirm_password;
+    const updateProfilePassword = async function (req, res, updatePasswordCallback) {
+       const oldPassword = req.body.oldPassword;
+       const newPassword = req.body.password;
+       const confirmPassword = req.body.confirmPassword;
 
-  //   if (newPassword !== confirmPassword) {
-  //     return res.status(400).json({ message: "Password doesnot match " });
-  //   }
+      if (newPassword !== confirmPassword) {
+        return res.status(400).json({ message: "Password doesnot match " });
+      }
 
-  //   const [hashPassword, hashPasswordError] = await wrapAwait(
-  //     bcrypt.hash(newPassword, saltRound)
-  //   );
+      const user  = {
+        customer:findUserByID,
+        agent:findUserByID,
+        staff:findAdminByID,
+        superAdmin:findAdminByID  
+        
+      }
 
-  //   try {
-  //     const response = await userPasswordUpdate(req.id, hashPassword);
-  //     return res.status(200).json({ message: "Password Update " });
-  //   } catch (error) {
-  //     console.log(error);
-  //     return res.status(500).json({ message: "Unable to update password" });
-  //   }
-  // };
+      // check oldPassword
+      const [userResponse, userError] = await wrapAwait(user[user_type](req.id),['password']);
+      
+      console.log(userResponse);
+      return;
+
+
+      const [hashPassword, hashPasswordError] = await wrapAwait(
+        bcrypt.hash(newPassword, saltRound)
+      );
+
+      try {
+        const response = await updatePasswordCallback(req.id, hashPassword);
+        return res.status(200).json({ message: "Password Update " });
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Unable to update password" });
+      }
+    };
 
   return {
     login,
@@ -1253,6 +1271,13 @@ function propertyUtility(property_type) {
 
     const [limit,offSet] = handleLimitOffset(req.query)
 
+    // if property request from customer or agent;
+    let owner_id = null;
+    if(req.id && req.user_type==='customer' || req.user_type==='agent'){
+      owner_id = req.id;
+    }
+
+
     // get condition
     let condition = req.query ? req.query : {};
     let district = req.body?.district ? req.body.district : null;
@@ -1285,6 +1310,10 @@ function propertyUtility(property_type) {
     condition.offset = offSet;
 
     console.log(condition);
+
+    if(owner_id){
+      condition.owner_id = owner_id;
+    }
 
 
     try {
@@ -1443,7 +1472,7 @@ function handleLimitOffset(req) {
   if (req.query?.limit) delete req.query.limit;
 
   offset = (page - 1) * limit;
-  return [limit, offset];
+  return [Number(limit), Number(offset)];
 }
 
 

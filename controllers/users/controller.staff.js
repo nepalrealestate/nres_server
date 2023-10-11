@@ -12,6 +12,7 @@ const {
   updateStaff,
   deleteStaff,
   getStaffProfile,
+  getStaffProfileByAdminID,
 } = require("../../models/services/users/service.staff");
 const { wrapAwait } = require("../../errorHandling");
 
@@ -156,8 +157,11 @@ const handleStaffRegistration = async (req, res) => {
         { admin_id: admin_id, ...staffProfile },
         { transaction }
       );
+      if(account_access === true){
+        sendPasswordEmail(email, password).catch((err) => console.log(err));
+      }
 
-      sendPasswordEmail(email, password).catch((err) => console.log(err));
+      
 
       await transaction.commit();
 
@@ -222,13 +226,20 @@ const handleStaffUpdate = async (req, res) => {
 };
 
 const handleStaffDelete = async (req, res) => {
-  const staff_id = req.params.staff_id;
+  const admin_id = req.params.staff_id;
 
   try {
-    const response = await deleteAdmin(staff_id);
+    // find staff profile from admin id 
+    const staffProfile = await getStaffProfileByAdminID(admin_id);
+    if (!staffProfile) {
+      return res.status(404).json({ message: "Staff Not Found" });
+    }
+    const response = await deleteAdmin(admin_id);
     if (response === 0) {
       return res.status(400).json({ message: "Unable to delete" });
     }
+    //change account access false
+    await updateStaff(staffProfile?.dataValues?.staff_id , { account_access: false});
     return res.status(200).json({ message: "Delete Successfully" });
   } catch (error) {
     utility.handleErrorResponse(res, error);
@@ -251,8 +262,8 @@ const handleStaffLogin = async (req, res) => {
 
 const handleGetAllStaff = async (req, res) => {
   let condition = {};
-  if (req.query?.name) {
-    condition.name = req.query.name;
+  if (req.query?.search) {
+    condition.search = req.query.search;
   }
   try {
     const data = await getAllStaff(condition);

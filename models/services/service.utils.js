@@ -46,12 +46,18 @@ function propertyServiceUtility(){
             };
           }
       
-         
         }
-      
+
+        // handling owner;
+        if(condition.owner_id){
+          whereConditions.owner_id = condition.owner_id;
+          delete condition.owner_id;
+        }
+
+        
         delete condition.location;
         delete condition.priceRange;
-        console.log(condition);
+       
 
         return await PropertyModel.findAll({
           where: whereConditions,

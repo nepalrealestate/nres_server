@@ -5,8 +5,8 @@ const path = "uploads/property/land"; //path from source
 const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
-const {Utility, utility, propertyUtility} = require("../controller.utils");
-const { insertPendingLand, getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand, insertLand, getRequestedLand, updateLand, deleteLand } = require("../../models/services/property/service.land");
+const {Utility, utility, propertyUtility, handleErrorResponse} = require("../controller.utils");
+const { insertPendingLand, getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand, insertLand, getRequestedLand, updateLand, deleteLand, soldLand, getSoldLandByID, deletePendingLand } = require("../../models/services/property/service.land");
 //const utils = new Utility();
 const utils = utility();
 const property = propertyUtility("land");
@@ -136,16 +136,61 @@ const handleGetLandComment = async (req,res)=>{
 
 }
 
-const handleInsertRequestedLand = async (req,res)=>{
- 
-  property.handleInsertRequestedProperty(req,res,insertRequestedLand)
 
-
+const handleSoldLand = async (req,res)=>{
+  const {property_id} = req.params;
+  if(!property_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+  try {
+    const response = await soldLand(property_id)
+    return res.status(200).json({message:"Successfully Sold "})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
 }
 
-const handleGetRequestedLand = async (req,res)=>{
-  property.handleGetProperty(req,res,getRequestedLand)
+const handleGetSoldLandByID = async (req,res)=>{
+  const {property_id} = req.params;
+  if(!property_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+  try {
+    const response = await getSoldLandByID(property_id)
+    return res.status(200).json(response)
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
 }
+
+const handleGetPendingLandByID = async (req,res)=>{
+  const {property_id} = req.params;
+  if(!property_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+
+  try {
+    const response = await getPendingLandByID(property_id);
+    return res.status(200).json(response)
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+const handleDeletePendingLand = async (req,res)=>{
+  const {property_id} = req.params;
+  if(!property_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+
+  try {
+    const response = await deletePendingLand(property_id);
+    return res.status(200).json({message:"Successfully Deleted"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
 
 module.exports = {
   handleAddLand,
@@ -159,6 +204,9 @@ module.exports = {
   handleUpdateLandAds,
   handleInsertLandComment,
   handleGetLandComment,
-  handleInsertRequestedLand,
-  handleGetRequestedLand
+  handleSoldLand,
+  handleGetSoldLandByID,
+  handleGetPendingLandByID,
+  handleDeletePendingLand
+  
 };

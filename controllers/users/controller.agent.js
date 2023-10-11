@@ -2,19 +2,16 @@ const bcrypt = require("bcrypt");
 
 
 
-const {
-  deleteToken,
-  findPasswordResetTokenValue,
-  insertUsersRating,
-} = require("../../models/users/model.commonUsersCode");
+
 const { wrapAwait } = require("../../errorHandling");
 
 const multer = require("multer");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
 
 const { query } = require("express");
-const { registerAgent, findAgent, getAllAgent, updateAgentProfile, getAgent, findAgentPassword, updateAgentPassword, insertAgentRating } = require("../../models/services/users/service.agent");
+const { registerAgent, findAgent, getAllAgent, updateAgentProfile, getAgent, findAgentPassword, updateAgentPassword, insertAgentRating, getAgentByID } = require("../../models/services/users/service.agent");
 const  utility = require("../controller.utils");
+const { getUser } = require("../../models/services/users/service.user");
 
 
 const saltRound = 10;
@@ -37,14 +34,20 @@ const handleGetAgent = async (req, res) => {
   console.log("Get Agent Api Hit");
   //const {agent_ID} = req.params;
   console.log(req.id)
-  const agent_ID = req.id;
+  const agent_id= null;
 
-  if (!agent_ID) {
+  if (!agent_id) {
     return res.status(400).json({ message: "please provide agent id" })
+  }
+  
+  if(req.id && req.user_type==="agent"){
+    agent_id = req.id;
+  }else{
+    return res.status(401).json({message:"Unauthorized"})
   }
 
   try {
-    const data = await getAgent(agent_ID);
+    const data = await getAgentByID(agent_id);
     console.log(data);
     return res.status(200).json( data );
   } catch (error) {

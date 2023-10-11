@@ -1,8 +1,8 @@
 const { wrapAwait } = require("../../errorHandling");
-const { getApartmentByID, getApartmentWithOwnerByID } = require("../../models/services/property/service.apartment");
-const { getHouseByID, getHouseWithOwnerByID } = require("../../models/services/property/service.house");
-const { getLandByID, getLandWithOwnerByID } = require("../../models/services/property/service.land");
-const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyShootSchedule, getPropertyShootSchedule, insertPropertyShootScheduleComment, getPropertyShootScheduleComment, insertPropertyFieldVisitRequest, getPropertyFieldVisitRequest, getPropertyFieldVisitRequestByID, updatePropertyFieldVisitRequest, insertPropertyFieldVisitOTP, getPropertyFieldVisitOTP, insertPropertyFieldVisit, countListingProperty, getRequestProperty, insertRequestedProperty, deleteRequestedProperty, deletePropertyShootSchedule, insertPropertyFieldVisitComment, deletePropertyFieldVisitRequest, getRequestPropertyByID } = require("../../models/services/property/service.property");
+const { getApartmentByID, getApartmentWithOwnerByID, getPendingApartment } = require("../../models/services/property/service.apartment");
+const { getHouseByID, getHouseWithOwnerByID, getPendingHouse } = require("../../models/services/property/service.house");
+const { getLandByID, getLandWithOwnerByID, getPendingLand } = require("../../models/services/property/service.land");
+const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyShootSchedule, getPropertyShootSchedule, insertPropertyShootScheduleComment, getPropertyShootScheduleComment, insertPropertyFieldVisitRequest, getPropertyFieldVisitRequest, getPropertyFieldVisitRequestByID, updatePropertyFieldVisitRequest, insertPropertyFieldVisitOTP, getPropertyFieldVisitOTP, insertPropertyFieldVisit, countListingProperty, getRequestProperty, insertRequestedProperty, deleteRequestedProperty, deletePropertyShootSchedule, insertPropertyFieldVisitComment, deletePropertyFieldVisitRequest, getRequestPropertyByID, getSoldProperty } = require("../../models/services/property/service.property");
 const { findCustomer, registerCustomer } = require("../../models/services/users/service.customer");
 const { getRandomNumber } = require("../../utils/helperFunction/helper");
 const { handleErrorResponse, handleLimitOffset } = require("../controller.utils");
@@ -94,6 +94,20 @@ const handleGetPropertyPriorityLocation = async function (req, res) {
   condition.district = district;
   condition.location = location;
 
+  // sort condition
+  if(req.query?.sort==='price' || req.query?.sort==='views'){
+    condition.sort = req.query.sort
+    if(req.query?.order){
+      condition.order = req.query.order
+    }
+  }
+ 
+
+ 
+    
+
+
+
   condition.priceRange = {}
   if (minPrice) {
     condition.priceRange.minPrice = minPrice;
@@ -104,13 +118,12 @@ const handleGetPropertyPriorityLocation = async function (req, res) {
     delete condition.maxPrice;
   }
 
-
-  console.log(condition)
-
-
+  if(req.id && req.user_type==='customer' || req.user_type==='agent'){
+    condition.owner_id = req.id;
+  }
   try {
     const data = await getLatestPropertyPriorityLocation(condition, limit, offSet);
-    console.log(data);
+    console.log(data.properties);
     //update views of property
     //await updateViewsCount()
     return res.status(200).json(data);
@@ -498,9 +511,10 @@ const handleInsertRequestedProperty = async function (req, res) {
     ward,
     name,
     email,
-    contact,
-    ...otherDetails // This will contain all properties not listed above
+    phone_number,
+    otherDetails // This will contain all properties not listed above
   } = req.body;
+
 
   const requestedProperty = {
     property_type,
@@ -511,14 +525,16 @@ const handleInsertRequestedProperty = async function (req, res) {
     ward,
     name,
     email,
-    contact,
+    contact:phone_number,
     property_details:otherDetails
   }
-
+  console.log("this is request body",req.body)
+  console.log(requestedProperty)
   let user = null;
   // requested by user 
   if (req.id && req.user_type === 'agent' || req.user_type === 'customer') {
-    user.user_id = req.id;
+    user = {};
+    user.id = req.id;
   } else if (!req.id) { // this handle customer without login and admin
     if (!requestedProperty.email || !requestedProperty.name || !requestedProperty.contact) {
       return res.status(400).json({ message: "Bad Request" })
@@ -585,13 +601,17 @@ const handleInsertRequestedProperty = async function (req, res) {
 const handleGetRequestProperty = async function (req, res) {
   const [limit, offset] = handleLimitOffset(req);
 
-  let searchQuery = {};
+  let condition = {};
   if(req.query?.search){
-    searchQuery.search = req.query.search.trim();
+    condition.search = req.query.search.trim();
+  }
+  //if property reqeuqsted by user
+  if(req.id && req.user_type === 'customer' || req.user_type === 'agent'){
+    condition.user_id = req.id;
   }
 
   try {
-    const response = await getRequestProperty(searchQuery, limit, offset);
+    const response = await getRequestProperty(condition, limit, offset);
     console.log(response)
     return res.status(200).json(response);
   } catch (error) {
@@ -628,7 +648,53 @@ const handleDeleteRequestedProperty = async function (req, res) {
   }
 }
 
+const handleGetSoldProperty = async function (req,res){
 
+  const [limit,offset] = handleLimitOffset(req)
+  const condition = {};
+  if(req.query?.property_type){
+    condition.property_type = req.query.property_type;
+  }
+  if(req.query?.listed_for){
+    condition.listed_for = req.query.listed_for;
+  }
+  if(req.query?.search){
+    condition.search = req.query.search.trim();
+  }
+  try {
+    const response = await getSoldProperty(condition,limit,offset);
+    return res.status(200).json(response);
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+
+const handleGetPendingProperty = async function (req,res){
+
+  const [limit,offset] = handleLimitOffset(req)
+  const condition = {};
+  if(req.query?.property_type){
+    condition.property_type = req.query.property_type;
+  }
+  if(req.query?.listed_for){
+    condition.listed_for = req.query.listed_for;
+  }
+  if(req.query?.search){
+    condition.search = req.query.search.trim();
+  }
+  try {
+    const [{ pendingApartment: apartmentData, totalCount: apartmentCount }, { pendingHouse: houseData, totalCount: houseCount }, { pendingLand: landData, totalCount: landCount }] = await Promise.all([getPendingApartment(condition,limit,offset),getPendingHouse(condition,limit,offset),getPendingLand(condition,limit,offset)])
+    
+    const allProperties = [...apartmentData, ...houseData, ...landData];
+const totalCount = apartmentCount + houseCount + landCount;
+    return res.status(200).json({properties:allProperties,totalCount:totalCount});
+
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+
+}
 
 module.exports = {
   handleGetPropertyWithAds,
@@ -650,5 +716,7 @@ module.exports = {
   handleGetRequestProperty,
   handleGetRequestPropertyByID,
   handleInsertRequestedProperty,
-  handleDeleteRequestedProperty
+  handleDeleteRequestedProperty,
+  handleGetSoldProperty,
+  handleGetPendingProperty
 }

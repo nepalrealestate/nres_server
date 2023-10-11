@@ -8,10 +8,10 @@ const { handleStaffRegistration, handleGetAllStaff, handleStaffUpdate, handleSta
 const { handleGetAllAgent } = require("../../controllers/users/controller.agent");
 const { handleGetServiceProvider, handleVerifyServiceProvider, handleDeleteServiceProvider, handleGetServiceProviderByID } = require("../../controllers/nres_services/controller.nres_service");
 const { handleGetCustomer, handleGetCustomerByID, handleGetBuyer, handleGetSeller, handleGetSellerByID } = require("../../controllers/users/controller.customer");
-const { handleAddApartment, handleGetApartment, handleInsertRequestedApartment, handleGetRequestedApartment, handleUpdateApartmentAds, handleUpdateApartment, handleDeleteApartment, handleGetApartmentByID, handleInsertApartmentComment, handleGetApartmentComment } = require("../../controllers/property/controller.apartment");
-const { handleAddHouse, handleGetHouse, handleInsertRequestedHouse, handleGetRequestedHouse, handleUpdateHouse, handleDeleteHouse, handleGetHouseByID, handleInsertHouseComment, handleGetHouseComment, handleUpdateHouseAds } = require("../../controllers/property/controller.house");
-const { handleAddLand, handleGetLand, handleInsertRequestedLand, handleGetRequestedLand, handleUpdateLand, handleDeleteLand, handleGetLandByID, handleInsertLandComment, handleGetLandComment, handleUpdateLandAds } = require("../../controllers/property/controller.land");
-const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleDeletePropertyFieldVisiteRequest, handleUpdatePropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP, handleGetRequestProperty, handleInsertRequestedProperty, handleDeleteRequestedProperty, handleDeletePropertyShootSchedule, handleGetRequestPropertyByID } = require("../../controllers/property/controller.property");
+const { handleAddApartment, handleGetApartment, handleUpdateApartmentAds, handleUpdateApartment, handleDeleteApartment, handleGetApartmentByID, handleInsertApartmentComment, handleGetApartmentComment, handleSoldApartment, handleGetSoldApartmentByID, handleApproveApartment, handleGetPendingApartmentByID, handleDeletePendingApartment } = require("../../controllers/property/controller.apartment");
+const { handleAddHouse, handleGetHouse, handleUpdateHouse, handleDeleteHouse, handleGetHouseByID, handleInsertHouseComment, handleGetHouseComment, handleUpdateHouseAds, handleSoldHouse, handleGetSoldHouseByID, handleApproveHouse, handleGetPendingHouseByID, handleDeletePendingHouse } = require("../../controllers/property/controller.house");
+const { handleAddLand, handleGetLand, handleUpdateLand, handleDeleteLand, handleGetLandByID, handleInsertLandComment, handleGetLandComment, handleUpdateLandAds, handleSoldLand, handleGetSoldLandByID, handleApproveLand, handleGetPendingLandByID, handleDeletePendingLand } = require("../../controllers/property/controller.land");
+const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleDeletePropertyFieldVisiteRequest, handleUpdatePropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP, handleGetRequestProperty, handleInsertRequestedProperty, handleDeleteRequestedProperty, handleDeletePropertyShootSchedule, handleGetRequestPropertyByID, handleGetSoldProperty, handleGetPendingProperty } = require("../../controllers/property/controller.property");
 const { handleInsertBlog, handleGetBlog, handleGetBlogById, handleDeleteBlog } = require("../../controllers/blog/controller.blog");
 const { handleInsertOrUpdateAds, handleGetAds } = require("../../controllers/ads/controller.ads");
 
@@ -154,4 +154,42 @@ router.post("/ads",superAdminVerifyToken,handleInsertOrUpdateAds);
 router.get("/ads",handleGetAds);
 
 
-module.exports  = router;
+
+//sold property
+router.post("/property/apartment/sold/:property_id",superAdminVerifyToken,handleSoldApartment)
+
+router.post("/property/house/sold/:property_id",superAdminVerifyToken,handleSoldHouse)
+
+router.post("/property/land/sold/:property_id",superAdminVerifyToken,handleSoldLand)
+
+router.get("/property/sold",superAdminVerifyToken,handleGetSoldProperty)
+
+router.get("/property/land/sold/:property_id",superAdminVerifyToken,handleGetSoldLandByID)
+router.get("/property/house/sold/:property_id",superAdminVerifyToken,handleGetSoldHouseByID)
+router.get("/property/apartment/sold/:property_id",superAdminVerifyToken,handleGetSoldApartmentByID)
+
+
+
+// pending property 
+router.get("/property/pending",superAdminVerifyToken,handleGetPendingProperty)
+router.get("/property/house/pending/:property_id",superAdminVerifyToken,handleGetPendingHouseByID)
+router.get("/property/apartment/pending/:property_id",superAdminVerifyToken,handleGetPendingApartmentByID)
+router.get("/property/land/pending/:property_id",superAdminVerifyToken,handleGetPendingLandByID)
+
+
+// delete pending property
+router.delete("/property/house/pending/:property_id",superAdminVerifyToken,handleDeletePendingHouse)
+router.delete("/property/apartment/pending/:property_id",superAdminVerifyToken,handleDeletePendingApartment)
+router.delete("/property/land/pending/:property_id",superAdminVerifyToken,handleDeletePendingLand)
+
+// approved property
+router.post("/property/house/approved/:property_id",superAdminVerifyToken,handleApproveHouse)
+
+router.post("/property/apartment/approved/:property_id",superAdminVerifyToken,handleApproveApartment)
+
+router.post("/property/land/approved/:property_id",superAdminVerifyToken,handleApproveLand)
+
+
+
+
+module.exports  = router; 

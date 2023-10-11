@@ -1,9 +1,11 @@
 
 const db = require('../../model.index');
 
-const Agent = db.UserModel.Agent;
+const User = db.UserModel.User;
 const AgentRating = db.UserModel.AgentRating;
 const AgentInfo = db.UserModel.AgentInfo
+
+
 async function registerAgent(data){
     return await Agent.create({
         name:data.name,
@@ -18,7 +20,7 @@ async function registerAgent(data){
 
 
 async function findAgent(email){
-    const data =  await Agent.findOne({
+    const data =  await User.findOne({
         where:{email:email},
         attributes:[['agent_id','id'],'name','email','password']
     });
@@ -41,7 +43,7 @@ async function findAgentPassword(id){
 //@note-  later return agent rating as well as
 
 //return all agent include - rating, total property except password
-async function getAgent(id){
+async function getAgentByID(id){
     return await Agent.findOne({
         where:{agent_id:id},
         attributes: { exclude: ['password'] },
@@ -151,7 +153,7 @@ module.exports ={
     registerAgent,
     findAgent,
     findAgentPassword,
-    getAgent,
+    getAgentByID,
     getAllAgent,
     updateAgentPassword,
     updateAgentProfile,

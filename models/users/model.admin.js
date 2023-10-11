@@ -40,8 +40,13 @@ function adminAccountModel(sequelize,DataTypes){
 
 function staffProfileModel (sequelize,DataTypes){
   return Staff = sequelize.define('user_admin_staff_profile',{
-    admin_id:{
+    staff_id:{
       type:DataTypes.INTEGER,
+      autoIncrement:true,
+      primaryKey:true,
+    },
+    admin_id:{
+      type:DataTypes.INTEGER, 
       references:{
         model:'user_adminAccount',
         key:'admin_id'
@@ -107,6 +112,10 @@ function staffProfileModel (sequelize,DataTypes){
       type:DataTypes.BOOLEAN,
       required:true,
     },
+    isActive:{
+      type:DataTypes.BOOLEAN,
+      defaultValue:true,
+    }
   },{
     freezeTableName:true
   })

@@ -3,8 +3,12 @@ const bcrypt = require("bcrypt")
 require("dotenv").config();
 const { wrapAwait } = require("../../errorHandling");
 const  utility = require("../controller.utils");
-const { registerCustomer, findCustomer, getCustomer } = require("../../models/services/users/service.customer");
+const { registerCustomer, findCustomer, getCustomer, getCustomerProfile } = require("../../models/services/users/service.customer");
 const { getUser, findUserByID, getBuyer, getSeller, getSellerByID } = require("../../models/services/users/service.user");
+const { countListingProperty } = require("../../models/services/property/service.property");
+const { UploadImage } = require("../../middlewares/middleware.uploadFile");
+
+const upload = new UploadImage("uploads/users/customer/images",2*1024*1024).upload.single("image");
 
 const saltRound = 10;
 const tokenExpireTime = "1hr";
@@ -71,6 +75,49 @@ const handleCustomerLogin = async (req,res)=>{
         return res.status(400).json({message:"User not found"})
     }
     return auth.login(req,res,customer.dataValues);
+}
+
+const handleGetCustomerProfile = async (req,res)=>{
+    let customer_id = null;
+    if(req.id && req.user_type==="customer"){
+        customer_id = req.id;       
+    }else{
+        return res.status(400).json({message:"Bad Request"})
+    }
+
+    try {
+        const [customer,propertyCount] = await Promise.all([getCustomerProfile(customer_id),countListingProperty({owner_id:customer_id})]);
+        const response =  {
+            customer,
+            propertyCount
+        }
+        return res.status(200).json(response)
+    } catch (error) {
+        utility.handleErrorResponse(res,error)
+    }
+}
+
+const handleUpdateCustomerProfile = async (req,res)=>{
+    let customer_id = null;
+    if(req.id && req.user_type==="customer"){
+        customer_id = req.id;       
+    }else{
+        return res.status(400).json({message:"Bad Request"})
+    }
+
+    upload(req,res,async function(err){
+        utils.handleMulterError(req,res,err,updateProfile,false);
+    })
+
+    async function updateProfile(){
+        
+
+        
+    }
+
+    
+
+
 }
 
 const handleGetCustomer = async (req,res)=>{
@@ -140,6 +187,15 @@ const customerVerifyToken = async(req,res,next)=>{
 }
 
 
+const updatePassword = async(req,res)=>{
+
+    
+
+}
 
 
-module.exports = {handleCustomerRegistration,handleCustomerLogin,handleGetCustomer,customerVerifyToken,handleGetCustomerByID,handleGetBuyer,handleGetSeller,handleGetSellerByID}
+
+
+
+
+module.exports = {handleCustomerRegistration,handleCustomerLogin,handleGetCustomer,customerVerifyToken,handleGetCustomerByID,handleGetBuyer,handleGetSeller,handleGetSellerByID,handleGetCustomerProfile}

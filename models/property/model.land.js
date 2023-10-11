@@ -429,18 +429,33 @@ function landViewsCountModel(sequelize,DataTypes){
 }
 
 
-
-function requestedLandModel(sequelize,DataTypes){
-  return RequestedLand = sequelize.define('property_requested_land',{
+function landSoldModel(sequelize,DataTypes){
+  return LandSold = sequelize.define('property_land_sold',{
+    property_id :{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      unique:true,
+      primaryKey:true,
+    },
     property_type:{
       type:DataTypes.ENUM('land'),
-      defaultValue:"land",
+      defaultValue:"land"
     },
     property_for :{
       type:DataTypes.ENUM('non-plotted','plotted')
     },
-    listed_for:{
+    property_name : {
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate:{
+        notEmpty: true, 
+      }
+    },
+    listed_for :{
       type:DataTypes.ENUM('sale','rent')
+    },
+    twist:{
+      type:DataTypes.FLOAT
     },
     property_area:{
       type:DataTypes.FLOAT
@@ -448,68 +463,80 @@ function requestedLandModel(sequelize,DataTypes){
     road_size:{
       type:DataTypes.FLOAT
     },
-    sewage:{
-      type:DataTypes.BOOLEAN
+   
+    facing:{
+      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
     },
-    drinking_water:{
-      type:DataTypes.BOOLEAN
-    },
-    electricity:{
-      type:DataTypes.BOOLEAN
-    },
-   minPrice:{
-    type:DataTypes.DECIMAL(12,2),
-    allowNull:false
-   },
-   maxPrice:{
-    type:DataTypes.DECIMAL(12,2),
-    allowNull:false
-   },
-    
-  description:{
-    type:DataTypes.TEXT
-  },
-  needed:{
-    type: DataTypes.ENUM(
-      'urgent',
-      'within a month',
-      'within 3 months',
-      'within a year',
-      'after a year'
-    ),
-    
-  },
     province:{
       type:DataTypes.STRING
     },
-    
     district:{
       type:DataTypes.STRING
     },
     municipality:{
       type:DataTypes.STRING
     },
-    ward:{
-      type:DataTypes.INTEGER
-    },
     area_name:{
       type:DataTypes.STRING
+    } ,     
+    ward:{
+      type:DataTypes.INTEGER
     },
     landmark:{
       type:DataTypes.STRING
     },
-    user_id:{
+    latitude:{
+      type:DataTypes.DECIMAL(9,6)
+    },
+    longitude:{
+      type:DataTypes.DECIMAL(9,6)
+    },
+    price:{
+      type:DataTypes.DECIMAL(12,2),
+      allowNull:false
+    },
+    price_type:{
+      type:DataTypes.ENUM('fixed','negotiable')
+    },
+    amenities:{
+      type:DataTypes.JSON
+    },
+    description:{
+      type:DataTypes.TEXT
+    },
+    social_media:{
+      type:DataTypes.JSON
+    },
+    property_image:{
+      type:DataTypes.JSON
+    },
+    approved_by:{
       type:DataTypes.INTEGER,
-      allowNull:false,
+      
+       references:{
+         model:'user_adminAccount',
+         key :'admin_id'
+       },
+       onDelete :'SET NULL'
+      
+    },
+    owner_id:{
+      type:DataTypes.INTEGER,
       references:{
         model:'user_userAccount',
         key:'user_id'
       },
-      onDelete:'CASCADE'
-    },
+      onDelete:'SET NULL'
+    }
   
-  },{freezeTableName:true})
+    
+
+
+  },{
+    freezeTableName: true,
+  })
 }
+
 
 
 
@@ -524,5 +551,6 @@ module.exports = {
   landFeedbackModel,
   landViewsModel,
   landViewsCountModel,
-  requestedLandModel,
+  landSoldModel
+  
 };

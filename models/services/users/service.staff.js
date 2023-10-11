@@ -19,18 +19,23 @@ async function findStaff(email){
     return data?data.dataValues:data;
 }
 
+async function getStaffProfileByAdminID(admin_id){
+    return await StaffProfile.findOne({
+        where:{admin_id:admin_id}
+    })
+}
 async function getStaffProfile(id){
     return await StaffProfile.findOne({
-        where:{admin_id:id},
+        where:{staff_id:id},
       //  attributes:{exclude: ['id']}
     })
 }
 
 async function getAllStaff(condition){
     const whereCondition = {};
-    if(condition?.name){
+    if(condition?.search){
         whereCondition.name={
-            [db.Op.substring]:condition.name
+            [db.Op.substring]:condition.search
         }
     }
     return await StaffProfile.findAll({
@@ -51,8 +56,9 @@ async function updateStaffPassword(id,hashPassword){
 
 async function updateStaff(id,updateData){
     if(updateData.password)delete updateData.password;
+    console.log("This is update Data",updateData);
     return await StaffProfile.update(updateData,{
-        where:{admin_id:id}
+        where:{staff_id:id}
     })
 }
 
@@ -66,4 +72,4 @@ async function deleteStaff(id){
 
 
 
-module.exports = {registerStaff,findStaff,getStaffProfile,getAllStaff,updateStaffPassword,updateStaff,deleteStaff}
+module.exports = {registerStaff,findStaff,getStaffProfile,getAllStaff,updateStaffPassword,updateStaff,deleteStaff,getStaffProfileByAdminID}

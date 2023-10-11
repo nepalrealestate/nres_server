@@ -537,6 +537,130 @@ function requestedApartmentModel(sequelize,DataTypes){
 
 
 
+function apartmentSoldModel (sequelize,DataTypes){
+  return ApartmentSold = sequelize.define('property_apartment_sold',{
+    property_id :{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      unique:true,
+      primaryKey:true,
+    
+    },
+    property_type:{
+      type:DataTypes.ENUM('apartment'),
+      defaultValue:"apartment"
+    },
+    property_for :{
+      type:DataTypes.ENUM('commercial','residential','office')
+    },
+    property_name : {
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate:{
+        notEmpty: true, 
+      }
+    },
+    listed_for :{
+      type:DataTypes.ENUM('sale','rent')
+    },
+   
+    property_age:{
+      type:DataTypes.INTEGER
+    },
+    floor:{
+      type:DataTypes.FLOAT
+    },
+   bhk:{
+      type:DataTypes.INTEGER
+   }, 
+    facing:{
+      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
+    },
+    province:{
+      type:DataTypes.STRING
+    },
+    district:{
+      type:DataTypes.STRING
+    },
+    municipality:{
+      type:DataTypes.STRING
+    },
+    area_name:{
+      type:DataTypes.STRING
+    } ,     
+    ward:{
+      type:DataTypes.INTEGER
+    },
+    landmark:{
+      type:DataTypes.STRING
+    },
+    latitude:{
+      type:DataTypes.DECIMAL(9,6)
+    },
+    longitude:{
+      type:DataTypes.DECIMAL(9,6)
+    },
+    property_area:{
+      type:DataTypes.FLOAT
+    },
+    road_size:{
+      type:DataTypes.FLOAT
+    },
+    price:{
+      type:DataTypes.DECIMAL(12,2),
+      allowNull:false
+    },
+    price_type:{
+      type:DataTypes.ENUM('fixed','negotiable')
+    },
+    furnish:{
+      type:DataTypes.ENUM('non-furnished','furnished','semi-furnished')
+    },
+    parking_bike:{
+      type:DataTypes.INTEGER
+    },
+    parking_car:{
+      type:DataTypes.INTEGER
+    },
+    amenities:{
+      type:DataTypes.JSON
+    },
+    description:{
+      type:DataTypes.TEXT
+    },
+    social_media:{
+      type:DataTypes.JSON
+    },
+    property_image:{
+      type:DataTypes.JSON
+    },
+    approved_by:{
+      type:DataTypes.INTEGER,
+      
+       references:{
+         model:'user_adminAccount',
+         key :'admin_id'
+       },
+       onDelete:'SET NULL'
+      
+    },
+    owner_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'SET NULL'
+    }
+  },{
+    freezeTableName: true,
+   
+  }
+  )
+
+}
+
+
 
 
 
@@ -550,6 +674,7 @@ module.exports = {
     apartmentViewsModel,
     apartmentViewsCountModel,
     requestedApartmentModel,
+    apartmentSoldModel
     
 
 };

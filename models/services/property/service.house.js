@@ -9,7 +9,7 @@ const HouseFeedback = db.PropertyModel.HouseFeedback
 const HouseComment = db.PropertyModel.HouseComment
 const HouseViews = db.PropertyModel.HouseViews
 const HouseViewsCount = db.PropertyModel.HouseViewsCount
-const RequestedHouse = db.PropertyModel.RequestedHouse
+const HouseSold = db.PropertyModel.HouseSold
 
 const propertyService = propertyServiceUtility();
 
@@ -97,19 +97,42 @@ async function deleteHouse(property_id){
  }
 
  async function getPendingHouse(condition,limit,offset){
-    return await PendingHouse.findAll({
+    
+    const [pendingHouse,totalCount] = await Promise.all([PendingHouse.findAll({
         where : condition,
-        attributes:[ 'property_id','property_name','listed_for','price','views'],
+        attributes:[ 'property_id','property_type','property_name','listed_for','province','district','municipality','ward','area_name','createdAt'],
+        include:[
+            {
+                model:db.UserModel.User,
+                as:'owner',
+                attributes:['name','email','phone_number']
+            }
+        ],
+        order:[['createdAt','DESC']],
         limit:limit,
         offset:offset
-    })
+    }),PendingHouse.count({where:condition})])
+    return {pendingHouse,totalCount};
  }
 
 
  async function getPendingHouseByID(property_id){
     return await PendingHouse.findOne({
-        where:{property_id:property_id}
+        where:{property_id:property_id},
+        include:[
+            {
+                model:db.UserModel.User,
+                as:'owner',
+                attributes:['name','email','phone_number']
+            }
+        ],
 
+    })
+ }
+
+ async function deletePendingHouse(property_id){
+    return await PendingHouse.destroy({
+        where:{property_id:property_id}
     })
  }
 
@@ -217,15 +240,27 @@ async  function updateHouseViews(property_id,latitude,longitude){
 }
 
 
-
-async function insertRequestedHouse (data){
-    return await RequestedHouse.create(data);
+async function soldHouse(property_id){
+    let transaction;
+    try {
+        
+        transaction  = await db.sequelize.transaction();
+        const house = await House.findOne({where:{property_id:property_id},transaction});
+        await HouseSold.create({...house.get()},{transaction});
+        await House.destroy({where:{property_id:property_id},transaction});
+        return await transaction.commit();
+    } catch (error) {
+        if(transaction) await transaction.rollback();
+        throw error;
+    }
 }
 
-async function getRequestedHouse(condition){
-    propertyService.getProperty(condition,RequestedHouse);
-}
 
+async function getSoldHouseByID(property_id){
+    return await HouseSold.findOne({
+        where:{property_id:property_id}
+    })
+}
 
 
 module.exports ={insertHouse,
@@ -242,6 +277,8 @@ module.exports ={insertHouse,
     insertHouseComment,
     updateHouseAds,
     approveHouse,
+    deletePendingHouse,
     updateHouseViews,
-    insertRequestedHouse,
-    getRequestedHouse}
+    soldHouse,
+    getSoldHouseByID
+}
