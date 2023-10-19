@@ -2,13 +2,17 @@ const express = require("express");
 
 const { handleStaffRegistration, handleStaffLogin, handleStaffPasswordReset, staffVerifyToken, handleGetStaffByID} = require('../../controllers/users/controller.staff');
 
-const { handleAddApartment, handleApproveApartment, handleGetPendingApartment, handleUpdateApartmentAds, handleInsertApartmentComment, handleGetApartment, handleGetApartmentComment, handleInsertRequestedApartment } = require("../../controllers/property/controller.apartment");
-const { handleAddHouse, handleApproveHouse, handleGetPendingHouse, handleUpdateHouseAds, handleGetHouse, handleInsertHouseComment, handleGetHouseComment, handleInsertRequestedHouse } = require("../../controllers/property/controller.house");
-const { handleAddLand, handleApproveLand, handleGetPendingLand, handleUpdateLandAds, handleInsertLandComment, handleGetLandComment, handleInsertRequestedLand } = require("../../controllers/property/controller.land");
+const { handleAddApartment, handleApproveApartment, handleGetPendingApartment, handleUpdateApartmentAds, handleInsertApartmentComment, handleGetApartment, handleGetApartmentComment, handleInsertRequestedApartment, handleGetApartmentByID, handleUpdateApartment, handleDeleteApartment, handleSoldApartment, handleGetSoldApartmentByID, handleGetPendingApartmentByID, handleDeletePendingApartment } = require("../../controllers/property/controller.apartment");
+const { handleAddHouse, handleApproveHouse, handleGetPendingHouse, handleUpdateHouseAds, handleGetHouse, handleInsertHouseComment, handleGetHouseComment, handleInsertRequestedHouse, handleGetHouseByID, handleUpdateHouse, handleDeleteHouse, handleSoldHouse, handleGetSoldHouseByID, handleGetPendingHouseByID, handleDeletePendingHouse } = require("../../controllers/property/controller.house");
+const { handleAddLand, handleApproveLand, handleGetPendingLand, handleUpdateLandAds, handleInsertLandComment, handleGetLandComment, handleInsertRequestedLand, handleGetLandByID, handleUpdateLand, handleDeleteLand, handleSoldLand, handleGetSoldLandByID, handleGetPendingLandByID, handleDeletePendingLand } = require("../../controllers/property/controller.land");
 
 const { handleGetAllAgent } = require("../../controllers/users/controller.agent");
 const { insertRequestedLand } = require("../../models/services/property/service.land");
-const { handleGetPropertyWithAds } = require("../../controllers/property/controller.property");
+const { handleGetPropertyWithAds, handleInsertRequestedProperty, handleGetRequestProperty, handleGetRequestPropertyByID, handleDeleteRequestedProperty, handleInsertPropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleUpdatePropertyFieldVisitRequest, handleDeletePropertyFieldVisiteRequest, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleDeletePropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetSoldProperty, handleGetPendingProperty } = require("../../controllers/property/controller.property");
+const { handleGetCustomer, handleGetBuyer, handleGetSeller, handleGetSellerByID } = require("../../controllers/users/controller.customer");
+const { handleGetServiceProvider, handleGetServiceProviderByID, handleVerifyServiceProvider, handleDeleteServiceProvider } = require("../../controllers/nres_services/controller.nres_service");
+const { handleInsertBlog, handleGetBlog, handleGetBlogById, handleDeleteBlog } = require("../../controllers/blog/controller.blog");
+const { handleInsertOrUpdateAds, handleGetAds } = require("../../controllers/ads/controller.ads");
 
 
 
@@ -16,80 +20,151 @@ const { handleGetPropertyWithAds } = require("../../controllers/property/control
 const router  = express.Router();
 
 router.get("/",staffVerifyToken,handleGetStaffByID);
-//router.post("/register",handleStaffRegistration);
+
 router.post("/login",handleStaffLogin);
 
 
 router.put("/resetPassword",handleStaffPasswordReset);
 
-//testing 
-// get latest property for dashboard
-router.get("/property",staffVerifyToken,handleGetPropertyWithAds)
-
-// get property
-router.get("/house",staffVerifyToken,handleGetHouse);
-router.get("/apartment",staffVerifyToken,handleGetApartment)
 
 
+// agent related routes
+router.get("/agent",staffVerifyToken,handleGetAllAgent);
 
-router.post("/addApartment",staffVerifyToken,handleAddApartment);
-router.post("/addHouse",staffVerifyToken,handleAddHouse);
-router.post("/addLand",staffVerifyToken,handleAddLand);
+//customer 
+router.get("/customer",staffVerifyToken,handleGetCustomer);
+// router.get("/customer/:customer_id",staffVerifyToken,handleGetCustomerByID);
+router.get("/customer/buyer",staffVerifyToken,handleGetBuyer)
+router.get("/customer/seller",staffVerifyToken,handleGetSeller)
+router.get("/customer/seller/:seller_id",staffVerifyToken,handleGetSellerByID)
 
-
-// get applied property
-
-router.get("/pendingApartment",staffVerifyToken,handleGetPendingApartment);
-router.get("/pendingHouse",staffVerifyToken,handleGetPendingHouse)
-router.get("/pendingLand",staffVerifyToken,handleGetPendingLand)
-//approved apply for listing apartment
-
-router.put("/approvedApartment/:property_id",staffVerifyToken,handleApproveApartment);
-router.put("/approvedHouse/:property_id",staffVerifyToken,handleApproveHouse);
-router.put("/approvedLand/:property_id",staffVerifyToken,handleApproveLand);
-
-
-//update property 
-
-
-//update property ads status
-router.put("/house/ads/:property_id",staffVerifyToken,handleUpdateHouseAds);
-router.put("/apartment/ads/:property_id",staffVerifyToken,handleUpdateApartmentAds);
-router.put("/land/ads/:property_id",staffVerifyToken,handleUpdateLandAds);
-
-//insert property comments for staff
-
-router.post("/house/comment/:property_id",staffVerifyToken,handleInsertHouseComment);
-router.post("/apartment/comment/:property_id",staffVerifyToken,handleInsertApartmentComment);
-router.post("/land/comment/:property_id",staffVerifyToken,handleInsertLandComment);
-
-
-// get property comments by id
-
-router.get("/house/comment/:property_id",staffVerifyToken,handleGetHouseComment)
-
-router.get("/apartment/comment/:property_id",staffVerifyToken,handleGetApartmentComment)
-
-router.get("/land/comment/:property_id",staffVerifyToken,handleGetLandComment)
-
-
-//get latest property for dashboard;
-// router.get("/property",staffVerifyToken,handleGetLatestPropertyDashboard);
+//service provider related routes
+router.get("/service/provider",staffVerifyToken,handleGetServiceProvider)
+router.get("/service/provider/:provider_id",staffVerifyToken,handleGetServiceProviderByID)
+router.patch("/service/provider/:provider_id",staffVerifyToken,handleVerifyServiceProvider)
+router.delete("/service/provider/:provider_id",staffVerifyToken,handleDeleteServiceProvider);
 
 
 
+// property Related Routes
+router.get("/property",staffVerifyToken,handleGetPropertyWithAds);
+// apartment
+router.get("/property/apartment/property_id",staffVerifyToken,handleGetApartmentByID)
+router.get("/property/apartment",staffVerifyToken,handleGetApartment)
+router.post("/property/apartment",staffVerifyToken,handleAddApartment)
+router.patch("/property/apartment/:property_id",staffVerifyToken,handleUpdateApartment)
+router.delete("/property/apartment/:property_id",staffVerifyToken,handleDeleteApartment);
 
-//get all agents
+router.post("/property/apartment/comment/:property_id",staffVerifyToken,handleInsertApartmentComment)
+router.get("/property/apartment/comment/:property_id",staffVerifyToken,handleGetApartmentComment)
 
-router.get("/agent",staffVerifyToken,handleGetAllAgent)
+router.patch("/property/apartment/ads/:property_id",staffVerifyToken,handleUpdateApartmentAds)
 
-//router.get("/staff");
-//router.get("/user")
+//house
+router.get("/property/house/:property_id",staffVerifyToken,handleGetHouseByID)
+router.get("/property/house",staffVerifyToken,handleGetHouse)
+router.post("/property/house",staffVerifyToken,handleAddHouse)
+router.patch("/property/house/:property_id",staffVerifyToken,handleUpdateHouse)
+router.delete("/property/house/:property_id",staffVerifyToken,handleDeleteHouse)
 
-//get all customer
+router.post("/property/house/comment/:property_id",staffVerifyToken,handleInsertHouseComment)
+router.get("/property/house/comment/:property_id",staffVerifyToken,handleGetHouseComment)
+
+router.patch("/property/house/ads/:property_id",staffVerifyToken,handleUpdateHouseAds)
+
+
+//land
+router.get("/property/land/:property_id",staffVerifyToken,handleGetLandByID)
+router.get("/property/land",staffVerifyToken,handleGetLandByID)
+router.post("/property/land",staffVerifyToken,handleAddLand)
+router.patch("/property/land/:property_id",staffVerifyToken,handleUpdateLand)
+router.delete("/property/land/:property_id",staffVerifyToken,handleDeleteLand)
+
+router.post("/property/land/comment/:property_id",staffVerifyToken,handleInsertLandComment);
+router.get("/property/land/comment/:property_id",staffVerifyToken,handleGetLandComment)
+
+router.patch("/property/land/ads/:property_id",staffVerifyToken,handleUpdateLandAds)
 
 
 
+//property request
+router.post("/property/request",staffVerifyToken,handleInsertRequestedProperty)
+router.get("/property/request",staffVerifyToken,handleGetRequestProperty)
+router.get("/property/request/:request_id",staffVerifyToken,handleGetRequestPropertyByID)
+router.delete("/property/request/:request_id",staffVerifyToken,handleDeleteRequestedProperty)
+
+// field visit 
+router.post("/property/field-visit-request",staffVerifyToken,handleInsertPropertyFieldVisitRequest)
+
+router.get("/property/field-visit-request",staffVerifyToken,handleGetPropertyFieldVisitRequest)
+
+router.get("/property/field-visit-request/:field_visit_id",staffVerifyToken,handleGetPropertyFieldVisitRequestByID);
+
+router.patch("/property/field-visit-request/:field_visit_id",staffVerifyToken,handleUpdatePropertyFieldVisitRequest)
+
+router.delete("/property/field-visit-request/:field_visit_id",staffVerifyToken,handleDeletePropertyFieldVisiteRequest)
+
+router.get("/property/field-visit-request/otp/:field_visit_id",staffVerifyToken,handleGetPropertyFieldVisitOTP)
+
+router.post("/property/field-visit-request/comment/:field_visit_id",staffVerifyToken,)
+
+// router.post("/property/field-visit-request-otp/:field_visit_id",superAdminVerifyToken,)
+
+
+//shoot schedule
+router.post("/property/shoot-schedule",staffVerifyToken,handleInsertPropertyShootSchedule)
+router.get("/property/shoot-schedule",staffVerifyToken,handleGetPropertyShootSchedule)
+router.delete("/property/shoot-schedule/:shoot_schedule_id",staffVerifyToken,handleDeletePropertyShootSchedule)
+// shoot schedule comment 
+router.post("/property/shoot-schedule-comment/:shoot_schedule_id",staffVerifyToken,handleInsertPropertyShootScheduleComment);
+router.get("/property/shoot-schedule-comment/:shoot_schedule_id",staffVerifyToken,handleGetPropertyShootScheduleComment);
+
+
+//blogs 
+router.post("/blog",staffVerifyToken,handleInsertBlog);
+router.get("/blog",staffVerifyToken,handleGetBlog);
+router.get("/blog/:id",staffVerifyToken,handleGetBlogById);
+router.delete("/blog/:id",staffVerifyToken,handleDeleteBlog);
+
+
+//ads
+router.post("/ads",staffVerifyToken,handleInsertOrUpdateAds);
+router.get("/ads",staffVerifyToken,handleGetAds);
+
+
+
+//sold property
+router.post("/property/apartment/sold/:property_id",staffVerifyToken,handleSoldApartment)
+
+router.post("/property/house/sold/:property_id",staffVerifyToken,handleSoldHouse)
+
+router.post("/property/land/sold/:property_id",staffVerifyToken,handleSoldLand)
+
+router.get("/property/sold",staffVerifyToken,handleGetSoldProperty)
+
+router.get("/property/land/sold/:property_id",staffVerifyToken,handleGetSoldLandByID)
+router.get("/property/house/sold/:property_id",staffVerifyToken,handleGetSoldHouseByID)
+router.get("/property/apartment/sold/:property_id",staffVerifyToken,handleGetSoldApartmentByID)
+
+
+// pending property 
+router.get("/property/pending",staffVerifyToken,handleGetPendingProperty)
+router.get("/property/house/pending/:property_id",staffVerifyToken,handleGetPendingHouseByID)
+router.get("/property/apartment/pending/:property_id",staffVerifyToken,handleGetPendingApartmentByID)
+router.get("/property/land/pending/:property_id",staffVerifyToken,handleGetPendingLandByID)
+
+
+// delete pending property
+router.delete("/property/house/pending/:property_id",staffVerifyToken,handleDeletePendingHouse)
+router.delete("/property/apartment/pending/:property_id",staffVerifyToken,handleDeletePendingApartment)
+router.delete("/property/land/pending/:property_id",staffVerifyToken,handleDeletePendingLand)
+
+// approved property
+router.post("/property/house/approved/:property_id",staffVerifyToken,handleApproveHouse)
+
+router.post("/property/apartment/approved/:property_id",staffVerifyToken,handleApproveApartment)
+
+router.post("/property/land/approved/:property_id",staffVerifyToken,handleApproveLand)
 
 
 module.exports = router;

@@ -136,8 +136,6 @@ function agentProfileModel(sequelize,DataTypes){
       type:DataTypes.STRING
     }
     
-
-
   })
 }
 

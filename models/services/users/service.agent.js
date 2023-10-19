@@ -7,16 +7,16 @@ const AgentInfo = db.UserModel.AgentInfo
 
 
 async function registerAgent(data){
-    return await Agent.create({
+    return await User.create({
+        user_type:"agent",
         name:data.name,
         email:data.email,
         phone_number:data.phone_number,
-        identification_type:data.identification_type,
-        identification_number:data.identification_number,
-        image:data.image,
         password:data.hashPassword
     })
 }
+
+
 
 
 async function findAgent(email){

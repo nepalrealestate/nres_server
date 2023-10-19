@@ -30,17 +30,17 @@ async function getUser(user_type){
 
 
 
-async function findUserByEmail(email){
+async function findUserByEmail(user_type='customer',email){
     return await User.findOne({
-        where:{email:email},
+        where:{user_type:user_type,email:email},
         attributes:[['user_id','id'],'user_type','name','email','password'],
     })
 }
 
 // first object where condition - second attributes array
-async function findUserByID(id,attributes=null){
+async function findUserByID(user_type='customer',id,attributes=null){
     return await User.findOne({
-        where:{user_id:id},
+        where:{user_type:user_type,user_id:id},
         attributes:attributes
     })
 }

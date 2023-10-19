@@ -35,6 +35,18 @@ const handleAddApartment = async (req, res) => {
     
 };
 
+
+const handleAddPendingApartment = async (req,res)=>{
+  upload(req, res, async function (err) {
+    utils.handleMulterError(req,res,err,addPendingApartment,true);
+  });
+  
+  async function addPendingApartment (){
+    property.handleAddProperty(req,res,insertPendingApartment);
+   // property.handleAddProperty(req,res,insertPendingHouse);
+  }
+}
+
 const handleUpdateApartment = async (req,res)=>{
 
   upload(req,res,async function (err){
@@ -260,5 +272,6 @@ module.exports = {
   handleSoldApartment,
   handleGetSoldApartmentByID,
   handleGetPendingApartmentByID,
-  handleDeletePendingApartment
+  handleDeletePendingApartment,
+  handleAddPendingApartment
 };

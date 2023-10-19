@@ -86,7 +86,7 @@ const handleGetCustomerProfile = async (req,res)=>{
     }
 
     try {
-        const [customer,propertyCount] = await Promise.all([getCustomerProfile(customer_id),countListingProperty({owner_id:customer_id})]);
+        const [customer,propertyCount] = await Promise.all([findUserByID("customer",customer_id,['name','email','phone_number']),countListingProperty({owner_id:customer_id})]);
         const response =  {
             customer,
             propertyCount

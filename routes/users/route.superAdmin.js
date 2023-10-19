@@ -65,8 +65,6 @@ router.patch("/service/provider/:provider_id",superAdminVerifyToken,handleVerify
 router.delete("/service/provider/:provider_id",superAdminVerifyToken,handleDeleteServiceProvider);
 
 
-//customer related routes
-router.get("/customer/:customer_id",handleGetCustomer)
 
 
 // property Related Routes
@@ -151,7 +149,7 @@ router.delete("/blog/:id",superAdminVerifyToken,handleDeleteBlog);
 
 //ads
 router.post("/ads",superAdminVerifyToken,handleInsertOrUpdateAds);
-router.get("/ads",handleGetAds);
+router.get("/ads",superAdminVerifyToken,handleGetAds);
 
 
 

@@ -26,6 +26,18 @@ const handleAddLand = async (req, res) => {
       
     
 };
+
+const handleAddPendingLand = async (req,res)=>{
+  upload(req, res, async function (err) {
+    utils.handleMulterError(req,res,err,addPendingLand,true);
+  });
+  
+  async function addPendingLand (){
+    property.handleAddProperty(req,res,insertPendingLand);
+   // property.handleAddProperty(req,res,insertPendingHouse);
+  }
+}
+
 const handleUpdateLand = async (req,res)=>{
 
   upload(req,res,async function (err){
@@ -207,6 +219,7 @@ module.exports = {
   handleSoldLand,
   handleGetSoldLandByID,
   handleGetPendingLandByID,
-  handleDeletePendingLand
+  handleDeletePendingLand,
+  handleAddPendingLand
   
 };

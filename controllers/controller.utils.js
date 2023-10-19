@@ -159,8 +159,7 @@ function  authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
     if (!passwordMatch) {
       return res.status(401).send({ message: "Invalid Email or Password" });
     }
-    console.log(user)
-
+    
     const token = jwt.sign({ id: user.id }, JWT_KEY, {
       expiresIn: tokenExpireTime,
     });

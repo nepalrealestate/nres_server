@@ -25,6 +25,7 @@ db.UserModel = {
     //AgentInfo :require('./users/model.agent').agentInfoModel(sequelize,DataTypes),
 
     User : require('./users/model.user').userAccountModel(sequelize,DataTypes),
+    AgentRating: require('./users/model.user').agentRatingModel(sequelize,DataTypes),
     Admin : require('./users/model.admin').adminAccountModel(sequelize,DataTypes),
     StaffProfile : require('./users/model.admin').staffProfileModel(sequelize,DataTypes)
 };
