@@ -14,7 +14,7 @@ const router  = express.Router();
 router.get("/",agentVerifyToken,handleGetAgent);
 router.post("/register",handleAgentRegistration);
 router.post("/login",handleAgentLogin);
-router.put("/resetPassword",handleAgentPasswordReset);
+router.put("/forgetPassword",handleAgentPasswordReset);
 router.post("/rating",handleAgentRating)
 
 router.put("/updateProfile",agentVerifyToken,handleUpdateAgentProfile);

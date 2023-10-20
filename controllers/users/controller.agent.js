@@ -97,10 +97,11 @@ const handleAgentRegistration = async (req, res) => {
     name: name,
     email: email,
     phone_number: phone_number,
-    hashPassword: hashPassword,
+    password: hashPassword,
   };
 
   try {
+    console.log("Before register",values)
     const response = await registerUser(values);
     console.log(response);
     return res.status(200).json({ message: "Agent Registration success" })
@@ -142,13 +143,13 @@ const handleAgentPasswordReset = async (req, res, next) => {
     return res.status(400).json({ message: "Please Enter Email" });
   }
 
-  const [agent, agentError] = await wrapAwait(findAgent(email));
+  const [agent, agentError] = await wrapAwait(findUserByEmail("agent",email));
   if (email && token && agent) {
     // pass update Password function as parameters;
     return await user.passwordUpdate(req, res, agent, updateAgentPassword);
   }
   // if there is no token - then get token for reset password
-  return await user.passwordReset(req, res, agent);
+  return await user.forgetPassword(req, res, agent.dataValues);
 };
 
 //this function will shift to user routing

@@ -287,6 +287,15 @@ const handleStaffPasswordReset = async (req, res, next) => {
     return res.status(400).json({ message: "Please Enter Email" });
   }
 
+  try {
+    const staffResponse = await findAdmin(email,"staff");
+    if(!staffResponse){
+      return res.status(400).json({message:"No Staff Found"});
+    }
+    
+  } catch (error) {
+    
+  }
   const [agent, agentError] = await wrapAwait(findStaff(email));
   if (email && token && agent) {
     // pass update Password function as parameters;

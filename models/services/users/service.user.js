@@ -2,14 +2,14 @@ const db = require("../../model.index");
 
 const User = db.UserModel.User;
 
-async function registerUser(user_type,name,email,phone_number,password,options={}){
+async function registerUser(data,options={}){
 
     const user =  await User.create({
-        user_type:user_type,
-        name:name,
-        email:email,
-        phone_number:phone_number,
-        password:password
+        user_type:data.user_type,
+        name:data.name,
+        email:data.email,
+        phone_number:data.phone_number,
+        password:data.password
     },options)
     if(user){
         user.id = user.user_id;
