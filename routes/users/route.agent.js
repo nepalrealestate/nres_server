@@ -4,7 +4,7 @@ const { handleAgentRegistration,handleGetAgent,handleAgentLogin, handleAgentPass
 const {  handleAddPendingApartment } = require("../../controllers/property/controller.apartment");
 const { handleAddPendingHouse, handleGetHouse } = require("../../controllers/property/controller.house");
 const { handleAddPendingLand, handleGetLand } = require("../../controllers/property/controller.land");
-const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty } = require("../../controllers/property/controller.property");
+const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty, handleGetProperty, handleGetPropertyPriorityLocation } = require("../../controllers/property/controller.property");
 
 const router  = express.Router();
 
@@ -22,6 +22,7 @@ router.put("/updatePassword",agentVerifyToken,handleUpdateAgentPassword);
 
 
 // property agent
+router.get("/property",agentVerifyToken,handleGetPropertyPriorityLocation)
 
 router.post("/property/house",agentVerifyToken,handleAddPendingHouse);
 router.get("/property/house",agentVerifyToken,handleGetHouse);

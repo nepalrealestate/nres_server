@@ -1,19 +1,16 @@
 const multer = require("multer");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const generator = require('generate-password')
 
 const {
-  sendPasswordResetTokenMail, sendPasswordEmail,
+  sendPasswordResetTokenMail,
 } = require("../middlewares/middleware.sendEmail");
 const { wrapAwait } = require("../errorHandling");
 
-const { pushNotification } = require("./notification/controller.notification");
-const { apartmentSchema, validateSchema } = require("./validationSchema");
+
+const { validateSchema } = require("./validationSchema");
 const { deleteFiles } = require("../middlewares/middleware.uploadFile");
 const logger = require("../utils/errorLogging/logger");
-const { findUser, findUserByEmail, registerUser, findUserByID } = require("../models/services/users/service.user");
-const { findAdminByID } = require("../models/services/users/service.admin");
 
 
 const saltRound = 10;
@@ -277,25 +274,8 @@ function  authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
   };
 
   const logout = async (req, res) => {
-
-    const cookies = req.headers.cookie;
-    if (!cookies) {
-      return res.status(401).json({ message: "You Are Not Authorized" });
-    }
-    const token = cookies.split("=")[1];
-    if (!token) {
-      return res.status(400).json({ message: "No Token" });
-    }
-    jwt.verify(token, JWT_KEY, (err, decode) => {
-      if (err) {
-        console.log(err)
-        return res.status(403).json({ message: "Unable to Logout" });
-      }
-      res.clearCookie(`${decode.id}`);
-      req.cookies[`${decode.id}`] = "";
-      console.log("Logout Succesfully");
-      return res.status(200).json({ message: "Successfully Logout" });
-    });
+    res.clearCookie("id");
+    return res.status(200).json({ message: "Successfully Logout" });
   }
 
    

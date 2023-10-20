@@ -1,6 +1,6 @@
 const express = require("express");
 
-const { handleStaffRegistration, handleStaffLogin, handleStaffPasswordReset, staffVerifyToken, handleGetStaffByID} = require('../../controllers/users/controller.staff');
+const { handleStaffRegistration, handleStaffLogin, handleStaffPasswordReset, staffVerifyToken, handleGetStaffByID, handleStaffLogout} = require('../../controllers/users/controller.staff');
 
 const { handleAddApartment, handleApproveApartment, handleGetPendingApartment, handleUpdateApartmentAds, handleInsertApartmentComment, handleGetApartment, handleGetApartmentComment, handleInsertRequestedApartment, handleGetApartmentByID, handleUpdateApartment, handleDeleteApartment, handleSoldApartment, handleGetSoldApartmentByID, handleGetPendingApartmentByID, handleDeletePendingApartment } = require("../../controllers/property/controller.apartment");
 const { handleAddHouse, handleApproveHouse, handleGetPendingHouse, handleUpdateHouseAds, handleGetHouse, handleInsertHouseComment, handleGetHouseComment, handleInsertRequestedHouse, handleGetHouseByID, handleUpdateHouse, handleDeleteHouse, handleSoldHouse, handleGetSoldHouseByID, handleGetPendingHouseByID, handleDeletePendingHouse } = require("../../controllers/property/controller.house");
@@ -22,6 +22,7 @@ const router  = express.Router();
 router.get("/",staffVerifyToken,handleGetStaffByID);
 
 router.post("/login",handleStaffLogin);
+router.post("/logout",handleStaffLogout)
 
 
 router.put("/resetPassword",handleStaffPasswordReset);

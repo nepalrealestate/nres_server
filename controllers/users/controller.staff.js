@@ -260,6 +260,11 @@ const handleStaffLogin = async (req, res) => {
   }
 };
 
+
+const handleStaffLogout = async (req, res) => {
+  return auth.logout(req, res);
+}
+
 const handleGetAllStaff = async (req, res) => {
   let condition = {};
   if (req.query?.search) {
@@ -292,7 +297,7 @@ const handleStaffPasswordReset = async (req, res, next) => {
     if(!staffResponse){
       return res.status(400).json({message:"No Staff Found"});
     }
-    
+
   } catch (error) {
     
   }
@@ -318,4 +323,5 @@ module.exports = {
   handleGetAllStaff,
   handleStaffUpdate,
   handleStaffDelete,
+  handleStaffLogout
 };

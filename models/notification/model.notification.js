@@ -1,7 +1,21 @@
 
 function notificationModel(sequelize,DataTypes){
-    
     return NotifyAdmin = sequelize.define('notification',{
+        
+        user_id:{
+            type:DataTypes.INTEGER,
+            allowNull:false,
+            validate:{
+                notEmpty:true
+            }
+        },
+        user_type:{
+            type:DataTypes.ENUM("customer","agent","staff","admin"),
+            allowNull:false,
+            validate:{
+                notEmpty:true
+            }
+        },
         notification:{
             type:DataTypes.STRING,
             allowNull:false,
@@ -15,13 +29,15 @@ function notificationModel(sequelize,DataTypes){
             validate:{
                 notEmpty:true
             }
+        },
+        seen:{
+            type:DataTypes.BOOLEAN,
+            defaultValue:false
         }
     },{
         freezeTableName:true
     })
-
 }
-
 
 
 module.exports = {notificationModel}

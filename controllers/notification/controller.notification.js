@@ -1,41 +1,27 @@
-const events = require("events");
-const { insertNotification } = require("../../models/services/notification/service.notification");
+const { handleLimitOffset } = require("../controller.utils")
 
-const notificationEmitter = new  events.EventEmitter();
 
-const pushNotification = async function(data){
 
+
+const handleGetNotification = async function(req,res){
+
+    const [limit,offset] = handleLimitOffset(req)
+   
     try {
-        insertNotification(data).then(()=>{
-        console.log("Insert Notification")
-        }).catch((err)=>{console.log("Error while insertion",err)});
-        
-        notificationEmitter.emit("pushNotification",data);
-      
+        const [notification,notificationCount] = await Promise.all([
+            
+            
+        ])
     } catch (error) {
-       console.log(error);
+        
     }
 
 }
 
-const handleNotification = async function (notification,socket){
-
-    notificationEmitter.on("pushNotification",handlePushNotification)
-
-    function handlePushNotification(data){
-        console.log(data);
-        // store notification
-
-        notification.emit("pushNotification",data);
-    }
-
-   // notification.emit("pushNotification","sending notification from backend");
-
+const handleUpdateNotificationSeen = async function(req,res){
 
 }
 
-// insert this statement whenever needed - 
-//notificationEmitter.emit("pushNotification",{message:`${user_type} Login Successfully`})
 
 
-module.exports = {handleNotification ,notificationEmitter,pushNotification}
+module.exports = {handleGetNotification,handleUpdateNotificationSeen}
