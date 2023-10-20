@@ -1,6 +1,6 @@
 const express = require("express");
 const { handleInsertAgentRating, handleAgentRating } = require("../../controllers/users/controller.agent");
-const { handleCustomerRegistration, handleCustomerLogin, handleGetCustomer, customerVerifyToken, handleGetCustomerProfile } = require("../../controllers/users/controller.customer");
+const { handleCustomerRegistration, handleCustomerLogin, handleGetCustomer, customerVerifyToken, handleGetCustomerProfile, handleCustomerPasswordReset } = require("../../controllers/users/controller.customer");
 const { handleAddHouse, handleGetHouse, handleAddPendingHouse } = require("../../controllers/property/controller.house");
 const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty, handleGetPropertyPriorityLocation } = require("../../controllers/property/controller.property");
 const { handleAddLand, handleGetLand, handleAddPendingLand } = require("../../controllers/property/controller.land");
@@ -14,6 +14,7 @@ const router = express.Router();
 router.post("/register",handleCustomerRegistration)
 router.post("/login",handleCustomerLogin); 
 router.get("/",customerVerifyToken,handleGetCustomerProfile)
+router.post("/forgetPassword",handleCustomerPasswordReset)
 
 // test this route
 router.post("/agentRating",customerVerifyToken,handleInsertAgentRating);

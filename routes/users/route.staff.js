@@ -25,7 +25,7 @@ router.post("/login",handleStaffLogin);
 router.post("/logout",handleStaffLogout)
 
 
-router.put("/resetPassword",handleStaffPasswordReset);
+router.put("/forgetPassword",handleStaffPasswordReset);
 
 
 

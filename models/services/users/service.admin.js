@@ -42,10 +42,25 @@ async function deleteAdmin(admin_id){
     })
 }
 
+
+async function updateStaffPassword(admin_id,hashPassword){
+    return await Admin.update({password:hashPassword},{
+        where:{admin_type:"staff",admin_id:admin_id}
+    })
+}
+
+
+async function updateSuperAdminPassword(admin_id,hashPassword){
+    return await Admin.update({password:hashPassword},{
+        where:{admin_type:"superAdmin",admin_id:admin_id}
+    })
+}
 module.exports = {
     registerAdmin,
     insertStaffProfile,
     findAdmin,
     findAdminByID,
-    deleteAdmin
+    deleteAdmin,
+    updateStaffPassword,
+    updateSuperAdminPassword,
 }

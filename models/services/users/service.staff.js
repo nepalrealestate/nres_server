@@ -45,14 +45,14 @@ async function getAllStaff(condition){
     });
 }
 
-async function updateStaffPassword(id,hashPassword){
-    return await Staff.update({password:hashPassword},
-        {
-            where:{
-                staff_id:id
-            }
-        })
-}
+// async function updateStaffPassword(id,hashPassword){
+//     return await Staff.update({password:hashPassword},
+//         {
+//             where:{
+//                 staff_id:id
+//             }
+//         })
+// }
 
 async function updateStaff(id,updateData){
     if(updateData.password)delete updateData.password;
@@ -72,4 +72,4 @@ async function deleteStaff(id){
 
 
 
-module.exports = {registerStaff,findStaff,getStaffProfile,getAllStaff,updateStaffPassword,updateStaff,deleteStaff,getStaffProfileByAdminID}
+module.exports = {registerStaff,findStaff,getStaffProfile,getAllStaff,updateStaff,deleteStaff,getStaffProfileByAdminID}

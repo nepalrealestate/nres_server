@@ -101,6 +101,18 @@ async function getSellerByID(user_id){
 }
 
 
+async function updateCustomerPassword(user_id,hashPassword){
+    return await User.update({password:hashPassword},{
+        where:{user_type:"customer",user_id:user_id}
+    })
+}
+
+async function updateAgentPassword(agent_id,hashPassword){
+    return await User.update({password:hashPassword},{
+        where:{user_type:"agent",user_id:agent_id}
+    })
+}
+
 
 
 module.exports ={registerUser,
@@ -109,5 +121,7 @@ module.exports ={registerUser,
     getUser,
     getBuyer,
     getSeller,
-    getSellerByID
+    getSellerByID,
+    updateCustomerPassword,
+    updateAgentPassword
 }

@@ -6,8 +6,6 @@ const { insertVideoLink } = require("../../models/property/model.property");
 const {
   registerStaff,
   findStaff,
-  getStaff,
-  updateStaffPassword,
   getAllStaff,
   updateStaff,
   deleteStaff,
@@ -30,7 +28,6 @@ const {
   deleteFiles,
 } = require("../../middlewares/middleware.uploadFile");
 const {
-  sendPasswordToStaff,
   sendPasswordEmail,
 } = require("../../middlewares/middleware.sendEmail");
 const {
@@ -38,6 +35,7 @@ const {
   registerAdmin,
   findAdmin,
   deleteAdmin,
+  updateStaffPassword,
 } = require("../../models/services/users/service.admin");
 const { sequelize } = require("../../models/model.index");
 
@@ -297,17 +295,19 @@ const handleStaffPasswordReset = async (req, res, next) => {
     if(!staffResponse){
       return res.status(400).json({message:"No Staff Found"});
     }
+    if(email && !token){
+        // if there is no token - then get token for reset password
+      return await user.forgetPassword(req, res, staffResponse.dataValues);
+    }
+    if(email && token){
+       // pass update Password function as parameters;
+      return await user.passwordUpdate(req, res, staffResponse.dataValues,updateStaffPassword);
+    }
 
   } catch (error) {
-    
+    utility.handleErrorResponse(res,error)
   }
-  const [agent, agentError] = await wrapAwait(findStaff(email));
-  if (email && token && agent) {
-    // pass update Password function as parameters;
-    return await user.passwordUpdate(req, res, agent, updateStaffPassword);
-  }
-  // if there is no token - then get token for reset password
-  return await user.passwordReset(req, res, agent);
+  
 };
 
 const staffVerifyToken = async (req, res, next) => {

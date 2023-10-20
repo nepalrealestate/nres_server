@@ -88,16 +88,7 @@ async function updateAgentProfile(id,updateData){
 
 }
 
-async function updateAgentPassword(id,hashPassword){
-    return await Agent.update(
-        {password:hashPassword},
-        {
-            where:{
-                agent_id:id
-            }
-        }
-    )
-}
+
 
 
 async function insertAgentRating(agentRating,review,customer_id,agent_id) {
@@ -155,7 +146,6 @@ module.exports ={
     findAgentPassword,
     getAgentByID,
     getAllAgent,
-    updateAgentPassword,
     updateAgentProfile,
     insertAgentRating
 }

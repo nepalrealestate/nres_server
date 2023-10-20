@@ -4,7 +4,7 @@ require("dotenv").config();
 const { wrapAwait } = require("../../errorHandling");
 const  utility = require("../controller.utils");
 const { registerCustomer, findCustomer, getCustomer, getCustomerProfile } = require("../../models/services/users/service.customer");
-const { getUser, findUserByID, getBuyer, getSeller, getSellerByID } = require("../../models/services/users/service.user");
+const { getUser, findUserByID, getBuyer, getSeller, getSellerByID, findUserByEmail, updateCustomerPassword } = require("../../models/services/users/service.user");
 const { countListingProperty } = require("../../models/services/property/service.property");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
 
@@ -15,6 +15,7 @@ const tokenExpireTime = "1hr";
 const JWT_KEY = process.env.JWT_KEY_CUSTOMER
 const auth = utility.authUtility(tokenExpireTime,saltRound,JWT_KEY,"customer")
 const utils = utility.utility();
+const user = utility.userUtility("customer");
 
 
 const handleCustomerRegistration = async (req,res)=>{
@@ -181,21 +182,57 @@ const handleGetSellerByID = async (req,res)=>{
 }
 
 
+const handleCustomerPasswordReset = async (req,res)=>{
+    
+  const { email, token } = req.query;
+
+  // if email field emptyempty
+  if (!email) {
+    return res.status(400).json({ message: "Please Enter Email" });
+  }
+
+  try {
+    console.log("email",email,"token",token)
+    const customerResponse = await findUserByEmail("customer",email);
+    console.log(customerResponse)
+    if(!customerResponse){
+      return res.status(400).json({message:"No Customer Found"});
+    }
+    if(email && !token){
+        // if there is no token - then get token for reset password
+      return await user.forgetPassword(req, res, customerResponse.dataValues);
+    }
+    if(email && token){
+       // pass update Password function as parameters;
+      return await user.passwordUpdate(req, res, customerResponse.dataValues,updateCustomerPassword);
+    }
+
+  } catch (error) {
+    utility.handleErrorResponse(res,error)
+  }
+}
+
+
 
 const customerVerifyToken = async(req,res,next)=>{
     auth.verifyToken(req,res,next)
 }
 
 
-const updatePassword = async(req,res)=>{
-
-    
-
-}
 
 
 
 
 
 
-module.exports = {handleCustomerRegistration,handleCustomerLogin,handleGetCustomer,customerVerifyToken,handleGetCustomerByID,handleGetBuyer,handleGetSeller,handleGetSellerByID,handleGetCustomerProfile}
+
+module.exports = {handleCustomerRegistration,
+    handleCustomerLogin,
+    handleGetCustomer,
+    customerVerifyToken,
+    handleGetCustomerByID,
+    handleGetBuyer,
+    handleGetSeller,
+    handleGetSellerByID,
+    handleGetCustomerProfile,
+    handleCustomerPasswordReset}

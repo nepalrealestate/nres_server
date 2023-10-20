@@ -30,24 +30,29 @@ function userUtility(user_type) {
     if (!user) {
       return res.status(404).json({ message: "User Not Found!" });
     }
+    try {
+      const randomToken = Math.floor(Math.random() * (9999 - 1000) + 1000)
+      const expireTime = Date.now() + 5 * 60 * 1000
+  
+      passwordToken.set(user.id, { token: randomToken, expireTime: expireTime });
+      console.log(passwordToken)
+  
+      sendPasswordResetTokenMail(user.email, randomToken)
+        .then(function (data) {
+          console.log(data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+  
+      return res
+        .status(200)
+        .json({ message: "OPT sucessfully Send . Check Your Email " });
+    } catch (error) {
+      handleErrorResponse(res,error)
+    }
 
-    const randomToken = Math.floor(Math.random() * (9999 - 1000) + 1000)
-    const expireTime = Date.now() + 5 * 60 * 1000
-
-    console.log(passwordToken)
-    passwordToken.set(user.id, { token: randomToken, expireTime: expireTime });
-
-    sendPasswordResetTokenMail(user.email, randomToken)
-      .then(function (data) {
-        console.log(data);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-
-    return res
-      .status(200)
-      .json({ message: "OPT sucessfully Send . Check Your Email " });
+   
   };
 
   const passwordUpdate = async function (req, res, user, updatePasswordCB) {
@@ -56,14 +61,14 @@ function userUtility(user_type) {
     }
 
     const { email, token } = req.query;
-    const user_id = req.id;
+    const user_id =user.id;
 
     // if email field empty
-    if (!email) {
-      return res.status(400).json({ message: "Please Enter Email" });
+    if (!email && !token) {
+      return res.status(400).json({ message: "missing email or otp" });
     }
 
-    if (email && token && user) {
+   
       // logic for update password
       const { password, confirmPassword } = req.body;
       // if password doesnot match
@@ -71,8 +76,6 @@ function userUtility(user_type) {
         console.log(" New Password not match  ");
         return res.status(403).json({ message: " New Password  not match" });
       }
-
-
 
       const storeToken = passwordToken.get(user_id);
       console.log(storeToken)
@@ -113,7 +116,7 @@ function userUtility(user_type) {
       }
       console.log(hashPasswordError)
       return res.status(500).json({ message: "couldn't update password hash error" });
-    }
+    
   };
 
   const updateProfilePassword = async function (req, res, userPasswordUpdate) {

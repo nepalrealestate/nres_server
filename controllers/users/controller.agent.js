@@ -13,12 +13,12 @@ const {
   updateAgentProfile,
   getAgent,
   findAgentPassword,
-  updateAgentPassword,
+  
   insertAgentRating,
   getAgentByID,
 } = require("../../models/services/users/service.agent");
 const utility = require("../controller.utils");
-const { getUser, registerUser, findUserByEmail, findUserByID } = require("../../models/services/users/service.user");
+const { getUser, registerUser, findUserByEmail, findUserByID, updateAgentPassword } = require("../../models/services/users/service.user");
 const { countListingProperty } = require("../../models/services/property/service.property");
 
 const saltRound = 10;
@@ -59,17 +59,17 @@ const handleGetAgent = async (req, res) => {
 const handleAgentRegistration = async (req, res) => {
 
   const {
-    name,
-    email,
-    phone_number,
-    password,
-    confirm_password,
+     name,
+      email,
+      phoneNumber,
+      password,
+      confirmPassword,
   } = req.body;
   console.log(req.body)
 
   const isEmailValid = utils.isValid.email(email);
-  const isPhoneNumberValid = utils.isValid.phoneNumber(phone_number);
-  const isPasswordValid = utils.isValid.password(password, confirm_password);
+  const isPhoneNumberValid = utils.isValid.phoneNumber(phoneNumber);
+  const isPasswordValid = utils.isValid.password(password, confirmPassword);
 
   if (!name) {
     return res.status(400).json({ message: "field missing" });
@@ -96,7 +96,7 @@ const handleAgentRegistration = async (req, res) => {
     user_type:"agent",
     name: name,
     email: email,
-    phone_number: phone_number,
+    phone_number: phoneNumber,
     password: hashPassword,
   };
 
@@ -130,11 +130,6 @@ const handleAgentVerifyToken = async (req, res, next) => {
 // Password Reset Function
 
 const handleAgentPasswordReset = async (req, res, next) => {
-  // recive email in parameter
-
-  // if we recieve only email then reset password
-  // if we recieve token email and password (in body)
-  // after update password - delete token in database
 
   const { email, token } = req.query;
 
@@ -142,14 +137,24 @@ const handleAgentPasswordReset = async (req, res, next) => {
   if (!email) {
     return res.status(400).json({ message: "Please Enter Email" });
   }
+  try {
+    const agentResponse = await findUserByEmail("agent",email);
+    
+    if(!agentResponse){
+      return res.status(400).json({message:"No Agent Found"});
+    }
+    if(email && !token){
+        // if there is no token - then get token for reset password
+      return await user.forgetPassword(req, res, agentResponse.dataValues);
+    }
+    if(email && token){
+       // pass update Password function as parameters;
+      return await user.passwordUpdate(req, res, agentResponse.dataValues,updateAgentPassword);
+    }
 
-  const [agent, agentError] = await wrapAwait(findUserByEmail("agent",email));
-  if (email && token && agent) {
-    // pass update Password function as parameters;
-    return await user.passwordUpdate(req, res, agent, updateAgentPassword);
+  } catch (error) {
+    utility.handleErrorResponse(res,error)
   }
-  // if there is no token - then get token for reset password
-  return await user.forgetPassword(req, res, agent.dataValues);
 };
 
 //this function will shift to user routing
@@ -206,6 +211,7 @@ const handleUpdateAgentProfile = async (req, res) => {
     }
   }
 };
+
 
 const handleUpdateAgentPassword = async (req, res) => {
   const agent_id = req.id;

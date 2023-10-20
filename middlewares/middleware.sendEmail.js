@@ -5,6 +5,8 @@ const { error } = require("console");
 const nodemailer = require("nodemailer");
 
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 5000;  // 5 seconds
 
 // create reusable transporter object using the default SMTP transport
 let transporter = nodemailer.createTransport({
@@ -19,25 +21,34 @@ let transporter = nodemailer.createTransport({
 
 
   // send password reset token to user
-
-  async function sendPasswordResetTokenMail(userEmail,token){
-
-    return new Promise((resolve, reject) => {
-      transporter.sendMail({
-        from: 'test@nres.com', // sender address
-        to: userEmail, // list of receivers
-        subject: "Reset Password Token  ✔", // Subject line
-        text: `Your Reset Password Token is : ${token} please use before it expires .`, // plain text body
-      }).then(function(data){
+  
+  async function sendPasswordResetTokenMail(userEmail, token, retries = 0) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const data = await transporter.sendMail({
+          from: 'test@nres.com',
+          to: userEmail,
+          subject: "Reset Password OTP  ✔",
+          text: `Your Reset Password OTP is : ${token} please use before it expires .`
+        });
+  
         console.log(data);
         resolve(data);
-      }).catch(function(error){
+      } catch (error) {
         console.log(error);
-        reject(error);
-      })
-    })
+        if (error.code === 'ETIMEDOUT' && retries < MAX_RETRIES) {
+          console.log(`Retry attempt ${retries + 1} after connection timeout...`);
+          setTimeout(() => {
+            sendPasswordResetTokenMail(userEmail, token, retries + 1)
+              .then(resolve)
+              .catch(reject);
+          }, RETRY_DELAY);
+        } else {
+          reject(error);
+        }
+      }
+    });
   }
-
 
     async function sendPasswordEmail(email,password){
       return new Promise((resolve,reject)=>{
