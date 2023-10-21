@@ -12,6 +12,7 @@ const bcrypt = require("bcrypt");
 const { sendPasswordToStaff, sendPasswordEmail } = require("../../middlewares/middleware.sendEmail");
 const logger = require("../../utils/errorLogging/logger");
 const { findUserByEmail, registerUser } = require("../../models/services/users/service.user");
+const { insertNotification } = require("../../models/services/notification/service.notification");
 
 const handleGetPropertyWithAds = async function (req, res) {
 
@@ -411,6 +412,16 @@ const handleInsertPropertyShootSchedule = async function (req, res) {
   try {
     const response = await insertPropertyShootSchedule({ property_type, listed_for, location, owner, contact, scheduled_date,longitude,latitude });
     console.log(response);
+    const notification = {
+      user_id: req.id,
+      user_type: req.user_type,
+      notification: `Property Shoot Schedule Request`,
+      url: `/admin/property/shoot-schedule/${response.dataValues.id}`
+    }
+    
+    insertNotification(notification).then((instance)=>{
+      console.log("Notification Inserted",instance)
+    }).catch((err)=>{console.log("Error While Insert Notification",err)})
     return res.status(200).json({ message: "Insert Property Shoot Schedule" });
   } catch (error) {
     handleErrorResponse(res, error);

@@ -14,6 +14,7 @@ const { handleAddLand, handleGetLand, handleUpdateLand, handleDeleteLand, handle
 const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleDeletePropertyFieldVisiteRequest, handleUpdatePropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP, handleGetRequestProperty, handleInsertRequestedProperty, handleDeleteRequestedProperty, handleDeletePropertyShootSchedule, handleGetRequestPropertyByID, handleGetSoldProperty, handleGetPendingProperty } = require("../../controllers/property/controller.property");
 const { handleInsertBlog, handleGetBlog, handleGetBlogById, handleDeleteBlog } = require("../../controllers/blog/controller.blog");
 const { handleInsertOrUpdateAds, handleGetAds } = require("../../controllers/ads/controller.ads");
+const { handleGetNotification, handleUpdateNotificationSeen } = require("../../controllers/notification/controller.notification");
 
 const router = express.Router();
 
@@ -187,6 +188,12 @@ router.post("/property/apartment/approved/:property_id",superAdminVerifyToken,ha
 
 router.post("/property/land/approved/:property_id",superAdminVerifyToken,handleApproveLand)
 
+
+
+
+// notification
+router.get("/notification",superAdminVerifyToken,handleGetNotification);
+router.patch("/notification/:notificationID",superAdminVerifyToken,handleUpdateNotificationSeen)
 
 
 

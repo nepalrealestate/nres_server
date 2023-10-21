@@ -10,7 +10,7 @@ function notificationModel(sequelize,DataTypes){
             }
         },
         user_type:{
-            type:DataTypes.ENUM("customer","agent","staff","admin"),
+            type:DataTypes.ENUM("customer","agent","staff","superAdmin"),
             allowNull:false,
             validate:{
                 notEmpty:true

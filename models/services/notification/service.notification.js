@@ -1,6 +1,9 @@
+const db = require("../../model.index");
+const NotifyAdmin = db.NotificationModel.NotifyAdmin;
 
 
 async function insertNotification(data){ 
+    console.log(data)
     return  NotifyAdmin.create({
             user_id:data.user_id,
             user_type:data.user_type,
