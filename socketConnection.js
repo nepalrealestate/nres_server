@@ -48,21 +48,21 @@ socketServer.chat = function() {
 
 
 
-socketServer.notification = function (){
-  let notification = io.of("/notification");
+// socketServer.notification = function (){
+//   let notification = io.of("/notification");
 
-  notification.on("connection",async function(socket){
+//   notification.on("connection",async function(socket){
    
-    handleNotification(notification,socket)
+//     handleNotification(notification,socket)
 
-  })
+//   })
   
-}
+// }
 
 
 socketServer.startServer =  () => {
-  server.listen(5000, () => {
-    console.log('Socket server running on port 5000');
+  server.listen(3000, () => {
+    console.log('Socket server running on port 3000');
     logger.info("Socket Server Started")
   });
 }; 
