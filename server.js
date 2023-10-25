@@ -12,38 +12,25 @@ const blogRouter = require("./routes/blogs/route.blog")
 const app  = express();
 const cors = require("cors")
 const bodyParser = require('body-parser')
-
-
 const cookieParser = require('cookie-parser');
-
-const testRouter = require("./routes/route.test")
-
-
-
-const {chatServer, socketServer} = require("./socketConnection");
-
-
-
+const  socketServer = require("./socketConnection");
 const db = require("./models/model.index");
 const logger = require("./utils/errorLogging/logger");
+const http = require("http");
+const socketIo = require("socket.io");
+
+const server = http.createServer(app);
+const chatServer = socketIo(server, {
+  pingTimeOut: 60000,
+  cors: {
+    origin: "http://localhost:3000",
+  },
+});
 
 const port = 8000;
 
 // init sequlize;
-
 db.sequelize.sync({force:false}); // alter creates duplicates index every time
-// async function synchronizeDatabase() {
-//   try {
-//     await db.sequelize.sync({ force: true });
-//     console.log('Database synchronized successfully.');
-//   } catch (error) {
-//     console.error('Error synchronizing the database:', error);
-//   }
-// }
-
-// synchronizeDatabase();
-
-
 
 //app.use("/api/uploads", express.static(path.join(__dirname, 'uploads')));
 app.use('/api/uploads', express.static('uploads'));
@@ -105,19 +92,17 @@ app.use("/api/property",propertyRouter);
 app.use("/api/service",serviceRouter);
 app.use("/api/blog",blogRouter)
 
-//testing
-app.use("/api/test",testRouter)
 
 
 
 //chat running
 
-socketServer.chat()
-// socketServer.notification();
-socketServer.startServer();
+socketServer.chat(chatServer)
+
 
 if(process.env.NODE_ENV=='Production'){
   app.listen(()=>{
+    console.log("Server Started")
    logger.info("Server Started")
   });
 }else{
