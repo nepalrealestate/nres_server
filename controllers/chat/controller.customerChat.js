@@ -1,13 +1,8 @@
 const { insertCustomerChat, getSingleCustomerChat, getCustomerChatList, findOrCreateCustomerChatList } = require("../../models/services/chat/service.customerChat");
-const fs = require('fs');
-const path = require('path');
 
-
-const {UploadImage} = require("../../middlewares/middleware.uploadFile");
+const { chatImageUpload} = require("../../middlewares/middleware.uploadFile");
 const { findUserByEmail, findUserByID } = require("../../models/services/users/service.user");
 const { handleLimitOffset, handleErrorResponse } = require("../controller.utils");
-
-const upload = new UploadImage("uploads/chat/customer", 2 * 1024 * 1024).upload.array('image',5);
 
 
 const userToSocket = new Map();
@@ -25,7 +20,7 @@ const handleUserChat = async function (userChat, socket) {
   if(Number(userID) !== 0){
     try {
       // find customer ;
-      const customerResponse = await findUserByID({user_id:userID,user_type:"customer"},['user_id','name'])
+      const customerResponse = await findUserByID("customer",userID,['user_id','name'])
       if(!customerResponse){
         socket.send("User Not Found");
         socket.disconnect(true)
@@ -50,77 +45,31 @@ const handleUserChat = async function (userChat, socket) {
   userToSocket.get(userID).add(socket.id);
   console.log(userToSocket);
 
-  //after user connect get all previous chats
-  // try {
-  //   const chat = await getSingleCustomerChat(userID);
-  //   socket.emit("previousMessage",chat);
-  // } catch (error) {
-  //  // socket.send(error);
-  // }
-
-  // socket.on("previousMessage", async function () {
-  //   try {
-  //     const chat = await getSingleCustomerChat(userID);
-  //     console.log("previous message",chat)
-  //     socket.emit("previousMessage", chat);
-  //   } catch (error) {
-  //     //socket.send(error);
-  //   }
-  // });
-
   socket.on("message", async function (payload) {
     //save all chats to database;
 
-    console.log(payload);
     console.log("This is sender id - " + userID);
     let sender_id = userID;
     //nres - admin denoted as number 0 - sender-id may string
     let receiver_id = sender_id == 0 ? payload.receiver_id : 0;
 
     let message = payload.message;
-    if (!message || message.trim().length === 0) {
+    console.log(payload)
+    if ( !payload.image && (!message || message.trim().length === 0) ) {
       return;  // Exit if the message is empty
     }
     console.log(sender_id, receiver_id, message);
-    let imageUrl = null;
+    let imageURL = null;
 
     // Check if there's an image in the payload
+
     if(payload.image) {
       try {
-        const imageBuffer = Buffer.from(payload.image.replace(/^data:image\/\w+;base64,/, ""), 'base64');
-        const tempFileName = Date.now() + '.png';
-        const tempFilePath = path.join(__dirname, 'uploads', tempFileName);
-        fs.writeFileSync(tempFilePath, imageBuffer);
-
-        // Use Multer to move the image to its final destination
-        const mockReq = {
-            body: {},
-            file: {
-                fieldname: 'image',
-                originalname: tempFileName,
-                encoding: '7bit',
-                mimetype: 'image/png',
-                buffer: imageBuffer,
-                size: imageBuffer.length
-            }
-        };
-        const mockRes = {};
-        await new Promise((resolve, reject) => {
-            upload(mockReq, mockRes, (err) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                imageUrl = `/uploads/${mockReq.file.filename}`;
-                resolve();
-            });
-        });
-    } catch (error) {
+        imageURL = await chatImageUpload(payload.image,'uploads/chat/customer','2 * 1024 * 1024');
+        console.log("Image URL",imageURL)
+      } catch (error) {
         console.error('Error processing image', error);
-        // Inform the client of the error
-        socket.send("Error processing the image");
-        return;  // Exit if there's an error
-    }
+      }
   }
   
 
@@ -129,6 +78,7 @@ const handleUserChat = async function (userChat, socket) {
         sender_id,
         receiver_id,
         message,
+        imageURL
          
       );
       console.log(response);
@@ -144,7 +94,7 @@ const handleUserChat = async function (userChat, socket) {
               sender_id:  Number(sender_id),
               receiver_id: Number(receiver_id),
               message: message,
-              imageUrl:imageUrl,
+              imageURL:imageURL,
               timestamp: new Date().toISOString(),
             });
         });
@@ -158,7 +108,7 @@ const handleUserChat = async function (userChat, socket) {
                 sender_id: Number(sender_id),
                 receiver_id: Number(receiver_id),
                 message: message,
-                imageUrl:imageUrl,
+                imageURL:imageURL,
                 timestamp: new Date().toISOString(),
               });
           });

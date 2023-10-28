@@ -376,6 +376,57 @@ async function getSoldProperty(condition,limit,offset){
 
 }
 
+async function getEveryMonthSoldProperty(){
+  return await SoldPropertyView.findAll({
+    attributes: [
+      'property_type',
+      [db.sequelize.Sequelize.fn('YEAR', db.sequelize.Sequelize.col('createdAt')), 'year'],
+      [db.sequelize.Sequelize.fn('MONTH', db.sequelize.Sequelize.col('createdAt')), 'month'],
+      
+      [db.sequelize.Sequelize.fn('COUNT', db.sequelize.Sequelize.col('property_id')), 'count']
+    ],
+    group: [
+      [db.sequelize.Sequelize.fn('YEAR', db.sequelize.Sequelize.col('createdAt'))],
+      [db.sequelize.Sequelize.fn('MONTH', db.sequelize.Sequelize.col('createdAt'))],
+      'property_type',
+     
+    ],
+    order: [
+      [db.sequelize.Sequelize.fn('YEAR', db.sequelize.Sequelize.col('createdAt')), 'DESC'],
+      [db.sequelize.Sequelize.fn('MONTH', db.sequelize.Sequelize.col('createdAt')), 'DESC'],
+      'property_type'
+    ]
+  })
+}
+
+
+async function getPropertyByPropertyTypeCount(){
+  return await PropertyAdminView.findAll({
+    attributes:[
+      'property_type',
+      [db.sequelize.Sequelize.fn('COUNT', db.sequelize.Sequelize.col('property_id')), 'count']
+    ],
+    group:[
+      'property_type'
+    ]
+  })
+
+  }
+
+async function getPropertyByListedForCount(){
+  return await PropertyAdminView.findAll({
+    attributes:[
+      'listed_for',
+      [db.sequelize.Sequelize.fn('COUNT', db.sequelize.Sequelize.col('property_id')), 'count']
+    ],
+    group:[
+      'listed_for'
+    ]
+  })
+
+}
+
+
 module.exports = {
   getPropertyWithAds,
   insertPropertyShootSchedule,
@@ -402,5 +453,8 @@ module.exports = {
   getRequestPropertyByID,
   insertRequestedProperty,
   deleteRequestedProperty,
-  getSoldProperty
+  getSoldProperty,
+  getEveryMonthSoldProperty,
+  getPropertyByPropertyTypeCount,
+  getPropertyByListedForCount
 };

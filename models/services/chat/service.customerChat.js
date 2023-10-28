@@ -20,13 +20,13 @@ async function getSingleCustomerChat(id){
     })
 }
 
-async function insertCustomerChat(sender_id,receiver_id,message,imageUrl){
-
+async function insertCustomerChat(sender_id,receiver_id,message,imageURL){
+    console.log("before insert",sender_id,receiver_id,message,imageURL)
     return await CustomerChat.create({
         sender_id:sender_id,
         receiver_id:receiver_id,
         message:message,
-        imageUrl:imageUrl,
+        imageURL:imageURL,
     })
 
 }

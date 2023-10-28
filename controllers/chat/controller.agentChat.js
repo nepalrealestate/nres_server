@@ -44,22 +44,7 @@ const handleAgentChat = async function (userChat, socket) {
   userToSocket.get(userID).add(socket.id);
   console.log(userToSocket);
 
-  // after user connect get all previous chats
-  // try {
-  //   const chat = await getSingleCustomerChat(userID);
-  //   socket.emit("previousMessage",chat);
-  // } catch (error) {
-  //  // socket.send(error);
-  // }
 
-  // socket.on("previousMessage", async function () {
-  //   try {
-  //     const chat = await getSingleAgentChat(userID);
-  //     socket.emit("previousMessage", chat);
-  //   } catch (error) {
-  //     //socket.send(error);
-  //   }
-  // });
 
   socket.on("message", async function (payload) {
     //save all chats to database;

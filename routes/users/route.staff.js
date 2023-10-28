@@ -8,7 +8,7 @@ const { handleAddLand, handleApproveLand, handleGetPendingLand, handleUpdateLand
 
 const { handleGetAllAgent } = require("../../controllers/users/controller.agent");
 const { insertRequestedLand } = require("../../models/services/property/service.land");
-const { handleGetPropertyWithAds, handleInsertRequestedProperty, handleGetRequestProperty, handleGetRequestPropertyByID, handleDeleteRequestedProperty, handleInsertPropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleUpdatePropertyFieldVisitRequest, handleDeletePropertyFieldVisiteRequest, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleDeletePropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetSoldProperty, handleGetPendingProperty } = require("../../controllers/property/controller.property");
+const { handleGetPropertyWithAds, handleInsertRequestedProperty, handleGetRequestProperty, handleGetRequestPropertyByID, handleDeleteRequestedProperty, handleInsertPropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleUpdatePropertyFieldVisitRequest, handleDeletePropertyFieldVisiteRequest, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleDeletePropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetSoldProperty, handleGetPendingProperty, handleGetPropertyAnalytics } = require("../../controllers/property/controller.property");
 const { handleGetCustomer, handleGetBuyer, handleGetSeller, handleGetSellerByID } = require("../../controllers/users/controller.customer");
 const { handleGetServiceProvider, handleGetServiceProviderByID, handleVerifyServiceProvider, handleDeleteServiceProvider } = require("../../controllers/nres_services/controller.nres_service");
 const { handleInsertBlog, handleGetBlog, handleGetBlogById, handleDeleteBlog } = require("../../controllers/blog/controller.blog");
@@ -167,5 +167,10 @@ router.post("/property/apartment/approved/:property_id",staffVerifyToken,handleA
 
 router.post("/property/land/approved/:property_id",staffVerifyToken,handleApproveLand)
 
+
+
+
+ // property analytics
+ router.get("/analytic",staffVerifyToken,handleGetPropertyAnalytics)
 
 module.exports = router;

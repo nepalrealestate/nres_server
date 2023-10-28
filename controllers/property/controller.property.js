@@ -2,7 +2,7 @@ const { wrapAwait } = require("../../errorHandling");
 const { getApartmentByID, getApartmentWithOwnerByID, getPendingApartment } = require("../../models/services/property/service.apartment");
 const { getHouseByID, getHouseWithOwnerByID, getPendingHouse } = require("../../models/services/property/service.house");
 const { getLandByID, getLandWithOwnerByID, getPendingLand } = require("../../models/services/property/service.land");
-const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyShootSchedule, getPropertyShootSchedule, insertPropertyShootScheduleComment, getPropertyShootScheduleComment, insertPropertyFieldVisitRequest, getPropertyFieldVisitRequest, getPropertyFieldVisitRequestByID, updatePropertyFieldVisitRequest, insertPropertyFieldVisitOTP, getPropertyFieldVisitOTP, insertPropertyFieldVisit, countListingProperty, getRequestProperty, insertRequestedProperty, deleteRequestedProperty, deletePropertyShootSchedule, insertPropertyFieldVisitComment, deletePropertyFieldVisitRequest, getRequestPropertyByID, getSoldProperty } = require("../../models/services/property/service.property");
+const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyShootSchedule, getPropertyShootSchedule, insertPropertyShootScheduleComment, getPropertyShootScheduleComment, insertPropertyFieldVisitRequest, getPropertyFieldVisitRequest, getPropertyFieldVisitRequestByID, updatePropertyFieldVisitRequest, insertPropertyFieldVisitOTP, getPropertyFieldVisitOTP, insertPropertyFieldVisit, countListingProperty, getRequestProperty, insertRequestedProperty, deleteRequestedProperty, deletePropertyShootSchedule, insertPropertyFieldVisitComment, deletePropertyFieldVisitRequest, getRequestPropertyByID, getSoldProperty, getEveryMonthSoldProperty, getSoldPropertyByPropertyTypeCount, getSoldPropertyByListedForCount, getPropertyByPropertyTypeCount, getPropertyByListedForCount } = require("../../models/services/property/service.property");
 const { findCustomer, registerCustomer } = require("../../models/services/users/service.customer");
 const { getRandomNumber } = require("../../utils/helperFunction/helper");
 const { handleErrorResponse, handleLimitOffset } = require("../controller.utils");
@@ -707,6 +707,20 @@ const totalCount = apartmentCount + houseCount + landCount;
 
 }
 
+const handleGetPropertyAnalytics = async function(req,res){
+  try {
+
+
+    const [everyMonthSoldProperty,propertyTypeCount,propertyListedForCount] = await Promise.all([getEveryMonthSoldProperty(),getPropertyByPropertyTypeCount(),getPropertyByListedForCount()]) ;
+    console.log(everyMonthSoldProperty)
+    return res.status(200).json({everyMonthSoldProperty,propertyTypeCount,propertyListedForCount})
+  } catch (error) {
+    handleErrorResponse(res,error)
+    
+  }
+}
+
+
 module.exports = {
   handleGetPropertyWithAds,
   handleGetProperty,
@@ -729,5 +743,6 @@ module.exports = {
   handleInsertRequestedProperty,
   handleDeleteRequestedProperty,
   handleGetSoldProperty,
-  handleGetPendingProperty
+  handleGetPendingProperty,
+  handleGetPropertyAnalytics
 }

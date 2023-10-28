@@ -1,5 +1,5 @@
 const express = require("express");
-const { handleGetPropertyWithAds, handleGetProperty, handleGetPropertyPriorityLocation, handleInsertRequestedProperty } = require("../../controllers/property/controller.property");
+const { handleGetPropertyWithAds, handleGetProperty, handleGetPropertyPriorityLocation, handleInsertRequestedProperty, handleGetPropertyAnalytics } = require("../../controllers/property/controller.property");
 const { handleGetAds } = require("../../controllers/ads/controller.ads");
 
 
@@ -16,5 +16,9 @@ const router = express.Router();
  // property request
  router.post("/request",handleInsertRequestedProperty)
 
+
+
+ // property analytics
+ router.get("/analytic",handleGetPropertyAnalytics)
 
 module.exports = router;
