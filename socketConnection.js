@@ -23,10 +23,10 @@ const logger = require("./utils/errorLogging/logger");
 const socketServer = {};
 socketServer.chat = function(io) {
   console.log("Chat Server Working")
-  let adminChat = io.of("/admin");
-  let userChat = io.of("/user");
-  let staffChat = io.of("/staff");
-  let agentChat = io.of("/agent");
+  let adminChat = io.of("/api/chat/admin");
+  let userChat = io.of("/api/chat/user");
+  let staffChat = io.of("/api/chat/staff");
+  let agentChat = io.of("/api/chat/agent");
 
 
   userChat.on("connection", async function(socket){
