@@ -4,7 +4,7 @@ const CustomerChat = db.ChatModel.CustomerChat;
 const CustomerChatList = db.ChatModel.CustomerChatList;
 
 
-async function getSingleCustomerChat(id){
+async function getSingleCustomerChat(id,limit,offset){
     return await CustomerChat.findAll({
         where:{
             [db.Op.or]:[
@@ -16,6 +16,8 @@ async function getSingleCustomerChat(id){
                 }
             ]
         },
+        limit:limit,
+        offset:offset,
         raw:true
     })
 }

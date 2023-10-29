@@ -7,6 +7,7 @@ const { registerCustomer, findCustomer, getCustomer, getCustomerProfile } = requ
 const { getUser, findUserByID, getBuyer, getSeller, getSellerByID, findUserByEmail, updateCustomerPassword } = require("../../models/services/users/service.user");
 const { countListingProperty } = require("../../models/services/property/service.property");
 const { UploadImage } = require("../../middlewares/middleware.uploadFile");
+const { getSingleCustomerChat } = require("../../models/services/chat/service.customerChat");
 
 const upload = new UploadImage("uploads/users/customer/images",2*1024*1024).upload.single("image");
 
@@ -211,6 +212,17 @@ const handleCustomerPasswordReset = async (req,res)=>{
     utility.handleErrorResponse(res,error)
   }
 }
+
+
+ const handleGetPreviousChat = async (req,res)=>{
+    const [limit,offset] = utility.handleLimitOffset(req);
+    const customer_id = req.id;
+    try {
+        const previousChat = await getSingleCustomerChat(customer_id,limit,offset);
+    } catch (error) {
+        
+    }
+ }
 
 
 

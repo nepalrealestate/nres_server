@@ -138,7 +138,7 @@ const handleGetCustomerChatList = async function (req, res) {
   }
 };
 
-const handleGetSingleCustomerChat = async function (req, res) {
+const handleGetSingleCustomerChatForAdmin = async function (req, res) {
   const { customer_id } = req.params;
   try {
     const data = await getSingleCustomerChat(customer_id);
@@ -148,6 +148,16 @@ const handleGetSingleCustomerChat = async function (req, res) {
     handleErrorResponse(res,error)
   }
 };
+
+const handleGetSingleCustomerChat = async function (req,res){
+  const customer_id = req.id;
+  try {
+    const previousChat = await getSingleCustomerChat(customer_id);
+    return res.status(200).json(previousChat);
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
 
 module.exports = {
   handleUserChat,
