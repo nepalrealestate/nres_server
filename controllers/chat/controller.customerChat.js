@@ -95,7 +95,7 @@ const handleUserChat = async function (userChat, socket) {
               receiver_id: Number(receiver_id),
               message: message,
               imageURL:imageURL,
-              timestamp: new Date().toISOString(),
+              createdAt: new Date().toISOString(),
             });
         });
         if (userToSocket.has(receiver_id.toString())) {
@@ -109,7 +109,7 @@ const handleUserChat = async function (userChat, socket) {
                 receiver_id: Number(receiver_id),
                 message: message,
                 imageURL:imageURL,
-                timestamp: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
               });
           });
         }
