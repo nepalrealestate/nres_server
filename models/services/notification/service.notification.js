@@ -19,6 +19,11 @@ async function updateNotificationSeen(id){
     })
 }
 
+async function updateAllNotification(){
+    return await NotifyAdmin.update({seen:true},{
+        where:{seen:false}
+    })
+}
 
 async function getNotification(limit,offset){
     return await NotifyAdmin.findAll({
@@ -33,6 +38,6 @@ async function getNotificationCount(){
 }
 
 
-module.exports  = {insertNotification,updateNotificationSeen,getNotification,getNotificationCount};
+module.exports  = {insertNotification,updateNotificationSeen,getNotification,getNotificationCount,updateAllNotification};
 
 
