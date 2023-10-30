@@ -140,8 +140,9 @@ const handleGetCustomerChatList = async function (req, res) {
 
 const handleGetSingleCustomerChatForAdmin = async function (req, res) {
   const { customer_id } = req.params;
+  const [limit,offset] = handleLimitOffset(req)
   try {
-    const data = await getSingleCustomerChat(customer_id);
+    const data = await getSingleCustomerChat(customer_id,limit,offset);
 
     return res.status(200).json(data);
   } catch (error) {
@@ -163,4 +164,5 @@ module.exports = {
   handleUserChat,
   handleGetCustomerChatList,
   handleGetSingleCustomerChat,
+  handleGetSingleCustomerChatForAdmin
 };
