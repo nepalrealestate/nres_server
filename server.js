@@ -50,6 +50,7 @@ app.use(
         "https://nres.com.np",
         "http://localhost:3000",
         "https://localhost:3000",
+        "https://admin.nres.com.np",
         "PostmanRuntime",
         // ... (your other domains)
       ];
