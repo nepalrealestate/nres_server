@@ -43,6 +43,8 @@ app.use(
       const whitelist = [
         "https://admin.nres.com.np",
         "http://admin.nres.com.np",
+        "https://admin.nres.com.np/",
+        "http://admin.nres.com.np/",
         "http://nres.com.np",
         "https://nres.com.np",
         "http://localhost:3000",
