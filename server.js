@@ -36,22 +36,17 @@ db.sequelize.sync({ force: false }); // alter creates duplicates index every tim
 app.use("/api/uploads", express.static("uploads"));
 
 app.use(express.json());
-
 app.use(
   cors({
     credentials: true,
     origin: function (origin, callback) {
       const whitelist = [
-        "https://blackmoon.com.np",
-        "http://blackmoon.com.np",
         "https://admin.nres.com.np",
         "http://admin.nres.com.np",
         "http://nres.com.np",
         "https://nres.com.np",
         "http://localhost:3000",
         "https://localhost:3000",
-        "https://admin.nres.com.np",
-        "PostmanRuntime",
         // ... (your other domains)
       ];
 
@@ -63,6 +58,7 @@ app.use(
     },
   })
 );
+
 
 
 app.use(cookieParser());
