@@ -33,7 +33,9 @@ const customLevels = {
 
 winston.addColors(customLevels.colors)
 
-
+const jsonformat = winston.format.printf(({ level, message, timestamp }) => {
+    return `${timestamp} [${level}]: ${message}`;
+})
 
 const logger = winston.createLogger({
 
@@ -43,7 +45,7 @@ const logger = winston.createLogger({
     level:'debug',
 
     format:winston.format.combine(
-   
+        jsonformat,
         winston.format.timestamp(),
     
     
