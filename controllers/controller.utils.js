@@ -772,7 +772,14 @@ function handleErrorResponse(res, error) {
   }
   //logger.error(`originalError:${error}, responseError: ${validResponse}`);
   logger.error("Error")
-  logger.error(error);
+  if (error) {
+    logger.error(`Error message: ${error.message}`);
+    logger.error(`Error stack: ${error.stack}`);
+    // Add more properties if needed
+  } else {
+    logger.error("Undefined error occurred");
+  }
+  
   return res.status(500).json({ message: "Internal Error" })
 
 }
