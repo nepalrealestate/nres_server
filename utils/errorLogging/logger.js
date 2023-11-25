@@ -34,16 +34,18 @@ const customLevels = {
 winston.addColors(customLevels.colors)
 
 
+
 const logger = winston.createLogger({
+
+  
 
     levels:customLevels.levels,
     level:'debug',
 
     format:winston.format.combine(
-    
-        winston.format.json(),
+   
         winston.format.timestamp(),
-        jsonFormat
+    
     
     ),
     
