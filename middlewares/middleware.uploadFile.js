@@ -6,20 +6,6 @@ const path = require("path");
 const logger = require("../utils/errorLogging/logger");
 const sizeOf = require('image-size');
 
-// Helper function to generate a new name in case of duplicate filenames
-function generateUniqueFilename(directory, originalName) {
-  let baseName = path.basename(originalName, path.extname(originalName));
-  let extension = path.extname(originalName);
-  let newName = originalName; // start with the original name including its extension
-  let count = 1;
-
-  while (fs.existsSync(path.join(directory, newName))) {
-    newName = `${baseName}_${count}${extension}`;
-    count++;
-  }
-
-  return newName.split(" ").join("");
-}
 
 function UploadImage(folderPath, maxImageSize) {
   let filePath = `${folderPath}`;
@@ -35,16 +21,13 @@ function UploadImage(folderPath, maxImageSize) {
     },
 
     filename: function (req, file, cb) {
-      // const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      // cb(null, file.fieldname + "-" + uniqueSuffix);
       const sanitizedFileName = path.basename(file.originalname); // This will include the file's extension
-      const uniqueFileName = generateUniqueFilename(
-        filePath,
-        sanitizedFileName
-      );
-
+      const timestamp = Date.now(); // Add a timestamp to ensure uniqueness
+      const uniqueFileName = `${timestamp}_${sanitizedFileName}`;
+    
       cb(null, uniqueFileName);
     },
+    
   });
 
   this.upload = multer({
