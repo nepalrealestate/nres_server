@@ -770,8 +770,8 @@ function handleErrorResponse(res, error) {
         message: validResponse.message
       })
   }
- logger.error(`originalError:${error}, responseError: ${validResponse}`);
-  //logger.error(error);
+  //logger.error(`originalError:${error}, responseError: ${validResponse}`);
+  logger.error(error);
   return res.status(500).json({ message: "Internal Error" })
 
 }

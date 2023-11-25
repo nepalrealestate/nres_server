@@ -9,28 +9,27 @@ if (fs.existsSync(filePath)) {
 }
 
 
-const jsonFormat = winston.format.printf(({ level, message, timestamp }) => {
-    return ({ timestamp, level, message });
-});
+
 
 const customLevels = {
-    levels:{
-    error: 0,
-    warn: 1,
-    info: 2,
-    db: 3,
-    debug: 4,
-    dbinit:5
+    levels: {
+      error: 0,
+      warn: 1,
+      info: 2,
+      db: 3,
+      debug: 4,
+      dbinit: 5,
     },
     colors: {
-        error: 'red',
-        warn: 'yellow',
-        info: 'green',
-        db: 'blue',
-        debug: 'gray'
-      }
-}
-
+      error: 'red',
+      warn: 'yellow',
+      info: 'green',
+      db: 'blue',
+      debug: 'gray',
+      dbinit: 'cyan',
+    },
+  };
+  
 winston.addColors(customLevels.colors)
 
 const jsonformat = winston.format.printf(({ level, message, timestamp }) => {
