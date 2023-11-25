@@ -440,12 +440,12 @@ function propertyUtility(property_type) {
 
       const response = await addPropertyCB(updatedProperty); // callback
       // data for notification
-      const data = {};
-      (data.notification = `New ${propertyType} Upload`),
-        (data.url = `/pending${propertyType.charAt(0).toUpperCase() + propertyType.slice(1)
-          }/${response.get().property_id}`);
+      // const data = {};
+      // (data.notification = `New ${propertyType} Upload`),
+      //   (data.url = `/pending${propertyType.charAt(0).toUpperCase() + propertyType.slice(1)
+      //     }/${response.get().property_id}`);
 
-      pushNotification(data);
+      // //pushNotification(data);
 
       return res.status(200).json({ message: `${propertyType} insert` });
 
@@ -530,8 +530,6 @@ function propertyUtility(property_type) {
     let latitude = 28.434883;
     let longitude = 85.72859;
 
-
-
     try {
       const result = await getPropertyByIDCallback(property_id); // get single  apartment by property
       // if there is apartment then also update views
@@ -545,14 +543,7 @@ function propertyUtility(property_type) {
         logger.error(`Error update ${propertyType} Views - ${err}`);
       });
 
-      // update views
-      // const [updateViews, updateViewsError] = await wrapAwait(
-      //   updatePropertyViews(property_id, latitude, longitude)
-      // );
-      // if (updateViewsError) {
-      //   return res.status(500).json({ message: "Error while getting Data" });
-      // }
-
+      
       return res.status(200).json(result);
     } catch (error) {
 

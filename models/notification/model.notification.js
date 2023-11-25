@@ -16,7 +16,7 @@ function notificationModel(sequelize,DataTypes){
                 notEmpty:true
             }
         },
-        notification:{
+        title:{
             type:DataTypes.STRING,
             allowNull:false,
             validate:{

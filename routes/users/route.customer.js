@@ -5,6 +5,8 @@ const { handleAddHouse, handleGetHouse, handleAddPendingHouse } = require("../..
 const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty, handleGetPropertyPriorityLocation } = require("../../controllers/property/controller.property");
 const { handleAddLand, handleGetLand, handleAddPendingLand } = require("../../controllers/property/controller.land");
 const { handleAddApartment, handleGetApartment, handleAddPendingApartment } = require("../../controllers/property/controller.apartment");
+const { handleGetSingleCustomerChat } = require("../../controllers/chat/controller.customerChat");
+
 
 const router = express.Router();
 
@@ -15,6 +17,12 @@ router.post("/register",handleCustomerRegistration)
 router.post("/login",handleCustomerLogin); 
 router.get("/",customerVerifyToken,handleGetCustomerProfile)
 router.post("/forgetPassword",handleCustomerPasswordReset)
+
+router.get("/isLoggedIn",customerVerifyToken,async (req, res) => {
+    return res
+      .status(200)
+      .json({ message: "Customer Logged In", user_id: req.id, role: "customer" });
+  })
 
 // test this route
 router.post("/agentRating",customerVerifyToken,handleInsertAgentRating);
@@ -46,6 +54,12 @@ router.get("/property/request",customerVerifyToken,handleGetRequestProperty)
 
 //agent rating
 router.post("/rating",customerVerifyToken,handleAgentRating)
+
+
+
+
+// chat
+router.get("/previousChat",customerVerifyToken,handleGetSingleCustomerChat)
 
 
 

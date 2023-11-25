@@ -1,4 +1,4 @@
-const { getNotification, getNotificationCount, updateNotificationSeen } = require("../../models/services/notification/service.notification")
+const { getNotification, getNotificationCount, updateNotificationSeen, updateAllNotification } = require("../../models/services/notification/service.notification")
 const { findAdminByID } = require("../../models/services/users/service.admin")
 const { findUserByID } = require("../../models/services/users/service.user")
 const { handleLimitOffset, handleErrorResponse } = require("../controller.utils")
@@ -17,22 +17,22 @@ const handleGetNotification = async function(req,res){
     }
    
     try {
-        const [notification,notificationCount] = await Promise.all([
+        const [notifications,notificationCount] = await Promise.all([
             getNotification(limit,offset),
             getNotificationCount(),
         ])
       
-        const userTypeFunction = getUser[notification[0]?.dataValues?.user_type];
+        const userTypeFunction = getUser[notifications[0]?.dataValues?.user_type];
 
         if (typeof userTypeFunction !== "function") {
             // Handle the error: maybe send a response or throw an error
             return res.status(400).json({ error: "Invalid user type" });
         }
         
-        const user = await userTypeFunction(notification[0]?.dataValues?.user_id, ['name']);
+        const user = await userTypeFunction(notifications[0]?.dataValues?.user_id, ['name']);
         
         const response = {
-            notification,
+            notifications,
             notificationCount,
             user
         }
@@ -55,6 +55,15 @@ const handleUpdateNotificationSeen = async function(req,res){
     }
 }
 
+const handleUpdateAllNotificationSeen = async function (req,res){
+    try {
+        const response = await updateAllNotification();
+        return res.status(200).json({message:"All notification seen updated"});
+    } catch (error) {
+        handleErrorResponse(res,error)
+    }
+}
 
 
-module.exports = {handleGetNotification,handleUpdateNotificationSeen}
+
+module.exports = {handleGetNotification,handleUpdateNotificationSeen,handleUpdateAllNotificationSeen}

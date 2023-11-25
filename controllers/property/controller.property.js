@@ -2,7 +2,7 @@ const { wrapAwait } = require("../../errorHandling");
 const { getApartmentByID, getApartmentWithOwnerByID, getPendingApartment } = require("../../models/services/property/service.apartment");
 const { getHouseByID, getHouseWithOwnerByID, getPendingHouse } = require("../../models/services/property/service.house");
 const { getLandByID, getLandWithOwnerByID, getPendingLand } = require("../../models/services/property/service.land");
-const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyShootSchedule, getPropertyShootSchedule, insertPropertyShootScheduleComment, getPropertyShootScheduleComment, insertPropertyFieldVisitRequest, getPropertyFieldVisitRequest, getPropertyFieldVisitRequestByID, updatePropertyFieldVisitRequest, insertPropertyFieldVisitOTP, getPropertyFieldVisitOTP, insertPropertyFieldVisit, countListingProperty, getRequestProperty, insertRequestedProperty, deleteRequestedProperty, deletePropertyShootSchedule, insertPropertyFieldVisitComment, deletePropertyFieldVisitRequest, getRequestPropertyByID, getSoldProperty, getEveryMonthSoldProperty, getSoldPropertyByPropertyTypeCount, getSoldPropertyByListedForCount, getPropertyByPropertyTypeCount, getPropertyByListedForCount } = require("../../models/services/property/service.property");
+const { getPropertyWithAds, getLatestProperty, getProperty, getPropertyPriorityLocation, getLatestPropertyPriorityLocation, insertPropertyShootSchedule, getPropertyShootSchedule, insertPropertyShootScheduleComment, getPropertyShootScheduleComment, insertPropertyFieldVisitRequest, getPropertyFieldVisitRequest, getPropertyFieldVisitRequestByID, updatePropertyFieldVisitRequest, insertPropertyFieldVisitOTP, getPropertyFieldVisitOTP, insertPropertyFieldVisit, countListingProperty, getRequestProperty, insertRequestedProperty, deleteRequestedProperty, deletePropertyShootSchedule, insertPropertyFieldVisitComment, deletePropertyFieldVisitRequest, getRequestPropertyByID, getSoldProperty, getEveryMonthSoldProperty, getSoldPropertyByPropertyTypeCount, getSoldPropertyByListedForCount, getPropertyByPropertyTypeCount, getPropertyByListedForCount, getPropertyList } = require("../../models/services/property/service.property");
 const { findCustomer, registerCustomer } = require("../../models/services/users/service.customer");
 const { getRandomNumber } = require("../../utils/helperFunction/helper");
 const { handleErrorResponse, handleLimitOffset } = require("../controller.utils");
@@ -102,13 +102,6 @@ const handleGetPropertyPriorityLocation = async function (req, res) {
       condition.order = req.query.order
     }
   }
- 
-
- 
-    
-
-
-
   condition.priceRange = {}
   if (minPrice) {
     condition.priceRange.minPrice = minPrice;
@@ -721,6 +714,22 @@ const handleGetPropertyAnalytics = async function(req,res){
 }
 
 
+const handleGetPropertyList = async function (req,res){
+  const [limit,offset] = handleLimitOffset(req)
+  const property_type = req.query?.propertyType;
+  const condition = {};
+  condition.property_type = property_type;
+
+
+  try {
+    const propertyList = await getPropertyList(condition,limit,offset);
+    return res.status(200).json(propertyList)
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+
 module.exports = {
   handleGetPropertyWithAds,
   handleGetProperty,
@@ -744,5 +753,6 @@ module.exports = {
   handleDeleteRequestedProperty,
   handleGetSoldProperty,
   handleGetPendingProperty,
-  handleGetPropertyAnalytics
+  handleGetPropertyAnalytics,
+  handleGetPropertyList
 }

@@ -17,6 +17,13 @@ router.post("/login",handleAgentLogin);
 router.post("/forgetPassword",handleAgentPasswordReset);
 router.post("/rating",handleAgentRating)
 
+
+router.get("/isLoggedIn",agentVerifyToken,async (req, res) => {
+    return res
+      .status(200)
+      .json({ message: "Agent Logged In", user_id: req.id, role: "agent" });
+  })
+
 router.put("/updateProfile",agentVerifyToken,handleUpdateAgentProfile);
 router.put("/updatePassword",agentVerifyToken,handleUpdateAgentPassword);
 

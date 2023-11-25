@@ -119,6 +119,16 @@ async function getProperty(condition, limit, offset) {
   });
 }
 
+async function getPropertyList(condition,limit, offset) {
+  return await PropertyViewClient.findAll({
+    where: condition,
+    attributes: ['property_id','property_name','property_type','listed_for'],
+    order: [["createdAt", "DESC"]],
+    limit: limit,
+    offset: offset,
+  });
+}
+
 async function countListingProperty(condition){
   return await PropertyViewClient.count({
     where:condition
@@ -456,5 +466,6 @@ module.exports = {
   getSoldProperty,
   getEveryMonthSoldProperty,
   getPropertyByPropertyTypeCount,
-  getPropertyByListedForCount
+  getPropertyByListedForCount,
+  getPropertyList
 };

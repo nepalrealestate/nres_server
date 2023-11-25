@@ -28,6 +28,12 @@ router.post("/logout",handleStaffLogout)
 router.put("/forgetPassword",handleStaffPasswordReset);
 
 
+router.get("/isLoggedIn",staffVerifyToken,async (req, res) => {
+    return res
+      .status(200)
+      .json({ message: "Staff Logged In", user_id: req.id, role: "staff" });
+  })
+
 
 // agent related routes
 router.get("/agent",staffVerifyToken,handleGetAllAgent);

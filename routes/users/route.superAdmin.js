@@ -2,7 +2,7 @@
 const express = require("express");
 
 const {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin, superAdminVerifyToken, superAdminVerifyLogin, superAdminLogout} = require('../../controllers/users/controller.superAdmin');
-const { handleGetCustomerChatList, handleGetSingleCustomerChat } = require("../../controllers/chat/controller.customerChat");
+const { handleGetCustomerChatList, handleGetSingleCustomerChat, handleGetSingleCustomerChatForAdmin } = require("../../controllers/chat/controller.customerChat");
 const { handleGetStaffChatList, handleInsertStaffGroup, handleDeleteStaffFromGroup } = require("../../controllers/chat/controller.staffChat");
 const { handleStaffRegistration, handleGetAllStaff, handleStaffUpdate, handleStaffDelete, handleGetStaffByID } = require("../../controllers/users/controller.staff");
 const { handleGetAllAgent } = require("../../controllers/users/controller.agent");
@@ -14,7 +14,7 @@ const { handleAddLand, handleGetLand, handleUpdateLand, handleDeleteLand, handle
 const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleDeletePropertyFieldVisiteRequest, handleUpdatePropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP, handleGetRequestProperty, handleInsertRequestedProperty, handleDeleteRequestedProperty, handleDeletePropertyShootSchedule, handleGetRequestPropertyByID, handleGetSoldProperty, handleGetPendingProperty, handleGetPropertyAnalytics } = require("../../controllers/property/controller.property");
 const { handleInsertBlog, handleGetBlog, handleGetBlogById, handleDeleteBlog } = require("../../controllers/blog/controller.blog");
 const { handleInsertOrUpdateAds, handleGetAds } = require("../../controllers/ads/controller.ads");
-const { handleGetNotification, handleUpdateNotificationSeen } = require("../../controllers/notification/controller.notification");
+const { handleGetNotification, handleUpdateNotificationSeen, handleUpdateAllNotificationSeen } = require("../../controllers/notification/controller.notification");
 
 const router = express.Router();
 
@@ -30,7 +30,7 @@ router.post("/logout",superAdminLogout)
 //router.post("chat/add")
 
 router.get("/chat/customer/list",handleGetCustomerChatList);
-router.get("/chat/:customer_id",handleGetSingleCustomerChat)
+router.get("/chat/:customer_id",handleGetSingleCustomerChatForAdmin)
 router.get("/chat/staff/list",handleGetStaffChatList);
 router.post("/chat/staff/group/:staffID",handleInsertStaffGroup);
 router.delete("/chat/staff/group/:staffID",handleDeleteStaffFromGroup);
@@ -194,6 +194,7 @@ router.post("/property/land/approved/:property_id",superAdminVerifyToken,handleA
 // notification
 router.get("/notification",superAdminVerifyToken,handleGetNotification);
 router.patch("/notification/:notificationID",superAdminVerifyToken,handleUpdateNotificationSeen)
+router.patch("/notification",superAdminVerifyToken,handleUpdateAllNotificationSeen)
 
 
 
