@@ -1,7 +1,7 @@
 // image upload
 
 const multer = require("multer");
-const fs = require("fs").promises;
+const fs = require("fs");
 const path = require("path");
 const logger = require("../utils/errorLogging/logger");
 const sizeOf = require('image-size');

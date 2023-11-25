@@ -440,12 +440,12 @@ function propertyUtility(property_type) {
 
       const response = await addPropertyCB(updatedProperty); // callback
       // data for notification
-      const data = {};
-      (data.notification = `New ${propertyType} Upload`),
-        (data.url = `/pending${propertyType.charAt(0).toUpperCase() + propertyType.slice(1)
-          }/${response.get().property_id}`);
+      // const data = {};
+      // (data.notification = `New ${propertyType} Upload`),
+      //   (data.url = `/pending${propertyType.charAt(0).toUpperCase() + propertyType.slice(1)
+      //     }/${response.get().property_id}`);
 
-      pushNotification(data);
+      // //pushNotification(data);
 
       return res.status(200).json({ message: `${propertyType} insert` });
 
