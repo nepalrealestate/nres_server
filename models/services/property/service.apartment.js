@@ -172,7 +172,7 @@ async function approveApartment(staff_id,property_id){
        
         const pendingApartment = await PendingApartment.findOne({where:{property_id:property_id},transaction})
 
-        await Apartment.create({...pendingApartment.get(),property_id:newPropertyId, staff_id: staff_id },{transaction});
+        await Apartment.create({...pendingApartment.get(),property_id:newPropertyId, approved_by: staff_id },{transaction});
 
         // Increment property_id in PropertyIdTracker
         const propertyIdTracker = await db.PropertyModel.PropertyIdTracker.findByPk(1, { transaction });

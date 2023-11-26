@@ -138,7 +138,7 @@ async function getPendingLand(condition,limit,offset){
        
         const pendingLand = await PendingLand.findOne({where:{property_id:property_id},transaction})
 
-        await Land.create({...pendingLand.get(),property_id:newPropertyId, staff_id: staff_id },{transaction});
+        await Land.create({...pendingLand.get(),property_id:newPropertyId, approved_by: staff_id },{transaction});
 
          // Increment property_id in PropertyIdTracker
          const propertyIdTracker = await db.PropertyModel.PropertyIdTracker.findByPk(1, { transaction });

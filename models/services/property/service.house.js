@@ -153,8 +153,7 @@ async function deleteHouse(property_id){
        
         const pendingHouse = await PendingHouse.findOne({where:{property_id:property_id},transaction})
 
-        await House.create({...pendingHouse.get(),property_id:newPropertyId, staff_id: staff_id },{transaction});
-
+        await House.create({...pendingHouse.get(),property_id:newPropertyId, approved_by: staff_id },{transaction});
          // Increment property_id in PropertyIdTracker
          const propertyIdTracker = await db.PropertyModel.PropertyIdTracker.findByPk(1, { transaction });
          propertyIdTracker.property_id += 1;
