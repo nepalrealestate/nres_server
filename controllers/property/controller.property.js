@@ -135,6 +135,7 @@ const handleGetPropertyPriorityLocation = async function (req, res) {
 const handleInsertPropertyFieldVisitRequest = async function (req, res) {
 
   let { name, email, contact, property_id, property_type, request_date } = req.body;
+  console.log(req.body)
 
   let user = null;
   if (req.id && req.user_type === 'agent' || req.user_type === 'customer') {
@@ -145,7 +146,8 @@ const handleInsertPropertyFieldVisitRequest = async function (req, res) {
     }
 
     try {
-      const findUser = await findUserByEmail(email);
+      console.log("Email before send",email)
+      const findUser = await findUserByEmail("customer",email);
       if (findUser) {
         user = findUser.dataValues;
       }

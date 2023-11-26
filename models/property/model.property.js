@@ -369,15 +369,17 @@ function propertyFieldVisitRequestModel(sequelize,DataTypes){
         
         console.log(sequelize.models[modelName])
         // check property exists for not with property type and 
+        console.log(sequelize.models[modelName])
         const property = await sequelize.models[modelName].findOne({
           where:{
-            property_id:property_id,
+           property_id:property_id,
             property_type:property_type
           }
         })
+       
 
         if(!property){
-          throw new sequelize.Sequelize.ValidationError(`The provided property_id and property_type do not match any record in property_${property_type} table.`)
+          throw new sequelize.Sequelize.ValidationError(`Invalid Propery ID ${property_id} for ${property_type}`)
           
         }
       }

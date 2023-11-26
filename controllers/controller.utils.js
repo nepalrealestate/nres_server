@@ -719,12 +719,7 @@ function propertyUtility(property_type) {
 
 
 function handleErrorResponse(res, error) {
-  //log error
-  // logger.error(error)
-
-  console.log(error)
-
-
+  
   const errorType = {
     "SequelizeUniqueConstraintError": {
       //"email must be unique":{status:409,message:"Email Already Register"}
@@ -756,7 +751,6 @@ function handleErrorResponse(res, error) {
 
   const validResponse = errorType[error?.name];
 
-  console.log(validResponse)
 
   if (validResponse) {
     // logger.error(`originalError:${error}, responseError: ${validResponse}`);
@@ -770,15 +764,14 @@ function handleErrorResponse(res, error) {
         message: validResponse.message
       })
   }
-  //logger.error(`originalError:${error}, responseError: ${validResponse}`);
-  logger.info("Error")
+ 
   if (error) {
-    logger.error(`Error message: ${error.message}`);
-    logger.error(`Error stack: ${error.stack}`);
+    logger.error(`Error message: ${error}`);
     // Add more properties if needed
   } else {
     logger.error("Undefined error occurred");
   }
+  console.log("error from handle",error)
   
   return res.status(500).json({ message: "Internal Error" })
 
