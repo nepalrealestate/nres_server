@@ -749,21 +749,21 @@ function handleErrorResponse(res, error) {
 
   }
 
-  //const validResponse = errorType[error?.name];
+  const validResponse = errorType[error?.name];
 
 
-  // if (validResponse) {
-  //   // logger.error(`originalError:${error}, responseError: ${validResponse}`);
-  //   logger.log({
-  //     level: validResponse.logLevel,
-  //     message: validResponse.message
-  //   })
-  //   return res.status(validResponse.status).json
-  //     ({
-  //       error: validResponse.error,
-  //       message: validResponse.message
-  //     })
-  // }
+  if (validResponse) {
+    // logger.error(`originalError:${error}, responseError: ${validResponse}`);
+    logger.log({
+      level: "error",
+      message: validResponse.message
+    })
+    return res.status(validResponse.status).json
+      ({
+        error: validResponse.error,
+        message: validResponse.message
+      })
+  }
  
   if (error) {
     logger.error(error);
@@ -772,6 +772,8 @@ function handleErrorResponse(res, error) {
     logger.error("Undefined error occurred");
   }
   console.log("error from handle",JSON.stringify(error))
+  console.log("error from handle Normal Form",error)
+
   
   return res.status(500).json({ message: "Internal Error" })
 
