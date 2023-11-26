@@ -6,8 +6,8 @@ const { combine, timestamp, label, printf } = format;
 
 const myFormat = printf(({ level, message, timestamp }) => {
   if (typeof message === 'object') {
-    // If message is an object, stringify it
-    return `${timestamp} ${level}: ${JSON.stringify(message)}`;
+    // If message is an object, 
+    return `${timestamp} ${level}: ${message}`;
   }
   // If message is a string, use it as is
   return `${timestamp} ${level}: ${message}`;
