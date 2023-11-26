@@ -771,7 +771,7 @@ function handleErrorResponse(res, error) {
       })
   }
   //logger.error(`originalError:${error}, responseError: ${validResponse}`);
-  logger.error("Error")
+  logger.info("Error")
   if (error) {
     logger.error(`Error message: ${error.message}`);
     logger.error(`Error stack: ${error.stack}`);

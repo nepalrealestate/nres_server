@@ -88,6 +88,9 @@ app.use("/api/blog", blogRouter);
 
 socketServer.chat(chatServer);
 
+console.log('Logging levels:', logger.levels);
+console.log('Logging level configured:', logger.level);
+
 if (process.env.NODE_ENV == "Production") {
   server.listen(() => {
     console.log("Server Started");

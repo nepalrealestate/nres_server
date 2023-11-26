@@ -1,62 +1,23 @@
-const winston = require("winston");
-const fs = require('fs');
 
-const filePath = 'Error/DB/dbinit.log';
-
-// Check if the file exists before writing
-if (fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, ''); // This will clear the contents of the file
-}
+const { createLogger, format, transports } = require('winston');
+const { combine, timestamp, label, printf } = format;
 
 
 
+const myFormat = printf(({ level, message, timestamp }) => {
+  return `${timestamp} ${level}: ${message}`;
+});
 
-const customLevels = {
-    levels: {
-      error: 0,
-      warn: 1,
-      info: 2,
-      db: 3,
-      debug: 4,
-      dbinit: 5,
-    },
-    colors: {
-      error: 'red',
-      warn: 'yellow',
-      info: 'green',
-      db: 'blue',
-      debug: 'gray',
-      dbinit: 'cyan',
-    },
-  };
-  
-winston.addColors(customLevels.colors)
-
-const jsonformat = winston.format.printf(({ level, message, timestamp }) => {
-    return `${timestamp} [${level}]: ${message}`;
-})
-
-const logger = winston.createLogger({
-
-  
-
-    levels:customLevels.levels,
-    level:'debug',
-
-    format:winston.format.combine(
-        jsonformat,
-        winston.format.timestamp(),
-    
-    
+const logger = createLogger({
+    level:"debug",
+    format: combine(
+      timestamp(),
+      myFormat
     ),
+    transports:[ 
+        new transports.File({filename:'Error/error.log',level:'error'}),
+        new transports.File({filename:'Error/info.log',level:'info'}),
     
-    transports:[
-        new winston.transports.File({filename:'Error/error.log',level:'error'}),
-        new winston.transports.File({filename:'Error/httpError.log',level:'http'}),
-        new winston.transports.File({filename:'Error/info.log',level:'info'}),
-        new winston.transports.File({filename:'Error/warn.log',level:'warn'}),
-        new winston.transports.File({filename:'Error/DB/dbinit.log',level:'dbinit'}),
-        new winston.transports.File({filename:'Error/combined.log',level:'debug'})
      ]
     
 })

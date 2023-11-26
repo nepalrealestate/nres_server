@@ -16,7 +16,8 @@ const sequelize = new Sequelize(database,userName,password,{
     host:host,
     port:port,
     dialect:'mysql',
-    logging: (msg)=>logger.log('dbinit',msg)
+    //logging: (msg)=>logger.log('info',msg)
+    logging:false
 })
 
 
