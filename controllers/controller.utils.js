@@ -749,24 +749,24 @@ function handleErrorResponse(res, error) {
 
   }
 
-  const validResponse = errorType[error?.name];
+  //const validResponse = errorType[error?.name];
 
 
-  if (validResponse) {
-    // logger.error(`originalError:${error}, responseError: ${validResponse}`);
-    logger.log({
-      level: validResponse.logLevel,
-      message: validResponse.message
-    })
-    return res.status(validResponse.status).json
-      ({
-        error: validResponse.error,
-        message: validResponse.message
-      })
-  }
+  // if (validResponse) {
+  //   // logger.error(`originalError:${error}, responseError: ${validResponse}`);
+  //   logger.log({
+  //     level: validResponse.logLevel,
+  //     message: validResponse.message
+  //   })
+  //   return res.status(validResponse.status).json
+  //     ({
+  //       error: validResponse.error,
+  //       message: validResponse.message
+  //     })
+  // }
  
   if (error) {
-    logger.error(`Error message: ${JSON.stringify(error)}`);
+    logger.error(error);
     // Add more properties if needed
   } else {
     logger.error("Undefined error occurred");
