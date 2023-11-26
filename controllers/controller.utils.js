@@ -766,12 +766,12 @@ function handleErrorResponse(res, error) {
   }
  
   if (error) {
-    logger.error(`Error message: ${error}`);
+    logger.error(`Error message: ${JSON.stringify(error)}`);
     // Add more properties if needed
   } else {
     logger.error("Undefined error occurred");
   }
-  console.log("error from handle",error)
+  console.log("error from handle",JSON.stringify(error))
   
   return res.status(500).json({ message: "Internal Error" })
 
