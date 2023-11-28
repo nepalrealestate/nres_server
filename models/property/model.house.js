@@ -73,7 +73,7 @@ function houseModel (sequelize,DataTypes){
       type:DataTypes.DECIMAL(9,6)
     },
     property_area:{
-      type:DataTypes.FLOAT
+      type:DataTypes.STRING
     },
     road_size:{
       type:DataTypes.FLOAT
@@ -106,7 +106,7 @@ function houseModel (sequelize,DataTypes){
     property_image:{
       type:DataTypes.JSON
     },
-    approved_by:{
+    approved_by_id:{
       type:DataTypes.INTEGER,
        references:{
          model:'user_adminAccount',
@@ -122,6 +122,13 @@ function houseModel (sequelize,DataTypes){
         key:'user_id'
       },
       onDelete:'CASCADE'
+    },
+    listing_type:{
+      type:DataTypes.ENUM("normal","top","premium"),
+      defaultValue:"normal"
+    },
+    status:{
+      type:DataTypes.ENUM("pending","approved","sold")
     }
   }
   ,{
@@ -130,145 +137,6 @@ function houseModel (sequelize,DataTypes){
   )
 }
 
-
-function pendingHouseModel (sequelize,DataTypes){
-  return PendingHouse = sequelize.define('property_pending_house',{
-    property_id :{
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      unique:true,
-      autoIncrement:true,
-      primaryKey:true,
-    },
-    property_type:{
-      type:DataTypes.ENUM('house'),
-      defaultValue:"house"
-    },
-    property_for :{
-      type:DataTypes.ENUM('commercial','residential','office')
-    },
-    property_name : {
-      type:DataTypes.STRING,
-      allowNull:false,
-      validate:{
-        notEmpty: true, 
-      }
-    },
-    listed_for :{
-      type:DataTypes.ENUM('sale','rent')
-    },
-   
-    property_age:{
-      type:DataTypes.INTEGER
-    },
-    floor:{
-      type:DataTypes.FLOAT
-    },
-    bedrooms:{
-      type:DataTypes.INTEGER
-    },
-    kitchen:{
-      type:DataTypes.INTEGER
-    },
-    bathrooms_attached:{
-      type:DataTypes.INTEGER
-    },
-    bathrooms_common:{
-      type:DataTypes.INTEGER
-    },
-    facing:{
-      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
-    },
-    province:{
-      type:DataTypes.STRING
-    },
-    zone:{
-      type:DataTypes.STRING
-    },
-    district:{
-      type:DataTypes.STRING
-    },
-    municipality:{
-      type:DataTypes.STRING
-    },
-    area_name:{
-      type:DataTypes.STRING
-    } ,     
-    ward:{
-      type:DataTypes.INTEGER
-    },
-    landmark:{
-      type:DataTypes.STRING
-    },
-    latitude:{
-      type:DataTypes.DECIMAL(9,6)
-    },
-    longitude:{
-      type:DataTypes.DECIMAL(9,6)
-    },
-    property_area:{
-      type:DataTypes.FLOAT
-    },
-    road_size:{
-      type:DataTypes.FLOAT
-    },
-    price:{
-      type:DataTypes.DECIMAL(12,2),
-      allowNull:false
-    },
-    price_type:{
-      type:DataTypes.ENUM('fixed','negotiable')
-    },
-    furnish:{
-      type:DataTypes.ENUM('non-furnished','furnished','semi-furnished')
-    },
-    parking_bike:{
-      type:DataTypes.INTEGER
-    },
-    parking_car:{
-      type:DataTypes.INTEGER
-    },
-    amenities:{
-      type:DataTypes.JSON
-    },
-    description:{
-      type:DataTypes.TEXT
-    },
-    social_media:{
-      type:DataTypes.JSON
-    },
-    property_image:{
-      type:DataTypes.JSON
-    },
-    approved_by:{
-      type:DataTypes.INTEGER,
-      default:null,
-       references:{
-         model:'user_adminAccount',
-         key :'admin_id'
-       },
-       onDelete :'SET NULL'
-      
-    },
-    owner_id:{
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      references:{
-        model:'user_userAccount',
-        key:'user_id'
-      },
-      onDelete:'CASCADE'
-    }
-
-
-
-  }
-  ,{
-    freezeTableName: true,
-  })
-}
-
-  
 
 function houseAdsModel (sequelize,DataTypes){
   return HouseAds = sequelize.define('property_house_ads',{
@@ -479,150 +347,11 @@ function houseViewsCountModel(sequelize,DataTypes){
 }
 
 
-async function houseSoldModel(sequelize,DataTypes){
-  return HouseSold = sequelize.define('property_house_sold',{
-    property_id :{
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      unique:true,
-      primaryKey:true,
-    },
-    property_type:{
-      type:DataTypes.ENUM('house'),
-      defaultValue:"house"
-    },
-    property_for :{
-      type:DataTypes.ENUM('commercial','residential','office')
-    },
-    property_name : {
-      type:DataTypes.STRING,
-      allowNull:false,
-      validate:{
-        notEmpty: true, 
-      }
-    },
-    listed_for :{
-      type:DataTypes.ENUM('sale','rent')
-    },
-   
-    property_age:{
-      type:DataTypes.INTEGER
-    },
-    floor:{
-      type:DataTypes.FLOAT
-    },
-    bedrooms:{
-      type:DataTypes.INTEGER
-    },
-    kitchen:{
-      type:DataTypes.INTEGER
-    },
-    bathrooms_attached:{
-      type:DataTypes.INTEGER
-    },
-    bathrooms_common:{
-      type:DataTypes.INTEGER
-    },
-    facing:{
-      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
-    },
-    province:{
-      type:DataTypes.STRING
-    },
-  
-    district:{
-      type:DataTypes.STRING
-    },
-    municipality:{
-      type:DataTypes.STRING
-    },
-    area_name:{
-      type:DataTypes.STRING
-    } ,     
-    ward:{
-      type:DataTypes.INTEGER
-    },
-    landmark:{
-      type:DataTypes.STRING
-    },
-    latitude:{
-      type:DataTypes.DECIMAL(9,6)
-    },
-    longitude:{
-      type:DataTypes.DECIMAL(9,6)
-    },
-    property_area:{
-      type:DataTypes.FLOAT
-    },
-    road_size:{
-      type:DataTypes.FLOAT
-    },
-    price:{
-      type:DataTypes.DECIMAL(12,2),
-      allowNull:false
-    },
-    price_type:{
-      type:DataTypes.ENUM('fixed','negotiable')
-    },
-    furnish:{
-      type:DataTypes.ENUM('non-furnished','furnished','semi-furnished')
-    },
-    parking_bike:{
-      type:DataTypes.INTEGER
-    },
-    parking_car:{
-      type:DataTypes.INTEGER
-    },
-    amenities:{
-      type:DataTypes.JSON
-    },
-    description:{
-      type:DataTypes.TEXT
-    },
-    social_media:{
-      type:DataTypes.JSON
-    },
-    property_image:{
-      type:DataTypes.JSON
-    },
-    approved_by:{
-      type:DataTypes.INTEGER,
-       references:{
-         model:'user_adminAccount',
-         key :'admin_id'
-       },
-       onDelete :'SET NULL'
-      
-    },
-    owner_id:{
-      type:DataTypes.INTEGER,
-      references:{
-        model:'user_userAccount',
-        key:'user_id'
-      },
-      onDelete:'SET NULL'
-    }
-  }
-  ,{
-    freezeTableName: true,
-  }
-  )
-}
-
-
-
-
-
-
 module.exports = {
   houseModel,
-  pendingHouseModel,
   houseCommentModel,
   houseFeedbackModel,
   houseAdsModel,
   houseViewsModel,
-  houseViewsCountModel,
-  houseSoldModel
-  
-  
+  houseViewsCountModel, 
 };

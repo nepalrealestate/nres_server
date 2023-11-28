@@ -55,6 +55,9 @@ async function getPropertyWithAds(condition, limit, offset) {
   if (condition.listed_for) {
     whereConditions.listed_for = condition.listed_for
   }
+  if(condition.status){
+    whereConditions.status = condition.status
+  }
 
   return await PropertyAdminView.findAll({
     where: whereConditions,

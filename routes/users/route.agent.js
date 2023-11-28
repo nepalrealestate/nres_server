@@ -1,10 +1,11 @@
 const express = require("express");
 const { handleAgentRegistration,handleGetAgent,handleAgentLogin, handleAgentPasswordReset, handleAgentRating, handleUpdateProfile, handleUpdateAgentProfile, handleUpdateAgentPassword, agentVerifyToken } = require("../../controllers/users/controller.agent");
 
-const {  handleAddPendingApartment } = require("../../controllers/property/controller.apartment");
-const { handleAddPendingHouse, handleGetHouse } = require("../../controllers/property/controller.house");
-const { handleAddPendingLand, handleGetLand } = require("../../controllers/property/controller.land");
+const { handleAddApartment } = require("../../controllers/property/controller.apartment");
+const { handleGetHouse, handleAddHouse } = require("../../controllers/property/controller.house");
+const { handleGetLand, handleAddLand } = require("../../controllers/property/controller.land");
 const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty, handleGetProperty, handleGetPropertyPriorityLocation } = require("../../controllers/property/controller.property");
+const { checkAgentPropertyLimitation } = require("../../middlewares/property/middleware.property");
 
 const router  = express.Router();
 
@@ -31,13 +32,13 @@ router.put("/updatePassword",agentVerifyToken,handleUpdateAgentPassword);
 // property agent
 router.get("/property",agentVerifyToken,handleGetPropertyPriorityLocation)
 
-router.post("/property/house",agentVerifyToken,handleAddPendingHouse);
+router.post("/property/house",agentVerifyToken,checkAgentPropertyLimitation,handleAddHouse);
 router.get("/property/house",agentVerifyToken,handleGetHouse);
 
-router.post("/property/land",agentVerifyToken,handleAddPendingLand)
+router.post("/property/land",agentVerifyToken,checkAgentPropertyLimitation,handleAddLand)
 router.get("/property/land",agentVerifyToken,handleGetLand);
 
-router.post("/property/apartment",agentVerifyToken,handleAddPendingApartment);
+router.post("/property/apartment",agentVerifyToken,checkAgentPropertyLimitation,handleAddApartment);
 router.get("/property/apartment",agentVerifyToken,handleGetAgent);
 
 

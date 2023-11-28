@@ -66,7 +66,7 @@ function apartmentModel (sequelize,DataTypes){
         type:DataTypes.DECIMAL(9,6)
       },
       property_area:{
-        type:DataTypes.FLOAT
+        type:DataTypes.STRING
       },
       road_size:{
         type:DataTypes.FLOAT
@@ -116,6 +116,13 @@ function apartmentModel (sequelize,DataTypes){
           key:'user_id'
         },
         onDelete:'CASCADE'
+      },
+      listing_type:{
+        type:DataTypes.ENUM("free","top","premium"),
+        defaultValue:"free"
+      },
+      status:{
+        type:DataTypes.ENUM("pending","approved","sold")
       }
     },{
       freezeTableName: true,
@@ -124,127 +131,6 @@ function apartmentModel (sequelize,DataTypes){
     )
   }
   
-
-function pendingApartmentModel (sequelize,DataTypes){
-
-  return PendingApartment = sequelize.define('property_pending_apartment',{
-    property_id :{
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      unique:true,
-      autoIncrement:true,
-      primaryKey:true,
-    },
-    property_type:{
-      type:DataTypes.ENUM('apartment'),
-      defaultValue:"apartment"
-    },
-    property_for :{
-      type:DataTypes.ENUM('commercial','residential','office')
-    },
-    property_name : {
-      type:DataTypes.STRING,
-      allowNull:false,
-      validate:{
-        notEmpty: true, 
-      }
-    },
-    listed_for :{
-      type:DataTypes.ENUM('sale','rent')
-    },
-   
-    property_age:{
-      type:DataTypes.INTEGER
-    },
-    floor:{
-      type:DataTypes.FLOAT
-    },
-   bhk:{
-      type:DataTypes.INTEGER
-   }, 
-    facing:{
-      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
-    },
-    province:{
-      type:DataTypes.STRING
-    },
-
-    district:{
-      type:DataTypes.STRING
-    },
-    municipality:{
-      type:DataTypes.STRING
-    },
-    area_name:{
-      type:DataTypes.STRING
-    } ,     
-    ward:{
-      type:DataTypes.INTEGER
-    },
-    landmark:{
-      type:DataTypes.STRING
-    },
-    latitude:{
-      type:DataTypes.DECIMAL(9,6)
-    },
-    longitude:{
-      type:DataTypes.DECIMAL(9,6)
-    },
-    property_area:{
-      type:DataTypes.FLOAT
-    },
-    road_size:{
-      type:DataTypes.FLOAT
-    },
-    price_type:{
-      type:DataTypes.ENUM('fixed','negotiable')
-    },
-    furnish:{
-      type:DataTypes.ENUM('non-furnished','furnished','semi-furnished')
-    },
-    parking_bike:{
-      type:DataTypes.INTEGER
-    },
-    parking_car:{
-      type:DataTypes.INTEGER
-    },
-    amenities:{
-      type:DataTypes.JSON
-    },
-    description:{
-      type:DataTypes.TEXT
-    },
-    social_media:{
-      type:DataTypes.JSON
-    },
-    property_image:{
-      type:DataTypes.JSON
-    },
-    approved_by:{
-      type:DataTypes.INTEGER,
-      default:null,
-       references:{
-         model:'user_adminAccount',
-         key :'admin_id'
-       },
-       onDelete :'SET NULL'
-      
-    },
-    owner_id:{
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      references:{
-        model:'user_userAccount',
-        key:'user_id'
-      },
-      onDelete:'CASCADE'
-    }
-  },{
-    freezeTableName: true,
-  })
-
-}
-
  function apartmentAdsModel(sequelize,DataTypes){
   return ApartmentAds = sequelize.define('property_apartment_ads',{
     id:{
@@ -453,212 +339,8 @@ function apartmentViewsCountModel(sequelize,DataTypes){
 }
 
 
-function requestedApartmentModel(sequelize,DataTypes){
-  return RequestedApartment = sequelize.define('property_requested_apartment',{
-    property_type:{
-      type:DataTypes.ENUM('apartment'),
-      defaultValue:'apartment'
-    },
-    property_for :{
-      type:DataTypes.ENUM('commercial','residential','office')
-    },
-    listed_for:{
-      type:DataTypes.ENUM('sale','rent')
-    },
-    property_area:{
-      type:DataTypes.FLOAT
-    },
-    floor:{
-      type:DataTypes.FLOAT
-    },
-   bhk:{
-      type:DataTypes.INTEGER
-   }, 
-    facing:{
-      type:DataTypes.ENUM('east','west','north','south','east-north','east-south','west-north','west-south')
-    },
-    road_size:{
-      type:DataTypes.FLOAT
-    },
-   minPrice:{
-    type:DataTypes.DECIMAL(12,2),
-    allowNull:false
-   },
-   maxPrice:{
-    type:DataTypes.DECIMAL(12,2),
-    allowNull:false
-   },
-    
-  furnish:{
-    type:DataTypes.ENUM('non-furnished','furnished','semi-furnished')
-  },
-  description:{
-    type:DataTypes.TEXT
-  },
-  needed:{
-    type: DataTypes.ENUM(
-      'urgent',
-      'within a month',
-      'within 3 months',
-      'within a year',
-      'after a year'
-    ),
-    
-  },
-    province:{
-      type:DataTypes.STRING
-    },
-    district:{
-      type:DataTypes.STRING
-    },
-    municipality:{
-      type:DataTypes.STRING
-    },
-    ward:{
-      type:DataTypes.INTEGER
-    },
-    area_name:{
-      type:DataTypes.STRING
-    },
-    landmark:{
-      type:DataTypes.STRING
-    },
-    user_id:{
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      references:{
-        model:'user_userAccount',
-        key:'user_id'
-      },
-      onDelete:'CASCADE'
-    },
-  },{freezeTableName:true})
-}
 
 
-
-function apartmentSoldModel (sequelize,DataTypes){
-  return ApartmentSold = sequelize.define('property_apartment_sold',{
-    property_id :{
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      unique:true,
-      primaryKey:true,
-    
-    },
-    property_type:{
-      type:DataTypes.ENUM('apartment'),
-      defaultValue:"apartment"
-    },
-    property_for :{
-      type:DataTypes.ENUM('commercial','residential','office')
-    },
-    property_name : {
-      type:DataTypes.STRING,
-      allowNull:false,
-      validate:{
-        notEmpty: true, 
-      }
-    },
-    listed_for :{
-      type:DataTypes.ENUM('sale','rent')
-    },
-   
-    property_age:{
-      type:DataTypes.INTEGER
-    },
-    floor:{
-      type:DataTypes.FLOAT
-    },
-   bhk:{
-      type:DataTypes.INTEGER
-   }, 
-    facing:{
-      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
-    },
-    province:{
-      type:DataTypes.STRING
-    },
-    district:{
-      type:DataTypes.STRING
-    },
-    municipality:{
-      type:DataTypes.STRING
-    },
-    area_name:{
-      type:DataTypes.STRING
-    } ,     
-    ward:{
-      type:DataTypes.INTEGER
-    },
-    landmark:{
-      type:DataTypes.STRING
-    },
-    latitude:{
-      type:DataTypes.DECIMAL(9,6)
-    },
-    longitude:{
-      type:DataTypes.DECIMAL(9,6)
-    },
-    property_area:{
-      type:DataTypes.FLOAT
-    },
-    road_size:{
-      type:DataTypes.FLOAT
-    },
-    price:{
-      type:DataTypes.DECIMAL(12,2),
-      allowNull:false
-    },
-    price_type:{
-      type:DataTypes.ENUM('fixed','negotiable')
-    },
-    furnish:{
-      type:DataTypes.ENUM('non-furnished','furnished','semi-furnished')
-    },
-    parking_bike:{
-      type:DataTypes.INTEGER
-    },
-    parking_car:{
-      type:DataTypes.INTEGER
-    },
-    amenities:{
-      type:DataTypes.JSON
-    },
-    description:{
-      type:DataTypes.TEXT
-    },
-    social_media:{
-      type:DataTypes.JSON
-    },
-    property_image:{
-      type:DataTypes.JSON
-    },
-    approved_by:{
-      type:DataTypes.INTEGER,
-      
-       references:{
-         model:'user_adminAccount',
-         key :'admin_id'
-       },
-       onDelete:'SET NULL'
-      
-    },
-    owner_id:{
-      type:DataTypes.INTEGER,
-      references:{
-        model:'user_userAccount',
-        key:'user_id'
-      },
-      onDelete:'SET NULL'
-    }
-  },{
-    freezeTableName: true,
-   
-  }
-  )
-
-}
 
 
 
@@ -670,11 +352,6 @@ module.exports = {
     apartmentAdsModel,
     apartmentFeedbackModel,
     apartmentCommentModel,
-    pendingApartmentModel,
     apartmentViewsModel,
     apartmentViewsCountModel,
-    requestedApartmentModel,
-    apartmentSoldModel
-    
-
 };

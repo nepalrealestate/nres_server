@@ -10,7 +10,7 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const {Utility, propertyUtility, utility, handleErrorResponse} = require("../controller.utils");
-const { insertPendingApartment, getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment, updateApartment, deleteApartment, insertApartmentComment, getApartmentComment, soldApartment, getSoldApartmentByID, deletePendingApartment } = require("../../models/services/property/service.apartment");
+const { getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment, updateApartment, deleteApartment, insertApartmentComment, getApartmentComment, soldApartment, getSoldApartmentByID, deletePendingApartment } = require("../../models/services/property/service.apartment");
 const { wrapAwait } = require("../../errorHandling");
 const { apartmentSchema } = require("../validationSchema");
 const { findCustomer } = require("../../models/services/users/service.customer");
@@ -36,16 +36,6 @@ const handleAddApartment = async (req, res) => {
 };
 
 
-const handleAddPendingApartment = async (req,res)=>{
-  upload(req, res, async function (err) {
-    utils.handleMulterError(req,res,err,addPendingApartment,true);
-  });
-  
-  async function addPendingApartment (){
-    property.handleAddProperty(req,res,insertPendingApartment);
-   // property.handleAddProperty(req,res,insertPendingHouse);
-  }
-}
 
 const handleUpdateApartment = async (req,res)=>{
 
@@ -96,7 +86,7 @@ const handleGetPendingApartment = async (req, res) => {
  
 
  
-    utils.getSearchData(req,res,getPendingApartment)
+    return property.handleGetProperty(req,res,getPendingApartment)
 
 };
 
@@ -273,5 +263,4 @@ module.exports = {
   handleGetSoldApartmentByID,
   handleGetPendingApartmentByID,
   handleDeletePendingApartment,
-  handleAddPendingApartment
 };

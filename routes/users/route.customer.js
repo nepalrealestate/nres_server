@@ -1,11 +1,12 @@
 const express = require("express");
 const { handleInsertAgentRating, handleAgentRating } = require("../../controllers/users/controller.agent");
 const { handleCustomerRegistration, handleCustomerLogin, handleGetCustomer, customerVerifyToken, handleGetCustomerProfile, handleCustomerPasswordReset } = require("../../controllers/users/controller.customer");
-const { handleAddHouse, handleGetHouse, handleAddPendingHouse } = require("../../controllers/property/controller.house");
-const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty, handleGetPropertyPriorityLocation } = require("../../controllers/property/controller.property");
-const { handleAddLand, handleGetLand, handleAddPendingLand } = require("../../controllers/property/controller.land");
-const { handleAddApartment, handleGetApartment, handleAddPendingApartment } = require("../../controllers/property/controller.apartment");
+const { handleAddHouse, handleGetHouse } = require("../../controllers/property/controller.house");
+const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty, handleGetPropertyPriorityLocation, handleInsertPropertyFieldVisitRequest } = require("../../controllers/property/controller.property");
+const { handleAddLand, handleGetLand } = require("../../controllers/property/controller.land");
+const { handleAddApartment, handleGetApartment } = require("../../controllers/property/controller.apartment");
 const { handleGetSingleCustomerChat } = require("../../controllers/chat/controller.customerChat");
+const { checkCustomerPropertyLimitation } = require("../../middlewares/property/middleware.property");
 
 
 const router = express.Router();
@@ -31,13 +32,13 @@ router.post("/agentRating",customerVerifyToken,handleInsertAgentRating);
 router.get("/property",customerVerifyToken,handleGetPropertyPriorityLocation)
 
 // property
-router.post("/property/house",customerVerifyToken,handleAddPendingHouse);
+router.post("/property/house",customerVerifyToken,checkCustomerPropertyLimitation,handleAddHouse);
 router.get("/property/house",customerVerifyToken,handleGetHouse);
 
-router.post("/property/land",customerVerifyToken,handleAddPendingLand)
+router.post("/property/land",customerVerifyToken,checkCustomerPropertyLimitation,handleAddLand)
 router.get("/property/land",customerVerifyToken,handleGetLand);
 
-router.post("/property/apartment",customerVerifyToken,handleAddPendingApartment);
+router.post("/property/apartment",customerVerifyToken,checkCustomerPropertyLimitation,handleAddApartment);
 router.get("/property/apartment",customerVerifyToken,handleGetApartment);
 //property Count 
 router.get("/property/count",customerVerifyToken,handleCountLisitingProperty)
@@ -62,6 +63,9 @@ router.post("/rating",customerVerifyToken,handleAgentRating)
 router.get("/previousChat",customerVerifyToken,handleGetSingleCustomerChat)
 
 
+
+// property field visit Request - 
+router.post("/property/fieldVisit",customerVerifyToken,handleInsertPropertyFieldVisitRequest)
 
 
 

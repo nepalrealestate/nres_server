@@ -6,7 +6,7 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const {Utility, utility, propertyUtility, handleErrorResponse} = require("../controller.utils");
-const { insertPendingLand, getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand, insertLand, getRequestedLand, updateLand, deleteLand, soldLand, getSoldLandByID, deletePendingLand } = require("../../models/services/property/service.land");
+const { getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand, insertLand, getRequestedLand, updateLand, deleteLand, soldLand, getSoldLandByID, deletePendingLand } = require("../../models/services/property/service.land");
 //const utils = new Utility();
 const utils = utility();
 const property = propertyUtility("land");
@@ -27,16 +27,16 @@ const handleAddLand = async (req, res) => {
     
 };
 
-const handleAddPendingLand = async (req,res)=>{
-  upload(req, res, async function (err) {
-    utils.handleMulterError(req,res,err,addPendingLand,true);
-  });
+// const handleAddPendingLand = async (req,res)=>{
+//   upload(req, res, async function (err) {
+//     utils.handleMulterError(req,res,err,addPendingLand,true);
+//   });
   
-  async function addPendingLand (){
-    property.handleAddProperty(req,res,insertPendingLand);
-   // property.handleAddProperty(req,res,insertPendingHouse);
-  }
-}
+//   async function addPendingLand (){
+//     property.handleAddProperty(req,res,insertPendingLand);
+//    // property.handleAddProperty(req,res,insertPendingHouse);
+//   }
+// }
 
 const handleUpdateLand = async (req,res)=>{
 
@@ -220,6 +220,4 @@ module.exports = {
   handleGetSoldLandByID,
   handleGetPendingLandByID,
   handleDeletePendingLand,
-  handleAddPendingLand
-  
 };

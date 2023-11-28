@@ -25,6 +25,8 @@ db.UserModel = {
     //AgentInfo :require('./users/model.agent').agentInfoModel(sequelize,DataTypes),
 
     User : require('./users/model.user').userAccountModel(sequelize,DataTypes),
+    CustomerProfile:require('./users/model.user').customerProfileModel(sequelize,DataTypes),
+    AgentProfile:require('./users/model.user').agentProfileModel(sequelize,DataTypes),
     AgentRating: require('./users/model.user').agentRatingModel(sequelize,DataTypes),
     Admin : require('./users/model.admin').adminAccountModel(sequelize,DataTypes),
     StaffProfile : require('./users/model.admin').staffProfileModel(sequelize,DataTypes)
@@ -46,12 +48,6 @@ db.PropertyModel = {
     House: require('./property/model.house').houseModel(sequelize, DataTypes),
     Apartment:require('./property/model.apartment').apartmentModel(sequelize,DataTypes),
     Land:require('./property/model.land').landModel(sequelize,DataTypes),
-
-   
-    // pending property table
-    PendingApartment:require('./property/model.apartment').pendingApartmentModel(sequelize,DataTypes),
-    PendingHouse:require('./property/model.house').pendingHouseModel(sequelize,DataTypes),
-    PendingLand:require('./property/model.land').pendingLandModel(sequelize,DataTypes),
 
     // property ads
     ApartmentAds: require('./property/model.apartment').apartmentAdsModel(sequelize,DataTypes),
@@ -94,17 +90,6 @@ db.PropertyModel = {
     PropertyFieldVisitOTP : require('./property/model.property').propertyFieldVisitOTPModel(sequelize,DataTypes),
     PropertyFieldVisit : require('./property/model.property').propertyFieldVisit(sequelize,DataTypes),
 
-
-
-    // sold property
-    ApartmentSold : require('../models/property/model.apartment').apartmentSoldModel(sequelize,DataTypes),
-    
-    HouseSold : require('../models/property/model.house').houseSoldModel(sequelize,DataTypes),
-
-    LandSold : require('../models/property/model.land').landSoldModel(sequelize,DataTypes),
-
-
-
 };
 
 
@@ -133,16 +118,16 @@ db.AdsModel = {
     Ads:require('./ads/model.ads').adsModel(sequelize,DataTypes)
 }
 
+db.ContactModel = {
+    Contact:require('./contact/model.contact').contactModel(sequelize,DataTypes)
+}
+
 
 // views 
 db.Views={
 
     PropertyViewAdmin:require("./property/model.property").propertyViewAdminModel(sequelize,DataTypes),
     PropertyViewClient :require("./property/model.property").propertyViewClientModel(sequelize,DataTypes),
-
-    SoldPropertyView : require("./property/model.property").soldPropertyViewModel(sequelize,DataTypes),
-   
-
 }
 
 
@@ -178,6 +163,13 @@ db.Views={
 // db.PropertyModel.House.belongsTo(db.UserModel.Customer,{foreignKey:'customer_id'});
 // db.UserModel.Customer.hasMany(db.PropertyModel.House,{foreignKey:'customer_id'});
 
+// user Account with customer profile and agent profile
+db.UserModel.User.hasOne(db.UserModel.CustomerProfile,{foreignKey:'user_id'});
+db.UserModel.CustomerProfile.belongsTo(db.UserModel.User,{foreignKey:'user_id'});
+
+db.UserModel.User.hasOne(db.UserModel.AgentProfile,{foreignKey:'user_id'});
+db.UserModel.AgentProfile.belongsTo(db.UserModel.User,{foreignKey:'user_id'});
+
 
 
 // user and admin relation with property table;
@@ -192,15 +184,6 @@ db.PropertyModel.Apartment.belongsTo(db.UserModel.User,{as:'owner',foreignKey:'o
 db.UserModel.User.hasMany(db.PropertyModel.Land,{foreignKey:'owner_id'});
 db.PropertyModel.Land.belongsTo(db.UserModel.User,{as:'owner',foreignKey:'owner_id'});
 
-//user relation with pending property
-db.UserModel.User.hasMany(db.PropertyModel.PendingApartment,{foreignKey:'owner_id'});
-db.PropertyModel.PendingApartment.belongsTo(db.UserModel.User,{as:'owner',foreignKey:'owner_id'});
-
-db.UserModel.User.hasMany(db.PropertyModel.PendingHouse,{foreignKey:'owner_id'});
-db.PropertyModel.PendingHouse.belongsTo(db.UserModel.User,{as:'owner',foreignKey:'owner_id'});
-
-db.UserModel.User.hasMany(db.PropertyModel.PendingLand,{foreignKey:'owner_id'});
-db.PropertyModel.PendingLand.belongsTo(db.UserModel.User,{as:'owner',foreignKey:'owner_id'});
 
 // user relation with requested property
 db.UserModel.User.hasMany(db.PropertyModel.RequestedProperty,{foreignKey:'user_id'});

@@ -32,16 +32,26 @@ function userAccountModel(sequelize,DataTypes){
               notEmpty: true,
             },
         },
-          password: {
+        password: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
               notEmpty: true,
             },
-          },
+        },
 
     },{
-        freezeTableName:true
+        freezeTableName:true,
+        hooks: {
+          afterCreate: async (user, options) => {
+            // Check user_type and create corresponding profile
+            if (user.user_type === 'customer') {
+              await sequelize.models.user_customerProfile.create({ user_id: user.user_id });
+            } else if (user.user_type === 'agent') {
+              await sequelize.models.user_agentProfile.create({ user_id: user.user_id });
+            }
+          },
+        }
     })
 }
 
@@ -63,9 +73,7 @@ function customerProfileModel(sequelize,DataTypes){
     },
     province:{
       type:DataTypes.STRING,
-      validate:{
-        notEmpty:true
-      }
+      
     },
     district:{
       type:DataTypes.STRING,
@@ -78,9 +86,13 @@ function customerProfileModel(sequelize,DataTypes){
     },
     area_name:{
       type:DataTypes.STRING
-    }
-    
-    
+    },
+    property_limit:{
+      type:DataTypes.INTEGER,
+      defaultValue:3
+    },
+  },{
+    freezeTableName:true
   })
 }
 
@@ -97,25 +109,16 @@ function agentProfileModel(sequelize,DataTypes){
     },
     identification_type:{
       type:DataTypes.ENUM('citizenship','passport','driving_license'),
-      allowNull:false,
-      validate:{
-        notEmpty:true
-      }
+      notEmpty:true
     },
     identification_number:{
       type:DataTypes.STRING,
-      allowNull:false,
       unique:true,
-      validate:{
-        notEmpty:true
-      }
+      
     },
     identification_image:{
       type:DataTypes.STRING,
-      allowNull:false,
-      validate:{
-        notEmpty:true
-      }
+   
     },
     profileImage:{
       type:DataTypes.STRING,
@@ -134,8 +137,22 @@ function agentProfileModel(sequelize,DataTypes){
     },
     area_name:{
       type:DataTypes.STRING
-    }
+    },
+
+    verified:{
+      type:DataTypes.BOOLEAN,
+      defaultValue:false
+    },
+    verified_by:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'user_adminAccount',
+        key:'admin_id'
+      }
+    },
     
+  },{
+    freezeTableName:true
   })
 }
 

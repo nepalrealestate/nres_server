@@ -8,7 +8,7 @@ const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 
 const {Utility, propertyUtility, utility, handleErrorResponse} = require("../controller.utils");
-const { insertPendingHouse, getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse, getRequestedHouse, updateHouse, deleteHouse, soldHouse, getSoldHouseByID, deletePendingHouse } = require("../../models/services/property/service.house");
+const { getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse, getRequestedHouse, updateHouse, deleteHouse, soldHouse, getSoldHouseByID, deletePendingHouse } = require("../../models/services/property/service.house");
 //const utils = new Utility();
 const utils  = utility();
 
@@ -28,17 +28,7 @@ const handleAddHouse = async (req, res) => {
 
 };
 
-const handleAddPendingHouse = async (req,res)=>{
-    
-  upload(req, res, async function (err) {
-    utils.handleMulterError(req,res,err,addPendingHouse,true);
-  });
-  
-  async function addPendingHouse (){
-    property.handleAddProperty(req,res,insertPendingHouse);
-   // property.handleAddProperty(req,res,insertPendingHouse);
-  }
-}
+
 
 
 const handleUpdateHouse = async (req,res)=>{
@@ -240,7 +230,6 @@ const handleDeletePendingHouse = async (req,res)=>{
 
 module.exports = {
   handleAddHouse,
-  handleAddPendingHouse,
   handleUpdateHouse,
   handleDeleteHouse,
   handleGetHouse,

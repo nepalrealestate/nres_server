@@ -1,9 +1,11 @@
 const db = require("../../model.index");
 
 const User = db.UserModel.User;
+const CustomerProfile = db.UserModel.CustomerProfile;
+const AgentProfile = db.UserModel.AgentProfile;
 
 async function registerUser(data,options={}){
-
+    console.log("register user",data);
     const user =  await User.create({
         user_type:data.user_type,
         name:data.name,
@@ -115,6 +117,30 @@ async function updateAgentPassword(agent_id,hashPassword){
 }
 
 
+async function getCustomerProfile(condition,attributes=null){
+    return await CustomerProfile.findOne({
+        where:condition,
+        attributes:attributes
+    })
+}
+
+async function getCustomerPropertyLimit(user_id){
+    return  await CustomerProfile.findOne({
+        where:{user_id:user_id},
+        attributes:['property_limit'],
+        raw:true
+    })
+}
+
+async function isAgentVerified(user_id){
+    return await AgentProfile.findOne({
+        where:{user_id:user_id},
+        attributes:['verified'],
+        raw:true,
+    })
+}
+
+
 
 
 
@@ -127,5 +153,8 @@ module.exports ={registerUser,
     getSeller,
     getSellerByID,
     updateCustomerPassword,
-    updateAgentPassword
+    updateAgentPassword,
+    getCustomerProfile,
+    getCustomerPropertyLimit,
+    isAgentVerified
 }

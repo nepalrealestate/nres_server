@@ -34,7 +34,7 @@ function landModel (sequelize,DataTypes){
       type:DataTypes.FLOAT
     },
     property_area:{
-      type:DataTypes.FLOAT
+      type:DataTypes.STRING
     },
     road_size:{
       type:DataTypes.FLOAT
@@ -103,6 +103,13 @@ function landModel (sequelize,DataTypes){
         key:'user_id'
       },
       onDelete:'CASCADE'
+    },
+    listing_type:{
+      type:DataTypes.ENUM("normal","top","premium"),
+      defaultValue:"normal"
+    },
+    status:{
+      type:DataTypes.ENUM("pending","approved","sold")
     }
   
     
@@ -115,117 +122,6 @@ function landModel (sequelize,DataTypes){
     }
   })
 }
-
-
-function pendingLandModel (sequelize,DataTypes){
-  return PendingLand = sequelize.define('property_pending_land',{
-    property_id :{
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      unique:true,
-      autoIncrement:true,
-      primaryKey:true,
-    },
-    property_type:{
-      type:DataTypes.ENUM('land'),
-      defaultValue:"land"
-    },
-    property_for :{
-      type:DataTypes.ENUM('non-plotted','plotted')
-    },
-    property_name : {
-      type:DataTypes.STRING,
-      allowNull:false,
-      validate:{
-        notEmpty: true, 
-      }
-    },
-    listed_for :{
-      type:DataTypes.ENUM('sale','rent')
-    },
-    twist:{
-      type:DataTypes.FLOAT
-    },
-    property_area:{
-      type:DataTypes.FLOAT
-    },
-    road_size:{
-      type:DataTypes.FLOAT
-    },
-    facing:{
-      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
-    },
-    province:{
-      type:DataTypes.STRING
-    },
-    zone:{
-      type:DataTypes.STRING
-    },
-    district:{
-      type:DataTypes.STRING
-    },
-    municipality:{
-      type:DataTypes.STRING
-    },
-    area_name:{
-      type:DataTypes.STRING
-    } ,     
-    ward:{
-      type:DataTypes.INTEGER
-    },
-    landmark:{
-      type:DataTypes.STRING
-    },
-    latitude:{
-      type:DataTypes.DECIMAL(9,6)
-    },
-    longitude:{
-      type:DataTypes.DECIMAL(9,6)
-    },
-    price:{
-      type:DataTypes.DECIMAL(12,2),
-      allowNull:false
-    },
-    price_type:{
-      type:DataTypes.ENUM('fixed','negotiable')
-    },
-    amenities:{
-      type:DataTypes.JSON
-    },
-    description:{
-      type:DataTypes.TEXT
-    },
-    social_media:{
-      type:DataTypes.JSON
-    },
-    property_image:{
-      type:DataTypes.JSON
-    },
-    approved_by:{
-      type:DataTypes.INTEGER,
-      default:null,
-       references:{
-         model:'user_adminAccount',
-         key :'admin_id'
-       },
-       onDelete :'SET NULL'
-      
-    },
-    owner_id:{
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      references:{
-        model:'user_userAccount',
-        key:'user_id'
-      },
-      onDelete:'CASCADE'
-    }
-   
-  },{
-    freezeTableName: true,
-  })
-}
-
 
 function landAdsModel (sequelize,DataTypes){
   return LandAds = sequelize.define('property_land_ads',{
@@ -429,113 +325,6 @@ function landViewsCountModel(sequelize,DataTypes){
 }
 
 
-function landSoldModel(sequelize,DataTypes){
-  return LandSold = sequelize.define('property_land_sold',{
-    property_id :{
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      unique:true,
-      primaryKey:true,
-    },
-    property_type:{
-      type:DataTypes.ENUM('land'),
-      defaultValue:"land"
-    },
-    property_for :{
-      type:DataTypes.ENUM('non-plotted','plotted')
-    },
-    property_name : {
-      type:DataTypes.STRING,
-      allowNull:false,
-      validate:{
-        notEmpty: true, 
-      }
-    },
-    listed_for :{
-      type:DataTypes.ENUM('sale','rent')
-    },
-    twist:{
-      type:DataTypes.FLOAT
-    },
-    property_area:{
-      type:DataTypes.FLOAT
-    },
-    road_size:{
-      type:DataTypes.FLOAT
-    },
-   
-    facing:{
-      type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
-    },
-    province:{
-      type:DataTypes.STRING
-    },
-    district:{
-      type:DataTypes.STRING
-    },
-    municipality:{
-      type:DataTypes.STRING
-    },
-    area_name:{
-      type:DataTypes.STRING
-    } ,     
-    ward:{
-      type:DataTypes.INTEGER
-    },
-    landmark:{
-      type:DataTypes.STRING
-    },
-    latitude:{
-      type:DataTypes.DECIMAL(9,6)
-    },
-    longitude:{
-      type:DataTypes.DECIMAL(9,6)
-    },
-    price:{
-      type:DataTypes.DECIMAL(12,2),
-      allowNull:false
-    },
-    price_type:{
-      type:DataTypes.ENUM('fixed','negotiable')
-    },
-    amenities:{
-      type:DataTypes.JSON
-    },
-    description:{
-      type:DataTypes.TEXT
-    },
-    social_media:{
-      type:DataTypes.JSON
-    },
-    property_image:{
-      type:DataTypes.JSON
-    },
-    approved_by:{
-      type:DataTypes.INTEGER,
-      
-       references:{
-         model:'user_adminAccount',
-         key :'admin_id'
-       },
-       onDelete :'SET NULL'
-      
-    },
-    owner_id:{
-      type:DataTypes.INTEGER,
-      references:{
-        model:'user_userAccount',
-        key:'user_id'
-      },
-      onDelete:'SET NULL'
-    }
-  
-    
-
-
-  },{
-    freezeTableName: true,
-  })
-}
 
 
 
@@ -545,12 +334,9 @@ function landSoldModel(sequelize,DataTypes){
 
 module.exports = {
   landModel,
-  pendingLandModel,
   landAdsModel,
   landCommentModel,
   landFeedbackModel,
   landViewsModel,
-  landViewsCountModel,
-  landSoldModel
-  
+  landViewsCountModel, 
 };

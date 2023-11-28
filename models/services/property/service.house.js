@@ -97,9 +97,15 @@ async function deleteHouse(property_id){
  }
 
  async function getPendingHouse(condition,limit,offset){
-    
-    const [pendingHouse,totalCount] = await Promise.all([PendingHouse.findAll({
-        where : condition,
+
+    // Add the 'status' field to the condition with the value 'pending'
+    const updatedCondition = {
+        status: 'pending',
+        ...condition,    
+    };
+
+    const [pendingHouse,totalCount] = await Promise.all([House.findAll({
+        where : updatedCondition,
         attributes:[ 'property_id','property_type','property_name','listed_for','province','district','municipality','ward','area_name','createdAt'],
         include:[
             {
@@ -111,14 +117,14 @@ async function deleteHouse(property_id){
         order:[['createdAt','DESC']],
         limit:limit,
         offset:offset
-    }),PendingHouse.count({where:condition})])
+    }),House.count({where:updatedCondition})])
     return {pendingHouse,totalCount};
  }
 
 
  async function getPendingHouseByID(property_id){
-    return await PendingHouse.findOne({
-        where:{property_id:property_id},
+    return await House.findOne({
+        where:{property_id:property_id,status:'pending'},
         include:[
             {
                 model:db.UserModel.User,
@@ -131,8 +137,8 @@ async function deleteHouse(property_id){
  }
 
  async function deletePendingHouse(property_id){
-    return await PendingHouse.destroy({
-        where:{property_id:property_id}
+    return await House.destroy({
+        where:{property_id:property_id,status:'pending'}
     })
  }
 
@@ -140,38 +146,44 @@ async function deleteHouse(property_id){
 
  async function approveHouse(staff_id,property_id){
 
-    let transaction ; 
-
     try {
-        transaction  = await db.sequelize.transaction();
-
-        // find latest property id
-        const propertyId = await db.PropertyModel.PropertyIdTracker.findOne({where:{id:1}});
+        await House.update({status:'approved',approved_by:staff_id},{where:{property_id:property_id}});
+    } catch (error) {
         
-        console.log(propertyId);
-        const newPropertyId = propertyId.dataValues.property_id;
+    }
+
+    // let transaction ; 
+
+    // try {
+    //     transaction  = await db.sequelize.transaction();
+
+    //     // find latest property id
+    //     const propertyId = await db.PropertyModel.PropertyIdTracker.findOne({where:{id:1}});
+        
+    //     console.log(propertyId);
+    //     const newPropertyId = propertyId.dataValues.property_id;
        
-        const pendingHouse = await PendingHouse.findOne({where:{property_id:property_id},transaction})
+    //     const pendingHouse = await PendingHouse.findOne({where:{property_id:property_id},transaction})
 
-        await House.create({...pendingHouse.get(),property_id:newPropertyId, approved_by: staff_id },{transaction});
-         // Increment property_id in PropertyIdTracker
-         const propertyIdTracker = await db.PropertyModel.PropertyIdTracker.findByPk(1, { transaction });
-         propertyIdTracker.property_id += 1;
-         await propertyIdTracker.save({ transaction });
+    //     await House.create({...pendingHouse.get(),property_id:newPropertyId, approved_by: staff_id },{transaction});
+    //      // Increment property_id in PropertyIdTracker
+    //      const propertyIdTracker = await db.PropertyModel.PropertyIdTracker.findByPk(1, { transaction });
+    //      propertyIdTracker.property_id += 1;
+    //      await propertyIdTracker.save({ transaction });
 
-         // delete from pending house\
-         await PendingHouse.destroy({where:{property_id},transaction});
+    //      // delete from pending house\
+    //      await PendingHouse.destroy({where:{property_id},transaction});
 
-         //insert into house ads
+    //      //insert into house ads
 
-         await HouseAds.create({property_id:newPropertyId},{transaction});
+    //      await HouseAds.create({property_id:newPropertyId},{transaction});
 
-         await transaction.commit();
+    //      await transaction.commit();
         
-        } catch (error) {
-            if (transaction) await transaction.rollback();
-            throw error;
-        }
+    //     } catch (error) {
+    //         if (transaction) await transaction.rollback();
+    //         throw error;
+    //     }
  }
 
 
@@ -240,24 +252,13 @@ async  function updateHouseViews(property_id,latitude,longitude){
 
 
 async function soldHouse(property_id){
-    let transaction;
-    try {
-        
-        transaction  = await db.sequelize.transaction();
-        const house = await House.findOne({where:{property_id:property_id},transaction});
-        await HouseSold.create({...house.get()},{transaction});
-        await House.destroy({where:{property_id:property_id},transaction});
-        return await transaction.commit();
-    } catch (error) {
-        if(transaction) await transaction.rollback();
-        throw error;
-    }
+    return await House.update({status:'sold'},{where:{property_id:property_id}});
 }
 
 
 async function getSoldHouseByID(property_id){
-    return await HouseSold.findOne({
-        where:{property_id:property_id}
+    return await House.findOne({
+        where:{property_id:property_id,status:'sold'}
     })
 }
 

@@ -115,6 +115,9 @@ const handleAgentLogin = async (req, res) => {
   const { email } = req.body;
   try {
     const agent = await findUserByEmail("agent",email);
+    if (!agent) {
+      return res.status(404).json({ message: "No Agent Found" });
+    }
     return auth.login(req, res, agent.dataValues);
   } catch (error) {
     utility.handleErrorResponse(res,error)

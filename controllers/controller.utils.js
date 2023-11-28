@@ -387,12 +387,12 @@ function propertyUtility(property_type) {
   const propertyType = property_type;
 
   async function handleAddProperty(req, res, addPropertyCB) {
-
-    let property = JSON.parse(req.body.property);
+    let data = req.body?.property;
+    let property = JSON.parse(data);
     console.log(property)
-
     let owner_id = null;
     let admin_id = null;
+    let status ;
     console.log(req.id, req.user_type)
     if (!req.id || !req.user_type) {
       return res.status(401).json({ message: "unauthorized" });
@@ -400,11 +400,16 @@ function propertyUtility(property_type) {
     //property added by admin
     if (req.user_type === 'staff' || req.user_type === 'superAdmin') {
       admin_id = req.id;
+      status = 'approved';
+      
     }
     // property added for listing
     if (req.user_type === 'customer' || req.user_type === 'agent') {
       owner_id = req.id;
+      status = 'pending';
     }
+    
+   
 
 
     let images;
@@ -429,7 +434,8 @@ function propertyUtility(property_type) {
       ...property,
       property_image: imageObject,
       approved_by: admin_id,
-      owner_id: owner_id
+      owner_id: owner_id,
+      status: status,
     };
 
 
@@ -719,6 +725,8 @@ function propertyUtility(property_type) {
 
 
 function handleErrorResponse(res, error) {
+
+  console.log(error)
   
   const errorType = {
     "SequelizeUniqueConstraintError": {
@@ -771,9 +779,6 @@ function handleErrorResponse(res, error) {
   } else {
     logger.error("Undefined error occurred");
   }
-  console.log("error from handle",JSON.stringify(error))
-  console.log("error from handle Normal Form",error)
-
   
   return res.status(500).json({ message: "Internal Error" })
 
