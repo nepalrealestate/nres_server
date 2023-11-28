@@ -108,10 +108,6 @@ function staffProfileModel (sequelize,DataTypes){
     documents:{
       type:DataTypes.JSON
     },
-    account_access:{
-      type:DataTypes.BOOLEAN,
-      required:true,
-    },
     isActive:{
       type:DataTypes.BOOLEAN,
       defaultValue:true,

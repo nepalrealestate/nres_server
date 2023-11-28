@@ -5,13 +5,18 @@ const StaffProfile = db.UserModel.StaffProfile;
 
 
 
+
 async function registerAdmin(admin_type,name,email,password,options ={}){
-    return await Admin.create({
-        admin_type:admin_type,
-        name:name,
-        email:email,
-        password:password
-    },options)
+    const data = {
+        admin_type,
+        name,
+        email,
+        password
+    }
+    if(admin_type ==="superAdmin"){
+        data.admin_id = 1;
+    }
+    return await Admin.create(data,options)
 }
 
 async function insertStaffProfile(staffProfile,options={}){

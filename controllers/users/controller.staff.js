@@ -11,6 +11,7 @@ const {
   deleteStaff,
   getStaffProfile,
   getStaffProfileByAdminID,
+  getStaffProfileByID,
 } = require("../../models/services/users/service.staff");
 const { wrapAwait } = require("../../errorHandling");
 
@@ -52,7 +53,7 @@ const handleGetStaffByID = async function (req, res) {
   }
 
   try {
-    const data = await getStaffProfile(staff_id);
+    const data = await getStaffProfileByID(staff_id);
     if (!data) {
       return res.status(404).json({ message: "Staff Not Found" });
     }
@@ -82,7 +83,7 @@ const handleStaffRegistration = async (req, res) => {
       salary,
       qualification,
       pan_no,
-      account_access,
+      account_access
     } = JSON.parse(req.body.staff);
     const isEmailValid = utils.isValid.email(email);
     const isPhoneNumberValid = utils.isValid.phoneNumber(contact);
@@ -125,7 +126,6 @@ const handleStaffRegistration = async (req, res) => {
       salary,
       qualification,
       pan_no,
-      account_access,
       documents: documentsObject,
     };
 
@@ -155,13 +155,10 @@ const handleStaffRegistration = async (req, res) => {
         { admin_id: admin_id, ...staffProfile },
         { transaction }
       );
+      await transaction.commit();
       if(account_access === true){
         sendPasswordEmail(email, password).catch((err) => console.log(err));
       }
-
-      
-
-      await transaction.commit();
 
       return res.status(200).json({ message: "Registration Succesfully" });
     } catch (error) {
@@ -223,22 +220,90 @@ const handleStaffUpdate = async (req, res) => {
   }
 };
 
+const handleCreateStaffAccountAccess = async (req,res)=>{
+  const staff_id = req.params.staff_id;
+  try {
+    const staffResponse = await getStaffProfileByID(staff_id);
+    console.log("Staff Response",staffResponse);
+    if(!staffResponse){
+      return res.status(404).json({message:"Staff Not Found"});
+    }
+    if(staffResponse?.dataValues?.admin_id){
+      return res.status(400).json({message:"Account Already Created"});
+    }
+    // generate random password ;
+    const password = generator.generate({ length: 10, numbers: true });
+
+    const [hashPassword, hashPasswordError] = await wrapAwait(
+      bcrypt.hash(password, saltRound)
+    );
+
+    if (hashPasswordError) {
+      return res
+        .status(500)
+        .json({ message: "Internal Error ! please try again" });
+    }
+    // create staff account
+    const accountResponse = await registerAdmin(
+       "staff", staffResponse?.dataValues?.name, staffResponse?.dataValues?.email, hashPassword
+    )
+    // insert admin account to staff profile
+    const staffProfileResponse = await updateStaff(staff_id,{admin_id:accountResponse.dataValues.admin_id,account_access:true});
+
+    // send password to email
+    sendPasswordEmail(staffResponse?.dataValues?.email, password).catch((err) => console.log(err));
+    return res.status(200).json({message:"Staff Access Account Successfully Created"});
+
+
+  } catch (error) {
+    utility.handleErrorResponse(res,error);
+  }
+}
+
+const handleDeleteStaffAccountAccess = async (req,res)=>{
+  const admin_id = req.params.admin_id;
+  if(admin_id==req.id && admin_id==1){
+    return res.status(400).json({message:"You can't delete your own account"});
+  }
+  try {
+   
+    const response = await deleteAdmin(admin_id)
+    console.log("Delete Response",response);
+    if(response==0){
+      return res.status(400).json({message:"Unable to delete staff account"});
+    }
+    
+    return res.status(200).json({message:"Delete Access Successfully"});
+  } catch (error) {
+    handleErrorResponse(res,error);
+  }
+}
+
 const handleStaffDelete = async (req, res) => {
-  const admin_id = req.params.staff_id;
+  const staff_id = req.params.staff_id;
+  if(staff_id==req.id && req.userType=="staff"){
+    return res.status(400).json({message:"You can't delete your own account"});
+  }
 
   try {
     // find staff profile from admin id 
-    const staffProfile = await getStaffProfileByAdminID(admin_id);
+    const staffProfile = await getStaffProfileByID(staff_id);
     if (!staffProfile) {
       return res.status(404).json({ message: "Staff Not Found" });
     }
-    const response = await deleteAdmin(admin_id);
-    if (response === 0) {
-      return res.status(400).json({ message: "Unable to delete" });
+    console.log("Staff ID",staff_id)
+    const deleteStaffResponse = await deleteStaff(staff_id);
+    console.log("Delete Staff Response ",deleteStaffResponse);
+    
+    
+    if(staffProfile.dataValues.admin_id){
+      const response = await deleteAdmin(admin_id);
     }
-    //change account access false
-    await updateStaff(staffProfile?.dataValues?.staff_id , { account_access: false});
+    if(staffProfile?.dataValues?.documents){
+      deleteFiles(staffProfile?.dataValues?.documents)
+    }
     return res.status(200).json({ message: "Delete Successfully" });
+
   } catch (error) {
     utility.handleErrorResponse(res, error);
   }
@@ -323,5 +388,7 @@ module.exports = {
   handleGetAllStaff,
   handleStaffUpdate,
   handleStaffDelete,
-  handleStaffLogout
+  handleStaffLogout,
+  handleCreateStaffAccountAccess,
+  handleDeleteStaffAccountAccess,
 };

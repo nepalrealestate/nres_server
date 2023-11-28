@@ -4,7 +4,7 @@ const express = require("express");
 const {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin, superAdminVerifyToken, superAdminVerifyLogin, superAdminLogout} = require('../../controllers/users/controller.superAdmin');
 const { handleGetCustomerChatList, handleGetSingleCustomerChat, handleGetSingleCustomerChatForAdmin } = require("../../controllers/chat/controller.customerChat");
 const { handleGetStaffChatList, handleInsertStaffGroup, handleDeleteStaffFromGroup } = require("../../controllers/chat/controller.staffChat");
-const { handleStaffRegistration, handleGetAllStaff, handleStaffUpdate, handleStaffDelete, handleGetStaffByID } = require("../../controllers/users/controller.staff");
+const { handleStaffRegistration, handleGetAllStaff, handleStaffUpdate, handleStaffDelete, handleGetStaffByID, handleCreateStaffAccountAccess, handleDeleteStaffAccountAccess } = require("../../controllers/users/controller.staff");
 const { handleGetAllAgent } = require("../../controllers/users/controller.agent");
 const { handleGetServiceProvider, handleVerifyServiceProvider, handleDeleteServiceProvider, handleGetServiceProviderByID } = require("../../controllers/nres_services/controller.nres_service");
 const { handleGetCustomer, handleGetCustomerByID, handleGetBuyer, handleGetSeller, handleGetSellerByID } = require("../../controllers/users/controller.customer");
@@ -45,6 +45,8 @@ router.post("/staff/register",superAdminVerifyToken,handleStaffRegistration);
 router.get("/staff",superAdminVerifyToken,handleGetAllStaff);
 router.get("/staff/:staff_id",superAdminVerifyToken,handleGetStaffByID)
 router.patch("/staff/:staff_id",superAdminVerifyToken,handleStaffUpdate)
+router.post("/staff/account/:staff_id",superAdminVerifyToken,handleCreateStaffAccountAccess)
+router.delete("/staff/account/:admin_id",superAdminVerifyToken,handleDeleteStaffAccountAccess)
 router.delete("/staff/:staff_id",superAdminVerifyToken,handleStaffDelete);
 
 

@@ -24,7 +24,7 @@ async function getStaffProfileByAdminID(admin_id){
         where:{admin_id:admin_id}
     })
 }
-async function getStaffProfile(id){
+async function getStaffProfileByID(id){
     return await StaffProfile.findOne({
         where:{staff_id:id},
       //  attributes:{exclude: ['id']}
@@ -54,17 +54,17 @@ async function getAllStaff(condition){
 //         })
 // }
 
-async function updateStaff(id,updateData){
+async function updateStaff(id,updateData,option={}){
     if(updateData.password)delete updateData.password;
     console.log("This is update Data",updateData);
     return await StaffProfile.update(updateData,{
         where:{staff_id:id}
-    })
+    },option)
 }
 
 async function deleteStaff(id){
     return await StaffProfile.destroy({
-        where:{admin_id:id}
+        where:{staff_id:id}
     })
 }
 
@@ -72,4 +72,4 @@ async function deleteStaff(id){
 
 
 
-module.exports = {registerStaff,findStaff,getStaffProfile,getAllStaff,updateStaff,deleteStaff,getStaffProfileByAdminID}
+module.exports = {registerStaff,findStaff,getStaffProfileByID,getAllStaff,updateStaff,deleteStaff,getStaffProfileByAdminID}
