@@ -69,7 +69,7 @@ function extractPathsFromObjects(fileObjects) {
 
 function deleteFiles(input) {
   console.log(input) 
-  const firstStringError = util.inspect(error);
+  const firstStringError = util.inspect(input);
   logger.log({
     level: "error",
     message: firstStringError
