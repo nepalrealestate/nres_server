@@ -790,9 +790,8 @@ function handleErrorResponse(res, error) {
   logger.info(error);
   logger.error(error)
   
-  
-  logger.error("Response Error", error ? util.inspect(error) : 'No error details available');
- 
+  logger.error(`1 - Response Error - ${error}`);
+  logger.error("Response Error", error || 'No error details available');
   
   return res.status(500).json({ message: "Internal Error" })
 
