@@ -786,12 +786,12 @@ function handleErrorResponse(res, error) {
       })
   }
 
-  logger.info("Test Error Printing Only");
-  logger.info(error);
-  logger.error(error)
-  
-  logger.error(`1 - Response Error - ${error}`);
-  logger.error("Response Error", error || 'No error details available');
+  const stringError = util.inspect(error);
+  logger.log({
+    level: "error",
+    message: stringError
+  })
+   
   
   return res.status(500).json({ message: `Internal Error ${error}` })
 
