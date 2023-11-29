@@ -84,6 +84,7 @@ function deleteFiles(input) {
           logger.error("Error while Deleting image", err);
         } else {
           console.log(path, " image deleted");
+          logger.info(path, " image deleted");
         }
       });
     });
@@ -96,6 +97,7 @@ function deleteFiles(input) {
           logger.error("Error while Deleting image", err);
         } else {
           console.log(path, " image deleted");
+          logger.info(path, " image deleted");
         }
       });
     });
@@ -109,6 +111,7 @@ function deleteSingleImage(path) {
       logger.error("Error while Deleting image", err);
     } else {
       console.log(path, " image deleted");
+      logger.info(path, " image deleted");
     }
   });
 }
