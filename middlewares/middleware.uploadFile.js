@@ -68,15 +68,22 @@ function extractPathsFromObjects(fileObjects) {
 }
 
 function deleteFiles(input) {
-  console.log(input)
- logger.log({
-  level: 'info',
-  message: `image input${input}`
- })
+  console.log(input) 
+  const firstStringError = util.inspect(error);
+  logger.log({
+    level: "error",
+    message: firstStringError
+  })
+
   // Determine if the input is an array of file objects
   if (input.length > 0 && typeof input[0] === "object" && input[0].path) {
     input = extractPathsFromObjects(input);
   }
+  const stringError = util.inspect(input);
+  logger.log({
+    level: "error",
+    message: `after extract from path${stringError}`
+  })
 
   // if we have in json format - most likely fetched from db;
   if (Array.isArray(input)) {
