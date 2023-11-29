@@ -7,7 +7,7 @@ async function insertNotification(data){
     return  NotifyAdmin.create({
             user_id:data.user_id,
             user_type:data.user_type,
-            notification:data.notification,
+            title:data.notification,
             url:data.url
     })
     

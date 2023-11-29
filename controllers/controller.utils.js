@@ -11,6 +11,7 @@ const { wrapAwait } = require("../errorHandling");
 const { validateSchema } = require("./validationSchema");
 const { deleteFiles } = require("../middlewares/middleware.uploadFile");
 const logger = require("../utils/errorLogging/logger");
+const { insertNotification } = require("../models/services/notification/service.notification");
 
 
 const saltRound = 10;
@@ -452,6 +453,17 @@ function propertyUtility(property_type) {
       //     }/${response.get().property_id}`);
 
       // //pushNotification(data);
+
+      // data for notification
+      const notify = {
+        user_id: req.id,
+        user_type: req.user_type,
+        notification: `New ${propertyType} Upload By ${req.user_type}`,
+        }
+      insertNotification(notify).catch((err) => {
+        console.log(err)
+        logger.error(`Error insert ${propertyType} notification - ${err}`);
+      });
 
       return res.status(200).json({ message: `${propertyType} insert` });
 

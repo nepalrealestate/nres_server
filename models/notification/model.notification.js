@@ -25,10 +25,6 @@ function notificationModel(sequelize,DataTypes){
         },
         url:{
             type:DataTypes.STRING,
-            allowNull:false,
-            validate:{
-                notEmpty:true
-            }
         },
         seen:{
             type:DataTypes.BOOLEAN,
