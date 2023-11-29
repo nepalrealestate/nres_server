@@ -11,11 +11,28 @@ function staffChatModel(sequelize,DataTypes){
       allowNull:false
   },
   message:{
-      type:DataTypes.STRING
-  }
+    type:DataTypes.TEXT,
+    validate:{
+        len:{
+            args:[0,1000],
+            msg:"Message length should be less than 1000 characters"
+        },
+    }
+},
+imageURL:{
+    type:DataTypes.STRING,
+    allowNull:true
+}
 
 },{
-  freezeTableName:true
+  freezeTableName:true,
+  validate:{
+      eitherMessageOrImageURL(){
+          if (!this.message && !this.imageURL) {
+              throw new Error('Either message or imageURL must be present');
+          }  
+      }
+  }
 })
   
 }
@@ -26,12 +43,12 @@ function staffChatListModel(sequelize,DataTypes){
   return StaffChatList = sequelize.define('chat_staff_list',{
     admin_id:{
       type:DataTypes.INTEGER,
-      allowNull:false,
       unique:true,
       references:{
         model:'user_adminAccount',
         key:"admin_id"
-      }
+      },
+      onDelete:'CASCADE',
     }
   },{
     freezeTableName:true
@@ -42,7 +59,6 @@ function staffChatGroupModel(sequelize,DataTypes){
   return StaffChatGroup = sequelize.define('chat_staff_group',{
     admin_id:{
       type:DataTypes.INTEGER,
-      allowNull:false,
       unique:true,
       references:{
         model:'user_adminAccount',

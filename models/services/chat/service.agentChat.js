@@ -18,11 +18,12 @@ async function getSingleAgentChat(id){
 
 
 
-async function insertAgentChat(sender_id,receiver_id,message){
+async function insertAgentChat(sender_id,receiver_id,message,imageURL){
     return await AgentChat.create({
         sender_id:sender_id,
         receiver_id:receiver_id,
-        message:message
+        message:message,
+        imageURL:imageURL
     })
 }
 

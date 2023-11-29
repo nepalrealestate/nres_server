@@ -1,7 +1,9 @@
 // const {  insertStaffChatList, insertStaffChat, getStaffChatList, insertStaffGroup, deleteStaffFromGroup, getStaffFromGroupByID, insertStaffGroupChat } = require("../../models/chat/model.staffChat");
 
+const { chatImageUpload } = require("../../middlewares/middleware.uploadFile");
 const { insertStaffChatList, getStaffFromGroupById, insertStaffChat, insertStaffGroupChat, getStaffChatList, getSingleStaffChat, insertStaffGroup, deleteStaffFromGroup } = require("../../models/services/chat/service.staffChat");
 const { findAdmin, findAdminByID } = require("../../models/services/users/service.admin");
+const { handleErrorResponse } = require("../controller.utils");
 
 const userToSocket = new Map();
 
@@ -37,7 +39,7 @@ const handleStaffChat = async function (staffChat, socket) {
  
   if(Number(userID) !== 0){
     try {
-      groupResponse = await getStaffFromGroupById(userID);
+      let groupResponse = await getStaffFromGroupById(userID);
      console.log(" This is Group Response " + groupResponse?.staff_id)
       if(groupResponse?.staff_id === Number(userID)){
         socket.join("staffGroup");
@@ -80,16 +82,29 @@ const handleStaffChat = async function (staffChat, socket) {
     if(message.length ===0){
       return;
     }
+    let imageURL = null;
+
+    // Check if there's an image in the payload
+
+    if(payload.image) {
+      try {
+        imageURL = await chatImageUpload(payload.image,'uploads/chat/staff/single','2 * 1024 * 1024');
+        console.log("Image URL",imageURL)
+      } catch (error) {
+        console.error('Error processing image', error);
+      }
+  }
 
     try {
       const response = await insertStaffChat(
         sender_id,
         receiver_id,
-        message
+        message,
+        imageURL
       );
      
 
-      if (response.affectedRows !== 0) {
+      if (response) {
         // if receiver_id present in online User then  send message
             //send to sender
         userToSocket.get(sender_id.toString()).forEach(function(socketID){
@@ -128,6 +143,18 @@ const handleStaffChat = async function (staffChat, socket) {
      if(message.length === 0){
        return;
      }
+     let imageURL = null;
+
+     // Check if there's an image in the payload
+ 
+     if(payload.image) {
+       try {
+         imageURL = await chatImageUpload(payload.image,'uploads/chat/staff/group','2 * 1024 * 1024');
+         console.log("Image URL",imageURL)
+       } catch (error) {
+         console.error('Error processing image', error);
+       }
+   }
  
      try {
        const response = await insertStaffGroupChat(sender_id,message);
@@ -165,7 +192,7 @@ const handleGetStaffChatList = async function(req,res){
       const data = await getStaffChatList();
       return res.status(200).json(data);
     } catch (error) {
-      return res.status(500).json("Internal Error");
+      handleErrorResponse(res,error)
     }
   
   }
@@ -178,7 +205,7 @@ const handleGetStaffChatList = async function(req,res){
         const data =await getSingleStaffChat(staffID);
         return res.status(200).json(data);
       } catch (error) {
-        return res.status(500).json("Internal Error");
+        handleErrorResponse(res,error)
       }
   
   }
@@ -188,13 +215,13 @@ const handleInsertStaffGroup = async function (req,res){
 
     try {
         const response = await insertStaffGroup(staffID);
-        if(response.affectedRows === 0){
+        if(!response){
             return res.status(400).json({message:"No staff Present"});
         }
         return res.status(200).json({message:"Staff added to group"});
 
     } catch (error) {
-        return res.status(500).json({message:"Internal Error"});
+        handleErrorResponse(res,error)
     }
 
 
@@ -205,12 +232,12 @@ const handleDeleteStaffFromGroup = async function (req,res){
 
     try {
         const response = await deleteStaffFromGroup(staffID);
-        if(response.affectedRows === 0){
-            return res.status(400).json({message:"No staff Present to remove"});
-        }
+        // if(response.affectedRows === 0){
+        //     return res.status(400).json({message:"No staff Present to remove"});
+        // }
         return res.status(200).json({message:"Staff deleted from group"});
     } catch (error) {
-        return res.status(500).json({message:"Internal Error"});
+       handleErrorResponse(res,error)
     }
 }
 

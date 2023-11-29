@@ -1,6 +1,7 @@
 // const { insertAgentList, getSingleAgentChat, insertAgentChat, getAgentChatList } = require("../../models/chat/model.agentChat");
 
-const { insertAgentChatList, getSingleAgentChat, getAgentChatList, findOrCreateAgentChatList } = require("../../models/services/chat/service.agentChat");
+const { chatImageUpload } = require("../../middlewares/middleware.uploadFile");
+const { insertAgentChatList, getSingleAgentChat, getAgentChatList, findOrCreateAgentChatList, insertAgentChat } = require("../../models/services/chat/service.agentChat");
 const { findUserByID } = require("../../models/services/users/service.user");
 
 
@@ -17,7 +18,7 @@ const handleAgentChat = async function (userChat, socket) {
   if(Number(userID) !== 0){
   try {
     //find agent;
-    const agentResponse = await findUserByID({user_id:userID,user_type:"agent"},['user_id','name']);
+    const agentResponse = await findUserByID("agent",userID,['user_id','name']);
     if(!agentResponse){
       socket.send("Agent Not Found");
       socket.disconnect(true)
@@ -28,7 +29,7 @@ const handleAgentChat = async function (userChat, socket) {
   } catch (error) {
     console.log(error)
     // this means user cannot insert because in customer table user is not register
-    socket.send("User is not register as agemt");
+    socket.send("User is not register as agent");
     socket.disconnect(true);
     return;
 
@@ -59,12 +60,25 @@ const handleAgentChat = async function (userChat, socket) {
     if (message.length === 0) {
       return;
     }
+    let imageURL = null;
+
+    // Check if there's an image in the payload
+
+    if(payload.image) {
+      try {
+        imageURL = await chatImageUpload(payload.image,'uploads/chat/agent','2 * 1024 * 1024');
+        console.log("Image URL",imageURL)
+      } catch (error) {
+        console.error('Error processing image', error);
+      }
+  }
 
     try {
       const response = await insertAgentChat(
         sender_id,
         receiver_id,
-        message
+        message,
+        imageURL
       );
 
       if (response) {

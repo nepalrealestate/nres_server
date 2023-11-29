@@ -1,5 +1,5 @@
 const db = require("../../model.index");
-const Contact = db.contact;
+const Contact = db.ContactModel.Contact;
 
 async function createContact(contact) {
     return await Contact.create(contact);
@@ -9,11 +9,13 @@ async function getContactById(id) {
     return await Contact.findByPk(id);
 }
 
-async function getContact(){
+async function getContact(limit,offset){
     return await Contact.findAll({
         order: [
             ['createdAt', 'DESC'],
         ],
+        limit:limit,
+        offset:offset
     });
 }
 

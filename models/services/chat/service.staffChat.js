@@ -30,7 +30,7 @@ async function insertStaffChat(sender_id,receiver_id,message){
 
 async function insertStaffChatList(staff_id){
     return await StaffChatList.create({
-        staff_id:staff_id
+        admin_id:staff_id
     })
 }
 
@@ -41,7 +41,7 @@ async function getStaffChatList(){
 
 async function insertStaffGroup(staff_id){
     return await StaffChatGroup.create({
-        staff_id:staff_id
+        admin_id:staff_id
     })
 }
 

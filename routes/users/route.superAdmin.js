@@ -15,6 +15,7 @@ const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleI
 const { handleInsertBlog, handleGetBlog, handleGetBlogById, handleDeleteBlog } = require("../../controllers/blog/controller.blog");
 const { handleInsertOrUpdateAds, handleGetAds } = require("../../controllers/ads/controller.ads");
 const { handleGetNotification, handleUpdateNotificationSeen, handleUpdateAllNotificationSeen } = require("../../controllers/notification/controller.notification");
+const { handleGetContact, handleGetContactByID } = require("../../controllers/contact/controller.contact");
 
 const router = express.Router();
 
@@ -203,5 +204,9 @@ router.patch("/notification",superAdminVerifyToken,handleUpdateAllNotificationSe
  // property analytics
  router.get("/analytic",superAdminVerifyToken,handleGetPropertyAnalytics)
 
+
+ // contact
+    router.get("/contact",superAdminVerifyToken,handleGetContact);
+    router.get("/contact/:id",superAdminVerifyToken,handleGetContactByID);
 
 module.exports  = router; 

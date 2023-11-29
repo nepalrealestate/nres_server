@@ -9,6 +9,7 @@ const apartmentRouter = require("./routes/property/route.apartment");
 const propertyRouter = require("./routes/property/route.property");
 const serviceRouter = require("./routes/services/route.service");
 const blogRouter = require("./routes/blogs/route.blog");
+const contactRouter = require("./routes/contact/route.contact");
 const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -83,6 +84,7 @@ app.use("/api/property/apartment", apartmentRouter);
 app.use("/api/property", propertyRouter);
 app.use("/api/service", serviceRouter);
 app.use("/api/blog", blogRouter);
+app.use("/api/contact",contactRouter)
 
 //chat running
 

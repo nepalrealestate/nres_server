@@ -1,5 +1,5 @@
 const { createContact, getContact, getContactById, deleteContact } = require("../../models/services/contact/service.contact");
-const { handleErrorResponse } = require("../controller.utils");
+const { handleErrorResponse, handleLimitOffset } = require("../controller.utils");
 
 
 const handleInsertContact = async (req, res) => {
@@ -8,7 +8,7 @@ const handleInsertContact = async (req, res) => {
         if (!name  || !phoneNumber || !message) {
             res.status(400).json({ message: "All fields are required" });
         } 
-        const contact = await createContact({ name, email, phone, message });
+        const contact = await createContact({ name, email, phoneNumber, message });
         res.status(200).json({ message: "Contact created successfully" });
     } catch (error) {
         handleErrorResponse(res,error);
@@ -16,6 +16,7 @@ const handleInsertContact = async (req, res) => {
 }
 
 const handleGetContact = async (req, res) => {
+    const [limit,offset] = handleLimitOffset(req)
     try {
         const contact = await getContact();
         res.status(200).json(contact);
