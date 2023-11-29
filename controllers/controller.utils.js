@@ -1,6 +1,8 @@
 const multer = require("multer");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const util = require('util');
+
 
 const {
   sendPasswordResetTokenMail,
@@ -784,13 +786,9 @@ function handleErrorResponse(res, error) {
         message: validResponse.message
       })
   }
+  
+  logger.error("Response Error", err ? util.inspect(err) : 'No error details available');
  
-  if (error) {
-    logger.error(error);
-    // Add more properties if needed
-  } else {
-    logger.error("Undefined error occurred");
-  }
   
   return res.status(500).json({ message: "Internal Error" })
 
