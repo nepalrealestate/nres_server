@@ -2,7 +2,7 @@ const multer = require("multer");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const util = require('util');
-
+const logger = require("../utils/errorLogging/logger")
 
 const {
   sendPasswordResetTokenMail,
@@ -12,7 +12,6 @@ const { wrapAwait } = require("../errorHandling");
 
 const { validateSchema } = require("./validationSchema");
 const { deleteFiles } = require("../middlewares/middleware.uploadFile");
-const logger = require("../utils/errorLogging/logger");
 const { insertNotification } = require("../models/services/notification/service.notification");
 
 
