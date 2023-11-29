@@ -118,7 +118,7 @@ function apartmentModel (sequelize,DataTypes){
         onDelete:'CASCADE'
       },
       listing_type:{
-        type:DataTypes.ENUM("free","top","premium"),
+        type:DataTypes.ENUM("free","top","premium","featured"),
         defaultValue:"free"
       },
       status:{

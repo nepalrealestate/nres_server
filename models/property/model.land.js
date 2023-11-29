@@ -105,21 +105,14 @@ function landModel (sequelize,DataTypes){
       onDelete:'CASCADE'
     },
     listing_type:{
-      type:DataTypes.ENUM("normal","top","premium"),
-      defaultValue:"normal"
+      type:DataTypes.ENUM("free","top","premium","featured"),
+      defaultValue:"free"
     },
     status:{
       type:DataTypes.ENUM("pending","approved","sold")
     }
-  
-    
-
-
   },{
     freezeTableName: true,
-    hooks:{
-      
-    }
   })
 }
 
