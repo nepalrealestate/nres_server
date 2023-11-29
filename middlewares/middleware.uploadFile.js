@@ -68,41 +68,64 @@ function extractPathsFromObjects(fileObjects) {
 }
 
 function deleteFiles(input) {
+  console.log(input)
+ logger.log({
+  level: 'info',
+  message: `image input${input}`
+ })
   // Determine if the input is an array of file objects
   if (input.length > 0 && typeof input[0] === "object" && input[0].path) {
     input = extractPathsFromObjects(input);
   }
 
   // if we have in json format - most likely fetched from db;
-  if (typeof input === "object") {
+  if (Array.isArray(input)) {
+    // At this point, input should be an array of file paths
+    input.forEach((path) => {
+      fs.unlink(path, function (err) {
+        if (err) {
+          console.log("Error while Deleting image", err);
+          logger.log({
+            level: 'error',
+            message: `Error While Image Delet`
+           })
+        } else {
+          console.log(path, " image deleted");
+          logger.log({
+            level: 'info',
+            message: `Image Deleted`
+           })
+        }
+      });
+    });
+  } else if (typeof input === "object") {
     let images = Object.values(input);
     console.log(images);
     images.forEach((path) => {
       fs.unlink(path, function (err) {
         if (err) {
           console.log("Error while Deleting image", err);
-          logger.error("Error while Deleting image", err);
+          logger.log({
+            level: 'error',
+            message: `Error While Image Delet`
+           })
         } else {
           console.log(path, " image deleted");
-          logger.info(path, " image deleted");
+          logger.log({
+            level: 'info',
+            message: `Image Deleted`
+           })
         }
       });
     });
   } else {
-    // At this point, input should be an array of file paths
-    input.forEach((path) => {
-      fs.unlink(path, function (err) {
-        if (err) {
-          console.log("Error while Deleting image", err);
-          logger.error("Error while Deleting image", err);
-        } else {
-          console.log(path, " image deleted");
-          logger.info(path, " image deleted");
-        }
-      });
-    });
+    logger.log({
+      level: 'error',
+      message: `Invalid Image Input`
+     })
   }
 }
+
 
 function deleteSingleImage(path) {
   fs.unlink(path, function (err) {
