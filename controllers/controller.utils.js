@@ -521,14 +521,16 @@ function propertyUtility(property_type) {
     try {
       const property = await getPropertyCallback(property_id);
       console.log("This is Property",property);
+      console.log("This is property object",property?.property_image)
+      console.log("This is property object",property?.dataValues?.property_image)
     
 
       const response = await deletePropertyCallabck(property_id);
       if (response === 0) {
         return res.status(404).json({ message: `${propertyType} not found` })
       }
-      if (property?.property_image) {
-        deleteFiles(property.property_image)
+      if (property?.dataValues?.property_image) {
+        deleteFiles(property?.dataValues?.property_image)
       }
       return res.status(200).json({ message: `${propertyType} deleted` })
     } catch (error) {

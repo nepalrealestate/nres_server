@@ -5,6 +5,7 @@ const fs = require("fs");
 const path = require("path");
 const logger = require("../utils/errorLogging/logger");
 const sizeOf = require('image-size');
+const util = require('util');
 
 
 function UploadImage(folderPath, maxImageSize) {
@@ -68,27 +69,31 @@ function extractPathsFromObjects(fileObjects) {
 }
 
 function deleteFiles(input) {
-  console.log(input) 
+  console.log("this is Input",input) 
   const firstStringError = util.inspect(input);
   logger.log({
     level: "error",
     message: firstStringError
   })
-
+  let inputFile = null;
   // Determine if the input is an array of file objects
+  // most likely insert from user and need to deleted 
   if (input.length > 0 && typeof input[0] === "object" && input[0].path) {
-    input = extractPathsFromObjects(input);
+    inputFile = extractPathsFromObjects(input);
+  }else{
+    inputFile = input;
   }
   const stringError = util.inspect(input);
+  console.log("This is input after extract",inputFile)
+  console.log("This is input STRING after extract",inputFile)
   logger.log({
     level: "error",
-    message: `after extract from path${stringError}`
+    message: `after extract from path${inputFile}`
   })
 
-  // if we have in json format - most likely fetched from db;
-  if (Array.isArray(input)) {
+  if (Array.isArray(inputFile)) {
     // At this point, input should be an array of file paths
-    input.forEach((path) => {
+    inputFile.forEach((path) => {
       fs.unlink(path, function (err) {
         if (err) {
           console.log("Error while Deleting image", err);
@@ -105,7 +110,9 @@ function deleteFiles(input) {
         }
       });
     });
-  } else if (typeof input === "object") {
+
+  } else if (typeof inputFile === "object") {
+    // 
     let images = Object.values(input);
     console.log(images);
     images.forEach((path) => {
