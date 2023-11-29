@@ -787,7 +787,9 @@ function handleErrorResponse(res, error) {
       })
   }
 
-  logger.error("Test Error Printing Only");
+  logger.info("Test Error Printing Only");
+  logger.info(error);
+  logger.error(error)
   
   
   logger.error("Response Error", error ? util.inspect(error) : 'No error details available');
