@@ -42,7 +42,8 @@ async function getCustomerProfile(id){
         where:{
             user_id:id,user_type:"customer"
         },
-        attributes:['name','email','phone_number']
+        attributes:['name','email','phone_number'],
+        raw:true
     })
 }
 
