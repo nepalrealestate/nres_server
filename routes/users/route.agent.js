@@ -1,5 +1,5 @@
 const express = require("express");
-const { handleAgentRegistration,handleGetAgent,handleAgentLogin, handleAgentPasswordReset, handleAgentRating, handleUpdateProfile, handleUpdateAgentProfile, handleUpdateAgentPassword, agentVerifyToken } = require("../../controllers/users/controller.agent");
+const { handleAgentRegistration,handleGetAgent,handleAgentLogin, handleAgentPasswordReset, handleAgentRating, handleUpdateProfile, handleUpdateAgentProfile, handleUpdateAgentPassword, agentVerifyToken, handleGetAgentIsLoggedIn } = require("../../controllers/users/controller.agent");
 
 const { handleAddApartment } = require("../../controllers/property/controller.apartment");
 const { handleGetHouse, handleAddHouse } = require("../../controllers/property/controller.house");
@@ -19,11 +19,7 @@ router.post("/forgetPassword",handleAgentPasswordReset);
 router.post("/rating",handleAgentRating)
 
 
-router.get("/isLoggedIn",agentVerifyToken,async (req, res) => {
-    return res
-      .status(200)
-      .json({ message: "Agent Logged In", user_id: req.id, role: "agent" });
-  })
+router.get("/isLoggedIn",agentVerifyToken,handleGetAgentIsLoggedIn)
 
 router.put("/updateProfile",agentVerifyToken,handleUpdateAgentProfile);
 router.put("/updatePassword",agentVerifyToken,handleUpdateAgentPassword);

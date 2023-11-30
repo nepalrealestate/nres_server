@@ -40,7 +40,7 @@ async function getCustomer(id){
 async function getCustomerProfile(id){
     return await User.findOne({
         where:{
-            user_id:id
+            user_id:id,user_type:"customer"
         },
         attributes:['name','email','phone_number']
     })

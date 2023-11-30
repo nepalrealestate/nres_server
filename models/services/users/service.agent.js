@@ -30,6 +30,8 @@ async function findAgent(email){
 }
 
 
+
+
 async function findAgentPassword(id){
     return await Agent.findOne({
         where:{
@@ -44,10 +46,10 @@ async function findAgentPassword(id){
 
 //return all agent include - rating, total property except password
 async function getAgentByID(id){
-    return await Agent.findOne({
-        where:{agent_id:id},
+    return await User.findOne({
+        where:{user_id:id,user_type:"agent"},
         attributes: { exclude: ['password'] },
-        include:{model:AgentInfo,as:'agentInfo'}
+        //include:{model:AgentInfo,as:'agentInfo'}
         
     })
 }

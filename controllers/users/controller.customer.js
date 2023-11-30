@@ -99,6 +99,19 @@ const handleGetCustomerProfile = async (req,res)=>{
     }
 }
 
+const handleGetCustomerIsLoggedIn = async (req,res)=>{
+    let customer_id = req.id;
+    if(!customer_id){      
+        return res.status(400).json({message:"Bad Request"})
+    }
+    try {
+        const response = await getCustomerProfile(customer_id);
+        return res.status(200).json({data:response, message: "Customer Logged In", user_id: req.id, role: "customer" })
+    } catch (error) {
+        utility.handleErrorResponse(res,error)
+    }
+}
+
 const handleUpdateCustomerProfile = async (req,res)=>{
     let customer_id = null;
     if(req.id && req.user_type==="customer"){
@@ -247,4 +260,6 @@ module.exports = {handleCustomerRegistration,
     handleGetSeller,
     handleGetSellerByID,
     handleGetCustomerProfile,
-    handleCustomerPasswordReset}
+    handleCustomerPasswordReset,
+    handleGetCustomerIsLoggedIn
+}

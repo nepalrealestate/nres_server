@@ -56,6 +56,16 @@ const handleGetAgent = async (req, res) => {
   }
 };
 
+const handleGetAgentIsLoggedIn = async (req, res) => {
+  const agent_id = req.id;
+  try {
+    const agent = await getAgentByID(agent_id);
+    return res.status(200).json({ data:agent,message: "Agent Logged In", agent: agent });
+  } catch (error) {
+    utility.handleErrorResponse(res,error)
+  }
+}
+
 const handleAgentRegistration = async (req, res) => {
 
   const {
@@ -269,4 +279,5 @@ module.exports = {
   handleGetAllAgent,
   handleInsertAgentRating,
   agentVerifyToken,
+  handleGetAgentIsLoggedIn
 };
