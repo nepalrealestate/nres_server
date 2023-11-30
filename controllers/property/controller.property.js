@@ -774,9 +774,10 @@ const handleGetPendingProperty = async function (req, res) {
     condition.search = req.query.search.trim();
   }
   try {
-    const data = await getProperty(condition, limit, offset);
-    console.log(data);
-    return res.status(200).json(data);
+    const [properties,totalCount] = await Promise.all([getProperty(condition,limit,offset),countListingProperty({status:"pending"})])
+    //const data = await getProperty(condition, limit, offset);
+   
+    return res.status(200).json({properties,totalCount});
   } catch (error) {
     handleErrorResponse(res, error);
   }

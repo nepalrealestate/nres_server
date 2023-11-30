@@ -244,6 +244,9 @@ const customerVerifyToken = async(req,res,next)=>{
 }
 
 
+const customerLogout = async (req,res)=>{
+    auth.logout(req,res);
+}
 
 
 
@@ -261,5 +264,6 @@ module.exports = {handleCustomerRegistration,
     handleGetSellerByID,
     handleGetCustomerProfile,
     handleCustomerPasswordReset,
-    handleGetCustomerIsLoggedIn
+    handleGetCustomerIsLoggedIn,
+    customerLogout
 }

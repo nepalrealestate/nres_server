@@ -1,6 +1,6 @@
 const express = require("express");
 const { handleInsertAgentRating, handleAgentRating } = require("../../controllers/users/controller.agent");
-const { handleCustomerRegistration, handleCustomerLogin, handleGetCustomer, customerVerifyToken, handleGetCustomerProfile, handleCustomerPasswordReset, handleGetCustomerIsLoggedIn } = require("../../controllers/users/controller.customer");
+const { handleCustomerRegistration, handleCustomerLogin, handleGetCustomer, customerVerifyToken, handleGetCustomerProfile, handleCustomerPasswordReset, handleGetCustomerIsLoggedIn, customerLogout } = require("../../controllers/users/controller.customer");
 const { handleAddHouse, handleGetHouse } = require("../../controllers/property/controller.house");
 const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty, handleGetPropertyPriorityLocation, handleInsertPropertyFieldVisitRequest } = require("../../controllers/property/controller.property");
 const { handleAddLand, handleGetLand } = require("../../controllers/property/controller.land");
@@ -18,6 +18,8 @@ router.post("/register",handleCustomerRegistration)
 router.post("/login",handleCustomerLogin); 
 router.get("/",customerVerifyToken,handleGetCustomerProfile)
 router.post("/forgetPassword",handleCustomerPasswordReset)
+router.post("/logout",customerLogout);
+
 
 router.get("/isLoggedIn",customerVerifyToken,handleGetCustomerIsLoggedIn)
 

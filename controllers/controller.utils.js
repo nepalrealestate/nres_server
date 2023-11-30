@@ -185,7 +185,7 @@ function  authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
       secure:true,
     });
    
-    return res.status(200).json({ message: "Successfully Logged In", user_id: user.id, role: user_type });
+    return res.status(200).json({ message: "Successfully Logged In",name:user.name,email:user.email, user_id: user.id, role: user_type });
   };
 
   const verifyToken = async function (req, res, next) {

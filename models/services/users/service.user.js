@@ -23,10 +23,12 @@ async function registerUser(data,options={}){
 
 
 
-async function getUser(user_type){
+async function getUser(user_type,limit,offset){
     return await User.findAll({
         where:{user_type:user_type},
-        attributes:['user_id','name','email','phone_number']
+        attributes:['user_id','name','email','phone_number','user_type'],
+        limit:limit,
+        offset:offset
     })
 }
 
@@ -82,6 +84,7 @@ async function getBuyerByID(user_id){
 async function getSeller(condition){
     return await User.findAll({
        where:condition,
+       attributes:['user_id','name','email','phone_number'],
        include:[{
         model:db.Views.PropertyViewClient,
         required:true,
