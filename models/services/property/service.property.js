@@ -211,7 +211,7 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
         attributes: [
             'property_id', 'property_type', 'property_for', 'property_name',
             'listed_for', 'price', 'district', 'municipality', 'area_name',
-            'latitude', 'longitude', 'social_media', 'property_image', 'views'
+            'latitude', 'longitude', 'social_media', 'property_image', 'views','listing_type'
         ],
         order: orderConditions,
         limit: limit,

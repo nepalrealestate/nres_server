@@ -49,20 +49,20 @@ function propertyViewAdminModel(sequelize, DataTypes) {
   async function createPropertyViewAdmin() {
     const sql = ` CREATE OR REPLACE VIEW ${propertyAdminView} AS
 
-    SELECT    h.property_id,h.property_type, h.property_name,h.listed_for,h.province,h.district, h.municipality,h.area_name,h.price,h.property_image,h.owner_id,h.status,h.createdAt,
+    SELECT    h.property_id,h.property_type, h.property_name,h.listed_for,h.province,h.district, h.municipality,h.area_name,h.price,h.property_image,h.owner_id,h.listing_type,h.status,h.createdAt,
     ha.twitter,ha.tiktok,ha.instagram,ha.facebook,ha.youtube
    FROM ${DB_NAME}.property_house as h INNER JOIN ${DB_NAME}.property_house_ads as ha ON h.property_id = ha.property_id
   
    UNION 
   
-   SELECT l.property_id,l.property_type, l.property_name,l.listed_for,l.province,l.district,l.municipality,l.area_name,l.price,l.property_image,l.owner_id,l.status, l.createdAt ,
+   SELECT l.property_id,l.property_type, l.property_name,l.listed_for,l.province,l.district,l.municipality,l.area_name,l.price,l.property_image,l.owner_id,l.listing_type,l.status, l.createdAt ,
     la.twitter,la.tiktok,la.instagram,la.facebook,la.youtube
 
    FROM ${DB_NAME}.property_land as l INNER JOIN ${DB_NAME}.property_land_ads as la ON l.property_id = la.property_id
    
    UNION
   
-   SELECT a.property_id,a.property_type, a.property_name, a.listed_for,a.province,a.district, a.municipality,a.area_name,a.price,a.property_image,a.owner_id,a.status, a.createdAt ,
+   SELECT a.property_id,a.property_type, a.property_name, a.listed_for,a.province,a.district, a.municipality,a.area_name,a.price,a.property_image,a.owner_id,a.listing_type,a.status, a.createdAt ,
 
   aa.twitter,aa.tiktok,aa.instagram,aa.facebook,aa.youtube
    FROM ${DB_NAME}.property_apartment as a INNER JOIN ${DB_NAME}.property_apartment_ads as aa ON a.property_id = aa.property_id;`;
@@ -118,6 +118,9 @@ function propertyViewAdminModel(sequelize, DataTypes) {
       },
       owner_id:{
         type:DataTypes.INTEGER,
+      },
+      listing_type:{
+        type:DataTypes.STRING
       },
       status:{
         type:DataTypes.STRING,

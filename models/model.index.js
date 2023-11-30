@@ -122,6 +122,10 @@ db.ContactModel = {
     Contact:require('./contact/model.contact').contactModel(sequelize,DataTypes)
 }
 
+db.VideoCarouselModel = {
+    VideoCarousel:require("./videoCarousel/model.videoCarousel").videoCarouselModel(sequelize,DataTypes)
+}
+
 
 // views 
 db.Views={

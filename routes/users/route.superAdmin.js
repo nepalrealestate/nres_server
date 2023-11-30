@@ -16,6 +16,7 @@ const { handleInsertBlog, handleGetBlog, handleGetBlogById, handleDeleteBlog } =
 const { handleInsertOrUpdateAds, handleGetAds } = require("../../controllers/ads/controller.ads");
 const { handleGetNotification, handleUpdateNotificationSeen, handleUpdateAllNotificationSeen } = require("../../controllers/notification/controller.notification");
 const { handleGetContact, handleGetContactByID } = require("../../controllers/contact/controller.contact");
+const { handleInsertVideoCarousel, handleDeleteVideoCarousel } = require("../../controllers/videoCarousel/controller.videoCarousel");
 
 const router = express.Router();
 
@@ -84,6 +85,7 @@ router.post("/property/apartment/comment/:property_id",superAdminVerifyToken,han
 router.get("/property/apartment/comment/:property_id",superAdminVerifyToken,handleGetApartmentComment)
 
 router.patch("/property/apartment/ads/:property_id",superAdminVerifyToken,handleUpdateApartmentAds)
+
 
 //house
 router.get("/property/house/:property_id",superAdminVerifyToken,handleGetHouseByID)
@@ -202,11 +204,16 @@ router.patch("/notification",superAdminVerifyToken,handleUpdateAllNotificationSe
 
 
  // property analytics
- router.get("/analytic",superAdminVerifyToken,handleGetPropertyAnalytics)
+router.get("/analytic",superAdminVerifyToken,handleGetPropertyAnalytics)
 
 
  // contact
-    router.get("/contact",superAdminVerifyToken,handleGetContact);
-    router.get("/contact/:id",superAdminVerifyToken,handleGetContactByID);
+router.get("/contact",superAdminVerifyToken,handleGetContact);
+router.get("/contact/:id",superAdminVerifyToken,handleGetContactByID);
+
+// video carousel
+router.post("/videoCarousel",superAdminVerifyToken,handleInsertVideoCarousel);
+router.delete("/videoCarousel/:id",superAdminVerifyToken,handleDeleteVideoCarousel);
+
 
 module.exports  = router; 
