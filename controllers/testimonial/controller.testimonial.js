@@ -7,6 +7,7 @@ const handleInsertTestimonial = async (req, res) => {
         const response = await insertTestimonial({name,testimonial});
         return res.status(200).json({
             message: "Testimonial inserted successfully",
+            data: response
         })
     } catch (error) {
         handleErrorResponse(res,error);
