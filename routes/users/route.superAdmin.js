@@ -15,7 +15,7 @@ const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleI
 const { handleInsertBlog, handleGetBlog, handleGetBlogById, handleDeleteBlog } = require("../../controllers/blog/controller.blog");
 const { handleInsertOrUpdateAds, handleGetAds } = require("../../controllers/ads/controller.ads");
 const { handleGetNotification, handleUpdateNotificationSeen, handleUpdateAllNotificationSeen } = require("../../controllers/notification/controller.notification");
-const { handleGetContact, handleGetContactByID } = require("../../controllers/contact/controller.contact");
+const { handleGetContact, handleGetContactByID, handleDeleteContact } = require("../../controllers/contact/controller.contact");
 const { handleInsertVideoCarousel, handleDeleteVideoCarousel, handleGetVideoCarousel } = require("../../controllers/videoCarousel/controller.videoCarousel");
 const { handleInsertTestimonial, handleGetTestimonial, handleGetTestimonialByID, handleDeleteTestimonial } = require("../../controllers/testimonial/controller.testimonial");
 
@@ -54,7 +54,7 @@ router.delete("/staff/:staff_id",superAdminVerifyToken,handleStaffDelete);
 
 
 // agent related routes
-router.get("/agent",handleSuperAdminLogin,handleGetAllAgent);
+router.get("/agent",superAdminVerifyToken,handleGetAllAgent);
 
 
 //customer 
@@ -215,6 +215,7 @@ router.get("/analytic",superAdminVerifyToken,handleGetPropertyAnalytics)
  // contact
 router.get("/contact",superAdminVerifyToken,handleGetContact);
 router.get("/contact/:id",superAdminVerifyToken,handleGetContactByID);
+router.delete("/contact/:id",superAdminVerifyToken,handleDeleteContact);
 
 // video carousel
 router.post("/videoCarousel",superAdminVerifyToken,handleInsertVideoCarousel);

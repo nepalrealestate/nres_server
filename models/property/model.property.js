@@ -157,20 +157,20 @@ function propertyViewClientModel(sequelize, DataTypes) {
     CREATE OR REPLACE VIEW ${propertyClientView} AS
     
   
-    SELECT   h.property_id,h.property_type, h.property_name,h.property_for,h.listed_for,h.province,h.district, h.municipality,h.area_name,h.latitude,h.longitude,h.price,h.social_media,h.property_image, COALESCE(house_views.views, 0) AS views,h.owner_id,h.listing_type,h.status, h.createdAt 
+    SELECT   h.property_id,h.property_type, h.property_name,h.property_for,h.listed_for,h.province,h.district, h.municipality,h.area_name,h.latitude,h.longitude,h.price,h.social_media,h.property_image, COALESCE(house_views.views, 0) AS views,h.owner_id,h.listing_type,h.status, h.createdAt,h.updatedAt
 
     FROM ${DB_NAME}.property_house  as h LEFT JOIN ${DB_NAME}.property_house_views_count as house_views ON h.property_id=house_views.property_id
    
     UNION 
    
-    SELECT l.property_id,l.property_type, l.property_name,l.property_for,l.listed_for,l.province,l.district,l.municipality,l.area_name,l.latitude,l.longitude,l.price,l.social_media,l.property_image, COALESCE(land_views.views, 0) AS views, l.owner_id,l.listing_type,l.status,l.createdAt 
+    SELECT l.property_id,l.property_type, l.property_name,l.property_for,l.listed_for,l.province,l.district,l.municipality,l.area_name,l.latitude,l.longitude,l.price,l.social_media,l.property_image, COALESCE(land_views.views, 0) AS views, l.owner_id,l.listing_type,l.status,l.createdAt ,l.updatedAt
   
   
     FROM ${DB_NAME}.property_land as l  LEFT JOIN ${DB_NAME}.property_land_views_count as land_views ON l.property_id=land_views.property_id
     
     UNION
    
-    SELECT a.property_id,a.property_type, a.property_name,a.property_for, a.listed_for,a.province,a.district, a.municipality,a.area_name,a.latitude,a.longitude,a.price,a.social_media,a.property_image, COALESCE(apartment_views.views, 0) AS views,a.owner_id,a.listing_type,a.status, a.createdAt 
+    SELECT a.property_id,a.property_type, a.property_name,a.property_for, a.listed_for,a.province,a.district, a.municipality,a.area_name,a.latitude,a.longitude,a.price,a.social_media,a.property_image, COALESCE(apartment_views.views, 0) AS views,a.owner_id,a.listing_type,a.status, a.createdAt ,a.updatedAt
   
     FROM ${DB_NAME}.property_apartment as a LEFT JOIN ${DB_NAME}.property_apartment_views_count as apartment_views ON a.property_id=apartment_views.property_id 
   `;
@@ -248,6 +248,9 @@ function propertyViewClientModel(sequelize, DataTypes) {
       createdAt: {
         type: DataTypes.DATE,
       },
+      updatedAt:{
+        type:DataTypes.DATE
+      }
     },
     {
       freezeTableName: true,
