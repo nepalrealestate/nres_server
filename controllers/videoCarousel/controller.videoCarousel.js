@@ -8,6 +8,7 @@ const handleInsertVideoCarousel = async (req, res) => {
         return res.status(200).json({
             success:true,
             message:"Video Carousel Link Inserted Successfully",
+            data:response
         })
     }catch(error){
         handleErrorResponse(res,error)

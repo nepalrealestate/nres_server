@@ -16,7 +16,7 @@ const { handleInsertBlog, handleGetBlog, handleGetBlogById, handleDeleteBlog } =
 const { handleInsertOrUpdateAds, handleGetAds } = require("../../controllers/ads/controller.ads");
 const { handleGetNotification, handleUpdateNotificationSeen, handleUpdateAllNotificationSeen } = require("../../controllers/notification/controller.notification");
 const { handleGetContact, handleGetContactByID } = require("../../controllers/contact/controller.contact");
-const { handleInsertVideoCarousel, handleDeleteVideoCarousel } = require("../../controllers/videoCarousel/controller.videoCarousel");
+const { handleInsertVideoCarousel, handleDeleteVideoCarousel, handleGetVideoCarousel } = require("../../controllers/videoCarousel/controller.videoCarousel");
 const { handleInsertTestimonial, handleGetTestimonial, handleGetTestimonialByID, handleDeleteTestimonial } = require("../../controllers/testimonial/controller.testimonial");
 
 const router = express.Router();
@@ -228,6 +228,7 @@ router.get("/contact/:id",superAdminVerifyToken,handleGetContactByID);
 
 // video carousel
 router.post("/videoCarousel",superAdminVerifyToken,handleInsertVideoCarousel);
+router.get("/videoCarousel",superAdminVerifyToken,handleGetVideoCarousel);
 router.delete("/videoCarousel/:id",superAdminVerifyToken,handleDeleteVideoCarousel);
 
 //testimonial
