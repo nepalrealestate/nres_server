@@ -1,5 +1,5 @@
 const db = require("../../model.index");
-const { VideoCarousel } = db;
+const  VideoCarousel  = db.VideoCarouselModel.VideoCarousel;
 async function insertVideoCarouselLink(link){
     return await VideoCarousel.create({
         link:link

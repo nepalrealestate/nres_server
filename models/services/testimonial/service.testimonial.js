@@ -1,5 +1,5 @@
 const db = require("../../model.index");
-const Testimonial = db.TestimonialModel;
+const Testimonial = db.TestimonialModel.Testimonial;
 
 
 async function insertTestimonial(data) {
