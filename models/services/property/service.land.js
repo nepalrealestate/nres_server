@@ -135,7 +135,7 @@ async function getPendingLand(condition,limit,offset){
  }
 
  async function updateLandListingType(property_id,listing_type){
-    return await Land.update({listed_type:listing_type},{where:{property_id:property_id}})
+    return await Land.update({listing_type:listing_type},{where:{property_id:property_id}})
  }
 
 

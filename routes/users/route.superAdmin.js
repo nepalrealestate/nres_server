@@ -175,12 +175,7 @@ router.get("/ads",superAdminVerifyToken,handleGetAds);
 
 
 
-//sold property
-router.post("/property/apartment/sold/:property_id",superAdminVerifyToken,handleSoldApartment)
-
-router.post("/property/house/sold/:property_id",superAdminVerifyToken,handleSoldHouse)
-
-router.post("/property/land/sold/:property_id",superAdminVerifyToken,handleSoldLand)
+//sold prop
 
 // router.get("/property/sold",superAdminVerifyToken,handleGetSoldProperty)
 
@@ -202,12 +197,6 @@ router.delete("/property/house/pending/:property_id",superAdminVerifyToken,handl
 router.delete("/property/apartment/pending/:property_id",superAdminVerifyToken,handleDeletePendingApartment)
 router.delete("/property/land/pending/:property_id",superAdminVerifyToken,handleDeletePendingLand)
 
-// approved property
-router.post("/property/house/approved/:property_id",superAdminVerifyToken,handleApproveHouse)
-
-router.post("/property/apartment/approved/:property_id",superAdminVerifyToken,handleApproveApartment)
-
-router.post("/property/land/approved/:property_id",superAdminVerifyToken,handleApproveLand)
 
 
 
