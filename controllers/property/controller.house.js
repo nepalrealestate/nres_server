@@ -8,7 +8,7 @@ const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 
 const {Utility, propertyUtility, utility, handleErrorResponse} = require("../controller.utils");
-const { getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse, getRequestedHouse, updateHouse, deleteHouse, soldHouse, getSoldHouseByID, deletePendingHouse } = require("../../models/services/property/service.house");
+const { getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse, getRequestedHouse, updateHouse, deleteHouse, soldHouse, getSoldHouseByID, deletePendingHouse, updateHouseListingType } = require("../../models/services/property/service.house");
 //const utils = new Utility();
 const utils  = utility();
 
@@ -103,10 +103,7 @@ const handleApproveHouse = async (req, res) => {
   const staff_id = req.id;
   let house;
   try {
-    house = await getPendingHouseByID(property_id);
-    if (house === undefined || house === null) {
-      return res.status(400).json({ message: "No House" });
-    }
+    
     await approveHouse(staff_id, property_id);
     return res.status(200).json({ message: "approve successfully" });
   } catch (error) {
@@ -116,6 +113,21 @@ const handleApproveHouse = async (req, res) => {
   }
 };
 
+const handleUpdateHouseListingType = async (req,res)=>{
+  const {property_id} = req.params;
+  const {listing_type} = req.body;
+
+  if(!property_id || !listing_type){
+    return res.status(400).json({message:"Bad Request"})
+  }
+
+  try {
+    const response = await updateHouseListingType(property_id,listing_type);
+    return res.status(200).json({message:"Successfully Update Listing Type"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
 
 
 const handleUpdateHouseAds = async (req,res)=>{
@@ -244,6 +256,7 @@ module.exports = {
   handleSoldHouse,
   handleGetSoldHouseByID,
   handleGetPendingHouseByID,
-  handleDeletePendingHouse
+  handleDeletePendingHouse,
+  handleUpdateHouseListingType
   
 };

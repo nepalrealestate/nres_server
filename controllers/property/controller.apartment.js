@@ -10,7 +10,7 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const {Utility, propertyUtility, utility, handleErrorResponse} = require("../controller.utils");
-const { getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment, updateApartment, deleteApartment, insertApartmentComment, getApartmentComment, soldApartment, getSoldApartmentByID, deletePendingApartment } = require("../../models/services/property/service.apartment");
+const { getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment, updateApartment, deleteApartment, insertApartmentComment, getApartmentComment, soldApartment, getSoldApartmentByID, deletePendingApartment, updateApartmentListingType } = require("../../models/services/property/service.apartment");
 const { wrapAwait } = require("../../errorHandling");
 const { apartmentSchema } = require("../validationSchema");
 const { findCustomer } = require("../../models/services/users/service.customer");
@@ -117,13 +117,8 @@ const handleApproveApartment = async (req, res) => {
 
   console.log(property_id);
   const staff_id = req.id;
-  let apartment;
   try {
-    apartment = await getPendingApartmentByID(property_id); //testing this function needed or not
-    if (apartment === undefined || apartment === null) {
-      return res.status(400).json({ message: "No Apartment" });
-    }
-    await approveApartment(staff_id, property_id);
+    const response  = await approveApartment(staff_id, property_id);
     return res.status(200).json({ message: "approve successfully" });
   } catch (error) {
     console.log(error)
@@ -133,6 +128,22 @@ const handleApproveApartment = async (req, res) => {
   }
 };
 
+
+const handleUpdateApartmentListingType = async (req,res)=>{
+  const {property_id} = req.params;
+  const {listing_type} = req.body;
+
+  if(!property_id || !listing_type){
+    return res.status(400).json({message:"Bad Request"})
+  }
+
+  try {
+    const response = await updateApartmentListingType(property_id,listing_type);
+    return res.status(200).json({message:"Successfully Updated"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
 
 
 
@@ -263,4 +274,5 @@ module.exports = {
   handleGetSoldApartmentByID,
   handleGetPendingApartmentByID,
   handleDeletePendingApartment,
+  handleUpdateApartmentListingType
 };

@@ -6,7 +6,7 @@ const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const multer = require("multer");
 const {Utility, utility, propertyUtility, handleErrorResponse} = require("../controller.utils");
-const { getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand, insertLand, getRequestedLand, updateLand, deleteLand, soldLand, getSoldLandByID, deletePendingLand } = require("../../models/services/property/service.land");
+const { getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand, insertLand, getRequestedLand, updateLand, deleteLand, soldLand, getSoldLandByID, deletePendingLand, updateLandListingType } = require("../../models/services/property/service.land");
 //const utils = new Utility();
 const utils = utility();
 const property = propertyUtility("land");
@@ -84,11 +84,6 @@ const handleApproveLand = async (req, res) => {
   let land;
 
   try {
-    land = await getPendingLandByID(property_id);
-    if (land === undefined || land === null) {
-      return res.status(400).json({ message: "No Land" });
-    }
-    
     await approveLand(staff_id, property_id);
     return res.status(200).json({ message: "approve successfully" });
   } catch (error) {
@@ -98,6 +93,20 @@ const handleApproveLand = async (req, res) => {
       .json({ message: "approved denied ! please try later" });
   }
 };
+
+const handleUpdateLandListingType = async (req,res)=>{
+  const {property_id} = req.params;
+  const {listing_type} = req.body;
+  if(!property_id || !listing_type){
+    return res.status(400).json({message:"Bad Request"});
+  }
+  try {
+    const response = await updateLandListingType(property_id,listing_type);
+    return res.status(200).json({message:"Successfully Updated"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
 
 
 
@@ -220,4 +229,5 @@ module.exports = {
   handleGetSoldLandByID,
   handleGetPendingLandByID,
   handleDeletePendingLand,
+  handleUpdateLandListingType
 };

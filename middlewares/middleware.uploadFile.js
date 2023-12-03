@@ -78,19 +78,12 @@ function deleteFiles(input) {
   let inputFile = null;
   // Determine if the input is an array of file objects
   // most likely insert from user and need to deleted 
-  if (input.length > 0 && typeof input[0] === "object" && input[0].path) {
+  if (typeof input[0] === "object" && input[0].path && input.length > 0 ) {
     inputFile = extractPathsFromObjects(input);
   }else{
     inputFile = input;
   }
-  const stringError = util.inspect(input);
-  console.log("This is input after extract",inputFile)
-  console.log("This is input STRING after extract",inputFile)
-  logger.log({
-    level: "error",
-    message: `after extract from path${inputFile}`
-  })
-
+  
   if (Array.isArray(inputFile)) {
     // At this point, input should be an array of file paths
     inputFile.forEach((path) => {

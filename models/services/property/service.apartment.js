@@ -164,44 +164,11 @@ async function deletePendingApartment(property_id){
 }
 
 async function approveApartment(staff_id,property_id){
+        return await House.update({status:'approved',approved_by:staff_id},{where:{property_id:property_id}});  
+}
 
-    try {
-        await House.update({status:'approved',approved_by:staff_id},{where:{property_id:property_id}});
-    } catch (error) {
-        
-    }
-    // let transaction ; 
-
-    // try {
-    //     transaction  = await db.sequelize.transaction();
-
-    //     // find latest property id
-    //     const propertyId = await db.PropertyModel.PropertyIdTracker.findOne({where:{id:1}});
-        
-    //     console.log(propertyId);
-    //     const newPropertyId = propertyId.dataValues.property_id;
-       
-    //     const pendingApartment = await PendingApartment.findOne({where:{property_id:property_id},transaction})
-
-    //     await Apartment.create({...pendingApartment.get(),property_id:newPropertyId, approved_by: staff_id },{transaction});
-
-    //     // Increment property_id in PropertyIdTracker
-    //     const propertyIdTracker = await db.PropertyModel.PropertyIdTracker.findByPk(1, { transaction });
-    //     propertyIdTracker.property_id += 1;
-    //     await propertyIdTracker.save({ transaction });
-
-    //     // Delete from PendingApartment
-    //     await PendingApartment.destroy({ where: { property_id }, transaction });
-        
-    //     //insert into apartments ads
-    //     await ApartmentAds.create({property_id:newPropertyId},{transaction})
-
-    //     await transaction.commit();
-
-    // } catch (error) {
-    //     if (transaction) await transaction.rollback();
-    //     throw error;
-    // }
+async function updateApartmentListingType(property_id,listing_type){
+    return await Apartment.update({listing_type:listing_type},{where:{property_id:property_id}})
 }
 
 
@@ -302,5 +269,6 @@ module.exports = {insertApartment,
     updateApartmentViews,
     soldApartment,
     getSoldApartmentByID,
-    deletePendingApartment
+    deletePendingApartment,
+    updateApartmentListingType
     };

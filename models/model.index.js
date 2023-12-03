@@ -126,6 +126,11 @@ db.VideoCarouselModel = {
     VideoCarousel:require("./videoCarousel/model.videoCarousel").videoCarouselModel(sequelize,DataTypes)
 }
 
+db.TestimonialModel = {
+    Testimonial:require("./testimonial/model.testimonial").testimonialModel(sequelize,DataTypes)
+
+}
+
 
 // views 
 db.Views={

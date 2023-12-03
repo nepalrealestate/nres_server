@@ -146,45 +146,15 @@ async function deleteHouse(property_id){
 
  async function approveHouse(staff_id,property_id){
 
-    try {
-        await House.update({status:'approved',approved_by:staff_id},{where:{property_id:property_id}});
-    } catch (error) {
-        
-    }
-
-    // let transaction ; 
-
-    // try {
-    //     transaction  = await db.sequelize.transaction();
-
-    //     // find latest property id
-    //     const propertyId = await db.PropertyModel.PropertyIdTracker.findOne({where:{id:1}});
-        
-    //     console.log(propertyId);
-    //     const newPropertyId = propertyId.dataValues.property_id;
-       
-    //     const pendingHouse = await PendingHouse.findOne({where:{property_id:property_id},transaction})
-
-    //     await House.create({...pendingHouse.get(),property_id:newPropertyId, approved_by: staff_id },{transaction});
-    //      // Increment property_id in PropertyIdTracker
-    //      const propertyIdTracker = await db.PropertyModel.PropertyIdTracker.findByPk(1, { transaction });
-    //      propertyIdTracker.property_id += 1;
-    //      await propertyIdTracker.save({ transaction });
-
-    //      // delete from pending house\
-    //      await PendingHouse.destroy({where:{property_id},transaction});
-
-    //      //insert into house ads
-
-    //      await HouseAds.create({property_id:newPropertyId},{transaction});
-
-    //      await transaction.commit();
-        
-    //     } catch (error) {
-    //         if (transaction) await transaction.rollback();
-    //         throw error;
-    //     }
+    return await House.update({status:'approved',approved_by:staff_id},{where:{property_id:property_id}});
+   
  }
+
+ async function updateHouseListingType(property_id,listing_type){
+    return await House.update({listed_for:listing_type},{where:{property_id:property_id}})
+}
+
+
 
 
  async function insertHouseFeedback(property_id,customer_id,feedback){
@@ -280,5 +250,6 @@ module.exports ={insertHouse,
     deletePendingHouse,
     updateHouseViews,
     soldHouse,
-    getSoldHouseByID
+    getSoldHouseByID,
+    updateHouseListingType
 }
