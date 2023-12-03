@@ -6,6 +6,7 @@ const path = require("path");
 const logger = require("../utils/errorLogging/logger");
 const sizeOf = require('image-size');
 const util = require('util');
+const { type } = require("os");
 
 
 function UploadImage(folderPath, maxImageSize) {
@@ -146,6 +147,26 @@ function deleteSingleImage(path) {
   });
 }
 
+function deleteMultipleImages(paths) {
+  if (!Array.isArray(paths)) {
+    return;
+  }
+
+  // Use a for...of loop to allow the use of async/await
+  for (const link of paths) {
+
+    fs.unlink(link, function (err) {
+      if (err) {
+        console.log("Error while Deleting image", err);
+        logger.error("Error while Deleting image", err);
+      } else {
+        console.log(link, " image deleted");
+        logger.info(link, " image deleted");
+      }
+    });
+  }
+}
+
 async function chatImageUpload(base64Image, uploadPath, uploadSize) {
   try {
     const imageBuffer = Buffer.from(
@@ -191,4 +212,5 @@ module.exports = {
   deleteFiles,
   deleteSingleImage,
   chatImageUpload,
+  deleteMultipleImages
 };

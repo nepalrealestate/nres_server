@@ -11,7 +11,7 @@ const { wrapAwait } = require("../errorHandling");
 
 
 const { validateSchema } = require("./validationSchema");
-const { deleteFiles } = require("../middlewares/middleware.uploadFile");
+const { deleteFiles, deleteMultipleImages } = require("../middlewares/middleware.uploadFile");
 const { insertNotification } = require("../models/services/notification/service.notification");
 
 
@@ -524,13 +524,17 @@ function propertyUtility(property_type) {
       console.log("This is property object",property?.property_image)
       console.log("This is property object",property?.dataValues?.property_image)
     
-
+      
       const response = await deletePropertyCallabck(property_id);
       if (response === 0) {
         return res.status(404).json({ message: `${propertyType} not found` })
       }
-      if (property?.dataValues?.property_image) {
-        deleteFiles(property?.dataValues?.property_image)
+      let imagePathsObject = property?.dataValues?.property_image|| null;
+      console.log("this is project nres",imagePathsObject)
+      let imagePaths = imagePathsObject ? Object.values(imagePathsObject):null;
+      if (imagePaths) {
+        
+        deleteMultipleImages(imagePaths)
       }
       return res.status(200).json({ message: `${propertyType} deleted` })
     } catch (error) {
