@@ -753,8 +753,9 @@ const handleGetSoldProperty = async function (req, res) {
   }
   condition.status='sold';
   try {
-    const response = await getProperty(condition, limit, offset);
-    return res.status(200).json(response);
+    const [soldProperty,totalCount] = await Promise.all([getProperty(condition,limit,offset),countListingProperty(condition)])
+    
+    return res.status(200).json({properties:soldProperty,totalCount});
   } catch (error) {
     handleErrorResponse(res, error);
   }

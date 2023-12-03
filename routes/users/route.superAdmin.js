@@ -75,6 +75,7 @@ router.delete("/service/provider/:provider_id",superAdminVerifyToken,handleDelet
 
 // property Related Routes
 router.get("/property",superAdminVerifyToken,handleGetPropertyWithAds);
+router.get("/property/sold",superAdminVerifyToken,handleGetSoldProperty)
 // apartment
 router.get("/property/apartment/property_id",superAdminVerifyToken,handleGetApartmentByID)
 router.get("/property/apartment",superAdminVerifyToken,handleGetApartment)
@@ -181,7 +182,7 @@ router.post("/property/house/sold/:property_id",superAdminVerifyToken,handleSold
 
 router.post("/property/land/sold/:property_id",superAdminVerifyToken,handleSoldLand)
 
-router.get("/property/sold",superAdminVerifyToken,handleGetSoldProperty)
+// router.get("/property/sold",superAdminVerifyToken,handleGetSoldProperty)
 
 router.get("/property/land/sold/:property_id",superAdminVerifyToken,handleGetSoldLandByID)
 router.get("/property/house/sold/:property_id",superAdminVerifyToken,handleGetSoldHouseByID)

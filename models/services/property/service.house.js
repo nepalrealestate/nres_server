@@ -151,7 +151,7 @@ async function deleteHouse(property_id){
  }
 
  async function updateHouseListingType(property_id,listing_type){
-    return await House.update({listed_for:listing_type},{where:{property_id:property_id}})
+    return await House.update({listed_type:listing_type},{where:{property_id:property_id}})
 }
 
 

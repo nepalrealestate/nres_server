@@ -378,7 +378,7 @@ async function getSoldProperty(condition,limit,offset){
     ]
     delete condition.search;
   }
-  const [properties,totalCount] = await Promise.all([SoldPropertyView.findAll({
+  const [properties,totalCount] = await Promise.all([PropertyViewClient.findAll({
     where:condition,
     order:[['updatedAt','DESC']],
     limit:limit,
