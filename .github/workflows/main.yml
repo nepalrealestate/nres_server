@@ -1,0 +1,40 @@
+name: Node.js Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.20.1
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Deploy to cPanel
+        run: |
+          # Add your deployment script or commands here
+          # For example:
+          # scp -r * user@yourdomain.com:/path/to/destination
+          # Deployment script
+          CPANEL_USER="nrescomn"
+          CPANEL_HOST="nres.com.np"
+          CPANEL_PATH="/home/nrescomn/nres_server"
+          
+          # Define SSH private key file path
+          
+          SSH_KEY_PATH="/home/nrescomn/.ssh/github"  # Update with the correct path
+          
+          # Copy files to cPanel using SCP
+          
+          scp -r -i "$SSH_KEY_PATH" * "$CPANEL_USER@$CPANEL_HOST:$CPANEL_PATH"
