@@ -1,0 +1,6 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/nres_server
+    - /bin/touch /home/nres_server
+    
