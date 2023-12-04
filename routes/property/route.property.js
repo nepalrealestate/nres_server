@@ -2,6 +2,7 @@ const express = require("express");
 const { handleGetPropertyWithAds, handleGetProperty, handleGetPropertyPriorityLocation, handleInsertRequestedProperty, handleGetPropertyAnalytics, handleGetPropertyList, handleInsertPropertyFieldVisitRequest } = require("../../controllers/property/controller.property");
 const { handleGetAds } = require("../../controllers/ads/controller.ads");
 const { handleGetVideoCarousel } = require("../../controllers/videoCarousel/controller.videoCarousel");
+const { handleGetTestimonial } = require("../../controllers/testimonial/controller.testimonial");
 
 
 const router = express.Router();
@@ -30,4 +31,7 @@ router.post("/fieldVisit",handleInsertPropertyFieldVisitRequest)
  // property video Carousel
  router.get("/videoCarousel",handleGetVideoCarousel)
 
+
+ //testimonial
+ router.get("/testimonial",handleGetTestimonial)
 module.exports = router;
