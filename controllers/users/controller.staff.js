@@ -221,7 +221,11 @@ const handleStaffUpdate = async (req, res) => {
 };
 
 const handleCreateStaffAccountAccess = async (req,res)=>{
+  console.log("Create Staff Account Access OA< IAM HERERERER")
   const staff_id = req.params.staff_id;
+  if(!staff_id){
+    return res.status(400).json({message:"Staff ID is required"});
+  }
   try {
     const staffResponse = await getStaffProfileByID(staff_id);
     console.log("Staff Response",staffResponse);
@@ -261,12 +265,18 @@ const handleCreateStaffAccountAccess = async (req,res)=>{
 }
 
 const handleDeleteStaffAccountAccess = async (req,res)=>{
-  const admin_id = req.params.admin_id;
-  if(admin_id==req.id && admin_id==1){
-    return res.status(400).json({message:"You can't delete your own account"});
+  const staff_id = req.params.staff_id;
+  if(!staff_id){
+    return res.status(400).json({message:"Staff ID is required"});
   }
   try {
-   
+    const staffResponse = await getStaffProfileByID(staff_id);
+    if(!staffResponse){
+      return res.status(404).json({message:"Staff Not Found"});
+    }
+    if(!staffResponse?.dataValues?.admin_id){
+      return res.status(400).json({message:"Account Not Created"});
+    }
     const response = await deleteAdmin(admin_id)
     console.log("Delete Response",response);
     if(response==0){

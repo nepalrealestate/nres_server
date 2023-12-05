@@ -21,7 +21,7 @@ const http = require("http");
 const socketIo = require("socket.io");
 
 
-const allowedOrigins = ['https://nres.com.np', 'https://admin.nres.com.np'];
+const allowedOrigins = ['https://nres.com.np', 'https://admin.nres.com.np','http://localhost:3000'];
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {

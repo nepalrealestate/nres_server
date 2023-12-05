@@ -530,8 +530,10 @@ function propertyUtility(property_type) {
         return res.status(404).json({ message: `${propertyType} not found` })
       }
       let imagePathsObject = property?.dataValues?.property_image|| null;
-      console.log("this is project nres",imagePathsObject)
+      console.log("this is project nres images ",imagePathsObject)
+      logger.error("This is image path object",imagePathsObject)
       let imagePaths = imagePathsObject ? Object.values(imagePathsObject):null;
+      console.log("this is project nres images after parse ",imagePaths)
       if (imagePaths) {
         
         deleteMultipleImages(imagePaths)

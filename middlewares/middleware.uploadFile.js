@@ -150,6 +150,8 @@ function deleteSingleImage(path) {
 }
 
 function deleteMultipleImages(paths) {
+  console.log("this is Input",paths)
+  logger.error("this is Input for image delete",paths)
   if (!Array.isArray(paths)) {
     return;
   }
