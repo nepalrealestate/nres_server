@@ -37,6 +37,7 @@ db.sequelize.sync({ force: false }); // alter creates duplicates index every tim
 app.use("/api/uploads", express.static("uploads"));
 
 app.use(express.json());
+
 app.use(
   cors({
     credentials: true,
@@ -44,17 +45,13 @@ app.use(
       const whitelist = [
         "https://admin.nres.com.np",
         "http://admin.nres.com.np",
-        "http://nres.com.np",
         "https://nres.com.np",
-        "http://api.nres.com.np",
-        "https://api.nres.com.np",
+        "http://nres.com.np",
         "http://localhost:3000",
         "https://localhost:3000",
-        
-        // ... (your other domains)
       ];
 
-      if (whitelist.indexOf(origin) !== -1 || !origin) {
+      if (!origin || whitelist.some(domain => origin.endsWith(domain))) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
@@ -62,7 +59,6 @@ app.use(
     },
   })
 );
-
 
 
 app.use(cookieParser());
