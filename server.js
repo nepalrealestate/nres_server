@@ -95,7 +95,7 @@ console.log('Logging level configured:', logger.level);
 if (process.env.NODE_ENV == "Production") {
   server.listen(() => {
     console.log("Server Started");
-    logger.info("Server Started");
+    logger.info("NRES Server Started");
   });
 } else {
   server.listen(port, () => {
