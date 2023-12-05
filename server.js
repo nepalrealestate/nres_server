@@ -38,28 +38,21 @@ app.use("/api/uploads", express.static("uploads"));
 
 app.use(express.json());
 
-app.use(
-  cors({
-    credentials: true,
-    origin: function (origin, callback) {
-      const whitelist = [
-        "https://admin.nres.com.np",
-        "http://admin.nres.com.np",
-        "https://nres.com.np",
-        "http://nres.com.np",
-        "http://localhost:3000",
-        "https://localhost:3000",
-      ];
+const allowlist = [
+  'https://admin.nres.com.np',
+  'https://nres.com.np'
+];
+const corsOptionsDelegate = function (req, callback) {
+  let corsOptions;
+  if (allowlist.indexOf(req.header("Origin")) !== -1) {
+    corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
+  } else {
+    corsOptions = { origin: false }; // disable CORS for this request
+  }
+  callback(null, corsOptions); // callback expects two parameters: error and options
+};
 
-      if (!origin || whitelist.some(domain => origin.endsWith(domain))) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-  })
-);
-
+app.use(cors(corsOptionsDelegate))
 
 app.use(cookieParser());
 
@@ -83,14 +76,14 @@ app.use("/api/property/apartment", apartmentRouter);
 app.use("/api/property", propertyRouter);
 app.use("/api/service", serviceRouter);
 app.use("/api/blog", blogRouter);
-app.use("/api/contact",contactRouter)
+app.use("/api/contact", contactRouter);
 
 //chat running
 
 socketServer.chat(chatServer);
 
-console.log('Logging levels:', logger.levels);
-console.log('Logging level configured:', logger.level);
+console.log("Logging levels:", logger.levels);
+console.log("Logging level configured:", logger.level);
 
 if (process.env.NODE_ENV == "Production") {
   server.listen(() => {
