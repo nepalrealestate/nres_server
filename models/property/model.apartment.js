@@ -36,7 +36,7 @@ function apartmentModel (sequelize,DataTypes){
         type:DataTypes.FLOAT
       },
      bhk:{
-        type:DataTypes.INTEGER
+        type:DataTypes.STRING
      }, 
       facing:{
         type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
@@ -253,7 +253,6 @@ function apartmentCommentModel(sequelize,DataTypes){
       type: DataTypes.BOOLEAN,
     },
     
-
   },{
     freezeTableName: true,
   },{

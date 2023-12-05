@@ -6,7 +6,7 @@ const apartmentSchema  = Joi.object({
   listed_for: Joi.string().valid('sale', 'rent').required(),
   property_age: Joi.number().integer().optional(),
   floor: Joi.number().precision(2).optional(),
-  bhk: Joi.number().integer().optional(),
+  bhk: Joi.string().optional(),
   facing: Joi.string().valid('east', 'west', 'north', 'south', 'north-east','south-east','north-west','south-west').required(),
   province: Joi.string().required(),
   district: Joi.string().required(),
