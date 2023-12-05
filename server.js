@@ -48,6 +48,8 @@ app.use(
         "https://nres.com.np",
         "http://localhost:3000",
         "https://localhost:3000",
+        "http://api.nres.com.np",
+        "https://api.nres.com.np",
         // ... (your other domains)
       ];
 

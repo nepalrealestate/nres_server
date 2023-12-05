@@ -2,4 +2,4 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/nrescomn/nres_server/
-    - /bin/cp -R /home/nrescomn/repositories/nres_server /home/nrescomn
+    #- /bin/cp -R /home/nrescomn/repositories/nres_server /home/nrescomn

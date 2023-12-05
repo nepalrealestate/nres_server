@@ -15,6 +15,8 @@ const router = express.Router();
  router.get("/ads",handleGetAds)
  router.get("/list",handleGetPropertyList)
 
+
+
  // property request
  router.post("/request",handleInsertRequestedProperty)
 
