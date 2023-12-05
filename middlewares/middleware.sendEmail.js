@@ -3,6 +3,7 @@
 
 const { error } = require("console");
 const nodemailer = require("nodemailer");
+const logger = require("../utils/errorLogging/logger");
 
 
 const MAX_RETRIES = 3;
@@ -60,6 +61,7 @@ let transporter = nodemailer.createTransport({
         }).then((data)=>{
           resolve(data);
         }).catch(function(err){
+          logger.error(`Error while sending password email - ${err}`)
           reject(err)
         })
       })

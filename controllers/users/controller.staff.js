@@ -38,6 +38,7 @@ const {
   updateStaffPassword,
 } = require("../../models/services/users/service.admin");
 const { sequelize } = require("../../models/model.index");
+const logger = require("../../utils/errorLogging/logger");
 
 const imageFolderPath = "uploads/users/staff/";
 const maxImageSize = "";
@@ -156,7 +157,9 @@ const handleStaffRegistration = async (req, res) => {
       );
       await transaction.commit();
       if(account_access === true){
-        sendPasswordEmail(email, password).catch((err) => console.log(err));
+        sendPasswordEmail(email, password).catch((err) => {
+          
+        });
       }
 
       return res.status(200).json({ message: "Registration Succesfully" });
