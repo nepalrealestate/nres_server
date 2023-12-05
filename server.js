@@ -30,13 +30,6 @@ const chatServer = socketIo(server, {
 
 const port = 8000;
 
-// init sequlize;
-db.sequelize.sync({ force: false }); // alter creates duplicates index every time
-
-//app.use("/api/uploads", express.static(path.join(__dirname, 'uploads')));
-app.use("/api/uploads", express.static("uploads"));
-
-app.use(express.json());
 
 const allowlist = [
   'https://admin.nres.com.np',
@@ -53,6 +46,18 @@ const corsOptionsDelegate = function (req, callback) {
 };
 
 app.use(cors(corsOptionsDelegate))
+app.options('*', cors(corsOptionsDelegate))
+
+
+// init sequlize;
+db.sequelize.sync({ force: false }); // alter creates duplicates index every time
+
+//app.use("/api/uploads", express.static(path.join(__dirname, 'uploads')));
+app.use("/api/uploads", express.static("uploads"));
+
+app.use(express.json());
+
+
 
 app.use(cookieParser());
 
