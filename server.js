@@ -20,6 +20,25 @@ const logger = require("./utils/errorLogging/logger");
 const http = require("http");
 const socketIo = require("socket.io");
 
+
+const allowedOrigins = ['https://nres.com.np', 'https://admin.nres.com.np'];
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+
 const server = http.createServer(app);
 const chatServer = socketIo(server, {
   cors: {
@@ -30,19 +49,7 @@ const chatServer = socketIo(server, {
 
 const port = 8000;
 
-// Allow all origins
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
-  
 
-}));
-// This is not necessary unless you have specific options for the OPTIONS preflight request
-app.options('*', cors());
 
 
 // init sequlize;
