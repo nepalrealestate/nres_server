@@ -122,6 +122,21 @@ async function getProperty(condition, limit, offset) {
   });
 }
 
+async function getPropertyWithOwner(condition,limit,offset){
+  return await PropertyViewClient.findAll({
+    where:condition,
+    attributes:{exclude:['id']},
+    order:[['createdAt','DESC']],
+    limit:limit,
+    offset:offset,
+    include:[{
+      model:db.UserModel.User,
+      as:'owner',
+      attributes:['name','email','phone_number']
+    }]
+  })
+}
+
 async function getPropertyList(condition,limit, offset) {
   return await PropertyViewClient.findAll({
     where: condition,
@@ -445,6 +460,7 @@ module.exports = {
   insertPropertyShootSchedule,
   getPropertyShootSchedule,
   getProperty,
+  getPropertyWithOwner,
   getLatestPropertyPriorityLocation,
   getPropertyId,
   updatePropertyId,

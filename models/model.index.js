@@ -199,10 +199,8 @@ db.UserModel.User.hasMany(db.PropertyModel.RequestedProperty,{foreignKey:'user_i
 db.PropertyModel.RequestedProperty.belongsTo(db.UserModel.User,{as:'request_by',foreignKey:'user_id'});
 
 //user/seller relation with property;
-db.UserModel.User.hasMany(db.Views.PropertyViewClient,{foreignKey: 'owner_id', 
-sourceKey: 'user_id'});
-db.Views.PropertyViewClient.belongsTo(db.UserModel.User,{foreignKey: 'owner_id',
-targetKey: 'user_id'});
+db.UserModel.User.hasMany(db.Views.PropertyViewClient,{foreignKey: 'owner_id'});
+db.Views.PropertyViewClient.belongsTo(db.UserModel.User,{as:'owner',foreignKey: 'owner_id'});
 
 //admin relation with house
 db.UserModel.Admin.hasMany(db.PropertyModel.House,{foreignKey:'approved_by'});

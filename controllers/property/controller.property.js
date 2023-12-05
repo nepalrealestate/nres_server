@@ -46,6 +46,7 @@ const {
   getPropertyByPropertyTypeCount,
   getPropertyByListedForCount,
   getPropertyList,
+  getPropertyWithOwner,
 } = require("../../models/services/property/service.property");
 const {
   findCustomer,
@@ -775,7 +776,7 @@ const handleGetPendingProperty = async function (req, res) {
     condition.search = req.query.search.trim();
   }
   try {
-    const [properties,totalCount] = await Promise.all([getProperty(condition,limit,offset),countListingProperty({status:"pending"})])
+    const [properties,totalCount] = await Promise.all([getPropertyWithOwner(condition,limit,offset),countListingProperty({status:"pending"})])
     //const data = await getProperty(condition, limit, offset);
    
     return res.status(200).json({properties,totalCount});
