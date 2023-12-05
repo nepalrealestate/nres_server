@@ -30,23 +30,10 @@ const chatServer = socketIo(server, {
 
 const port = 8000;
 
-
-const allowlist = [
-  'https://admin.nres.com.np',
-  'https://nres.com.np'
-];
-const corsOptionsDelegate = function (req, callback) {
-  let corsOptions;
-  if (allowlist.indexOf(req.header("Origin")) !== -1) {
-    corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
-  } else {
-    corsOptions = { origin: false }; // disable CORS for this request
-  }
-  callback(null, corsOptions); // callback expects two parameters: error and options
-};
-
-app.use(cors(corsOptionsDelegate))
-app.options('*', cors(corsOptionsDelegate))
+// Allow all origins
+app.use(cors());
+// This is not necessary unless you have specific options for the OPTIONS preflight request
+app.options('*', cors());
 
 
 // init sequlize;
