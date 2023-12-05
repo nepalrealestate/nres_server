@@ -31,7 +31,16 @@ const chatServer = socketIo(server, {
 const port = 8000;
 
 // Allow all origins
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  
+
+}));
 // This is not necessary unless you have specific options for the OPTIONS preflight request
 app.options('*', cors());
 
