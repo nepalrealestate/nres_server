@@ -9,7 +9,6 @@ const {
   getAllStaff,
   updateStaff,
   deleteStaff,
-  getStaffProfile,
   getStaffProfileByAdminID,
   getStaffProfileByID,
 } = require("../../models/services/users/service.staff");
@@ -196,7 +195,7 @@ const handleStaffUpdate = async (req, res) => {
    
 
     try {
-      const getStaffResponse = await getStaffProfile(staff_id);
+      const getStaffResponse = await getStaffProfileByID(staff_id);
       if (!getStaffResponse) {
         return res.status(404).json({ message: "Staff Not Found" });
       }

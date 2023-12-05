@@ -162,7 +162,7 @@ function deleteMultipleImages(paths) {
     fs.unlink(link, function (err) {
       if (err) {
         console.log("Error while Deleting image", err);
-        logger.error("Error while Deleting image", err);
+        //logger.error("Error while Deleting image", err);
       } else {
         console.log(link, " image deleted");
         logger.info(link, " image deleted");
