@@ -49,7 +49,7 @@ router.get("/staff",superAdminVerifyToken,handleGetAllStaff);
 router.get("/staff/:staff_id",superAdminVerifyToken,handleGetStaffByID)
 router.patch("/staff/:staff_id",superAdminVerifyToken,handleStaffUpdate)
 router.post("/staff/account/:staff_id",superAdminVerifyToken,handleCreateStaffAccountAccess)
-router.delete("/staff/account/:admin_id",superAdminVerifyToken,handleDeleteStaffAccountAccess)
+router.delete("/staff/account/:staff_id",superAdminVerifyToken,handleDeleteStaffAccountAccess)
 router.delete("/staff/:staff_id",superAdminVerifyToken,handleStaffDelete);
 
 
