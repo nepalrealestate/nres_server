@@ -9,6 +9,8 @@ const util = require('util');
 const { type } = require("os");
 
 
+
+
 function UploadImage(folderPath, maxImageSize) {
   let filePath = `${folderPath}`;
 

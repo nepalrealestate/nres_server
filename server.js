@@ -46,10 +46,11 @@ app.use(
         "http://admin.nres.com.np",
         "http://nres.com.np",
         "https://nres.com.np",
-        "http://localhost:3000",
-        "https://localhost:3000",
         "http://api.nres.com.np",
         "https://api.nres.com.np",
+        "http://localhost:3000",
+        "https://localhost:3000",
+        
         // ... (your other domains)
       ];
 
