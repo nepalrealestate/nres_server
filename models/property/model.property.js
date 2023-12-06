@@ -88,6 +88,8 @@ function propertyViewAdminModel(sequelize, DataTypes) {
     {
       property_id: {
         type: DataTypes.INTEGER,
+        primaryKey:true,
+        unique:true,
       },
       property_type: {
         type: DataTypes.STRING,
@@ -195,7 +197,8 @@ function propertyViewClientModel(sequelize, DataTypes) {
     {
       property_id: {
         type: DataTypes.INTEGER,
-        primaryKey:true
+        primaryKey:true,
+        unique:true
       },
       property_type: {
         type: DataTypes.STRING,
@@ -548,15 +551,20 @@ function requestedPropertyModel(sequelize,DataTypes){
     property_details:{
       type:DataTypes.JSON
     },
-    user_id:{
-      type:DataTypes.INTEGER,
-      allowNull:false,
-      references:{
-        model:'user_userAccount',
-        key:'user_id'
-      },
-      onDelete:'CASCADE'
-    }
+    name:{
+      type:DataTypes.STRING,
+      required:true
+    },
+    email:{
+      type:DataTypes.STRING,
+    },
+    contact:{
+      type:DataTypes.STRING,
+      required:true
+    },
+    address:{
+      type:DataTypes.STRING
+    },
   },{
     freezeTableName:true
   })

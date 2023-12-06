@@ -22,7 +22,7 @@ const handleRegisterServiceProvider = async function (req, res,next) {
        async function registration(){
             const { name, phone_number, email, service_type, state, district, city, ward_number } = req.body;
             console.log(req.body)
-            const image = {"identification":req.file.path};
+            const imagePath = req?.file?.path;
   
             const isEmailValid = utils.isValid.email(email);
             const isPhoneNumberValid = utils.isValid.phoneNumber(phone_number);

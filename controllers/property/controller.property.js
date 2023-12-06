@@ -68,6 +68,7 @@ const logger = require("../../utils/errorLogging/logger");
 const {
   findUserByEmail,
   registerUser,
+  findUserByID,
 } = require("../../models/services/users/service.user");
 const {
   insertNotification,
@@ -596,6 +597,7 @@ const handleInsertRequestedProperty = async function (req, res) {
     ward,
     name,
     email,
+    address,
     phone_number,
     otherDetails, // This will contain all properties not listed above
   } = req.body;
@@ -609,6 +611,7 @@ const handleInsertRequestedProperty = async function (req, res) {
     ward,
     name,
     email,
+    address,
     contact: phone_number,
     property_details: otherDetails,
   };
@@ -617,78 +620,89 @@ const handleInsertRequestedProperty = async function (req, res) {
   let user = null;
   // requested by user
   if ((req.id && req.user_type === "agent") || req.user_type === "customer") {
-    user = {};
-    user.id = req.id;
-  } else if (!req.id) {
+    const userData = await findUserByID(req.user_type, req.id);
+    if(!userData){
+      return res.status(400).json({message:"Please Provide Information"})
+    }
+    requestedProperty.name = userData?.dataValues?.name;
+    requestedProperty.email = userData?.dataValues?.email;
+    requestedProperty.contact = userData?.dataValues?.phone_number;
+  }  
     // this handle customer without login and admin
-    if (
+  if (
       !requestedProperty.email ||
       !requestedProperty.name ||
-      !requestedProperty.contact
-    ) {
+      !requestedProperty.contact   
+   ) {
       return res.status(400).json({ message: "Bad Request" });
     }
-  }
-  try {
-    if (!user) {
-      //find user or  create user
-      const customer = await findUserByEmail(requestedProperty.email);
 
-      if (!customer) {
-        const password = generator.generate({ length: 10, numbers: true });
-        const [hashPassword, hashPasswordError] = await wrapAwait(
-          bcrypt.hash(password, 10)
-        );
-        if (hashPasswordError) {
-          handleErrorResponse(res, hashPasswordError);
-        }
-
-        const customerData = {
-          user_type: "customer",
-          name: requestedProperty.name,
-          email: requestedProperty.email,
-          phone_number: requestedProperty.contact,
-          password: hashPassword,
-        };
-        console.log(customerData);
-        const accountResponse = await registerUser(
-          "customer",
-          customerData.name,
-          customerData.email,
-          customerData.phone_number,
-          customerData.password
-        );
-        console.log("Account Created", accountResponse);
-        if (accountResponse?.dataValues) {
-          user = accountResponse.dataValues;
-          sendPasswordEmail(accountResponse.dataValues.email, password).catch(
-            (err) => {
-              logger.error("Error While Send Email ", err);
-              console.log("Error while send Email ", email);
-            }
-          );
-        }
-      } else {
-        user = customer.dataValues;
-      }
+    try {
+      const data = await insertRequestedProperty(requestedProperty);
+      return res.status(200).json({ message: "Successfully Inserted" });
+    } catch (error) {
+      handleErrorResponse(res, error);
     }
-  } catch (error) {
-    return handleErrorResponse(res, error);
-  }
-  console.log("User Found Or create", user);
-  if (!user) return res.status(500).json({ message: "Unable Process Request" });
-  // delete name , email ,contact from requested Proeprty
-  delete requestedProperty.name;
-  delete requestedProperty.email;
-  delete requestedProperty.contact;
-  // add user id to requested property
-  requestedProperty.user_id = user.id;
-  try {
-    const data = await insertRequestedProperty(requestedProperty);
-    return res.status(200).json({ message: "Successfully Inserted" });
-  } catch (error) {
-    handleErrorResponse(res, error);
-  }
+  
+
+
+
+
+  // try {
+  //   if (!user) {
+  //     //find user or  create user
+  //     const customer = await findUserByEmail(requestedProperty.email);
+
+  //     if (!customer) {
+        // const password = generator.generate({ length: 10, numbers: true });
+        // const [hashPassword, hashPasswordError] = await wrapAwait(
+        //   bcrypt.hash(password, 10)
+        // );
+        // if (hashPasswordError) {
+        //   handleErrorResponse(res, hashPasswordError);
+        // }
+
+        // const customerData = {
+        //   user_type: "customer",
+        //   name: requestedProperty.name,
+        //   email: requestedProperty.email,
+        //   phone_number: requestedProperty.contact,
+        //   password: hashPassword,
+        // };
+        // console.log(customerData);
+        // const accountResponse = await registerUser(
+        //   "customer",
+        //   customerData.name,
+        //   customerData.email,
+        //   customerData.phone_number,
+        //   customerData.password
+        // );
+        // console.log("Account Created", accountResponse);
+        // if (accountResponse?.dataValues) {
+        //   user = accountResponse.dataValues;
+        //   sendPasswordEmail(accountResponse.dataValues.email, password).catch(
+        //     (err) => {
+        //       logger.error("Error While Send Email ", err);
+        //       console.log("Error while send Email ", email);
+        //     }
+        //   );
+        // }
+  //     } else {
+  //       user = customer.dataValues;
+  //     }
+  //   }
+  // } catch (error) {
+  //   return handleErrorResponse(res, error);
+  // }
+  // console.log("User Found Or create", user);
+  // if (!user) return res.status(500).json({ message: "Unable Process Request" });
+  // // delete name , email ,contact from requested Proeprty
+  // delete requestedProperty.name;
+  // delete requestedProperty.email;
+  // delete requestedProperty.contact;
+  // // add user id to requested property
+  // requestedProperty.user_id = user.id;
+  
 };
 
 const handleGetRequestProperty = async function (req, res) {
@@ -697,10 +711,6 @@ const handleGetRequestProperty = async function (req, res) {
   let condition = {};
   if (req.query?.search) {
     condition.search = req.query.search.trim();
-  }
-  //if property reqeuqsted by user
-  if ((req.id && req.user_type === "customer") || req.user_type === "agent") {
-    condition.user_id = req.id;
   }
 
   try {

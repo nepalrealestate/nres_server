@@ -333,10 +333,6 @@ async function insertRequestedProperty(data){
 async function getRequestProperty(condition, limit, offset) {
   const whereConditions = {};
 
-  if(condition?.user_id){
-    whereConditions.user_id = condition.user_id;
-  }
-
   if (condition?.search) {
       whereConditions[db.Op.or] = [
           { province: { [db.Op.like]: `%${condition.search}%` } },
@@ -349,19 +345,11 @@ async function getRequestProperty(condition, limit, offset) {
 
       delete condition.search;
   }
-
-
-
   console.log(whereConditions);
 
   return await RequestedProperty.findAll({
       where: whereConditions,
       order: [['createdAt', 'DESC']],
-      include: [{
-          model: db.UserModel.User,
-          as:'request_by',
-          attributes: ['name', 'email', 'phone_number']
-      }],
       limit: limit,
       offset: offset
   });
