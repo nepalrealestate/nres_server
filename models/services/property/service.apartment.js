@@ -92,7 +92,12 @@ async function getApartmentByID(property_id,requiredAttributes=null){
     //  return data!==null?data.get():null;
     const data  = await Apartment.findOne({
         where:{property_id:property_id},
-        include:[ApartmentViewsCount],
+        include:[{
+            model:db.PropertyModel.ApartmentViewsCount,
+            attributes:['views'],
+            as:'apartmentViews'
+        
+        }],
         attributes:requiredAttributes
     })
     return data;

@@ -211,21 +211,21 @@ db.PropertyModel.House.belongsTo(db.UserModel.Admin,{foreignKey:'approved_by'});
 db.PropertyModel.Apartment.hasMany(db.PropertyModel.ApartmentViews,{foreignKey:'property_id'});
 db.PropertyModel.ApartmentViews.belongsTo(db.PropertyModel.Apartment,{foreignKey:'property_id'});
 
-db.PropertyModel.Apartment.hasOne(db.PropertyModel.ApartmentViewsCount,{foreignKey:'property_id'});
+db.PropertyModel.Apartment.hasOne(db.PropertyModel.ApartmentViewsCount,{as:'apartmentViews',foreignKey:'property_id'});
 db.PropertyModel.ApartmentViewsCount.belongsTo(db.PropertyModel.Apartment,{foreignKey:'property_id'});
 
 // house to views model and views count
 db.PropertyModel.House.hasMany(db.PropertyModel.HouseViews,{foreignKey:'property_id'});
 db.PropertyModel.HouseViews.belongsTo(db.PropertyModel.House,{foreignKey:'property_id'});
 
-db.PropertyModel.House.hasOne(db.PropertyModel.HouseViewsCount,{foreignKey:'property_id'});
+db.PropertyModel.House.hasOne(db.PropertyModel.HouseViewsCount,{as:'houseViews',foreignKey:'property_id'});
 db.PropertyModel.HouseViewsCount.belongsTo(db.PropertyModel.House,{foreignKey:'property_id'});
 
 //land to views and views count
 db.PropertyModel.Land.hasMany(db.PropertyModel.LandViews,{foreignKey:'property_id'});
 db.PropertyModel.LandViews.belongsTo(db.PropertyModel.Land,{foreignKey:'property_id'});
 
-db.PropertyModel.Land.hasOne(db.PropertyModel.LandViewsCount,{foreignKey:'property_id'});
+db.PropertyModel.Land.hasOne(db.PropertyModel.LandViewsCount,{as:'landViews',foreignKey:'property_id'});
 db.PropertyModel.LandViewsCount.belongsTo(db.PropertyModel.Land,{foreignKey:'property_id'});
 
 // property field visit request with user_userAccount;

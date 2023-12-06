@@ -78,7 +78,11 @@ async function deleteHouse(property_id){
     // return await House.findByPk(property_id)
     return await House.findOne({
         where:{property_id:property_id},
-        include:[HouseViewsCount],
+        include:[{
+            model:db.PropertyModel.HouseViewsCount,
+            attributes:['views'],
+            as:'houseViews',
+        }],
         attributes :  requiredAttributes
     })
  }

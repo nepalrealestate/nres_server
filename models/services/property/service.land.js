@@ -65,6 +65,11 @@ async function getLand(condition){
 async function getLandByID(property_id,requiredAttributes=null){
     return await Land.findOne({
         where:{property_id:property_id},
+        include:[{
+            model:db.PropertyModel.LandViewsCount,
+            attributes:['views'],
+            as:'landViews'
+        }],
         
         attributes: requiredAttributes
     });
