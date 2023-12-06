@@ -292,24 +292,27 @@ function apartmentViewsModel (sequelize,DataTypes){
   },
   },{
     freezeTableName: true,
-    afterCreate:async (instance,options)=>{
+    hook:{
+      afterCreate:async (instance,options)=>{
 
-      const apartmentViewsCount = sequelize.models.property_apartment_views_count;
-
-      apartmentViewsCount.findOrCreate({
-        where: { property_id: instance.property_id },
-        defaults: { views: 0 }
-      }).then(([apartmentViewCount, created]) => {
-        if (!created) {
-          apartmentViewCount.increment('views', { by: 1 });
-        }
-      }).catch(error => {
-        // Handle the error if necessary
-        console.error("Error updating views count:", error);
-        logger.error(`Error while update Apartment Views - ${error}`)
-      });
-      
+        const apartmentViewsCount = sequelize.models.property_apartment_views_count;
+  
+        apartmentViewsCount.findOrCreate({
+          where: { property_id: instance.property_id },
+          defaults: { views: 0 }
+        }).then(([apartmentViewCount, created]) => {
+          if (!created) {
+            apartmentViewCount.increment('views', { by: 1 });
+          }
+        }).catch(error => {
+          // Handle the error if necessary
+          console.error("Error updating views count:", error);
+          logger.error(`Error while update Apartment Views - ${error}`)
+        });
+        
+      }
     }
+    
   }
   
   )
