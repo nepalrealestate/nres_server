@@ -297,7 +297,7 @@ function propertyShootScheduleModel(sequelize, DataTypes) {
         type:DataTypes.DECIMAL(9,6),
      },
      shoot_status:{
-      type:DataTypes.ENUM("scheduled","completed","read_to_post"),
+      type:DataTypes.ENUM("scheduled","completed","ready_to_post"),
       defaultValue:"scheduled"
     },
     },{
