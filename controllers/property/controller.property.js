@@ -495,7 +495,7 @@ const handleInsertPropertyShootSchedule = async function (req, res) {
       .catch((err) => {
         console.log("Error While Insert Notification", err);
       });
-    return res.status(200).json({ message: "Insert Property Shoot Schedule" });
+    return res.status(200).json({ data:response,message: "Insert Property Shoot Schedule" });
   } catch (error) {
     handleErrorResponse(res, error);
   }
