@@ -310,7 +310,7 @@ const handleStaffDelete = async (req, res) => {
     
     
     if(staffProfile?.dataValues?.admin_id){
-      const response = await deleteAdmin(admin_id);
+      const response = await deleteAdmin(staffProfile?.dataValues?.admin_id);
     }
     if(staffProfile?.dataValues?.documents){
       deleteFiles(staffProfile?.dataValues?.documents)
