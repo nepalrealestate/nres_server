@@ -538,7 +538,7 @@ function propertyUtility(property_type) {
         : null;
       console.log("this is project nres images after parse ", imagePaths);
       if (imagePaths) {
-        deleteMultipleImages(imagePaths);
+        deleteFiles(imagePaths);
       }
       return res.status(200).json({ message: `${propertyType} deleted` });
     } catch (error) {

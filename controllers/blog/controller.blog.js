@@ -63,8 +63,8 @@ const handleDeleteBlog = async(req,res)=>{
             return res.status(404).json({message:"blog not found"});
         }
         console.log(blog)
-        if(blog.dataValues.image){
-            deleteSingleImage(blog.dataValues.image);
+        if(blog.dataValues?.image){
+            delete(blog.dataValues?.image);
         }
         
         const deleteResponse = await deleteBlog(id);

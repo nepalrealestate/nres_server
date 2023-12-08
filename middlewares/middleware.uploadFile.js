@@ -71,70 +71,70 @@ function extractPathsFromObjects(fileObjects) {
   return fileObjects.map((fileObject) => fileObject.path);
 }
 
-function deleteFiles(input) {
-  console.log("this is Input",input) 
-  const firstStringError = util.inspect(input);
-  logger.log({
-    level: "error",
-    message: firstStringError
-  })
-  let inputFile = null;
-  // Determine if the input is an array of file objects
-  // most likely insert from user and need to deleted 
-  if (typeof input[0] === "object" && input[0].path && input.length > 0 ) {
-    inputFile = extractPathsFromObjects(input);
-  }else{
-    inputFile = input;
-  }
+// function deleteFiles(input) {
+//   console.log("this is Input",input) 
+//   const firstStringError = util.inspect(input);
+//   logger.log({
+//     level: "error",
+//     message: firstStringError
+//   })
+//   let inputFile = null;
+//   // Determine if the input is an array of file objects
+//   // most likely insert from user and need to deleted 
+//   if (typeof input[0] === "object" && input[0].path && input.length > 0 ) {
+//     inputFile = extractPathsFromObjects(input);
+//   }else{
+//     inputFile = input;
+//   }
   
-  if (Array.isArray(inputFile)) {
-    // At this point, input should be an array of file paths
-    inputFile.forEach((path) => {
-      fs.unlink(path, function (err) {
-        if (err) {
-          console.log("Error while Deleting image", err);
-          logger.log({
-            level: 'error',
-            message: `Error While Image Delet`
-           })
-        } else {
-          console.log(path, " image deleted");
-          logger.log({
-            level: 'info',
-            message: `Image Deleted`
-           })
-        }
-      });
-    });
+//   if (Array.isArray(inputFile)) {
+//     // At this point, input should be an array of file paths
+//     inputFile.forEach((path) => {
+//       fs.unlink(path, function (err) {
+//         if (err) {
+//           console.log("Error while Deleting image", err);
+//           logger.log({
+//             level: 'error',
+//             message: `Error While Image Delet`
+//            })
+//         } else {
+//           console.log(path, " image deleted");
+//           logger.log({
+//             level: 'info',
+//             message: `Image Deleted`
+//            })
+//         }
+//       });
+//     });
 
-  } else if (typeof inputFile === "object") {
-    // 
-    let images = Object.values(input);
-    console.log(images);
-    images.forEach((path) => {
-      fs.unlink(path, function (err) {
-        if (err) {
-          console.log("Error while Deleting image", err);
-          logger.log({
-            level: 'error',
-            message: `Error While Image Delet`
-           })
-        } else {
-          console.log(path, " image deleted");
-          logger.log({
-            level: 'info',
-            message: `Image Deleted`
-           })
-        }
-      });
-    });
-  } else {
-    logger.log({
-      level: 'error',
-      message: `Invalid Image Input`
-     })
-  }
-}
+//   } else if (typeof inputFile === "object") {
+//     // 
+//     let images = Object.values(input);
+//     console.log(images);
+//     images.forEach((path) => {
+//       fs.unlink(path, function (err) {
+//         if (err) {
+//           console.log("Error while Deleting image", err);
+//           logger.log({
+//             level: 'error',
+//             message: `Error While Image Delet`
+//            })
+//         } else {
+//           console.log(path, " image deleted");
+//           logger.log({
+//             level: 'info',
+//             message: `Image Deleted`
+//            })
+//         }
+//       });
+//     });
+//   } else {
+//     logger.log({
+//       level: 'error',
+//       message: `Invalid Image Input`
+//      })
+//   }
+// }
 
 
 function deleteSingleImage(path) {
@@ -209,6 +209,24 @@ async function chatImageUpload(base64Image, uploadPath, uploadSize) {
   } catch (error) {
     throw error;
   }
+}
+
+const deleteFile = (filePath) => {
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.log("Error while Deleting image", err);
+      logger.error("Error while Deleting image", err);
+    }else{
+      console.log(filePath, " image deleted");
+      //logger.info(filePath, " image deleted");
+    }
+  });
+}
+
+const deleteFiles = (filePaths) => {
+  filePaths.forEach((filePath) => {
+    deleteFile(filePath);
+  });
 }
 
 module.exports = {

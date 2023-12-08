@@ -5,6 +5,7 @@ const { wrapAwait } = require("../../errorHandling");
 const {
   registerAdmin,
   findAdmin,
+  updateSuperAdminPassword,
 } = require("../../models/services/users/service.admin");
 
 const saltRound = 10;
@@ -102,7 +103,7 @@ const handleSuperAdminPasswordReset = async (req, res, next) => {
         req,
         res,
         adminResponse.dataValues,
-        updateStaffPassword
+        updateSuperAdminPassword
       );
     }
   } catch (error) {
