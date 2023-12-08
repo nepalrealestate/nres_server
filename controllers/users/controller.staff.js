@@ -156,7 +156,10 @@ const handleStaffRegistration = async (req, res) => {
         { transaction }
       );
       await transaction.commit();
+      console.log(req.body.staff);
+
       if(account_access === true){
+    
         sendPasswordEmail(email, password).catch((err) => {
           
         });
@@ -279,7 +282,7 @@ const handleDeleteStaffAccountAccess = async (req,res)=>{
     if(!staffResponse?.dataValues?.admin_id){
       return res.status(400).json({message:"Account Not Created"});
     }
-    const response = await deleteAdmin(admin_id)
+    const response = await deleteAdmin(staffResponse?.dataValues?.admin_id)
     console.log("Delete Response",response);
     if(response==0){
       return res.status(400).json({message:"Unable to delete staff account"});
@@ -287,15 +290,13 @@ const handleDeleteStaffAccountAccess = async (req,res)=>{
     
     return res.status(200).json({message:"Delete Access Successfully"});
   } catch (error) {
-    handleErrorResponse(res,error);
+    utility.handleErrorResponse(res,error);
   }
 }
 
 const handleStaffDelete = async (req, res) => {
   const staff_id = req.params.staff_id;
-  if(staff_id==req.id && req.userType=="staff"){
-    return res.status(400).json({message:"You can't delete your own account"});
-  }
+
 
   try {
     // find staff profile from admin id 
@@ -308,7 +309,7 @@ const handleStaffDelete = async (req, res) => {
     console.log("Delete Staff Response ",deleteStaffResponse);
     
     
-    if(staffProfile.dataValues.admin_id){
+    if(staffProfile?.dataValues?.admin_id){
       const response = await deleteAdmin(admin_id);
     }
     if(staffProfile?.dataValues?.documents){

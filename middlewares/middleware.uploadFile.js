@@ -224,7 +224,19 @@ const deleteFile = (filePath) => {
 }
 
 const deleteFiles = (filePaths) => {
-  filePaths.forEach((filePath) => {
+  let filePathArray;
+  if(typeof filePaths==='object' && filePaths[0] && filePaths[0]?.path){
+    filePathArray = extractPathsFromObjects(filePaths);
+  }else if(typeof filePaths==='object'){
+    filePathArray = Object.values(filePaths);
+  }else if(Array.isArray(filePaths)){
+    filePathArray = filePaths;
+  }else{
+    console.log("Invalid file paths");
+    logger.error("Invalid file paths");
+    return ;
+  }
+  filePathArray.forEach((filePath) => {
     deleteFile(filePath);
   });
 }

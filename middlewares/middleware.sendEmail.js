@@ -1,7 +1,4 @@
 // send all email to users;
-
-
-const { error } = require("console");
 const nodemailer = require("nodemailer");
 const logger = require("../utils/errorLogging/logger");
 
@@ -27,7 +24,7 @@ let transporter = nodemailer.createTransport({
     return new Promise(async (resolve, reject) => {
       try {
         const data = await transporter.sendMail({
-          from: 'test@nres.com',
+          from: process.env.EMAIL,
           to: userEmail,
           subject: "Reset Password OTP  ✔",
           text: `Your Reset Password OTP is : ${token} please use before it expires .`
@@ -54,11 +51,13 @@ let transporter = nodemailer.createTransport({
     async function sendPasswordEmail(email,password){
       return new Promise((resolve,reject)=>{
         transporter.sendMail({
-          from:'test@nres.com',
+          from:process.env.EMAIL,
           to:email,
           subject:"Your NRES Login Password",
           text:`Your Password is ${password} . Please Change `,
         }).then((data)=>{
+          console.log("Email sent",data)
+          logger.info(`Password email sent to ${email}`);
           resolve(data);
         }).catch(function(err){
           logger.error(`Error while sending password email - ${err}`)

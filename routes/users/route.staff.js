@@ -8,7 +8,7 @@ const { handleAddLand, handleApproveLand, handleGetPendingLand, handleUpdateLand
 
 const { handleGetAllAgent } = require("../../controllers/users/controller.agent");
 const { insertRequestedLand } = require("../../models/services/property/service.land");
-const { handleGetPropertyWithAds, handleInsertRequestedProperty, handleGetRequestProperty, handleGetRequestPropertyByID, handleDeleteRequestedProperty, handleInsertPropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleUpdatePropertyFieldVisitRequest, handleDeletePropertyFieldVisiteRequest, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleDeletePropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetSoldProperty, handleGetPendingProperty, handleGetPropertyAnalytics } = require("../../controllers/property/controller.property");
+const { handleGetPropertyWithAds, handleInsertRequestedProperty, handleGetRequestProperty, handleGetRequestPropertyByID, handleDeleteRequestedProperty, handleInsertPropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleUpdatePropertyFieldVisitRequest, handleDeletePropertyFieldVisiteRequest, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleDeletePropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetSoldProperty, handleGetPendingProperty, handleGetPropertyAnalytics, handleUpdatePropertyShootSchedule } = require("../../controllers/property/controller.property");
 const { handleGetCustomer, handleGetBuyer, handleGetSeller, handleGetSellerByID } = require("../../controllers/users/controller.customer");
 const { handleGetServiceProvider, handleGetServiceProviderByID, handleVerifyServiceProvider, handleDeleteServiceProvider } = require("../../controllers/nres_services/controller.nres_service");
 const { handleInsertBlog, handleGetBlog, handleGetBlogById, handleDeleteBlog } = require("../../controllers/blog/controller.blog");
@@ -140,6 +140,7 @@ router.post("/property/field-visit-request/comment/:field_visit_id",staffVerifyT
 //shoot schedule
 router.post("/property/shoot-schedule",staffVerifyToken,handleInsertPropertyShootSchedule)
 router.get("/property/shoot-schedule",staffVerifyToken,handleGetPropertyShootSchedule)
+router.patch("/property/shoot-schedule/:id",staffVerifyToken,handleUpdatePropertyShootSchedule)
 router.delete("/property/shoot-schedule/:shoot_schedule_id",staffVerifyToken,handleDeletePropertyShootSchedule)
 // shoot schedule comment 
 router.post("/property/shoot-schedule-comment/:shoot_schedule_id",staffVerifyToken,handleInsertPropertyShootScheduleComment);
@@ -202,6 +203,7 @@ router.get("/analytic",staffVerifyToken,handleGetPropertyAnalytics)
 router.get("/contact",staffVerifyToken,handleGetContact);
 router.get("/contact/:id",staffVerifyToken,handleGetContactByID);
 router.delete("/contact/:id",staffVerifyToken,handleDeleteContact);
+
 // video carousel
 router.post("/videoCarousel",staffVerifyToken,handleInsertVideoCarousel);
 router.get("/videoCarousel",staffVerifyToken,handleGetVideoCarousel);
@@ -212,6 +214,7 @@ router.post("/testimonial",staffVerifyToken,handleInsertTestimonial);
 router.get("/testimonial",staffVerifyToken,handleGetTestimonial);
 router.get("/testimonial/:id",staffVerifyToken,handleGetTestimonialByID);
 router.delete("/testimonial/:id",staffVerifyToken,handleDeleteTestimonial);
+
 
 
 
