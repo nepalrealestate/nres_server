@@ -530,7 +530,11 @@ const handleUpdatePropertyShootSchedule = async function(req,res){
   }
   try {
     const response = await updatePropertyShootSchedule({shoot_status},id)
-    return res.status(200).json({message:"Update Successfull"})
+    let responseObject={
+      shoot_status:shoot_status,
+      id:id
+    }
+    return res.status(200).json({data:responseObject,message:"Update Successfull"})
   } catch (error) {
    handleErrorResponse(res,error) 
   }
@@ -546,7 +550,10 @@ const handleDeletePropertyShootSchedule = async function (req, res) {
     if (response === 0) {
       return res.status(404).json({ message: "Shoot Schedule Not Found" });
     }
-    return res.status(200).json({ message: "Delete Successfull" });
+    const responseObject = {
+      id: shoot_schedule_id,
+    }
+    return res.status(200).json({data:responseObject, message: "Delete Successfull" });
   } catch (error) {
     handleErrorResponse(res, error);
   }
