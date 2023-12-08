@@ -89,6 +89,12 @@ async function getPropertyShootSchedule(condition, limit, offset) {
   });
 }
 
+async function updatePropertyShootSchedule(updateCondition, shoot_schedule_id) {
+  return PropertyShootSchedule.update(updateCondition, {
+    where: { id: shoot_schedule_id },
+  });
+}
+
 async function deletePropertyShootSchedule(shoot_schedule_id) {
   return PropertyShootSchedule.destroy({
     where: {id: shoot_schedule_id },
@@ -474,5 +480,6 @@ module.exports = {
   getEveryMonthSoldProperty,
   getPropertyByPropertyTypeCount,
   getPropertyByListedForCount,
-  getPropertyList
+  getPropertyList,
+  updatePropertyShootSchedule
 };

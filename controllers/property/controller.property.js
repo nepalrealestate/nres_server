@@ -47,6 +47,7 @@ const {
   getPropertyByListedForCount,
   getPropertyList,
   getPropertyWithOwner,
+  updatePropertyShootSchedule,
 } = require("../../models/services/property/service.property");
 const {
   findCustomer,
@@ -506,6 +507,11 @@ const handleGetPropertyShootSchedule = async function (req, res) {
   if (req.query?.search) {
     condition.search = req.query.search.trim();
   }
+  if(req.query?.shoot_status){
+    condition.shoot_status = req.query.shoot_status;
+  }else{
+    condition.shoot_status="scheduled"
+  }
 
   try {
     const response = await getPropertyShootSchedule(condition, limit, offset);
@@ -515,6 +521,20 @@ const handleGetPropertyShootSchedule = async function (req, res) {
     handleErrorResponse(res, error);
   }
 };
+
+const handleUpdatePropertyShootSchedule = async function(req,res){
+  let {shoot_status} = req.body;
+  let id = req.params.id;
+  if(!shoot_status || !id){
+    return res.status(400).json({message:"Please Provide Shoot Status"})
+  }
+  try {
+    const response = await updatePropertyShootSchedule({shoot_status},id)
+    return res.status(200).json({message:"Update Successfull"})
+  } catch (error) {
+   handleErrorResponse(res,error) 
+  }
+}
 
 const handleDeletePropertyShootSchedule = async function (req, res) {
   const shoot_schedule_id = req.params?.shoot_schedule_id;
@@ -855,4 +875,5 @@ module.exports = {
   handleGetPendingProperty,
   handleGetPropertyAnalytics,
   handleGetPropertyList,
+  handleUpdatePropertyShootSchedule
 };
