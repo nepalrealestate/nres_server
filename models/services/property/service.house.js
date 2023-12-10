@@ -76,15 +76,24 @@ async function deleteHouse(property_id){
  
  async function getHouseByID(property_id,requiredAttributes=null){
     // return await House.findByPk(property_id)
-    return await House.findOne({
+    const data = await House.findOne({
         where:{property_id:property_id},
         include:[{
             model:db.PropertyModel.HouseViewsCount,
-            attributes:['views'],
-            as:'houseViews',
+            attributes: [ 'views'], // Use COALESCE to return 0 if there are no views
+            as: 'houseViews',
+            required: false, // Perform a LEFT JOIN
         }],
         attributes :  requiredAttributes
     })
+    if(data && data.houseViews && data.houseViews.dataValues && data.houseViews.dataValues.views !== null){
+        data.dataValues.views = data.houseViews.dataValues.views;
+        
+    }else{
+        data.dataValues.views = 0;
+    }
+    delete data.dataValues.houseViews;
+    return data;
  }
 
  async function getHouseWithOwnerByID(property_id){

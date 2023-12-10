@@ -62,19 +62,33 @@ async function getLand(condition){
     // })
 }
 
-async function getLandByID(property_id,requiredAttributes=null){
-    return await Land.findOne({
-        where:{property_id:property_id},
-        include:[{
-            model:db.PropertyModel.LandViewsCount,
-            attributes:['views'],
-            as:'landViews'
-        }],
-        
-        attributes: requiredAttributes
+async function getLandByID(property_id, requiredAttributes = null) {
+    const result = await Land.findOne({
+      where: { property_id: property_id },
+      include: [
+        {
+          model: db.PropertyModel.LandViewsCount,
+          attributes: ['views'],
+          as: 'landViews',
+          required: false,
+        },
+      ],
+      attributes: requiredAttributes,
     });
-}
-
+  
+    if (result && result.landViews && result.landViews.dataValues && result.landViews.dataValues.views !== null) {
+      result.dataValues.views = result.landViews.dataValues.views;
+      
+    } else {
+      result.dataValues.views = 0;
+    }
+    delete result.dataValues.landViews;
+  
+    return result;
+  }
+  
+  
+  
 async function getLandWithOwnerByID(property_id){
     return await Land.findOne({
         where:{property_id:property_id},

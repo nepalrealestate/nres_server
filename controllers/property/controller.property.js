@@ -92,29 +92,11 @@ const handleGetPropertyWithAds = async function (req, res) {
   condition.status = "approved";
   console.log(condition);
 
-  try {
-    const data = await getPropertyWithAds(condition, limit, offset);
-    const modifiedData = data.map((item) => {
-      return {
-        ...item.dataValues,
-        ads: {
-          twitter: item.twitter,
-          tiktok: item.tiktok,
-          instagram: item.instagram,
-          facebook: item.facebook,
-          youtube: item.youtube,
-        },
-        twitter: undefined, // These lines will essentially remove the original properties
-        tiktok: undefined, // from the outer object
-        instagram: undefined,
-        facebook: undefined,
-        youtube: undefined,
-      };
-    });
+  try { 
+    const [properties,totalCount] = await Promise.all([getPropertyWithAds(condition,limit,offset),countListingProperty(condition)])
+    console.log(properties);
 
-    console.log(data);
-
-    return res.status(200).json(modifiedData);
+    return res.status(200).json({properties,totalCount});
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Internal Error " });

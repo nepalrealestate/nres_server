@@ -570,19 +570,19 @@ function propertyUtility(property_type) {
         logger.error(`Error update ${propertyType} Views - ${err}`);
       });
 
-      // Destructure the propertyData object
-      const {
-        houseViews: { views },
-        ...rest
-      } = result?.dataValues;
+      // // Destructure the propertyData object
+      // const {
+      //   houseViews: { views },
+      //   ...rest
+      // } = result?.dataValues;
 
-      // Combine into a single object
-      const combinedObject = {
-        ...rest,
-        views
-      };
+      // // Combine into a single object
+      // const combinedObject = {
+      //   ...rest,
+      //   views
+      // };
 
-      return res.status(200).json(combinedObject);
+      return res.status(200).json(result);
     } catch (error) {
       handleErrorResponse(res, error);
       //return res.status(500).json({ message: "Internal Error" });

@@ -94,12 +94,21 @@ async function getApartmentByID(property_id,requiredAttributes=null){
         where:{property_id:property_id},
         include:[{
             model:db.PropertyModel.ApartmentViewsCount,
-            attributes:['views'],
-            as:'apartmentViews'
+            attributes: [['COALESCE(SUM(views), 0)', 'views']], // Use COALESCE to return 0 if there are no views
+            as: 'apartmentViews',
+            required: false, // Perform a LEFT JOIN
         
         }],
         attributes:requiredAttributes
     })
+    if(data && data.apartmentViews && data.apartmentViews.dataValues && data.apartmentViews.dataValues.views!==null){
+        data.dataValues.views = data.apartmentViews.dataValues.views;
+       
+
+    }else{
+        data.dataValues.views = 0;
+    }
+    delete data.dataValues.apartmentViews;
     return data;
     // console.log(property_id)
     // const apartment = await Apartment.findOne({where:{property_id}});
