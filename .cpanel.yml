@@ -1,27 +1,28 @@
+---
 deployment:
   tasks:
     - export DEPLOYPATH=/home/nrescomn/nres_server/
-    
+
     # Create a temporary directory for initial copy
     - export TMP_DIR=$(mktemp -d)
-    
+
     # Copy all folders excluding "uploads" folder to the temporary directory
-    - rsync -av --exclude='/uploads' /home/nrescomn/repositories/nres_server/ $TMP_DIR
-    
+    - rsync -av --exclude='/uploads' $SOURCE_DIR/ $TMP_DIR
+
     # Move the "uploads" folder from the deployment directory to the temporary directory
     - mv $DEPLOYPATH/uploads $TMP_DIR
-    
+
     # Copy the entire contents of the temporary directory to the deployment directory
     - rsync -av $TMP_DIR/ $DEPLOYPATH
-    
+
     # Clean up: remove the temporary directory
     - rm -r $TMP_DIR
-    
-    # Change to the deployment directory
-    - cd $DEPLOYPATH
-    
-    # Run npm install to install dependencies
-    - npm install
-    
-    # Start your Node.js server
-    - node server.js
+
+    # # Change to the deployment directory
+    # - cd $DEPLOYPATH
+
+    # # Run npm install to install dependencies
+    # - npm install
+
+    # # Start your Node.js server
+    # - node server.js
