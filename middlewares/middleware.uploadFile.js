@@ -216,30 +216,37 @@ const deleteFile = (filePath) => {
     if (err) {
       console.log("Error while Deleting image", err);
       logger.error("Error while Deleting image", err);
+      logger.error(`${filePath}`)
     }else{
       console.log(filePath, " image deleted");
-      //logger.info(filePath, " image deleted");
+      logger.info(`Image deleted - ${filePath}`);
     }
   });
 }
 
 const deleteFiles = (filePaths) => {
   let filePathArray;
+ 
   if(typeof filePaths==='object' && filePaths[0] && filePaths[0]?.path){
     filePathArray = extractPathsFromObjects(filePaths);
   }else if(typeof filePaths==='object'){
     filePathArray = Object.values(filePaths);
   }else if(Array.isArray(filePaths)){
     filePathArray = filePaths;
+  }else if(typeof filePaths==='string'){
+      let jsonObject = JSON.parse(filePaths)
+      
+      filePathArray = Object.values(jsonObject);
   }else{
-    console.log("Invalid file paths");
     logger.error("Invalid file paths");
+    logger.error(`${filePathArray}`);
     return ;
   }
   filePathArray.forEach((filePath) => {
     deleteFile(filePath);
   });
 }
+
 
 module.exports = {
   UploadImage,
