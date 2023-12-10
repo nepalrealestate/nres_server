@@ -6,8 +6,8 @@ deployment:
     # Create a temporary directory for initial copy
     - export TMP_DIR=$(mktemp -d)
 
-    # Copy all folders excluding "uploads" folder to the temporary directory
-    - rsync -av --exclude='/uploads' $SOURCE_DIR/ $TMP_DIR
+    # Copy all folders excluding "uploads" and "node_modules" folders to the temporary directory
+    - rsync -av --exclude='/uploads' --exclude='/node_modules' $SOURCE_DIR/ $TMP_DIR
 
     # Move the "uploads" folder from the deployment directory to the temporary directory
     - mv $DEPLOYPATH/uploads $TMP_DIR
