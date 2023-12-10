@@ -277,7 +277,7 @@ function landViewsModel(sequelize,DataTypes){
       
         LandViewsCount.findOrCreate({
           where: { property_id: instance.property_id },
-          defaults: { views: 0 }
+          defaults: { views: 1 }
         }).then(([landViewCount, created]) => {
           if (!created) {
             landViewCount.increment('views', { by: 1 });

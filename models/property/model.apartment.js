@@ -299,7 +299,7 @@ function apartmentViewsModel (sequelize,DataTypes){
   
         apartmentViewsCount.findOrCreate({
           where: { property_id: instance.property_id },
-          defaults: { views: 0 }
+          defaults: { views: 1 }
         }).then(([apartmentViewCount, created]) => {
           if (!created) {
             apartmentViewCount.increment('views', { by: 1 });
