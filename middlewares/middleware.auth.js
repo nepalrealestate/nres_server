@@ -6,9 +6,14 @@ const client = new OAuth2Client(clientID);
 const googleSignInVerify = async(req,res,next)=>{
    console.log("googleSignInVerify")
    console.log(req.body)
+   if(req.loginType === "google"){
+        delete req.body?.googleAccessToken;
+        delete req.loginType;
+   }
     let token = req.body?.googleAccessToken;
     if(token){
-        console.log("This is token",token);
+        try {
+            console.log("This is token",token);
         const ticket = await client.verifyIdToken({
             idToken: token,
             audience: process.env.GOOGLE_CLIENT_ID
@@ -19,9 +24,13 @@ const googleSignInVerify = async(req,res,next)=>{
     
         req.body = {
             name,
-            email,
-            picture
+            email
         }
+        req.loginType = "google";
+        } catch (error) {
+            next(error)
+        }
+        
     }
    
     next();

@@ -154,15 +154,17 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
   //const tokenExpireTime = "1hr";
 
   const login = async function (req, res, user, path = "/") {
-    const { password } = req.body;
+    if (req.loginType !== "google") {
+      const { password } = req.body;
 
-    if (!user) {
-      console.log("No User Found");
-      return res.status(401).send({ message: "Invalid Email or Password" });
-    }
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      return res.status(401).send({ message: "Invalid Email or Password" });
+      if (!user) {
+        console.log("No User Found");
+        return res.status(401).send({ message: "Invalid Email or Password" });
+      }
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
+        return res.status(401).send({ message: "Invalid Email or Password" });
+      }
     }
 
     const token = jwt.sign({ id: user.id }, JWT_KEY, {
@@ -187,15 +189,13 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
       secure: true,
     });
 
-    return res
-      .status(200)
-      .json({
-        message: "Successfully Logged In",
-        name: user.name,
-        email: user.email,
-        user_id: user.id,
-        role: user_type,
-      });
+    return res.status(200).json({
+      message: "Successfully Logged In",
+      name: user.name,
+      email: user.email,
+      user_id: user.id,
+      role: user_type,
+    });
   };
 
   const verifyToken = async function (req, res, next) {
