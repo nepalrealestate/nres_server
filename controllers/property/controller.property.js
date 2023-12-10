@@ -93,8 +93,26 @@ const handleGetPropertyWithAds = async function (req, res) {
   console.log(condition);
 
   try { 
-    const [properties,totalCount] = await Promise.all([getPropertyWithAds(condition,limit,offset),countListingProperty(condition)])
-    console.log(properties);
+    const [data,totalCount] = await Promise.all([getPropertyWithAds(condition,limit,offset),countListingProperty(condition)])
+    
+    
+    const properties = data.map((property) => ({
+      ...property.dataValues,
+      ads: {
+        twitter: property.dataValues.twitter,
+        tiktok: property.dataValues.tiktok,
+        instagram: property.dataValues.instagram,
+        facebook: property.dataValues.facebook,
+        youtube: property.dataValues.youtube,
+      },
+      // Remove the individual social media properties from the main object
+      twitter: undefined,
+      tiktok: undefined,
+      instagram: undefined,
+      facebook: undefined,
+      youtube: undefined,
+    }));
+    
 
     return res.status(200).json({properties,totalCount});
   } catch (error) {
