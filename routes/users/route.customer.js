@@ -7,6 +7,7 @@ const { handleAddLand, handleGetLand } = require("../../controllers/property/con
 const { handleAddApartment, handleGetApartment } = require("../../controllers/property/controller.apartment");
 const { handleGetSingleCustomerChat } = require("../../controllers/chat/controller.customerChat");
 const { checkCustomerPropertyLimitation } = require("../../middlewares/property/middleware.property");
+const { googleSignInVerify } = require("../../middlewares/middleware.auth");
 
 
 const router = express.Router();
@@ -14,8 +15,8 @@ const router = express.Router();
 
 //router.post("/register");
 
-router.post("/register",handleCustomerRegistration)
-router.post("/login",handleCustomerLogin); 
+router.post("/register",googleSignInVerify,handleCustomerRegistration)
+router.post("/login",googleSignInVerify,handleCustomerLogin); 
 router.get("/",customerVerifyToken,handleGetCustomerProfile)
 router.post("/forgetPassword",handleCustomerPasswordReset)
 router.post("/logout",customerLogout);
