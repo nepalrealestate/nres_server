@@ -94,7 +94,7 @@ async function getApartmentByID(property_id,requiredAttributes=null){
         where:{property_id:property_id},
         include:[{
             model:db.PropertyModel.ApartmentViewsCount,
-            attributes: [['COALESCE(SUM(views), 0)', 'views']], // Use COALESCE to return 0 if there are no views
+            attributes: [ 'views'], // Use COALESCE to return 0 if there are no views
             as: 'apartmentViews',
             required: false, // Perform a LEFT JOIN
         
