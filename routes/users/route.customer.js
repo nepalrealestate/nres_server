@@ -15,7 +15,7 @@ const router = express.Router();
 
 //router.post("/register");
 
-router.post("/register",googleSignInVerify,handleCustomerRegistration)
+router.post("/register",handleCustomerRegistration)
 router.post("/login",googleSignInVerify,handleCustomerLogin); 
 router.get("/",customerVerifyToken,handleGetCustomerProfile)
 router.post("/forgetPassword",handleCustomerPasswordReset)
