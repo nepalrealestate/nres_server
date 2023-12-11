@@ -63,7 +63,7 @@ router.delete("/service/provider/:provider_id",staffVerifyToken,handleDeleteServ
 router.get("/property",staffVerifyToken,handleGetPropertyWithAds);
 router.get("/property/sold",staffVerifyToken,handleGetSoldProperty)
 // apartment
-router.get("/property/apartment/property_id",staffVerifyToken,handleGetApartmentByID)
+router.get("/property/apartment/:property_id",staffVerifyToken,handleGetApartmentByID)
 router.get("/property/apartment",staffVerifyToken,handleGetApartment)
 router.post("/property/apartment",staffVerifyToken,handleAddApartment)
 router.patch("/property/apartment/:property_id",staffVerifyToken,handleUpdateApartment)
