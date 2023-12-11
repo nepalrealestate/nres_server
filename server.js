@@ -20,6 +20,13 @@ const logger = require("./utils/errorLogging/logger");
 const http = require("http");
 const socketIo = require("socket.io");
 
+// Set CORS headers for all routes
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://nres.com.np'); // Replace with your actual domain
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
 
 const allowedOrigins = ['https://nres.com.np', 'https://admin.nres.com.np','http://localhost:3000'];
 const corsOptions = {
