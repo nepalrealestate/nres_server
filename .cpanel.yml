@@ -1,28 +1,28 @@
----
-deployment:
-  tasks:
-    - export DEPLOYPATH=/home/nrescomn/nres_server/
+# ---
+# deployment:
+#   tasks:
+#     - export DEPLOYPATH=/home/nrescomn/nres_server/
 
-    # # Create a temporary directory for initial copy
-    # - export TMP_DIR=$(mktemp -d)
+#     # # Create a temporary directory for initial copy
+#     # - export TMP_DIR=$(mktemp -d)
 
-    # # Copy all folders excluding "uploads" and "node_modules" folders to the temporary directory
-    # - rsync -av --exclude='/uploads' --exclude='/node_modules' $SOURCE_DIR/ $TMP_DIR
+#     # # Copy all folders excluding "uploads" and "node_modules" folders to the temporary directory
+#     # - rsync -av --exclude='/uploads' --exclude='/node_modules' $SOURCE_DIR/ $TMP_DIR
 
-    # # Move the "uploads" folder from the deployment directory to the temporary directory
-    # - mv $DEPLOYPATH/uploads $TMP_DIR
+#     # # Move the "uploads" folder from the deployment directory to the temporary directory
+#     # - mv $DEPLOYPATH/uploads $TMP_DIR
 
-    # # Copy the entire contents of the temporary directory to the deployment directory
-    # - rsync -av $TMP_DIR/ $DEPLOYPATH
+#     # # Copy the entire contents of the temporary directory to the deployment directory
+#     # - rsync -av $TMP_DIR/ $DEPLOYPATH
 
-    # # Clean up: remove the temporary directory
-    # - rm -r $TMP_DIR
+#     # # Clean up: remove the temporary directory
+#     # - rm -r $TMP_DIR
 
-    # # # Change to the deployment directory
-    # # - cd $DEPLOYPATH
+#     # # # Change to the deployment directory
+#     # # - cd $DEPLOYPATH
 
-    # # # Run npm install to install dependencies
-    # # - npm install
+#     # # # Run npm install to install dependencies
+#     # # - npm install
 
-    # # # Start your Node.js server
-    # # - node server.js
+#     # # # Start your Node.js server
+#     # # - node server.js
