@@ -226,6 +226,8 @@ const deleteFile = (filePath) => {
 
 const deleteFiles = (filePaths) => {
   let filePathArray;
+  logger.error("this is Input for image delete")
+  logger.error(`${filePaths}`)
  
   if(typeof filePaths==='object' && filePaths[0] && filePaths[0]?.path){
     filePathArray = extractPathsFromObjects(filePaths);
@@ -242,6 +244,8 @@ const deleteFiles = (filePaths) => {
     logger.error(`${filePathArray}`);
     return ;
   }
+  logger.error("this is filePath Array for image delete")
+  logger.error(`${filePathArray}`);
   filePathArray.forEach((filePath) => {
     deleteFile(filePath);
   });
