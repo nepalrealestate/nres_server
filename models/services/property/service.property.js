@@ -59,12 +59,13 @@ async function getPropertyWithAds(condition, limit, offset) {
     whereConditions.status = condition.status
   }
 
-  return await PropertyAdminView.findAll({
+  return await PropertyAdminView.findAndCountAll({
     where: whereConditions,
     attributes: { exclude: ["id"] },
     order: orderConditions,
     limit: limit,
     offset: offset,
+    raw: true,
   });
 }
 

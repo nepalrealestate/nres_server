@@ -93,17 +93,21 @@ const handleGetPropertyWithAds = async function (req, res) {
   console.log(condition);
 
   try { 
-    const [data,totalCount] = await Promise.all([getPropertyWithAds(condition,limit,offset),countListingProperty(condition)])
-    
+    //const [data,totalCount] = await Promise.all([getPropertyWithAds(condition,limit,offset),countListingProperty(condition)])
+    const response = await getPropertyWithAds(condition, limit, offset);
+    console.log(response);
+
+    const { rows: data, count: totalCount } = response;
+
     
     const properties = data.map((property) => ({
-      ...property.dataValues,
+      ...property,
       ads: {
-        twitter: property.dataValues.twitter,
-        tiktok: property.dataValues.tiktok,
-        instagram: property.dataValues.instagram,
-        facebook: property.dataValues.facebook,
-        youtube: property.dataValues.youtube,
+        twitter: property.twitter,
+        tiktok: property.tiktok,
+        instagram: property.instagram,
+        facebook: property.facebook,
+        youtube: property.youtube,
       },
       // Remove the individual social media properties from the main object
       twitter: undefined,
@@ -791,8 +795,8 @@ const handleGetSoldProperty = async function (req, res) {
   }
   condition.status='sold';
   try {
-    const [soldProperty,totalCount] = await Promise.all([getProperty(condition,limit,offset),countListingProperty(condition)])
-    
+    const response = await getPropertyWithAds(condition, limit, offset);
+    const { rows: soldProperty, count: totalCount } = response;
     return res.status(200).json({properties:soldProperty,totalCount});
   } catch (error) {
     handleErrorResponse(res, error);

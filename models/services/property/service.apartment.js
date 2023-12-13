@@ -88,8 +88,6 @@ async function getApartment(condition){
 
 async function getApartmentByID(property_id,requiredAttributes=null){
 
-    //  const data = await Apartment.findByPk(property_id);
-    //  return data!==null?data.get():null;
     const data  = await Apartment.findOne({
         where:{property_id:property_id},
         include:[{
@@ -110,10 +108,7 @@ async function getApartmentByID(property_id,requiredAttributes=null){
     }
     delete data.dataValues.apartmentViews;
     return data;
-    // console.log(property_id)
-    // const apartment = await Apartment.findOne({where:{property_id}});
-    // console.log(apartment)
-    // return apartment;
+    
 }
 
 async function getApartmentWithOwnerByID(property_id){
