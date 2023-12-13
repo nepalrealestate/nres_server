@@ -149,7 +149,7 @@ async function getPendingLand(condition,limit,offset){
 
  async function approveLand(staff_id,property_id){
 
-    return await House.update({status:'approved',approved_by:staff_id},{where:{property_id:property_id}});
+    return await Land.update({status:'approved',approved_by:staff_id},{where:{property_id:property_id}});
     
  }
 

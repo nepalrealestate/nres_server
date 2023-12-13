@@ -1,7 +1,7 @@
 
 const express = require("express");
 
-const {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin, superAdminVerifyToken, superAdminVerifyLogin, superAdminLogout} = require('../../controllers/users/controller.superAdmin');
+const {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin, superAdminVerifyToken, superAdminVerifyLogin, superAdminLogout, handleSuperAdminPasswordReset} = require('../../controllers/users/controller.superAdmin');
 const { handleGetCustomerChatList, handleGetSingleCustomerChat, handleGetSingleCustomerChatForAdmin } = require("../../controllers/chat/controller.customerChat");
 const { handleGetStaffChatList, handleInsertStaffGroup, handleDeleteStaffFromGroup } = require("../../controllers/chat/controller.staffChat");
 const { handleStaffRegistration, handleGetAllStaff, handleStaffUpdate, handleStaffDelete, handleGetStaffByID, handleCreateStaffAccountAccess, handleDeleteStaffAccountAccess } = require("../../controllers/users/controller.staff");
@@ -27,6 +27,7 @@ router.post("/register",handleSuperAdminRegistration)
 router.post("/login",handleSuperAdminLogin)
 router.get("/isLoggedIn",superAdminVerifyToken,superAdminVerifyLogin)
 router.post("/logout",superAdminLogout)
+router.post("/forgetPassword",handleSuperAdminPasswordReset)
 
 
 // chat 
