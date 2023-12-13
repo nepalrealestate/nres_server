@@ -130,8 +130,31 @@ async function getProperty(condition, limit, offset) {
 }
 
 async function getPropertyWithOwner(condition,limit,offset){
-  return await PropertyViewClient.findAll({
-    where:condition,
+
+  let orderConditions = [["createdAt", "DESC"]];
+  let whereConditions = {};
+  let location;
+  if (condition.location) {
+    location = condition.location;
+    whereConditions[db.Op.or] = [
+      { province: { [db.Op.like]: `%${location}%` } },
+      { district: { [db.Op.like]: `%${location}%` } },
+      { municipality: { [db.Op.like]: `%${location}%` } },
+      { area_name: { [db.Op.like]: `%${location}` } }
+    ];
+  }
+  if (condition.property_type) {
+    whereConditions.property_type = condition.property_type
+  }
+  if (condition.listed_for) {
+    whereConditions.listed_for = condition.listed_for
+  }
+  if(condition.status){
+    whereConditions.status = condition.status
+  }
+
+  return await PropertyViewClient.findAllAndCount({
+    where:whereConditions,
     attributes:{exclude:['id']},
     order:[['createdAt','DESC']],
     limit:limit,
@@ -139,8 +162,10 @@ async function getPropertyWithOwner(condition,limit,offset){
     include:[{
       model:db.UserModel.User,
       as:'owner',
-      attributes:['name','email','phone_number']
-    }]
+      attributes:['name','email','phone_number'],
+      raw:true
+    }],
+    raw:true
   })
 }
 

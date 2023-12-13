@@ -813,12 +813,13 @@ const handleGetPendingProperty = async function (req, res) {
   if (req.query?.listed_for) {
     condition.listed_for = req.query.listed_for;
   }
-  if (req.query?.search) {
-    condition.search = req.query.search.trim();
+  if (req.query?.location) {
+    condition.location = req.query.location.trim();
   }
   try {
-    const [properties,totalCount] = await Promise.all([getPropertyWithOwner(condition,limit,offset),countListingProperty({status:"pending"})])
+    const response = await getPropertyWithOwner(condition, limit, offset);
     //const data = await getProperty(condition, limit, offset);
+    const { rows: properties, count: totalCount } = response;
    
     return res.status(200).json({properties,totalCount});
   } catch (error) {
