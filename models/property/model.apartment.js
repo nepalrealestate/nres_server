@@ -25,6 +25,9 @@ function apartmentModel (sequelize,DataTypes){
           notEmpty: true, 
         }
       },
+      property_area:{
+        type:DataTypes.STRING
+      },
       listed_for :{
         type:DataTypes.ENUM('sale','rent')
       },
@@ -32,12 +35,39 @@ function apartmentModel (sequelize,DataTypes){
       property_age:{
         type:DataTypes.INTEGER
       },
+      road_access:{
+        type:DataTypes.FLOAT
+      },
       floor:{
         type:DataTypes.FLOAT
       },
      bhk:{
         type:DataTypes.STRING
      }, 
+     bedroom:{
+        type:DataTypes.INTEGER
+     },
+      bathroom:{
+          type:DataTypes.INTEGER
+      },
+      living_room:{
+          type:DataTypes.INTEGER
+      },
+      kitchen:{
+          type:DataTypes.INTEGER
+      },
+      dining:{
+          type:DataTypes.INTEGER
+      },
+      servant_quater:{
+          type:DataTypes.INTEGER
+      },
+      store_room:{
+          type:DataTypes.INTEGER
+      },
+      extra_room:{
+          type:DataTypes.INTEGER
+      },
       facing:{
         type:DataTypes.ENUM('east','west','north','south','north-east','south-east','north-west','south-west')
       },
@@ -65,15 +95,13 @@ function apartmentModel (sequelize,DataTypes){
       longitude:{
         type:DataTypes.DECIMAL(9,6)
       },
-      property_area:{
-        type:DataTypes.STRING
-      },
-      road_size:{
-        type:DataTypes.FLOAT
-      },
+      
       price:{
-        type:DataTypes.DECIMAL(12,2),
+        type:DataTypes.BIGINT,
         allowNull:false
+      },
+      price_per:{
+        type:DataTypes.STRING
       },
       price_type:{
         type:DataTypes.ENUM('fixed','negotiable')
@@ -116,6 +144,12 @@ function apartmentModel (sequelize,DataTypes){
           key:'user_id'
         },
         onDelete:'CASCADE'
+      },
+      owner_name:{
+        type:DataTypes.STRING
+      },
+      owner_phone:{
+        type:DataTypes.STRING
       },
       listing_type:{
         type:DataTypes.ENUM("free","top","premium","featured"),
@@ -292,7 +326,7 @@ function apartmentViewsModel (sequelize,DataTypes){
   },
   },{
     freezeTableName: true,
-    hook:{
+    hooks:{
       afterCreate:async (instance,options)=>{
 
         const apartmentViewsCount = sequelize.models.property_apartment_views_count;

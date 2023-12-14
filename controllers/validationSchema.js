@@ -1,44 +1,24 @@
 const Joi = require("joi")
-const apartmentSchema  = Joi.object({
+
+const apartmentSchema = Joi.object({
+  property_id: Joi.number().integer().optional(),
   property_type: Joi.string().valid('apartment').default('apartment'),
   property_for: Joi.string().valid('commercial', 'residential', 'office').required(),
-  property_name: Joi.string().required().not('').label('Property name cannot be empty'),
+  property_name: Joi.string().required().label('Property name cannot be empty'),
+  property_area: Joi.string().optional(),
   listed_for: Joi.string().valid('sale', 'rent').required(),
   property_age: Joi.number().integer().optional(),
+  road_access: Joi.number().precision(2).optional(),
   floor: Joi.number().precision(2).optional(),
   bhk: Joi.string().optional(),
-  facing: Joi.string().valid('east', 'west', 'north', 'south', 'north-east','south-east','north-west','south-west').required(),
-  province: Joi.string().required(),
-  district: Joi.string().required(),
-  municipality: Joi.string().required(),
-  area_name: Joi.string().optional(),
-  ward: Joi.number().integer().optional(),
-  landmark: Joi.string().optional(),
-  latitude: Joi.number().precision(6).optional(),
-  longitude: Joi.number().precision(6).optional(),
-  property_area: Joi.string().optional(),
-  road_size: Joi.number().precision(2).optional(),
-  price: Joi.number().precision(2).required(),
-  price_type: Joi.string().valid('fixed', 'negotiable').required(),
-  furnish: Joi.string().valid('non-furnished', 'furnished', 'semi-furnished').required(),
-  parking_bike: Joi.number().integer().optional(),
-  parking_car: Joi.number().integer().optional(),
-  amenities: Joi.object().optional(), 
-  description: Joi.string().optional().allow(''),
-  social_media: Joi.object().optional()
-})
-
-const houseSchema = Joi.object({
-  property_type: Joi.string().valid('house').default('house'),
-  property_for: Joi.string().valid('commercial', 'residential', 'office').required(),
-  property_name: Joi.string().required().not('').label('Property name cannot be empty'),
-  listed_for: Joi.string().valid('sale', 'rent').required(),
-  property_age: Joi.number().integer().optional(),
-  floor: Joi.number().precision(2).optional(),
-  bedrooms: Joi.number().integer().optional(),
+  bedroom: Joi.number().integer().optional(),
+  bathroom: Joi.number().integer().optional(),
+  living_room: Joi.number().integer().optional(),
   kitchen: Joi.number().integer().optional(),
-  bathrooms_attached: Joi.number().integer().optional(),
-  bathrooms_common: Joi.number().integer().optional(),
+  dining: Joi.number().integer().optional(),
+  servant_quater: Joi.number().integer().optional(),
+  store_room: Joi.number().integer().optional(),
+  extra_room: Joi.number().integer().optional(),
   facing: Joi.string().valid('east', 'west', 'north', 'south', 'north-east', 'south-east', 'north-west', 'south-west').required(),
   province: Joi.string().required(),
   district: Joi.string().required(),
@@ -48,27 +28,88 @@ const houseSchema = Joi.object({
   landmark: Joi.string().optional(),
   latitude: Joi.number().precision(6).optional(),
   longitude: Joi.number().precision(6).optional(),
-  property_area: Joi.string().optional(),
-  road_size: Joi.number().precision(2).optional(),
-  price: Joi.number().precision(2).required(),
+  price: Joi.number().integer().required(),
+  price_per: Joi.string().optional(),
   price_type: Joi.string().valid('fixed', 'negotiable').required(),
   furnish: Joi.string().valid('non-furnished', 'furnished', 'semi-furnished').required(),
   parking_bike: Joi.number().integer().optional(),
   parking_car: Joi.number().integer().optional(),
-  amenities: Joi.object().optional(), // Depending on your JSON structure, you may need to provide more specific validation
-  description: Joi.string().optional().allow(''),
-  social_media: Joi.object().optional()
-})
+  amenities: Joi.object().optional(),
+  description: Joi.string().optional(),
+  social_media: Joi.object().optional(),
+  approved_by: Joi.number().integer().optional(),
+  owner_id: Joi.number().integer().optional(),
+  owner_name: Joi.string().optional(),
+  owner_phone: Joi.string().optional(),
+  listing_type: Joi.string().valid('free', 'top', 'premium', 'featured').default('free'),
+  status: Joi.string().valid('pending', 'approved', 'sold').optional(),
+});
+
+
+
+
+const houseSchema = Joi.object({
+  property_id: Joi.number().integer().optional(),
+  property_type: Joi.string().valid('house').default('house'),
+  property_for: Joi.string().valid('commercial', 'residential', 'office').required(),
+  property_name: Joi.string().required().label('Property name cannot be empty'),
+  house_type: Joi.string().optional(),
+  buit_up_area: Joi.number().precision(2).optional(),
+  listed_for: Joi.string().valid('sale', 'rent').required(),
+  property_age: Joi.number().integer().optional(),
+  land_area: Joi.string().optional(),
+  road_access: Joi.number().precision(2).optional(),
+  pillar: Joi.number().integer().optional(),
+  phase_line: Joi.string().optional(),
+  material_used: Joi.string().optional(),
+  floor: Joi.number().precision(2).optional(),
+  bedroom: Joi.number().integer().optional(),
+  kitchen: Joi.number().integer().optional(),
+  dining_room: Joi.number().integer().optional(),
+  bathroom: Joi.number().integer().optional(),
+  living_room: Joi.number().integer().optional(),
+  store: Joi.number().integer().optional(),
+  servent_quater: Joi.number().integer().optional(),
+  pooja_room: Joi.number().integer().optional(),
+  extra_room: Joi.number().integer().optional(),
+  facing: Joi.string().valid('east', 'west', 'north', 'south', 'north-east', 'south-east', 'north-west', 'south-west').required(),
+  province: Joi.string().required(),
+  district: Joi.string().required(),
+  municipality: Joi.string().required(),
+  area_name: Joi.string().optional(),
+  ward: Joi.number().integer().optional(),
+  landmark: Joi.string().optional(),
+  latitude: Joi.number().precision(6).optional(),
+  longitude: Joi.number().precision(6).optional(),
+  price: Joi.number().integer().required(),
+  price_per: Joi.string().valid('month', 'year', 'week').optional(),
+  price_type: Joi.string().valid('fixed', 'negotiable').required(),
+  furnish: Joi.string().valid('non-furnished', 'furnished', 'semi-furnished').required(),
+  parking_bike: Joi.number().integer().optional(),
+  parking_car: Joi.number().integer().optional(),
+  amenities: Joi.object().optional(),
+  description: Joi.string().optional(),
+  social_media: Joi.object().optional(),
+  approved_by_id: Joi.number().integer().optional(),
+  owner_id: Joi.number().integer().optional(),
+  owner_name: Joi.string().optional(),
+  owner_phone: Joi.string().optional(),
+  listing_type: Joi.string().valid('free', 'top', 'premium', 'featured').default('free'),
+  status: Joi.string().valid('pending', 'approved', 'sold').optional(),
+});
+
 
 
 const landSchema = Joi.object({
+  property_id: Joi.number().integer().optional(),
   property_type: Joi.string().valid('land').default('land'),
   property_for: Joi.string().valid('non-plotted', 'plotted').required(),
-  property_name: Joi.string().required().not('').label('Property name cannot be empty'),
+  property_name: Joi.string().required().label('Property name cannot be empty'),
+  land_area: Joi.string().optional(),
+  moda: Joi.string().optional(),
   listed_for: Joi.string().valid('sale', 'rent').required(),
   twist: Joi.number().precision(2).optional(),
-  property_area: Joi.string().optional(),
-  road_size: Joi.number().precision(2).optional(),
+  road_access: Joi.number().precision(2).optional(),
   facing: Joi.string().valid('east', 'west', 'north', 'south', 'north-east', 'south-east', 'north-west', 'south-west').required(),
   province: Joi.string().required(),
   district: Joi.string().required(),
@@ -78,33 +119,19 @@ const landSchema = Joi.object({
   landmark: Joi.string().optional(),
   latitude: Joi.number().precision(6).optional(),
   longitude: Joi.number().precision(6).optional(),
-  price: Joi.number().precision(2).required(),
+  price: Joi.number().integer().required(),
+  price_for: Joi.string().optional(),
   price_type: Joi.string().valid('fixed', 'negotiable').required(),
-  amenities: Joi.object().optional(), // Depending on your JSON structure, you may need to provide more specific validation
-  description: Joi.string().optional().allow(''),
-  social_media: Joi.object().optional() // Depending on your JSON structure, you may need to provide more specific validation
-
-})
-
-// async function errorTypeResonse(callback){
-
-//     try{
-//         const value = await callback();
-//         return value;
-//     }catch(error){
-//         throw error.name = "schemaValidationError";
-//     }
-
-// }===
-
-// async function validationSchemaError (callback,property){
-//     try {
-//         return await callback(property);
-//     } catch (error) {
-//        // error.name = "validateSchemaError"
-//         throw error
-//     }
-// }
+  amenities: Joi.object().optional(),
+  description: Joi.string().optional(),
+  social_media: Joi.object().optional(),
+  approved_by: Joi.number().integer().optional(),
+  owner_id: Joi.number().integer().optional(),
+  owner_name: Joi.string().optional(),
+  owner_phone: Joi.string().optional(),
+  listing_type: Joi.string().valid('free', 'top', 'premium', 'featured').default('free'),
+  status: Joi.string().valid('pending', 'approved', 'sold').optional(),
+});
 
 const validateSchema={
     "apartment":async (property)=>await apartmentSchema.validateAsync(property),

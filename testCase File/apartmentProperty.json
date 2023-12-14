@@ -1,118 +1,117 @@
-      
-      
-[      
-  {
-    "property_type": "apartment",
-    "property_for": "residential",
-    "property_name": "Lalitpur Luxe Apartment",
-    "listed_for": "rent",
-    "property_age": 2,
-    "floor": 3.5,
-    "bhk": 3,
-    "facing": "north-east",
-    "province": "Province 3",
-    "district": "Lalitpur",
-    "municipality": "Lalitpur Sub-Metropolitan City",
-    "area_name": "Pulchowk",
-    "ward": 5,
-    "landmark": "Nearby Patan Durbar Square",
-    "latitude": 27.673582,
-    "longitude": 85.325939,
-    "property_area": 1400.0,
-    "road_size": 18.0,
-    "price": 50000.00,
-    "price_type": "negotiable",
-    "furnish": "furnished",
-    "parking_bike": 5,
-    "parking_car": 2,
-    "amenities": {
-      "lift": true,
-      "24hr_water_supply": true,
-      "backup_power": true,
-      "gym": true
-    },
-    "description": "A luxurious apartment situated in the heart of Lalitpur. Close to major landmarks and with all modern amenities.",
-    "social_media": {
-      "facebook": "https://facebook.com/LalitpurLuxeApartment",
-      "instagram": "https://instagram.com/LalitpurLuxe",
-      "youtube":"https://www.youtube.com/watch?v=D4dXCTf4yfA&t=3s&ab_channel=NepalRealEstateSolution-NRES"
-    }
+{
+  "property_type": "apartment",
+  "property_for": "residential",
+  "property_name": "Luxury Apartment",
+  "listed_for": "sale",
+  "property_age": 5,
+  "road_access": 20.5,
+  "floor": 10.5,
+  "bhk": "3 BHK",
+  "bedroom": 3,
+  "bathroom": 2,
+  "living_room": 1,
+  "kitchen": 1,
+  "dining": 1,
+  "servant_quater": 0,
+  "store_room": 1,
+  "extra_room": 0,
+  "facing": "east",
+  "province": "Province 1",
+  "district": "Kathmandu",
+  "municipality": "Kathmandu Metropolitan City",
+  "area_name": "Baluwatar",
+  "ward": 4,
+  "landmark": "Near City Center",
+  "latitude": 27.7172,
+  "longitude": 85.3240,
+  "price": 15000000,
+  "price_per": "sqft",
+  "price_type": "negotiable",
+  "furnish": "furnished",
+  "parking_bike": 1,
+  "parking_car": 2,
+  "amenities": {
+    "swimming_pool": true,
+    "gym": true,
+    "security": true
   },
-
-  {
-    "property_type": "apartment",
-    "property_for": "residential",
-    "property_name": "Indreni Luxurious Apartment Baluwatar",
-    "listed_for": "rent",
-    "property_age": 0,
-    "floor": 2,
-    "bhk": 3,
-    "facing": "north-east",
-    "province": "Bagmati",
-    "district": "Kathmandu",
-    "municipality": "Kathmandu Metropolitan City",
-    "area_name": "Baluwatar",
-    "ward": 9,
-    "landmark": "Chinese Embassy",
-    "latitude": 27.721472, 
-    "longitude": 85.333384,
-    "property_area": 1400.0,
-    "road_size": 18.0,
-    "price": 238699.26,
-    "price_type": "negotiable",
-    "furnish": "furnished",
-    "parking_bike": 5,
-    "parking_car": 5,
-    "amenities": {
-      "Swimming Pool": true,
-      "24hr Water": true,
-      "Gym": true
-    },
-    "description": " one of the very peaceful and luxurious apartments with gym , swimming pool in Baluwatar, Now available for rent",
-    "social_media": {
-      "facebook": "",
-      "instagram": "",
-      "youtube":"https://www.youtube.com/watch?v=IIfCLmO7M6c&ab_channel=NepalRealEstateSolution-NRES",
-      "tiktok":"https://www.tiktok.com/@nepalrealestatesolution/video/7278652164438871314?fbclid=IwAR0M_8mHR9Jbu6ORzlhEj13Ks29cT_Tn3ndFSJpRCLd4b2EhznzTf0VUTvk"
-    }
+  "description": "A beautiful apartment with scenic views",
+  "social_media": {
+    "facebook": "https://facebook.com/luxuryapartment",
+    "twitter": "https://twitter.com/luxuryapartment"
   }
-  
-  
+}
 
 
 
-
-
-
-
-
-]
-
-
-
-[
-  {
-    "property_type": "apartment",
-    "property_for": "commercial",
-    "listed_for": "sale",
-    "property_area": 1000.5,
-    "floor": 2,
-    "bhk": 3,
-    "facing": "east-north",
-    "road_size": 14.5,
-    "minPrice": "100000.00",
-    "maxPrice": "150000.00",
-    "furnish": "furnished",
-    "description": "Beautiful property located near the central marketplace.",
-    "needed": "within 3 months",
-    "province": "Province 1",
-    "district": "SomeDistrict",
-    "municipality": "SomeMunicipality",
-    "ward": 5,
-    "area_name": "CentralArea",
-    "landmark": "Near Central Park",
-    "name":"Rakshya Gauli",
-    "email":"rakshyagauli123@gmail.com",
-    "contact":"9841234567" 
+{
+  "property_id": "INTEGER",
+  "property_type": {
+    "type": "ENUM",
+    "values": ["apartment"],
+    "defaultValue": "apartment"
+  },
+  "property_for": {
+    "type": "ENUM",
+    "values": ["commercial", "residential", "office"]
+  },
+  "property_name": "STRING",
+  "property_area": "STRING",
+  "listed_for": {
+    "type": "ENUM",
+    "values": ["sale", "rent"]
+  },
+  "property_age": "INTEGER",
+  "road_access": "FLOAT",
+  "floor": "FLOAT",
+  "bhk": "STRING",
+  "bedroom": "INTEGER",
+  "bathroom": "INTEGER",
+  "living_room": "INTEGER",
+  "kitchen": "INTEGER",
+  "dining": "INTEGER",
+  "servant_quater": "INTEGER",
+  "store_room": "INTEGER",
+  "extra_room": "INTEGER",
+  "facing": {
+    "type": "ENUM",
+    "values": ["east", "west", "north", "south", "north-east", "south-east", "north-west", "south-west"]
+  },
+  "province": "STRING",
+  "district": "STRING",
+  "municipality": "STRING",
+  "area_name": "STRING",
+  "ward": "INTEGER",
+  "landmark": "STRING",
+  "latitude": "DECIMAL",
+  "longitude": "DECIMAL",
+  "price": "BIGINT",
+  "price_per": "STRING",
+  "price_type": {
+    "type": "ENUM",
+    "values": ["fixed", "negotiable"]
+  },
+  "furnish": {
+    "type": "ENUM",
+    "values": ["non-furnished", "furnished", "semi-furnished"]
+  },
+  "parking_bike": "INTEGER",
+  "parking_car": "INTEGER",
+  "amenities": "JSON",
+  "description": "TEXT",
+  "social_media": "JSON",
+  "property_image": "JSON",
+  "approved_by": "INTEGER",
+  "owner_id": "INTEGER",
+  "owner_name": "STRING",
+  "owner_phone": "STRING",
+  "listing_type": {
+    "type": "ENUM",
+    "values": ["free", "top", "premium", "featured"],
+    "defaultValue": "free"
+  },
+  "status": {
+    "type": "ENUM",
+    "values": ["pending", "approved", "sold"]
   }
-]
+}

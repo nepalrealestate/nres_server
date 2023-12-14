@@ -8,8 +8,7 @@ const HouseAds = db.PropertyModel.HouseAds
 const HouseFeedback = db.PropertyModel.HouseFeedback
 const HouseComment = db.PropertyModel.HouseComment
 const HouseViews = db.PropertyModel.HouseViews
-const HouseViewsCount = db.PropertyModel.HouseViewsCount
-const HouseSold = db.PropertyModel.HouseSold
+
 
 const propertyService = propertyServiceUtility();
 
@@ -209,25 +208,7 @@ async function getHouseComment(property_id){
 
 
 async  function updateHouseViews(property_id,latitude,longitude){
-    //update views in House table and HouseViewsCount Table
-    // let transaction ;
-
-    // try {
-    //     transaction = await db.sequelize.transaction();
-    //     // create new views 
-    //     await HouseViews.create({property_id,latitude,longitude},{transaction});
-
-    //     // update House views
-    //     await House.increment('views',{by:1,where:{property_id:property_id},transaction});
-
-    //     await transaction.commit();
-    //     return;
-    // } catch (error) {
-    //     console.log(error)
-    //     await transaction.rollback();
-    //     throw error;
-    // }
-
+    
     HouseViews.create({property_id,latitude,longitude}).catch((error)=>{
         logger.error(`Error while insert House View Location - ${error}`)
     });

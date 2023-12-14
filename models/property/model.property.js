@@ -113,7 +113,7 @@ function propertyViewAdminModel(sequelize, DataTypes) {
         type:DataTypes.STRING,
       },
       price:{
-        type:DataTypes.DECIMAL(12,2),
+        type:DataTypes.BIGINT,
       },
       property_image:{
         type:DataTypes.JSON
@@ -222,7 +222,7 @@ function propertyViewClientModel(sequelize, DataTypes) {
         type:DataTypes.STRING,
       },
       price:{
-        type:DataTypes.DECIMAL(12,2),
+        type:DataTypes.BIGINT,
       },
       latitude:{
         type:DataTypes.DECIMAL(9,6)

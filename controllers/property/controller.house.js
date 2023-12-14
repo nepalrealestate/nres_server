@@ -75,19 +75,6 @@ const handleHouseFeedback = async (req, res) => {
   }
 };
 
-const handleUpdateHouseViews = async (req, res) => {
-  const { property_id } = req.params;
-  console.log(req.params);
-  let longitude ;
-  let latitude  ;
-
-  try {
-    const result = await updateHouseViews(property_id,latitude,longitude); //update property views common function to update views in parent table property
-    return res.status(200).json({ message: "Views update successfully" });
-  } catch (error) {
-    return res.status(500).json({ message: "Internal Error" });
-  }
-};
 
 const handleGetHouseByID = async (req, res) => {
 
@@ -246,7 +233,6 @@ module.exports = {
   handleDeleteHouse,
   handleGetHouse,
   handleHouseFeedback,
-  handleUpdateHouseViews,
   handleGetHouseByID,
   handleGetPendingHouse,
   handleApproveHouse,

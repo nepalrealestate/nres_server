@@ -17,6 +17,7 @@ const {
 const {
   insertNotification,
 } = require("../models/services/notification/service.notification");
+const { uploadMultipleOnCloudinary, deleteMultipleFromCloudinary } = require("../utils/cloudinary");
 
 const saltRound = 10;
 
@@ -421,17 +422,41 @@ function propertyUtility(property_type) {
       images = null;
     }
 
-    let imageObject;
-    if (images) {
-      imageObject = images.reduce(
-        (acc, value, index) => ({ ...acc, [index]: value.path }),
-        {}
-      );
+    // let imageObject;
+
+    // if (images) {
+    //   imageObject = images.reduce(
+    //     (acc, value, index) => ({ ...acc, [index]: value.path }),
+    //     {}
+    //   );
+    // }
+
+    let imageArray ;
+    if(images){
+      imageArray = images.map((image)=>{
+        return image.path
+      })
     }
+
+    if(!imageArray){
+      return res.status(400).json({message:"Please Upload Image"})
+    }
+
+    const cloudinaryResponse = await uploadMultipleOnCloudinary(imageArray,property_type);
+    console.log(cloudinaryResponse)
+    if(!cloudinaryResponse){
+      return res.status(500).json({message:"Unable to upload image"})
+    }
+
+
+    console.log(images)
+    console.log("this is image Array",imageArray)
+  
+
     // update object - store some value
     let updatedProperty = {
       ...property,
-      property_image: imageObject,
+      property_image: cloudinaryResponse,
       approved_by: admin_id,
       owner_id: owner_id,
       status: status,
@@ -441,17 +466,9 @@ function propertyUtility(property_type) {
     try {
       const value = await validateSchema[property_type](property);
       console.log("Validate schema", value);
-
-      const response = await addPropertyCB(updatedProperty); // callback
-      // data for notification
-      // const data = {};
-      // (data.notification = `New ${propertyType} Upload`),
-      //   (data.url = `/pending${propertyType.charAt(0).toUpperCase() + propertyType.slice(1)
-      //     }/${response.get().property_id}`);
-
-      // //pushNotification(data);
-
-      // data for notification
+      
+      
+      const response = await addPropertyCB(updatedProperty); 
       const notify = {
         user_id: req.id,
         user_type: req.user_type,
@@ -467,6 +484,11 @@ function propertyUtility(property_type) {
       //delete uploaded images
       if (images) {
         deleteFiles(images);
+      }
+      //delete from cloudinary
+      if(cloudinaryResponse){
+        let linkArray = Object.values(cloudinaryResponse);
+        deleteMultipleFromCloudinary(linkArray);
       }
 
       return handleErrorResponse(res, error);
@@ -554,8 +576,7 @@ function propertyUtility(property_type) {
   ) {
     const { property_id } = req.params;
     console.log(property_id);
-    let latitude = 28.434883;
-    let longitude = 85.72859;
+    const {longitude,latitude} = req.body;
 
     try {
       const result = await getPropertyByIDCallback(property_id); // get single  apartment by property

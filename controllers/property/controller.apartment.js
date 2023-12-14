@@ -98,17 +98,6 @@ const handleGetApartmentByID = async (req, res) => {
 
 //-----------------------------------------------UPDATE RELATED-------------------------------------------------------------
 
-const handleUpdateApartmentViews = async (req, res) => {
-  const { property_ID } = req.params;
-  console.log(req.params);
-
-  try {
-    const result = await updatePropertyViews(property_ID); // update property views common function to update views in parent table property
-    return res.status(200).json({ message: "Views update successfully" });
-  } catch (error) {
-    return res.status(500).json({ message: error.sqlMessage });
-  }
-};
 
 const handleApproveApartment = async (req, res) => {
   // handle approved apartment and shift unapproved apartmnet to approved apartment table
@@ -263,7 +252,6 @@ module.exports = {
   handleDeleteApartment,
   handleGetApartment,
   handleApartmentFeedback,
-  handleUpdateApartmentViews,
   handleGetApartmentByID,
   handleGetPendingApartment,
   handleApproveApartment,

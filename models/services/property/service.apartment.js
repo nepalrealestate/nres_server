@@ -99,10 +99,9 @@ async function getApartmentByID(property_id,requiredAttributes=null){
         }],
         attributes:requiredAttributes
     })
+    console.log("Data WIth Views",data)
     if(data && data.apartmentViews && data.apartmentViews.dataValues && data.apartmentViews.dataValues.views!==null){
         data.dataValues.views = data.apartmentViews.dataValues.views;
-       
-
     }else{
         data.dataValues.views = 0;
     }
@@ -220,26 +219,7 @@ async function getApartmentComment(property_id){
 
 
 async function updateApartmentViews(property_id,latitude,longitude){
-    //update views in Apartment table and ApartmentViewsCount Table
-    // let transaction ;
 
-
-    // try {
-    //     transaction = await db.sequelize.transaction();
-    //     // create new views 
-    //     await ApartmentViews.create({property_id,latitude,longitude},{transaction});
-
-    //     // update Apartment views
-    //     await Apartment.increment('views', { by: 1, where: { property_id: property_id }, transaction });
-
-    //     await transaction.commit();
-    //     return;
-
-    // } catch (error) {
-
-    //     await transaction.rollback();
-    //     throw error;
-    // }
     ApartmentViews.create({property_id,latitude,longitude}).catch((error)=>{
         logger.error(`Error while insert Apartment View Location - ${error}`)
     });

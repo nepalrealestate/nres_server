@@ -205,26 +205,6 @@ async function getLandComment(property_id){
 
 
 async function updateLandViews(property_id,latitude,longitude){
-    //update views in Apartment table and Land views  Table
-    // let transaction ;
-
-
-    // try {
-    //     transaction = await db.sequelize.transaction();
-    //     // create new views 
-    //     await LandViews.create({property_id,latitude,longitude},{transaction});
-
-    //     // update Apartment views
-    //     await Land.increment('views', { by: 1, where: { property_id: property_id }, transaction });
-
-    //     await transaction.commit();
-    //     return;
-
-    // } catch (error) {
-
-    //     await transaction.rollback();
-    //     throw error;
-    // }
 
     LandViews.create({property_id,latitude,longitude}).catch((error)=>{
         logger.error(`Error while insert Land View Location - ${error}`)

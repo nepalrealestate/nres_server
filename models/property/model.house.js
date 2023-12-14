@@ -12,9 +12,17 @@ function houseModel (sequelize,DataTypes){
       type:DataTypes.ENUM('house'),
       defaultValue:"house"
     },
+    house_type:{
+      type:DataTypes.STRING,
+    },
+    buit_up_area:{
+      type:DataTypes.FLOAT
+    },
+
     property_for :{
       type:DataTypes.ENUM('commercial','residential','office')
     },
+    
     property_name : {
       type:DataTypes.STRING,
       allowNull:false,
@@ -29,19 +37,50 @@ function houseModel (sequelize,DataTypes){
     property_age:{
       type:DataTypes.INTEGER
     },
+    land_area:{
+      type:DataTypes.STRING
+    },
+    road_access:{
+      type:DataTypes.FLOAT
+    },
+    pillar:{
+      type:DataTypes.INTEGER
+    },
+    phase_line:{
+      type:DataTypes.STRING
+    },
+    material_used:{
+      type:DataTypes.STRING
+    },
+
     floor:{
       type:DataTypes.FLOAT
     },
-    bedrooms:{
+    bedroom:{
       type:DataTypes.INTEGER
     },
     kitchen:{
       type:DataTypes.INTEGER
     },
-    bathrooms_attached:{
+    dining_room:{
       type:DataTypes.INTEGER
     },
-    bathrooms_common:{
+    bathroom:{
+      type:DataTypes.INTEGER
+    },
+    living_room:{
+      type:DataTypes.INTEGER
+    },
+    store:{
+      type:DataTypes.INTEGER
+    },
+    servent_quater:{
+      type:DataTypes.INTEGER
+    },
+    pooja_room:{
+      type:DataTypes.INTEGER
+    },
+    extra_room:{
       type:DataTypes.INTEGER
     },
     facing:{
@@ -72,15 +111,13 @@ function houseModel (sequelize,DataTypes){
     longitude:{
       type:DataTypes.DECIMAL(9,6)
     },
-    property_area:{
-      type:DataTypes.STRING
-    },
-    road_size:{
-      type:DataTypes.FLOAT
-    },
+    
     price:{
-      type:DataTypes.DECIMAL(12,2),
+      type:DataTypes.BIGINT,
       allowNull:false
+    },
+    price_per:{
+      type:DataTypes.ENUM('month','year','week')
     },
     price_type:{
       type:DataTypes.ENUM('fixed','negotiable')
@@ -122,6 +159,12 @@ function houseModel (sequelize,DataTypes){
         key:'user_id'
       },
       onDelete:'CASCADE'
+    },
+    owner_name:{
+      type:DataTypes.STRING
+    },
+    owner_phone:{
+      type:DataTypes.STRING
     },
     listing_type:{
       type:DataTypes.ENUM("free","top","premium","featured"),

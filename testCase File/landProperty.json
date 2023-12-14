@@ -1,39 +1,113 @@
+{
+  "property_type": "land",
+  "property_for": "plotted",
+  "property_name": "Prime Land",
+  "land_area": "10 ropani",
+  "moda": "plain",
+  "listed_for": "sale",
+  "twist": 10.75,
+  "road_access": 25.5,
+  "facing": "west",
+  "province": "Province 5",
+  "district": "Rupandehi",
+  "municipality": "Lumbini Sanskritik Municipality",
+  "area_name": "Sainamaina",
+  "ward": 8,
+  "landmark": "Near Lumbini Airport",
+  "latitude": 27.5090,
+  "longitude": 83.4722,
+  "price": 20000000,
+  "price_for": "ropani",
+  "price_type": "negotiable",
+  "amenities": {
+    "water_supply": true,
+    "electricity": true
+  },
+  "description": "Prime land suitable for residential or commercial use",
+  "social_media": {
+    "facebook": "https://facebook.com/primeland",
+    "twitter": "https://twitter.com/primeland"
+  }
+}
 
-[ 
+
+
+
+
 
 {
-    "property_type": "land",
-    "property_for": "plotted",
-    "property_name": "Plotted Land For Sale in Bageshwori, Bhaktapur",
-    "listed_for": "sale",
-    "twist": 3.5,
-    "property_area":6,
-    "road_size": 20.0,
-    "facing": "north-west",
-    "province": "Bagmati",
-    "district": "Bhaktpur",
-    "municipality": "Changunarayan Municipality ",
-    "area_name": "Bageshwori",
-    "ward": 7,
-    "landmark": "100m from Changunarayan Ward Office",
-    "latitude": 27.702259, 
-    "longitude": 85.476505,
-    "price": 1500000,
-    "price_type": "negotiable",
-    "amenities": {
-      "Road Access": true,
-      "Electricity": true,
-      "Water Supply": true
-    },
-    "description": "The land for sale is in Bageshwori, Bhaktapur. The plotted land has 5 plots left with land area of 4 to 6 aana. The land is perfect for the residential area because it is close to greenery and peaceful surrounding. The land also has facility of electricity, water line, and drainage system. So, please do not miss this opportunity to own these lands.",
-    "social_media": {
-      "facebook": "",
-      "instagram": "",
-      "youtube":"https://www.youtube.com/watch?v=WG-8F6UaB8M&ab_channel=NepalRealEstateSolution-NRES",
-      "tiktok":"https://www.tiktok.com/@nepalrealestatesolution/video/7243594236594031874?fbclid=IwAR0M_8mHR9Jbu6ORzlhEj13Ks29cT_Tn3ndFSJpRCLd4b2EhznzTf0VUTvk"
+  "property_id": "INTEGER",
+  "property_type": {
+    "type": "ENUM",
+    "values": ["land"],
+    "defaultValue": "land"
+  },
+  "property_for": {
+    "type": "ENUM",
+    "values": ["non-plotted", "plotted"]
+  },
+  "property_name": {
+    "type": "STRING",
+    "allowNull": false,
+    "validate": {
+      "notEmpty": true
     }
+  },
+  "land_area": "STRING",
+  "moda": "STRING",
+  "listed_for": {
+    "type": "ENUM",
+    "values": ["sale", "rent"]
+  },
+  "twist": "FLOAT",
+  "road_access": "FLOAT",
+  "facing": {
+    "type": "ENUM",
+    "values": ["east", "west", "north", "south", "north-east", "south-east", "north-west", "south-west"]
+  },
+  "province": "STRING",
+  "district": "STRING",
+  "municipality": "STRING",
+  "area_name": "STRING",
+  "ward": "INTEGER",
+  "landmark": "STRING",
+  "latitude": "DECIMAL(9,6)",
+  "longitude": "DECIMAL(9,6)",
+  "price":"BIGINT",
+  "price_for": "STRING",
+  "price_type": {
+    "type": "ENUM",
+    "values": ["fixed", "negotiable"]
+  },
+  "amenities": "JSON",
+  "description": "TEXT",
+  "social_media": "JSON",
+  "property_image": "JSON",
+  "approved_by": {
+    "type": "INTEGER",
+    "references": {
+      "model": "user_adminAccount",
+      "key": "admin_id"
+    },
+    "onDelete": "SET NULL"
+  },
+  "owner_id": {
+    "type": "INTEGER",
+    "references": {
+      "model": "user_userAccount",
+      "key": "user_id"
+    },
+    "onDelete": "CASCADE"
+  },
+  "owner_name": "STRING",
+  "owner_phone": "STRING",
+  "listing_type": {
+    "type": "ENUM",
+    "values": ["free", "top", "premium", "featured"],
+    "defaultValue": "free"
+  },
+  "status": {
+    "type": "ENUM",
+    "values": ["pending", "approved", "sold"]
   }
-  
-    
-    
-]
+}

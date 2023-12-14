@@ -189,10 +189,16 @@ const handleUpdateCustomerProfile = async (req, res) => {
 };
 
 const handleGetCustomer = async (req, res) => {
+  let condition = {};
+  condition.user_type = "customer";
+  const [limit,offset] = utility.handleLimitOffset(req);
+
+  if(req.query?.search){
+    condition.search = req.query.search
+  }
   try {
-    const data = await getUser("customer");
-    console.log(data);
-    return res.status(200).json(data);
+    const {rows:user,count:totalCount} = await getUser(condition,limit,offset);
+    return res.status(200).json({user,totalCount});
   } catch (error) {
     utility.handleErrorResponse(res, error);
   }
@@ -214,21 +220,32 @@ const handleGetCustomerByID = async (req, res) => {
 
 // this function doesnot return any value
 const handleGetBuyer = async (req, res) => {
-  console.log("Hello Iam here");
+  let condition = {};
+  condition.user_type = "customer";
+  const [limit,offset] = utility.handleLimitOffset(req);
+
+  if(req.query?.search){
+    condition.search = req.query.search
+  }
   try {
-    const data = await getBuyer({});
-    return res.status(200).json(data);
+    const {rows:user,count:totalCount} = await getBuyer(condition,limit,offset);
+    return res.status(200).json({user,totalCount});
   } catch (error) {
     utility.handleErrorResponse(res, error);
   }
 };
 
 const handleGetSeller = async (req, res) => {
-  console.log("Hello Iam here");
   let condition = {};
+  condition.user_type = "customer";
+  const [limit,offset] = utility.handleLimitOffset(req);
+
+  if(req.query?.search){
+    condition.search = req.query.search
+  }
   try {
-    const data = await getSeller(condition);
-    return res.status(200).json(data);
+    const {rows:user,count:totalCount} = await getSeller(condition,limit,offset);
+    return res.status(200).json({user,totalCount});
   } catch (error) {
     utility.handleErrorResponse(res, error);
   }

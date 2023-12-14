@@ -27,16 +27,19 @@ function landModel (sequelize,DataTypes){
         notEmpty: true, 
       }
     },
+    land_area:{
+      type:DataTypes.STRING
+    },
+    moda:{
+      type:DataTypes.STRING
+    },
     listed_for :{
       type:DataTypes.ENUM('sale','rent')
     },
     twist:{
       type:DataTypes.FLOAT
     },
-    property_area:{
-      type:DataTypes.STRING
-    },
-    road_size:{
+    road_access:{
       type:DataTypes.FLOAT
     },
    
@@ -68,8 +71,11 @@ function landModel (sequelize,DataTypes){
       type:DataTypes.DECIMAL(9,6)
     },
     price:{
-      type:DataTypes.DECIMAL(12,2),
+      type:DataTypes.BIGINT,
       allowNull:false
+    },
+    price_for:{
+      type:DataTypes.STRING
     },
     price_type:{
       type:DataTypes.ENUM('fixed','negotiable')
@@ -103,6 +109,12 @@ function landModel (sequelize,DataTypes){
         key:'user_id'
       },
       onDelete:'CASCADE'
+    },
+    owner_name:{
+      type:DataTypes.STRING
+    },
+    owner_phone:{
+      type:DataTypes.STRING
     },
     listing_type:{
       type:DataTypes.ENUM("free","top","premium","featured"),

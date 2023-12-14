@@ -39,6 +39,7 @@ const {
 } = require("../../models/services/users/service.admin");
 const { sequelize } = require("../../models/model.index");
 const logger = require("../../utils/errorLogging/logger");
+const { deleteMultipleFromCloudinary, uploadMultipleOnCloudinary } = require("../../utils/cloudinary");
 
 const imageFolderPath = "uploads/users/staff/";
 const maxImageSize = "";
@@ -104,14 +105,20 @@ const handleStaffRegistration = async (req, res) => {
         .status(500)
         .json({ message: "Internal Error ! please try again" });
     }
-    let documentsObject = {};
+    let imageArray = null;
     if (req.files || req.file) {
-      let image = req?.files || req?.file;
-       documentsObject = image.reduce(
-        (acc, value, index) => ({ ...acc, [index]: value.path }),
-        {}
-      );
+      let images = req?.files || req?.file;
+      imageArray = images.map((image)=>{
+        return image.path
+      })
     }
+    let cloudinaryResponse = null;
+    if(imageArray){
+      cloudinaryResponse = await uploadMultipleOnCloudinary(imageArray,"staff");
+    }
+
+
+
 
     const staffProfile = {
       name,
@@ -126,7 +133,7 @@ const handleStaffRegistration = async (req, res) => {
       salary,
       qualification,
       pan_no,
-      documents: documentsObject,
+      documents: cloudinaryResponse,
     };
 
     const staffAccount = {
@@ -168,11 +175,8 @@ const handleStaffRegistration = async (req, res) => {
       return res.status(200).json({ message: "Registration Succesfully" });
     } catch (error) {
       await transaction.rollback();
-      if (req.files) {
-        deleteFiles(req.files);
-      }
-      if (req.file) {
-        deleteFiles(req.file);
+      if(cloudinaryResponse){
+        deleteMultipleFromCloudinary(cloudinaryResponse)
       }
       utility.handleErrorResponse(res, error);
     }
