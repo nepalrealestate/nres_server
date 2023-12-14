@@ -15,7 +15,7 @@ function houseModel (sequelize,DataTypes){
     house_type:{
       type:DataTypes.STRING,
     },
-    buit_up_area:{
+    built_up_area:{
       type:DataTypes.FLOAT
     },
 
@@ -32,10 +32,6 @@ function houseModel (sequelize,DataTypes){
     },
     listed_for :{
       type:DataTypes.ENUM('sale','rent')
-    },
-   
-    property_age:{
-      type:DataTypes.INTEGER
     },
     land_area:{
       type:DataTypes.STRING
@@ -62,7 +58,7 @@ function houseModel (sequelize,DataTypes){
     kitchen:{
       type:DataTypes.INTEGER
     },
-    dining_room:{
+    dining:{
       type:DataTypes.INTEGER
     },
     bathroom:{
@@ -74,7 +70,7 @@ function houseModel (sequelize,DataTypes){
     store:{
       type:DataTypes.INTEGER
     },
-    servent_quater:{
+    servant_quarter:{
       type:DataTypes.INTEGER
     },
     pooja_room:{

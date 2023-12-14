@@ -31,14 +31,7 @@ function apartmentModel (sequelize,DataTypes){
       listed_for :{
         type:DataTypes.ENUM('sale','rent')
       },
-     
-      property_age:{
-        type:DataTypes.INTEGER
-      },
       road_access:{
-        type:DataTypes.FLOAT
-      },
-      floor:{
         type:DataTypes.FLOAT
       },
      bhk:{
@@ -59,7 +52,7 @@ function apartmentModel (sequelize,DataTypes){
       dining:{
           type:DataTypes.INTEGER
       },
-      servant_quater:{
+      servant_quarter:{
           type:DataTypes.INTEGER
       },
       store_room:{
