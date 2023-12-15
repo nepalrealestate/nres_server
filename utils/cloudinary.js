@@ -29,40 +29,84 @@ const uploadOnCloudinary = async(localFilePath,foderPath)=>{
     }
 }
 
-const uploadMultipleOnCloudinary = async(localFilePathsArray,folderName)=>{
-    // @param {sting[]} localFilePathsArray
-    // @return {string{}} uploadedResponseURL - object
-    if(!localFilePathsArray || !Array.isArray(localFilePathsArray)){
+// const uploadMultipleOnCloudinary = async(localFilePathsArray,folderName)=>{
+//     // @param {sting[]} localFilePathsArray
+//     // @return {string{}} uploadedResponseURL - object
+//     if(!localFilePathsArray || !Array.isArray(localFilePathsArray)){
+//         return null;
+//     }
+//     try{
+//         console.log("Calling Upload on Cloudinary")
+//         let uploadedResponseURL = {};
+//         let countImageUpload = 0;
+//         for(let localPath of localFilePathsArray){
+//             console.log("Uploading",localPath)
+//             const uploadResponse = await cloudinary.uploader.upload(localPath,{
+//                 resource_type:"auto",
+//                 folder:folderName
+//             });
+//             uploadedResponseURL[countImageUpload] = uploadResponse.secure_url;
+//             countImageUpload++;
+//             //uploadedResponseURL.push(uploadResponse.secure_url);
+//             console.log("Uploaded",uploadedResponseURL)
+//             fs.unlinkSync(localPath);
+//         }
+//         return uploadedResponseURL;
+//     }catch(error){
+//         console.log(error);
+//         if(localFilePathsArray){
+//             for(let localPath of localFilePathsArray){
+//                 fs.unlinkSync(localPath);
+//             }
+//         }
+        
+//         return null
+//     }
+// }
+
+const uploadMultipleOnCloudinary = async (localFilePathsArray, folderName) => {
+    if (!localFilePathsArray || !Array.isArray(localFilePathsArray)) {
         return null;
     }
-    try{
-        console.log("Calling Upload on Cloudinary")
+
+    try {
+        console.log("Calling Upload on Cloudinary");
         let uploadedResponseURL = {};
-        let countImageUpload = 0;
-        for(let localPath of localFilePathsArray){
-            console.log("Uploading",localPath)
-            const uploadResponse = await cloudinary.uploader.upload(localPath,{
-                resource_type:"auto",
-                folder:folderName
-            });
-            uploadedResponseURL[countImageUpload] = uploadResponse.secure_url;
-            countImageUpload++;
-            //uploadedResponseURL.push(uploadResponse.secure_url);
-            console.log("Uploaded",uploadedResponseURL)
-            fs.unlinkSync(localPath);
-        }
-        return uploadedResponseURL;
-    }catch(error){
-        console.log(error);
-        if(localFilePathsArray){
-            for(let localPath of localFilePathsArray){
+        let promises = [];
+
+        localFilePathsArray.forEach((localPath, index) => {
+            console.log("Uploading", localPath);
+            const uploadPromise = cloudinary.uploader.upload(localPath, {
+                resource_type: "auto",
+                folder: folderName,
+                quality: "auto",
+            }).then(uploadResponse => {
+                uploadedResponseURL[index] = uploadResponse.secure_url;
+                console.log("Uploaded", uploadedResponseURL);
                 fs.unlinkSync(localPath);
-            }
+            });
+
+            promises.push(uploadPromise);
+        });
+
+        // Wait for all uploads to complete
+        await Promise.all(promises);
+
+        return uploadedResponseURL;
+    } catch (error) {
+        console.error("Error uploading files:", error);
+
+        // Handle errors appropriately
+        if (localFilePathsArray) {
+            localFilePathsArray.forEach(localPath => {
+                fs.unlinkSync(localPath);
+            });
         }
-        
-        return null
+
+        return null;
     }
-}
+};
+
 
 const deleteFromCloudinary = async(link)=>{
     if(!link){
