@@ -1,8 +1,6 @@
 const Joi = require("joi")
 
 const apartmentValidation = Joi.object({
-  property_id: Joi.number().integer().required(),
-  property_type: Joi.string().valid('apartment').default('apartment'),
   property_for: Joi.string().valid('commercial', 'residential', 'office'),
   property_name: Joi.string().required(),
   property_area: Joi.string(),
@@ -40,16 +38,12 @@ const apartmentValidation = Joi.object({
   owner_id: Joi.number().integer(),
   owner_name: Joi.string(),
   owner_phone: Joi.string(),
-  listing_type: Joi.string().valid('free', 'top', 'premium', 'featured').default('free'),
-  status: Joi.string().valid('pending', 'approved', 'sold'),
 });
 
 
 
 
 const houseValidation = Joi.object({
-  property_id: Joi.number().integer().required(),
-  property_type: Joi.string().valid('house').default('house'),
   house_type: Joi.string(),
   built_up_area: Joi.number(),
   property_for: Joi.string().valid('commercial', 'residential', 'office'),
@@ -93,16 +87,13 @@ const houseValidation = Joi.object({
   owner_id: Joi.number().integer(),
   owner_name: Joi.string(),
   owner_phone: Joi.string(),
-  listing_type: Joi.string().valid('free', 'top', 'premium', 'featured').default('free'),
-  status: Joi.string().valid('pending', 'approved', 'sold'),
+ 
 });
 
 
 
 
 const landValidation = Joi.object({
-  property_id: Joi.number().integer().required(),
-  property_type: Joi.string().valid('land').default('land'),
   property_for: Joi.string().valid('non-plotted', 'plotted'),
   property_name: Joi.string().required(),
   land_area: Joi.string(),
@@ -120,7 +111,7 @@ const landValidation = Joi.object({
   latitude: Joi.number().precision(6),
   longitude: Joi.number().precision(6),
   price: Joi.number().integer().required(),
-  price_for: Joi.string(),
+  price_per: Joi.string(),
   price_type: Joi.string().valid('fixed', 'negotiable'),
   amenities: Joi.object(),
   description: Joi.string(),
@@ -130,8 +121,7 @@ const landValidation = Joi.object({
   owner_id: Joi.number().integer(),
   owner_name: Joi.string(),
   owner_phone: Joi.string(),
-  listing_type: Joi.string().valid('free', 'top', 'premium', 'featured').default('free'),
-  status: Joi.string().valid('pending', 'approved', 'sold'),
+
 });
 
 const validateSchema={

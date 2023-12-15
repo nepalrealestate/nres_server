@@ -74,7 +74,7 @@ function landModel (sequelize,DataTypes){
       type:DataTypes.BIGINT,
       allowNull:false
     },
-    price_for:{
+    price_per:{
       type:DataTypes.STRING
     },
     price_type:{

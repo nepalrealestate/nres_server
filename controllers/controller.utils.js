@@ -422,14 +422,6 @@ function propertyUtility(property_type) {
       images = null;
     }
 
-    // let imageObject;
-
-    // if (images) {
-    //   imageObject = images.reduce(
-    //     (acc, value, index) => ({ ...acc, [index]: value.path }),
-    //     {}
-    //   );
-    // }
 
     let imageArray ;
     if(images){
@@ -481,10 +473,6 @@ function propertyUtility(property_type) {
 
       return res.status(200).json({ message: `${propertyType} insert` });
     } catch (error) {
-      //delete uploaded images
-      if (images) {
-        deleteFiles(images);
-      }
       //delete from cloudinary
       if(cloudinaryResponse){
         let linkArray = Object.values(cloudinaryResponse);
