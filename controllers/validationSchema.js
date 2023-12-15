@@ -4,10 +4,10 @@ const apartmentValidation = Joi.object({
   property_id: Joi.number().integer().required(),
   property_type: Joi.string().valid('apartment').default('apartment'),
   property_for: Joi.string().valid('commercial', 'residential', 'office'),
-  property_name: Joi.string().required().notEmpty(),
+  property_name: Joi.string().required(),
   property_area: Joi.string(),
   listed_for: Joi.string().valid('sale', 'rent'),
-  road_access: Joi.number().float(),
+  road_access: Joi.number(),
   bhk: Joi.string(),
   bedroom: Joi.number().integer(),
   bathroom: Joi.number().integer(),
@@ -51,16 +51,16 @@ const houseValidation = Joi.object({
   property_id: Joi.number().integer().required(),
   property_type: Joi.string().valid('house').default('house'),
   house_type: Joi.string(),
-  built_up_area: Joi.number().float(),
+  built_up_area: Joi.number(),
   property_for: Joi.string().valid('commercial', 'residential', 'office'),
-  property_name: Joi.string().required().notEmpty(),
+  property_name: Joi.string().required(),
   listed_for: Joi.string().valid('sale', 'rent'),
   land_area: Joi.string(),
-  road_access: Joi.number().float(),
+  road_access: Joi.number(),
   pillar: Joi.number().integer(),
   phase_line: Joi.string(),
   material_used: Joi.string(),
-  floor: Joi.number().float(),
+  floor: Joi.number(),
   bedroom: Joi.number().integer(),
   kitchen: Joi.number().integer(),
   dining: Joi.number().integer(),
@@ -104,12 +104,12 @@ const landValidation = Joi.object({
   property_id: Joi.number().integer().required(),
   property_type: Joi.string().valid('land').default('land'),
   property_for: Joi.string().valid('non-plotted', 'plotted'),
-  property_name: Joi.string().required().notEmpty(),
+  property_name: Joi.string().required(),
   land_area: Joi.string(),
   moda: Joi.string(),
   listed_for: Joi.string().valid('sale', 'rent'),
-  twist: Joi.number().float(),
-  road_access: Joi.number().float(),
+  twist: Joi.number(),
+  road_access: Joi.number(),
   facing: Joi.string().valid('east', 'west', 'north', 'south', 'north-east', 'south-east', 'north-west', 'south-west'),
   province: Joi.string(),
   district: Joi.string(),
@@ -135,9 +135,9 @@ const landValidation = Joi.object({
 });
 
 const validateSchema={
-    "apartment":async (property)=>await apartmentSchema.validateAsync(property),
-    "house":async(property)=>await houseSchema.validateAsync(property),
-    "land":async(property)=>await landSchema.validateAsync(property)
+    "apartment":async (property)=>await apartmentValidation.validateAsync(property),
+    "house":async(property)=>await houseValidation.validateAsync(property),
+    "land":async(property)=>await landValidation.validateAsync(property)
   }
 
 module.exports = {validateSchema}
