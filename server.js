@@ -20,25 +20,32 @@ const logger = require("./utils/errorLogging/logger");
 const http = require("http");
 const socketIo = require("socket.io");
 
+const cluster = require("node:cluster");
+const numCPUs = require("os").cpus().length;
+
 // Set CORS headers for all routes
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://nres.com.np'); // Replace with your actual domain
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header("Access-Control-Allow-Origin", "https://nres.com.np"); // Replace with your actual domain
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
   next();
 });
 
-const allowedOrigins = ['https://nres.com.np', 'https://admin.nres.com.np','http://localhost:3000'];
+const allowedOrigins = [
+  "https://nres.com.np",
+  "https://admin.nres.com.np",
+  "http://localhost:3000",
+];
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error("Not allowed by CORS"));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
   preflightContinue: false,
   optionsSuccessStatus: 204,
@@ -56,9 +63,6 @@ const chatServer = socketIo(server, {
 
 const port = 8000;
 
-
-
-
 // init sequlize;
 db.sequelize.sync({ force: false }); // alter creates duplicates index every time
 
@@ -66,8 +70,6 @@ db.sequelize.sync({ force: false }); // alter creates duplicates index every tim
 app.use("/api/uploads", express.static("uploads"));
 
 app.use(express.json());
-
-
 
 app.use(cookieParser());
 
@@ -95,19 +97,27 @@ app.use("/api/contact", contactRouter);
 
 //chat running
 
-socketServer.chat(chatServer);
-
-console.log("Logging levels:", logger.levels);
-console.log("Logging level configured:", logger.level);
-
-if (process.env.NODE_ENV == "Production") {
-  server.listen(() => {
-    console.log("Server Started");
-    logger.info("NRES Server Started");
+if (cluster.isPrimary) {
+  console.log(`Primary ${process.pid} is running`);
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+  cluster.on("exit", (worker, code, signal) => {
+    console.log(`worker ${worker.process.pid} died`);
   });
 } else {
-  server.listen(port, () => {
-    console.log(` port ${port} is listening.......`);
-    logger.info("port is running in 8000: devs");
-  });
+  console.log(`Worker ${process.pid} started`);
+  socketServer.chat(chatServer);
+
+  if (process.env.NODE_ENV == "Production") {
+    server.listen(() => {
+      //console.log("Server Started");
+      logger.info("NRES Server Started");
+    });
+  } else {
+    server.listen(port, () => {
+      //console.log(` port ${port} is listening.......`);
+      logger.info("port is running in 8000: devs");
+    });
+  }
 }

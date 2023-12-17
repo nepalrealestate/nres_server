@@ -153,7 +153,7 @@ async function getPropertyWithOwner(condition,limit,offset){
     whereConditions.status = condition.status
   }
 
-  return await PropertyViewClient.findAllAndCount({
+  return await PropertyViewClient.findAndCountAll({
     where:whereConditions,
     attributes:{exclude:['id']},
     order:[['createdAt','DESC']],
