@@ -30,9 +30,6 @@ function landModel (sequelize,DataTypes){
     land_area:{
       type:DataTypes.STRING
     },
-    moda:{
-      type:DataTypes.STRING
-    },
     listed_for :{
       type:DataTypes.ENUM('sale','rent')
     },

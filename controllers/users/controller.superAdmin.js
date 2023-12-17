@@ -90,19 +90,20 @@ const handleSuperAdminPasswordReset = async (req, res, next) => {
 
   try {
     const adminResponse = await findAdmin(email, "superAdmin");
+    console.log(adminResponse);
     if (!adminResponse) {
       return res.status(400).json({ message: "No Admin Found" });
     }
     if (email && !token) {
       // if there is no token - then get token for reset password
-      return await user.forgetPassword(req, res, adminResponse.dataValues);
+      return await user.forgetPassword(req, res, adminResponse);
     }
     if (email && token) {
       // pass update Password function as parameters;
       return await user.passwordUpdate(
         req,
         res,
-        adminResponse.dataValues,
+        adminResponse,
         updateSuperAdminPassword
       );
     }

@@ -316,9 +316,6 @@ const handleStaffDelete = async (req, res) => {
     if(staffProfile?.dataValues?.admin_id){
       const response = await deleteAdmin(staffProfile?.dataValues?.admin_id);
     }
-    if(staffProfile?.dataValues?.documents){
-      deleteFiles(staffProfile?.dataValues?.documents)
-    }
     return res.status(200).json({ message: "Delete Successfully" });
 
   } catch (error) {
@@ -379,11 +376,11 @@ const handleStaffPasswordReset = async (req, res, next) => {
     }
     if(email && !token){
         // if there is no token - then get token for reset password
-      return await user.forgetPassword(req, res, staffResponse.dataValues);
+      return await user.forgetPassword(req, res, staffResponse);
     }
     if(email && token){
        // pass update Password function as parameters;
-      return await user.passwordUpdate(req, res, staffResponse.dataValues,updateStaffPassword);
+      return await user.passwordUpdate(req, res, staffResponse,updateStaffPassword);
     }
 
   } catch (error) {

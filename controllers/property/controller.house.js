@@ -18,7 +18,7 @@ const property = propertyUtility("house");
 const handleAddHouse = async (req, res) => {
   
   upload(req, res, async function (err) {
-    utils.handleMulterError(req,res,err,addHouse,false);
+    utils.handleMulterError(req,res,err,addHouse,true);
   });
   
   async function addHouse (){

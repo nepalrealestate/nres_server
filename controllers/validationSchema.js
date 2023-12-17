@@ -1,6 +1,7 @@
 const Joi = require("joi")
 
 const apartmentValidation = Joi.object({
+  property_type:Joi.string().valid('apartment'),
   property_for: Joi.string().valid('commercial', 'residential', 'office'),
   property_name: Joi.string().required(),
   property_area: Joi.string(),
@@ -44,6 +45,7 @@ const apartmentValidation = Joi.object({
 
 
 const houseValidation = Joi.object({
+  property_type:Joi.string().valid('house'),
   house_type: Joi.string(),
   built_up_area: Joi.number(),
   property_for: Joi.string().valid('commercial', 'residential', 'office'),
@@ -94,10 +96,10 @@ const houseValidation = Joi.object({
 
 
 const landValidation = Joi.object({
+  property_type:Joi.string().valid('land'),
   property_for: Joi.string().valid('non-plotted', 'plotted'),
   property_name: Joi.string().required(),
   land_area: Joi.string(),
-  moda: Joi.string(),
   listed_for: Joi.string().valid('sale', 'rent'),
   twist: Joi.number(),
   road_access: Joi.number(),
@@ -107,18 +109,18 @@ const landValidation = Joi.object({
   municipality: Joi.string(),
   area_name: Joi.string(),
   ward: Joi.number().integer(),
-  landmark: Joi.string(),
+  landmark: Joi.string().optional(),
   latitude: Joi.number().precision(6),
   longitude: Joi.number().precision(6),
   price: Joi.number().integer().required(),
   price_per: Joi.string(),
   price_type: Joi.string().valid('fixed', 'negotiable'),
-  amenities: Joi.object(),
-  description: Joi.string(),
-  social_media: Joi.object(),
-  property_image: Joi.object(),
+  amenities: Joi.object().optional(),
+  description: Joi.string().optional(),
+  social_media: Joi.object().optional(),
+  property_image: Joi.object().optional(),
   approved_by: Joi.number().integer(),
-  owner_id: Joi.number().integer(),
+  owner_id: Joi.number().integer().optional(),
   owner_name: Joi.string(),
   owner_phone: Joi.string(),
 

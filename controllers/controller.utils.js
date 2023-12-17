@@ -17,7 +17,10 @@ const {
 const {
   insertNotification,
 } = require("../models/services/notification/service.notification");
-const { uploadMultipleOnCloudinary, deleteMultipleFromCloudinary } = require("../utils/cloudinary");
+const {
+  uploadMultipleOnCloudinary,
+  deleteMultipleFromCloudinary,
+} = require("../utils/cloudinary");
 
 const saltRound = 10;
 
@@ -422,45 +425,45 @@ function propertyUtility(property_type) {
       images = null;
     }
 
-
-    let imageArray ;
-    if(images){
-      imageArray = images.map((image)=>{
-        return image.path
-      })
+    let imageArray;
+    if (images) {
+      imageArray = images.map((image) => {
+        return image.path;
+      });
     }
 
-    if(!imageArray){
-      return res.status(400).json({message:"Please Upload Image"})
-    }
-
-    const cloudinaryResponse = await uploadMultipleOnCloudinary(imageArray,property_type);
-    console.log(cloudinaryResponse)
-    if(!cloudinaryResponse){
-      return res.status(500).json({message:"Unable to upload image"})
+    if (!imageArray) {
+      return res.status(400).json({ message: "Please Upload Image" });
     }
 
 
-    console.log(images)
-    console.log("this is image Array",imageArray)
-  
-
-    // update object - store some value
-    let updatedProperty = {
-      ...property,
-      property_image: cloudinaryResponse,
-      approved_by: admin_id,
-      owner_id: owner_id,
-      status: status,
-    };
+    console.log(images);
+    console.log("this is image Array", imageArray);
 
     //console.log(property,imageObject)
+    let cloudinaryResponse;
     try {
       const value = await validateSchema[property_type](property);
       console.log("Validate schema", value);
-      
-      
-      const response = await addPropertyCB(updatedProperty); 
+
+      cloudinaryResponse = await uploadMultipleOnCloudinary(
+        imageArray,
+        property_type
+      );
+      console.log(cloudinaryResponse);
+      if (!cloudinaryResponse) {
+        return res.status(500).json({ message: "Unable to upload image" });
+      }
+      // update object - store some value
+      let updatedProperty = {
+        ...property,
+        property_image: cloudinaryResponse,
+        approved_by: admin_id,
+        owner_id: owner_id,
+        status: status,
+      };
+
+      const response = await addPropertyCB(updatedProperty);
       const notify = {
         user_id: req.id,
         user_type: req.user_type,
@@ -474,8 +477,12 @@ function propertyUtility(property_type) {
       return res.status(200).json({ message: `${propertyType} insert` });
     } catch (error) {
       //delete from cloudinary
-      if(cloudinaryResponse){
+      if(imageArray && !cloudinaryResponse){
+        deleteFiles(imageArray)
+      }
+      if (cloudinaryResponse) {
         let linkArray = Object.values(cloudinaryResponse);
+
         deleteMultipleFromCloudinary(linkArray);
       }
 
@@ -564,7 +571,7 @@ function propertyUtility(property_type) {
   ) {
     const { property_id } = req.params;
     console.log(property_id);
-    const {longitude,latitude} = req.body;
+    const { longitude, latitude } = req.body;
 
     try {
       const result = await getPropertyByIDCallback(property_id); // get single  apartment by property
