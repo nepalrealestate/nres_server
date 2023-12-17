@@ -58,6 +58,9 @@ function apartmentModel (sequelize,DataTypes){
       store_room:{
           type:DataTypes.INTEGER
       },
+      pooja_room:{
+          type:DataTypes.INTEGER
+      },
       extra_room:{
           type:DataTypes.INTEGER
       },

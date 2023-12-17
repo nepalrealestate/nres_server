@@ -15,6 +15,7 @@ const apartmentValidation = Joi.object({
   dining: Joi.number().integer(),
   servant_quarter: Joi.number().integer(),
   store_room: Joi.number().integer(),
+  pooja_room: Joi.number().integer(),
   extra_room: Joi.number().integer(),
   facing: Joi.string().valid('east', 'west', 'north', 'south', 'north-east', 'south-east', 'north-west', 'south-west'),
   province: Joi.string(),
