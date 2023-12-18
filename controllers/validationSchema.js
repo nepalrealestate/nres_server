@@ -77,7 +77,7 @@ const houseValidation = Joi.object({
   latitude: Joi.number().precision(6),
   longitude: Joi.number().precision(6),
   price: Joi.number().integer().required(),
-  price_per: Joi.string().valid('month', 'year', 'week'),
+  price_per: Joi.string(),
   price_type: Joi.string().valid('fixed', 'negotiable'),
   furnish: Joi.string().valid('non-furnished', 'furnished', 'semi-furnished'),
   parking_bike: Joi.number().integer(),
