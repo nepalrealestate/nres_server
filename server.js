@@ -96,28 +96,29 @@ app.use("/api/blog", blogRouter);
 app.use("/api/contact", contactRouter);
 
 //chat running
+socketServer.chat(chatServer);
 
-if (cluster.isPrimary) {
-  console.log(`Primary ${process.pid} is running`);
-  for (let i = 0; i < numCPUs; i++) {
-    cluster.fork();
-  }
-  cluster.on("exit", (worker, code, signal) => {
-    console.log(`worker ${worker.process.pid} died`);
+if (process.env.NODE_ENV == "Production") {
+  server.listen(() => {
+    //console.log("Server Started");
+    logger.info("NRES Server Started");
   });
 } else {
-  console.log(`Worker ${process.pid} started`);
-  socketServer.chat(chatServer);
-
-  if (process.env.NODE_ENV == "Production") {
-    server.listen(() => {
-      //console.log("Server Started");
-      logger.info("NRES Server Started");
-    });
-  } else {
-    server.listen(port, () => {
-      //console.log(` port ${port} is listening.......`);
-      logger.info("port is running in 8000: devs");
-    });
-  }
+  server.listen(port, () => {
+    //console.log(` port ${port} is listening.......`);
+    logger.info("port is running in 8000: devs");
+  });
 }
+
+// if (cluster.isPrimary) {
+//   console.log(`Primary ${process.pid} is running`);
+//   for (let i = 0; i < numCPUs; i++) {
+//     cluster.fork();
+//   }
+//   cluster.on("exit", (worker, code, signal) => {
+//     console.log(`worker ${worker.process.pid} died`);
+//   });
+// } else {
+//   console.log(`Worker ${process.pid} started`);
+ 
+// }
