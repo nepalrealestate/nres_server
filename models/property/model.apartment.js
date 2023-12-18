@@ -114,6 +114,12 @@ function apartmentModel (sequelize,DataTypes){
       amenities:{
         type:DataTypes.JSON
       },
+      availability_from:{
+        type:DataTypes.DATEONLY
+      },
+      availability_to:{
+        type:DataTypes.DATEONLY
+      },
       description:{
         type:DataTypes.TEXT
       },

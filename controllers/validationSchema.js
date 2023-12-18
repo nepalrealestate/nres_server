@@ -33,6 +33,8 @@ const apartmentValidation = Joi.object({
   parking_bike: Joi.number().integer(),
   parking_car: Joi.number().integer(),
   amenities: Joi.object(),
+  availability_from: Joi.date(),
+  availability_to:Joi.date(),
   description: Joi.string(),
   social_media: Joi.object(),
   property_image: Joi.object(),
