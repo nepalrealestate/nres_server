@@ -1,5 +1,6 @@
 const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
+const logger = require('./errorLogging/logger');
 
 
 cloudinary.config({
@@ -93,6 +94,7 @@ const uploadMultipleOnCloudinary = async (localFilePathsArray, folderName) => {
 
             promises.push(uploadPromise);
         });
+    
 
         // Wait for all uploads to complete
         await Promise.all(promises);

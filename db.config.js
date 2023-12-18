@@ -16,6 +16,10 @@ const sequelize = new Sequelize(database,userName,password,{
     host:host,
     port:port,
     dialect:'mysql',
+    define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
+      },
     //logging: (msg)=>logger.log('info',msg)
     logging:false
 })
