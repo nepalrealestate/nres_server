@@ -40,7 +40,7 @@ function houseModel (sequelize,DataTypes){
       type:DataTypes.FLOAT
     },
     pillar:{
-      type:DataTypes.INTEGER
+      type:DataTypes.STRING
     },
     phase_line:{
       type:DataTypes.STRING
@@ -113,7 +113,7 @@ function houseModel (sequelize,DataTypes){
       allowNull:false
     },
     price_per:{
-      type:DataTypes.ENUM('month','year','week')
+      type:DataTypes.STRING
     },
     price_type:{
       type:DataTypes.ENUM('fixed','negotiable')

@@ -56,7 +56,7 @@ const houseValidation = Joi.object({
   listed_for: Joi.string().valid('sale', 'rent'),
   land_area: Joi.string(),
   road_access: Joi.number(),
-  pillar: Joi.number().integer(),
+  pillar: Joi.string(),
   phase_line: Joi.string(),
   material_used: Joi.string(),
   floor: Joi.number(),
