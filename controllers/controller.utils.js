@@ -20,6 +20,7 @@ const {
 const {
   uploadMultipleOnCloudinary,
   deleteMultipleFromCloudinary,
+  uploadOnCloudinary,
 } = require("../utils/cloudinary");
 
 const saltRound = 10;
@@ -462,6 +463,7 @@ function propertyUtility(property_type) {
         owner_id: owner_id,
         status: status,
       };
+      console.log("")
 
       const response = await addPropertyCB(updatedProperty);
       const notify = {
@@ -495,9 +497,17 @@ function propertyUtility(property_type) {
     if (!updateProperty) {
       return res.status(400).json({ message: "Please Provide Update Data" });
     }
-
     const property_id = req.params.property_id;
     // property_type , property_id
+    let cloudinaryResponse; 
+    if(req?.file){
+      cloudinaryResponse = await uploadOnCloudinary(req?.file?.path,property_type);
+      if(cloudinaryResponse) {
+        updateProperty.property_image = cloudinaryResponse.secure_url;
+      }
+    }
+  
+    
 
     if (updateProperty?.property_type) {
       delete updateProperty.property_type;
@@ -555,7 +565,8 @@ function propertyUtility(property_type) {
         : null;
       console.log("this is project nres images after parse ", imagePaths);
       if (imagePaths) {
-        deleteFiles(imagePaths);
+       // deleteFiles(imagePaths);
+        deleteMultipleFromCloudinary(imagePaths)
       }
       return res.status(200).json({ message: `${propertyType} deleted` });
     } catch (error) {

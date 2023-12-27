@@ -90,6 +90,11 @@ db.PropertyModel = {
     PropertyFieldVisitOTP : require('./property/model.property').propertyFieldVisitOTPModel(sequelize,DataTypes),
     PropertyFieldVisit : require('./property/model.property').propertyFieldVisit(sequelize,DataTypes),
 
+    //HomeLoan : require('./property/model.house').homeLoanModel(sequelize,DataTypes),
+    HomeLoan : require('./property/model.property').homeLoanModel(sequelize,DataTypes),
+
+    FavouriteProperty : require('./property/model.property').favouritePropertyModel(sequelize,DataTypes),
+    
 };
 
 

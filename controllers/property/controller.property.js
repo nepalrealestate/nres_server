@@ -48,6 +48,9 @@ const {
   getPropertyList,
   getPropertyWithOwner,
   updatePropertyShootSchedule,
+  insertHomeLoan,
+  getHomeLoan,
+  deleteHomeLoan,
 } = require("../../models/services/property/service.property");
 const {
   findCustomer,
@@ -862,6 +865,51 @@ const handleGetPropertyList = async function (req, res) {
   }
 };
 
+const handleInsertHomeLoan = async (req,res)=>{
+  const {name,email,phone_number,loan_amount,property_id,property_type} = req.body;
+
+  if(!name  || !phone_number || !loan_amount){
+    return res.status(400).json({message:"Bad Request"});
+  }
+
+  try {
+    const response = await insertHomeLoan({name,email,phone_number,loan_amount,property_id,property_type});
+
+    return res.status(200).json({message:"Successfully Inserted"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+const handleGetHomeLoan = async (req,res)=>{
+  let condition = {};
+  const [limit,offset] = handleLimitOffset(req);
+  if(req.query){
+    condition = req.query;
+  }
+  try {
+    const response = await getHomeLoan(condition,limit,offset);
+    return res.status(200).json(response)
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+const handleDeleteHomeLoan = async (req,res)=>{
+  const {id} = req.params;
+  if(!id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+
+  try {
+    const response = await deleteHomeLoan(id);
+    return res.status(200).json({message:"Successfully Deleted"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+
 module.exports = {
   handleGetPropertyWithAds,
   handleGetProperty,
@@ -887,5 +935,9 @@ module.exports = {
   handleGetPendingProperty,
   handleGetPropertyAnalytics,
   handleGetPropertyList,
-  handleUpdatePropertyShootSchedule
+  handleUpdatePropertyShootSchedule,
+  handleInsertHomeLoan,
+  handleGetHomeLoan,
+  handleDeleteHomeLoan
+
 };

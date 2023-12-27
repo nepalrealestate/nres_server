@@ -386,6 +386,33 @@ function houseViewsCountModel(sequelize,DataTypes){
 }
 
 
+
+function homeLoanModel(sequelize,DataTypes){
+  return homeLoan = sequelize.define('home_loan',{
+
+    name:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      validate:{
+        notEmpty:true
+      }
+    },
+    email:{
+      type:DataTypes.STRING,
+    },
+    phone_number:{
+      type:DataTypes.STRING,
+    },
+    loan_amount:{
+      type:DataTypes.BIGINT
+    },
+
+  },{
+    freezeTableName:true
+  })
+}
+
+
 module.exports = {
   houseModel,
   houseCommentModel,
@@ -393,4 +420,5 @@ module.exports = {
   houseAdsModel,
   houseViewsModel,
   houseViewsCountModel, 
+  homeLoanModel
 };

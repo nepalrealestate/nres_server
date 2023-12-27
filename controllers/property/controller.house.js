@@ -5,10 +5,11 @@ const { updatePropertyViews } = require("../../models/property/model.property");
 const path = "uploads/property/house"; //path from source
 const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
+const updateUpload = new UploadImage(path, maxImageSize).upload.single("image");
 const multer = require("multer");
 
-const {Utility, propertyUtility, utility, handleErrorResponse} = require("../controller.utils");
-const { getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse, getRequestedHouse, updateHouse, deleteHouse, soldHouse, getSoldHouseByID, deletePendingHouse, updateHouseListingType } = require("../../models/services/property/service.house");
+const {Utility, propertyUtility, utility, handleErrorResponse, handleLimitOffset} = require("../controller.utils");
+const { getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse, getRequestedHouse, updateHouse, deleteHouse, soldHouse, getSoldHouseByID, deletePendingHouse, updateHouseListingType, insertHomeLoan, getHomeLoan } = require("../../models/services/property/service.house");
 //const utils = new Utility();
 const utils  = utility();
 
@@ -30,10 +31,9 @@ const handleAddHouse = async (req, res) => {
 
 
 
-
 const handleUpdateHouse = async (req,res)=>{
 
-  upload(req,res,async function (err){
+  updateUpload(req,res,async function (err){
     utils.handleMulterError(req,res,err,update,false);
   })
 
@@ -227,6 +227,7 @@ const handleDeletePendingHouse = async (req,res)=>{
 
 
 
+
 module.exports = {
   handleAddHouse,
   handleUpdateHouse,
@@ -243,6 +244,7 @@ module.exports = {
   handleGetSoldHouseByID,
   handleGetPendingHouseByID,
   handleDeletePendingHouse,
-  handleUpdateHouseListingType
+  handleUpdateHouseListingType,
+
   
 };

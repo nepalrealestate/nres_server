@@ -572,6 +572,64 @@ function requestedPropertyModel(sequelize,DataTypes){
 
 
 
+function favouritePropertyModel(sequelize,DataTypes){
+  return FavouriteProperty = sequelize.define('favorite_property',{
+    id:{
+      type:DataTypes.INTEGER,
+      primaryKey:true,
+      autoIncrement:true
+    },
+    property_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false
+    },
+    property_type:{
+      type:DataTypes.ENUM('house','apartment','land')
+    },
+    user_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'CASCADE'
+    }
+  },{
+    freezeTableName:true
+  })
+}
+
+
+
+function homeLoanModel(sequelize,DataTypes){
+  return HomeLoan = sequelize.define('property_home_loan',{
+    name:{
+      type:DataTypes.STRING,
+      allowNull:false
+    },
+    email:{
+      type:DataTypes.STRING,
+    },
+    phone_number:{
+      type:DataTypes.STRING,
+    },
+    loan_amount:{
+      type:DataTypes.STRING,
+      allowNull:false
+    },
+    property_id:{
+      type:DataTypes.INTEGER,
+    },
+    property_type:{
+      type:DataTypes.ENUM('house','apartment','land')
+    },
+  
+  },{
+    freezeTableName:true
+  })
+}
+
+
 module.exports = {
   propertyIdTrackerModel,
   propertyViewAdminModel,
@@ -583,4 +641,6 @@ module.exports = {
   propertyFieldVisitOTPModel,
   propertyFieldVisit,
   requestedPropertyModel,
+  favouritePropertyModel,
+  homeLoanModel
 };

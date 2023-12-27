@@ -11,6 +11,7 @@ const PropertyFieldVisit = db.PropertyModel.PropertyFieldVisit;
 const PropertyShootScheduleComment = db.PropertyModel.PropertyShootScheduleComment;
 const RequestedProperty = db.PropertyModel.RequestedProperty;
 const SoldPropertyView = db.Views.SoldPropertyView;
+const HomeLoan = db.PropertyModel.HomeLoan;
 
 // get latest property insert id
 async function getPropertyId() {
@@ -474,6 +475,25 @@ async function getPropertyByListedForCount(){
 
 }
 
+//home loan
+async function insertHomeLoan(homeLoan){
+  return await HomeLoan.create(homeLoan);
+}
+
+async function getHomeLoan(condition,limit,offset){
+  return await HomeLoan.findAll({
+      where:condition,
+      limit:limit,
+      offset:offset
+  })
+}
+
+async function deleteHomeLoan(id){
+  return await HomeLoan.destroy({
+      where:{id:id}
+  })
+}
+
 
 module.exports = {
   getPropertyWithAds,
@@ -507,5 +527,8 @@ module.exports = {
   getPropertyByPropertyTypeCount,
   getPropertyByListedForCount,
   getPropertyList,
-  updatePropertyShootSchedule
+  updatePropertyShootSchedule,
+  insertHomeLoan,
+  getHomeLoan,
+  deleteHomeLoan
 };

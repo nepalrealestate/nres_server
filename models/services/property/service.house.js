@@ -8,6 +8,7 @@ const HouseAds = db.PropertyModel.HouseAds
 const HouseFeedback = db.PropertyModel.HouseFeedback
 const HouseComment = db.PropertyModel.HouseComment
 const HouseViews = db.PropertyModel.HouseViews
+const HomeLoan = db.PropertyModel.HomeLoan;
 
 
 const propertyService = propertyServiceUtility();
@@ -245,5 +246,6 @@ module.exports ={insertHouse,
     updateHouseViews,
     soldHouse,
     getSoldHouseByID,
-    updateHouseListingType
+    updateHouseListingType,
+
 }

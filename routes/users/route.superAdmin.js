@@ -11,7 +11,7 @@ const { handleGetCustomer, handleGetCustomerByID, handleGetBuyer, handleGetSelle
 const { handleAddApartment, handleGetApartment, handleUpdateApartmentAds, handleUpdateApartment, handleDeleteApartment, handleGetApartmentByID, handleInsertApartmentComment, handleGetApartmentComment, handleSoldApartment, handleGetSoldApartmentByID, handleApproveApartment, handleGetPendingApartmentByID, handleDeletePendingApartment, handleUpdateApartmentListingType } = require("../../controllers/property/controller.apartment");
 const { handleAddHouse, handleGetHouse, handleUpdateHouse, handleDeleteHouse, handleGetHouseByID, handleInsertHouseComment, handleGetHouseComment, handleUpdateHouseAds, handleSoldHouse, handleGetSoldHouseByID, handleApproveHouse, handleGetPendingHouseByID, handleDeletePendingHouse, handleUpdateHouseListingType } = require("../../controllers/property/controller.house");
 const { handleAddLand, handleGetLand, handleUpdateLand, handleDeleteLand, handleGetLandByID, handleInsertLandComment, handleGetLandComment, handleUpdateLandAds, handleSoldLand, handleGetSoldLandByID, handleApproveLand, handleGetPendingLandByID, handleDeletePendingLand, handleUpdateLandListingType } = require("../../controllers/property/controller.land");
-const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleDeletePropertyFieldVisiteRequest, handleUpdatePropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP, handleGetRequestProperty, handleInsertRequestedProperty, handleDeleteRequestedProperty, handleDeletePropertyShootSchedule, handleGetRequestPropertyByID, handleGetSoldProperty, handleGetPendingProperty, handleGetPropertyAnalytics, handleUpdatePropertyShootSchedule } = require("../../controllers/property/controller.property");
+const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleDeletePropertyFieldVisiteRequest, handleUpdatePropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP, handleGetRequestProperty, handleInsertRequestedProperty, handleDeleteRequestedProperty, handleDeletePropertyShootSchedule, handleGetRequestPropertyByID, handleGetSoldProperty, handleGetPendingProperty, handleGetPropertyAnalytics, handleUpdatePropertyShootSchedule, handleGetHomeLoan, handleDeleteHomeLoan } = require("../../controllers/property/controller.property");
 const { handleInsertBlog, handleGetBlog, handleGetBlogById, handleDeleteBlog } = require("../../controllers/blog/controller.blog");
 const { handleInsertOrUpdateAds, handleGetAds } = require("../../controllers/ads/controller.ads");
 const { handleGetNotification, handleUpdateNotificationSeen, handleUpdateAllNotificationSeen } = require("../../controllers/notification/controller.notification");
@@ -76,8 +76,10 @@ router.delete("/service/provider/:provider_id",superAdminVerifyToken,handleDelet
 
 // property Related Routes
 router.get("/property",superAdminVerifyToken,handleGetPropertyWithAds);
-router.get("/property/sold",superAdminVerifyToken,handleGetSoldProperty)
+router.get("/property/sold",superAdminVerifyToken,handleGetSoldProperty);
+
 // apartment
+
 router.get("/property/apartment/:property_id",superAdminVerifyToken,handleGetApartmentByID)
 router.get("/property/apartment",superAdminVerifyToken,handleGetApartment)
 router.post("/property/apartment",superAdminVerifyToken,handleAddApartment)
@@ -231,6 +233,10 @@ router.get("/testimonial/:id",superAdminVerifyToken,handleGetTestimonialByID);
 router.delete("/testimonial/:id",superAdminVerifyToken,handleDeleteTestimonial);
 
 
+
+//home loand
+router.get("/property/homeLoan",superAdminVerifyToken,handleGetHomeLoan)
+router.delete("/property/homeLoan/:id",superAdminVerifyToken,handleDeleteHomeLoan)
 
 
 
