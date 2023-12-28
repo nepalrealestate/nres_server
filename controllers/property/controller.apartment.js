@@ -8,9 +8,10 @@ const path = "uploads/property/apartment"; //path from source
 const maxImageSize = 2 * 1024 * 1024;
 
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
+const updateUpload = new UploadImage(path, maxImageSize).upload.single("image");
 const multer = require("multer");
 const {Utility, propertyUtility, utility, handleErrorResponse} = require("../controller.utils");
-const { getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment, updateApartment, deleteApartment, insertApartmentComment, getApartmentComment, soldApartment, getSoldApartmentByID, deletePendingApartment, updateApartmentListingType } = require("../../models/services/property/service.apartment");
+const { getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment, updateApartment, deleteApartment, insertApartmentComment, getApartmentComment, soldApartment, getSoldApartmentByID, deletePendingApartment, updateApartmentListingType, deleteApartmentImage } = require("../../models/services/property/service.apartment");
 const { wrapAwait } = require("../../errorHandling");
 const { apartmentSchema } = require("../validationSchema");
 const { findCustomer } = require("../../models/services/users/service.customer");
@@ -39,7 +40,7 @@ const handleAddApartment = async (req, res) => {
 
 const handleUpdateApartment = async (req,res)=>{
 
-  upload(req,res,async function (err){
+  updateUpload(req,res,async function (err){
     utils.handleMulterError(req,res,err,update,false);
   })
 
@@ -56,6 +57,9 @@ const handleDeleteApartment = async (req,res)=>{
   property.handleDeleteProperty(req,res,getApartmentByID,deleteApartment);
 }
 
+const handleDeleteApartmentImage = async (req,res)=>{
+  property.handleDeletePropertyImage(req,res,deleteApartmentImage)
+}
 
 
 
@@ -250,6 +254,7 @@ module.exports = {
   handleAddApartment,
   handleUpdateApartment,
   handleDeleteApartment,
+  handleDeleteApartmentImage,
   handleGetApartment,
   handleApartmentFeedback,
   handleGetApartmentByID,

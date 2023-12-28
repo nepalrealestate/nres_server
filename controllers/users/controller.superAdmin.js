@@ -9,7 +9,7 @@ const {
 } = require("../../models/services/users/service.admin");
 
 const saltRound = 10;
-const tokenExpireTime = "1hr";
+const tokenExpireTime = "7d";
 const JWT_KEY = process.env.JWT_KEY_AGENT;
 const auth = utility.authUtility(
   tokenExpireTime,

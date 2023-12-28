@@ -22,7 +22,7 @@ const { getUser, registerUser, findUserByEmail, findUserByID, updateAgentPasswor
 const { countListingProperty } = require("../../models/services/property/service.property");
 
 const saltRound = 10;
-const tokenExpireTime = "1hr";
+const tokenExpireTime = "7d";
 const JWT_KEY = process.env.JWT_KEY_AGENT;
 const auth = utility.authUtility(tokenExpireTime, saltRound, JWT_KEY, "agent");
 const user = utility.userUtility("agent");

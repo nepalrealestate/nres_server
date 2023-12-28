@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {handleAddHouse,handleGetHouse, handleHouseFeedback, handleGetHouseByID, handleInsertHomeLoan} = require("../../controllers/property/controller.house");
+const {handleAddHouse,handleGetHouse, handleHouseFeedback, handleGetHouseByID} = require("../../controllers/property/controller.house");
 const { handleUpdateHouseViews } = require("../../controllers/property/controller.house");
 
 router.post("/",handleAddHouse); // insert house property

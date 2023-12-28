@@ -4,9 +4,10 @@ const { UploadImage } = require("../../middlewares/middleware.uploadFile");
 const path = "uploads/property/land"; //path from source
 const maxImageSize = 2 * 1024 * 1024;
 const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
+const updateUpload = new UploadImage(path, maxImageSize).upload.single("image");
 const multer = require("multer");
 const {Utility, utility, propertyUtility, handleErrorResponse} = require("../controller.utils");
-const { getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand, insertLand, getRequestedLand, updateLand, deleteLand, soldLand, getSoldLandByID, deletePendingLand, updateLandListingType } = require("../../models/services/property/service.land");
+const { getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand, insertLand, getRequestedLand, updateLand, deleteLand, soldLand, getSoldLandByID, deletePendingLand, updateLandListingType, deleteLandImage } = require("../../models/services/property/service.land");
 //const utils = new Utility();
 const utils = utility();
 const property = propertyUtility("land");
@@ -27,11 +28,9 @@ const handleAddLand = async (req, res) => {
     
 };
 
-
-
 const handleUpdateLand = async (req,res)=>{
 
-  upload(req,res,async function (err){
+  updateUpload(req,res,async function (err){
     utils.handleMulterError(req,res,err,update,false);
   })
 
@@ -43,6 +42,10 @@ const handleUpdateLand = async (req,res)=>{
 
 const handleDeleteLand = async (req,res)=>{
   property.handleDeleteProperty(req,res,getLandByID,deleteLand)
+}
+
+const handleDeleteLandImage  =async (req,res)=>{
+  property.handleDeletePropertyImage(req,res,deleteLandImage)
 }
 
 
@@ -220,5 +223,6 @@ module.exports = {
   handleGetSoldLandByID,
   handleGetPendingLandByID,
   handleDeletePendingLand,
-  handleUpdateLandListingType
+  handleUpdateLandListingType,
+  handleDeleteLandImage
 };

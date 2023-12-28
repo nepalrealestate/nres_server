@@ -38,7 +38,7 @@ async function updatePropertyId(transaction) {
 }
 
 async function getPropertyWithAds(condition, limit, offset) {
-  let orderConditions = [["createdAt", "DESC"]];
+  let orderConditions = ["createdAt", "DESC"];
   let whereConditions = {};
   let location;
   if (condition.location) {
@@ -63,7 +63,7 @@ async function getPropertyWithAds(condition, limit, offset) {
   return await PropertyAdminView.findAndCountAll({
     where: whereConditions,
     attributes: { exclude: ["id"] },
-    order: orderConditions,
+    order: [orderConditions],
     limit: limit,
     offset: offset,
     raw: true,

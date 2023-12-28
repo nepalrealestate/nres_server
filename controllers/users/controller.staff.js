@@ -17,7 +17,7 @@ const { wrapAwait } = require("../../errorHandling");
 const utility = require("../controller.utils");
 
 const saltRound = 10;
-const tokenExpireTime = "1hr";
+const tokenExpireTime = "7d";
 const JWT_KEY = process.env.JWT_KEY_AGENT;
 const auth = utility.authUtility(tokenExpireTime, saltRound, JWT_KEY, "staff");
 

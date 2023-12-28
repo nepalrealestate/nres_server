@@ -21,6 +21,7 @@ const {
   uploadMultipleOnCloudinary,
   deleteMultipleFromCloudinary,
   uploadOnCloudinary,
+  deleteFromCloudinary,
 } = require("../utils/cloudinary");
 
 const saltRound = 10;
@@ -492,6 +493,7 @@ function propertyUtility(property_type) {
     }
   }
 
+
   async function handleUpdateProperty(req, res, updatePropertyCallback) {
     const updateProperty = JSON.parse(req.body.property);
     if (!updateProperty) {
@@ -500,15 +502,13 @@ function propertyUtility(property_type) {
     const property_id = req.params.property_id;
     // property_type , property_id
     let cloudinaryResponse; 
+    console.log("single image",req?.file);
     if(req?.file){
       cloudinaryResponse = await uploadOnCloudinary(req?.file?.path,property_type);
       if(cloudinaryResponse) {
         updateProperty.property_image = cloudinaryResponse.secure_url;
       }
     }
-  
-    
-
     if (updateProperty?.property_type) {
       delete updateProperty.property_type;
     }
@@ -574,6 +574,29 @@ function propertyUtility(property_type) {
     }
   }
 
+  async function handleDeletePropertyImage(req,res,deletePropertyImageCallback){
+    const {property_id} = req.params;
+    const {imageLink} = req.body;
+
+    try{
+      const response = await deletePropertyImageCallback(property_id,imageLink);
+      if(response === 0){
+        return res.status(404).json({message:`${propertyType} not found`})
+      }
+      // delete image Link from cloudinary
+      deleteFromCloudinary(imageLink).then((data)=>{
+        console.log(data);
+        console.log("Image Deleted",data);
+      });
+
+      return res.status(200).json({message:`${propertyType} image deleted`})
+    }catch(error){
+      handleErrorResponse(res,error);
+    }
+
+  }
+
+  
   async function handleGetPropertyByID(
     req,
     res,
@@ -759,6 +782,7 @@ function propertyUtility(property_type) {
     handleAddProperty,
     handleUpdateProperty,
     handleDeleteProperty,
+    handleDeletePropertyImage,
     handleGetPropertyByID,
     handleGetProperty,
     handleInsertPropertyComment,

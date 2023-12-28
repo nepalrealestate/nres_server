@@ -57,6 +57,33 @@ async function insertApartment(apartment){
 
 async function updateApartment(property_id,updateData){
 
+    if(updateData.property_image){
+        let existingPropertyImage = {};
+        // Fetch the existing property_image from the database
+     const existingApartment = await Apartment.findOne({
+        where: { property_id: property_id },
+        attributes: ['property_image']
+    });
+
+    // Parse the existing property_image JSON object or initialize an empty object
+    console.log("This is existing land",existingApartment)
+    if (existingApartment && existingApartment.dataValues.property_image) {
+        try {
+            existingPropertyImage = (existingApartment.dataValues.property_image);
+        } catch (error) {
+            console.error('Error parsing existing property_image JSON:', error);
+            return null;
+        }
+    }
+    // Find the next available index
+    const nextIndex = Object.keys(existingPropertyImage).length;
+    // Add the new image link to the property_image JSON object
+    const newImageLink = updateData.property_image; // Use the provided image link
+    existingPropertyImage[nextIndex] = newImageLink;
+    updateData.property_image = null;
+    updateData.property_image = existingPropertyImage;
+    }
+
    return await Apartment.update(updateData,
         {
             where:{property_id:property_id}
@@ -68,6 +95,46 @@ async function deleteApartment(property_id){
     return await Apartment.destroy({
         where:{property_id:property_id}
     })
+}
+
+async function deleteApartmentImage(property_id,imageLink){
+    // Fetch the existing property_image from the database
+    const existingProperty = await Apartment.findOne({
+        where: { property_id: property_id },
+        attributes: ['property_image'],
+    });
+
+    if (!existingProperty || !existingProperty.dataValues.property_image) {
+        // Handle the case where property_image is not found or is empty
+        console.error('Property not found or property_image is empty.');
+        return null;
+    }
+
+    // Parse the existing property_image JSON object
+    let existingPropertyImage;
+    try {
+        existingPropertyImage = existingProperty.property_image;
+    } catch (error) {
+        console.error('Error parsing existing property_image JSON:', error);
+        return null;
+    }
+
+    // Find the index of the specified image link
+    const indexToRemove = Object.values(existingPropertyImage).indexOf(imageLink);
+
+    if (indexToRemove === -1) {
+        // Handle the case where the specified image link is not found
+        console.error('Image link not found in property_image.');
+        return null;
+    }
+
+    // Remove the specified image link from the property_image JSON object
+    delete existingPropertyImage[indexToRemove];
+
+    // Update the property_image field in the database
+   return await Apartment.update({ property_image: existingPropertyImage }, {
+        where: { property_id: property_id }
+    });
 }
 
 
@@ -245,6 +312,7 @@ module.exports = {insertApartment,
     insertPendingApartment,
     updateApartment,
     deleteApartment,
+    deleteApartmentImage,
     getApartment,
     getApartmentByID,
     getApartmentWithOwnerByID,
