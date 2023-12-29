@@ -327,6 +327,36 @@ function landViewsCountModel(sequelize,DataTypes){
 }
 
 
+function landFavouriteModel(sequelize,DataTypes){
+  return LandFavourite = sequelize.define('property_land_favourite',{
+    id:{
+      type:DataTypes.INTEGER,
+      autoIncrement:true,
+      primaryKey:true
+    },
+    property_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'property_land',
+        key:'property_id'
+      },
+      onDelete: 'CASCADE'
+    },
+    user_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete: 'CASCADE'
+    },
+  },{
+    freezeTableName:true
+  })
+}
+
 
 
 
@@ -340,5 +370,6 @@ module.exports = {
   landCommentModel,
   landFeedbackModel,
   landViewsModel,
-  landViewsCountModel, 
+  landViewsCountModel,
+  landFavouriteModel 
 };

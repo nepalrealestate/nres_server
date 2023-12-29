@@ -376,13 +376,35 @@ function apartmentViewsCountModel(sequelize,DataTypes){
 
 }
 
-
-
-
-
-
-
-
+function apartmentFavouriteModel(sequelize,DataTypes){
+  return ApartmentFavourite = sequelize.define('property_apartment_favourite',{
+    id:{
+      type:DataTypes.INTEGER,
+      autoIncrement:true,
+      primaryKey:true
+    },
+    property_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'property_apartment',
+        key:'property_id'
+      },
+      onDelete: 'CASCADE'
+    },
+    user_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete: 'CASCADE'
+    },
+  },{
+    freezeTableName:true
+  })
+}
 
 
 module.exports = {
@@ -392,4 +414,5 @@ module.exports = {
     apartmentCommentModel,
     apartmentViewsModel,
     apartmentViewsCountModel,
-};
+    apartmentFavouriteModel
+  };

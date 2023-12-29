@@ -577,6 +577,11 @@ function propertyUtility(property_type) {
   async function handleDeletePropertyImage(req,res,deletePropertyImageCallback){
     const {property_id} = req.params;
     const {imageLink} = req.body;
+    if(!imageLink){
+      return res.status(400).json({message:"Please provide image link"})
+    }
+    console.log("This is image Link",imageLink)
+    console.log("This is request body",req.body)
 
     try{
       const response = await deletePropertyImageCallback(property_id,imageLink);

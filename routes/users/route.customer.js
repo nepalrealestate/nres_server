@@ -1,10 +1,10 @@
 const express = require("express");
 const { handleInsertAgentRating, handleAgentRating } = require("../../controllers/users/controller.agent");
 const { handleCustomerRegistration, handleCustomerLogin, handleGetCustomer, customerVerifyToken, handleGetCustomerProfile, handleCustomerPasswordReset, handleGetCustomerIsLoggedIn, customerLogout } = require("../../controllers/users/controller.customer");
-const { handleAddHouse, handleGetHouse } = require("../../controllers/property/controller.house");
+const { handleAddHouse, handleGetHouse, handleInsertHouseFavourite, handleDeleteHouseFavourite } = require("../../controllers/property/controller.house");
 const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty, handleGetPropertyPriorityLocation, handleInsertPropertyFieldVisitRequest } = require("../../controllers/property/controller.property");
-const { handleAddLand, handleGetLand } = require("../../controllers/property/controller.land");
-const { handleAddApartment, handleGetApartment } = require("../../controllers/property/controller.apartment");
+const { handleAddLand, handleGetLand, handleInsertLandFavourite, handleDeleteLandFavourite } = require("../../controllers/property/controller.land");
+const { handleAddApartment, handleGetApartment, handleInsertApartmentFavourite, handleDeleteApartmentFavourite } = require("../../controllers/property/controller.apartment");
 const { handleGetSingleCustomerChat } = require("../../controllers/chat/controller.customerChat");
 const { checkCustomerPropertyLimitation } = require("../../middlewares/property/middleware.property");
 const { googleSignInVerify } = require("../../middlewares/middleware.auth");
@@ -66,6 +66,15 @@ router.get("/previousChat",customerVerifyToken,handleGetSingleCustomerChat)
 // property field visit Request - 
 router.post("/property/fieldVisit",customerVerifyToken,handleInsertPropertyFieldVisitRequest)
 
+
+//favourite Property
+router.post("/property/house/favourite/:property_id",customerVerifyToken,handleInsertHouseFavourite)
+router.post("/property/apartment/favourite/:property_id",customerVerifyToken,handleInsertApartmentFavourite)
+router.post("/property/land/favourite/:property_id",customerVerifyToken,handleInsertLandFavourite)
+
+router.delete("/property/house/favourite/:property_id",customerVerifyToken,handleDeleteHouseFavourite)
+router.delete("/property/apartment/favourite/:property_id",customerVerifyToken,handleDeleteApartmentFavourite)
+router.delete("/property/land/favourite/:property_id",customerVerifyToken,handleDeleteLandFavourite);
 
 
 

@@ -7,7 +7,7 @@ const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const updateUpload = new UploadImage(path, maxImageSize).upload.single("image");
 const multer = require("multer");
 const {Utility, utility, propertyUtility, handleErrorResponse} = require("../controller.utils");
-const { getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand, insertLand, getRequestedLand, updateLand, deleteLand, soldLand, getSoldLandByID, deletePendingLand, updateLandListingType, deleteLandImage } = require("../../models/services/property/service.land");
+const { getLand, getPendingLand, insertLandFeedback, getLandByID, getPendingLandByID, approveLand, updateLandAds, insertLandComment, getLandComment, updateLandViews, insertRequestedLand, insertLand, getRequestedLand, updateLand, deleteLand, soldLand, getSoldLandByID, deletePendingLand, updateLandListingType, deleteLandImage, insertLandFavourite, deleteLandFavourite } = require("../../models/services/property/service.land");
 //const utils = new Utility();
 const utils = utility();
 const property = propertyUtility("land");
@@ -206,6 +206,38 @@ const handleDeletePendingLand = async (req,res)=>{
   }
 }
 
+const handleInsertLandFavourite = async (req,res)=>{
+  const {property_id} = req.params;
+  const user_id = req.id;
+
+  if(!property_id || !user_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+
+  try {
+    const response = await insertLandFavourite(property_id,user_id);
+    return res.status(200).json({message:"Successfully Inserted"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+const handleDeleteLandFavourite = async (req,res)=>{
+  const {property_id} = req.params;
+  const user_id = req.id;
+
+  if(!property_id || !user_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+
+  try {
+    const response = await deleteLandFavourite(property_id,user_id);
+    return res.status(200).json({message:"Successfully Deleted"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
 
 module.exports = {
   handleAddLand,
@@ -224,5 +256,7 @@ module.exports = {
   handleGetPendingLandByID,
   handleDeletePendingLand,
   handleUpdateLandListingType,
-  handleDeleteLandImage
+  handleDeleteLandImage,
+  handleInsertLandFavourite,
+  handleDeleteLandFavourite
 };

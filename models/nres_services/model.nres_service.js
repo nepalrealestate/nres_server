@@ -1,11 +1,10 @@
 
 function serviceProviderModel(sequelize,DataTypes){
   return ServiceProvider = sequelize.define('service_provider',{
-    provider_id:{
+    id:{
       type:DataTypes.INTEGER,
       autoIncrement:true,
       primaryKey:true
-
     },
     name:{
       type:DataTypes.STRING,
@@ -16,20 +15,18 @@ function serviceProviderModel(sequelize,DataTypes){
     },
     email:{
       type:DataTypes.STRING,
+      unique:true,
+    },
+    phone_number:{
+      type:DataTypes.STRING,
       allowNull:false,
       unique:true,
       validate:{
-          isEmail:true,
-          notEmpty:true
-      }
-    },
-    phone_number:{
-    type:DataTypes.STRING,
-    allowNull:false,
-    unique:true,
-    validate:{
       notEmpty:true
-    }
+      },
+    },
+    gender:{
+      type:DataTypes.STRING
     },
     service_type:{
       type:DataTypes.STRING,
@@ -38,13 +35,13 @@ function serviceProviderModel(sequelize,DataTypes){
         notEmpty:true
       }
     },
-    state:{
+    province:{
       type:DataTypes.STRING,
     },
     district:{
       type:DataTypes.STRING
     },
-    city:{      
+    municipality:{      
       type:DataTypes.STRING
     },
     ward_number:{
@@ -72,7 +69,7 @@ function serviceProviderRatingModel(sequelize,Datatypes){
       allowNull:false,
       references:{
         model:'service_provider',
-        key:'provider_id'
+        key:'id'
       }
     },
     user_id:{

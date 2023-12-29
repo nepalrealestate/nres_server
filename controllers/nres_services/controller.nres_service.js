@@ -35,10 +35,11 @@ const handleRegisterServiceProvider = async function (req, res, next) {
       name,
       phone_number,
       email,
+      gender,
       service_type,
-      state,
+      province,
       district,
-      city,
+      municipality,
       ward_number,
     } = req.body;
     console.log(req.body);
@@ -58,12 +59,13 @@ const handleRegisterServiceProvider = async function (req, res, next) {
       name: name,
       email: email,
       phone_number: phone_number,
+      gender:gender,
       service_type: service_type,
-      state: state,
+      province: province,
       district: district,
-      city: city,
+      municipality: municipality,
       ward_number: ward_number,
-      profileImage: imagePath,
+      profileImage: null,
     };
     try {
       let cloudinaryResonse = null;

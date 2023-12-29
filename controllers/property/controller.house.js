@@ -9,7 +9,7 @@ const updateUpload = new UploadImage(path, maxImageSize).upload.single("image");
 const multer = require("multer");
 
 const {Utility, propertyUtility, utility, handleErrorResponse, handleLimitOffset} = require("../controller.utils");
-const { getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse, getRequestedHouse, updateHouse, deleteHouse, soldHouse, getSoldHouseByID, deletePendingHouse, updateHouseListingType, insertHomeLoan, getHomeLoan, deleteHouseImage } = require("../../models/services/property/service.house");
+const { getHouse, getPendingHouse, insertHouseFeedback, getHouseByID, getPendingHouseByID, approveHouse, updateHouseAds, insertHouseComment, getHouseComment, updateHouseViews, insertRequestedHouse, insertHouse, getRequestedHouse, updateHouse, deleteHouse, soldHouse, getSoldHouseByID, deletePendingHouse, updateHouseListingType, insertHomeLoan, getHomeLoan, deleteHouseImage, insertHouseFavourite, deleteHouseFavourite } = require("../../models/services/property/service.house");
 //const utils = new Utility();
 const utils  = utility();
 
@@ -228,6 +228,38 @@ const handleDeletePendingHouse = async (req,res)=>{
   }
 }
 
+const handleInsertHouseFavourite = async (req,res)=>{
+  const {property_id} = req.params;
+  const user_id = req.id;
+
+  if(!property_id || !user_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+
+  try {
+    const response = await insertHouseFavourite(property_id,user_id);
+    return res.status(200).json({message:"Successfully Inserted"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+
+const handleDeleteHouseFavourite = async (req,res)=>{
+  const {property_id} = req.params;
+  const user_id = req.id;
+
+  if(!property_id || !user_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+
+  try {
+    const response = await deleteHouseFavourite(property_id,user_id);
+    return res.status(200).json({message:"Successfully Deleted"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
 
 
 
@@ -250,6 +282,6 @@ module.exports = {
   handleGetPendingHouseByID,
   handleDeletePendingHouse,
   handleUpdateHouseListingType,
-
-  
+  handleInsertHouseFavourite,
+  handleDeleteHouseFavourite
 };

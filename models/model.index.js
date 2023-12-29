@@ -94,6 +94,9 @@ db.PropertyModel = {
     HomeLoan : require('./property/model.property').homeLoanModel(sequelize,DataTypes),
 
     FavouriteProperty : require('./property/model.property').favouritePropertyModel(sequelize,DataTypes),
+    HouseFavourite : require("./property/model.house").houseFavouriteModel(sequelize,DataTypes),
+    ApartmentFavourite : require("./property/model.apartment").apartmentFavouriteModel(sequelize,DataTypes),
+    LandFavourite : require("./property/model.land").landFavouriteModel(sequelize,DataTypes)
     
 };
 

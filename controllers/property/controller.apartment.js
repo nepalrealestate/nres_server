@@ -11,7 +11,7 @@ const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
 const updateUpload = new UploadImage(path, maxImageSize).upload.single("image");
 const multer = require("multer");
 const {Utility, propertyUtility, utility, handleErrorResponse} = require("../controller.utils");
-const { getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment, updateApartment, deleteApartment, insertApartmentComment, getApartmentComment, soldApartment, getSoldApartmentByID, deletePendingApartment, updateApartmentListingType, deleteApartmentImage } = require("../../models/services/property/service.apartment");
+const { getPendingApartment, approveApartment, getPendingApartmentByID, getApartment, getApartmentByID, updateApartmentViews, insertRequestedApartment, updateApartmentAds, insertApartment, getRequestedApartment, updateApartment, deleteApartment, insertApartmentComment, getApartmentComment, soldApartment, getSoldApartmentByID, deletePendingApartment, updateApartmentListingType, deleteApartmentImage, insertApartmentFavourite, deleteApartmentFavourite } = require("../../models/services/property/service.apartment");
 const { wrapAwait } = require("../../errorHandling");
 const { apartmentSchema } = require("../validationSchema");
 const { findCustomer } = require("../../models/services/users/service.customer");
@@ -249,6 +249,38 @@ const handleDeletePendingApartment = async (req,res)=>{
   }
 }
 
+const handleInsertApartmentFavourite = async (req,res)=>{
+  const {property_id} = req.params;
+  const user_id = req.id;
+
+  if(!property_id || !user_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+
+  try {
+    const response = await insertApartmentFavourite(property_id,user_id);
+    return res.status(200).json({message:"Successfully Inserted"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+
+const handleDeleteApartmentFavourite = async (req,res)=>{
+  const {property_id} = req.params;
+  const user_id = req.id;
+
+  if(!property_id || !user_id){
+    return res.status(400).json({message:"Bad Request"});
+  }
+
+  try {
+    const response = await deleteApartmentFavourite(property_id,user_id);
+    return res.status(200).json({message:"Successfully Deleted"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
 
 module.exports = {
   handleAddApartment,
@@ -267,5 +299,7 @@ module.exports = {
   handleGetSoldApartmentByID,
   handleGetPendingApartmentByID,
   handleDeletePendingApartment,
-  handleUpdateApartmentListingType
+  handleUpdateApartmentListingType,
+  handleInsertApartmentFavourite,
+  handleDeleteApartmentFavourite
 };

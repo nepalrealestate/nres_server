@@ -12,6 +12,7 @@ const LandFeedback = db.PropertyModel.LandFeedback
 const LandViews = db.PropertyModel.LandViews
 const RequestedLand = db.PropertyModel.RequestedLand
 const LandSold = db.PropertyModel.LandSold;
+const LandFavourite = db.PropertyModel.LandFavourite;
 
 
 async function insertPendingLand(land){
@@ -213,36 +214,38 @@ async function deleteLandImage(property_id,imageLink){
             where: { property_id: property_id },
             attributes: ['property_image'],
         });
-    
         if (!existingProperty || !existingProperty.dataValues.property_image) {
             // Handle the case where property_image is not found or is empty
             console.error('Property not found or property_image is empty.');
-            return null;
+            throw new Error('Property Not Found')
         }
+        let existingPropertyImage = existingProperty.dataValues.property_image
+         // Find the index of the specified image link
+         const indexToRemove = Object.keys(existingPropertyImage).find(
+            key => existingPropertyImage[key] === imageLink
+        );
     
-        // Parse the existing property_image JSON object
-        let existingPropertyImage;
-        try {
-            existingPropertyImage = existingProperty.property_image;
-        } catch (error) {
-            console.error('Error parsing existing property_image JSON:', error);
-            return null;
-        }
-    
-        // Find the index of the specified image link
-        const indexToRemove = Object.values(existingPropertyImage).indexOf(imageLink);
-    
-        if (indexToRemove === -1) {
+        if (!indexToRemove) {
             // Handle the case where the specified image link is not found
             console.error('Image link not found in property_image.');
-            return null;
+            throw new Error("Image Link Not Found")
         }
     
-        // Remove the specified image link from the property_image JSON object
+        // Remove the specified image link from the property_image object
         delete existingPropertyImage[indexToRemove];
+        console.log("This is deleted existing property image",existingPropertyImage)
+    
+        // Reindex the keys in the updated object
+        const reindexedPropertyImage = {};
+        let newIndex = 0;
+        for (const key in existingPropertyImage) {
+            reindexedPropertyImage[newIndex] = existingPropertyImage[key];
+            newIndex++;
+        }
+        console.log("This is reindexed property image",reindexedPropertyImage)
     
         // Update the property_image field in the database
-       return await Land.update({ property_image: existingPropertyImage }, {
+       return await Land.update({ property_image: reindexedPropertyImage }, {
             where: { property_id: property_id }
         });
     }
@@ -290,6 +293,22 @@ async function getSoldLandByID(property_id){
     })
 }
 
+async function insertLandFavourite(property_id,user_id){
+    return await LandFavourite.create({
+        property_id:property_id,
+        user_id:user_id
+    })
+}
+
+async function deleteLandFavourite(property_id,user_id){
+    return await LandFavourite.destroy({
+        where:{
+            property_id:property_id,
+            user_id:user_id
+        }
+    })
+}
+
 module.exports = {
     insertLand,
     updateLand,
@@ -310,6 +329,8 @@ module.exports = {
     getSoldLandByID,
     deletePendingLand,
     updateLandListingType,
-    deleteLandImage
+    deleteLandImage,
+    insertLandFavourite,
+    deleteLandFavourite
     
 }

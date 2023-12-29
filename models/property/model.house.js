@@ -412,6 +412,37 @@ function homeLoanModel(sequelize,DataTypes){
   })
 }
 
+function houseFavouriteModel(sequelize,DataTypes){
+  return HouseFavourite = sequelize.define('property_house_favourite',{
+    id:{
+      type:DataTypes.INTEGER,
+      autoIncrement:true,
+      primaryKey:true
+    },
+    property_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'property_house',
+        key:'property_id'
+      },
+      onDelete: 'CASCADE'
+    },
+    user_id:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete: 'CASCADE'
+    },
+  },{
+    freezeTableName:true
+  })
+}
+
+
 
 module.exports = {
   houseModel,
@@ -420,5 +451,6 @@ module.exports = {
   houseAdsModel,
   houseViewsModel,
   houseViewsCountModel, 
-  homeLoanModel
+  homeLoanModel,
+  houseFavouriteModel
 };
