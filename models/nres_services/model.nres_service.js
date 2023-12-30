@@ -28,6 +28,9 @@ function serviceProviderModel(sequelize,DataTypes){
     gender:{
       type:DataTypes.STRING
     },
+    age:{
+      type:DataTypes.INTEGER
+    },
     service_type:{
       type:DataTypes.STRING,
       allowNull:false,
