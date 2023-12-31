@@ -56,7 +56,7 @@ async function getPendingServiceProvider(condition, limit, offset) {
         where: condition,
         limit: limit,
         offset: offset,
-        rew: true
+        raw: true
     })
 
     return data;
@@ -67,7 +67,7 @@ async function verifyServiceProvider(status, provider_id) {
 
     return await ServiceProvider.update({ status: status }, {
         where: {
-            provider_id: provider_id
+            id: provider_id
         }
     })
 
@@ -76,7 +76,7 @@ async function verifyServiceProvider(status, provider_id) {
 async function deleteServiceProvider(provider_id) {
     return await ServiceProvider.destroy({
         where: {
-            provider_id: provider_id
+            id: provider_id
         }
     })
 }
