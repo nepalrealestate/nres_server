@@ -33,6 +33,7 @@ const handleRegisterServiceProvider = async function (req, res, next) {
   });
 
   async function registration() {
+    const providerData = req.body?.providerData;
     const {
       name,
       phone_number,
@@ -44,7 +45,7 @@ const handleRegisterServiceProvider = async function (req, res, next) {
       district,
       municipality,
       ward_number,
-    } = req.body;
+    } = JSON.parse(providerData);
 
     const imagePath = req?.file?.path;
 
