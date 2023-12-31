@@ -10,6 +10,7 @@ const router = express.Router();
 router.post("/registerProvider",handleRegisterServiceProvider);
 
 router.get("/getProvider",handleGetServiceProvider);
+router.get("/provider",handleGetServiceProvider)
 
 
 
