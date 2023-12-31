@@ -129,6 +129,8 @@ const handleGetServiceProviderByID = async function (req, res) {
 const handleVerifyServiceProvider = async function (req, res) {
   let { provider_id } = req.params;
   let { status } = req.body;
+  console.log("Provider ID", provider_id);
+  
   if (status !== "approved" && status !== "pending") {
     return res
       .status(400)
@@ -158,7 +160,7 @@ const handleDeleteServiceProvider = async function (req, res) {
       return res.status(400).json({ message: "No Service Provider Found" });
     }
     console.log("Delete Service Provider");
-    if (provider.dataValues.profileImage !== null) {
+    if (provider.dataValues?.profileImage) {
       console.log("Delete Service Provider");
       deleteSingleImage(provider.dataValues.profileImage);
     }
