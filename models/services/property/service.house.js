@@ -312,6 +312,22 @@ async function deleteHouseFavourite(property_id,user_id){
     })
 }
 
+async function getHouseFavourite(user_id,limit,offset){
+
+    return await HouseFavourite.findAndCountAll({
+        where:{user_id:user_id},
+        include:[{
+            model:House,
+            as:'favourite',
+        }],
+        limit:limit,
+        offset:offset
+    
+    })
+
+}
+
+
 
 module.exports ={insertHouse,
     insertPendingHouse,
@@ -334,5 +350,7 @@ module.exports ={insertHouse,
     getSoldHouseByID,
     updateHouseListingType,
     insertHouseFavourite,
-    deleteHouseFavourite
+    deleteHouseFavourite,
+    getHouseFavourite,
+    getHouseFavourite
 }

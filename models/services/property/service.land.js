@@ -309,6 +309,19 @@ async function deleteLandFavourite(property_id,user_id){
     })
 }
 
+async function getLandFavourite(user_id,limit,offset){
+    return await LandFavourite.findAndCountAll({
+        where:{user_id:user_id},
+        include:[{
+            model:Land,
+            as:'favourite',
+        }],
+        limit:limit,
+        offset:offset
+    
+    })
+}
+
 module.exports = {
     insertLand,
     updateLand,
@@ -331,6 +344,7 @@ module.exports = {
     updateLandListingType,
     deleteLandImage,
     insertLandFavourite,
-    deleteLandFavourite
+    deleteLandFavourite,
+    getLandFavourite
     
 }

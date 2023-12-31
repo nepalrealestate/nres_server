@@ -243,6 +243,15 @@ db.PropertyModel.PropertyFieldVisitRequest.belongsTo(db.UserModel.User,{as:'user
 db.PropertyModel.PropertyFieldVisitRequest.hasOne(db.PropertyModel.PropertyFieldVisitOTP,{foreignKey:'field_visit_id'});
 db.PropertyModel.PropertyFieldVisitOTP.belongsTo(db.PropertyModel.PropertyFieldVisitRequest,{foreignKey:'field_visit_id'});
 
+// favourite property relation with property
+db.PropertyModel.Land.hasMany(db.PropertyModel.LandFavourite,{as:'favourite',foreignKey:'property_id'});
+db.PropertyModel.LandFavourite.belongsTo(db.PropertyModel.Land,{as:'favourite',foreignKey:'property_id'});
+
+db.PropertyModel.House.hasMany(db.PropertyModel.HouseFavourite,{as:'favourite',foreignKey:'property_id'});
+db.PropertyModel.HouseFavourite.belongsTo(db.PropertyModel.House,{as:'favourite',foreignKey:'property_id'});
+
+db.PropertyModel.Apartment.hasMany(db.PropertyModel.ApartmentFavourite,{as:'favourite',foreignKey:'property_id'});
+db.PropertyModel.ApartmentFavourite.belongsTo(db.PropertyModel.Apartment,{as:'favourite',foreignKey:'property_id'});
 
 
 
@@ -274,6 +283,7 @@ db.PropertyModel.PropertyShootScheduleComment.belongsTo(db.UserModel.Admin,{as: 
 // user/admin relation to chat
 db.UserModel.User.hasMany(db.ChatModel.CustomerChatList, {foreignKey: 'user_id'});
 db.ChatModel.CustomerChatList.belongsTo(db.UserModel.User, {as: 'customer', foreignKey: 'user_id'});
+
 
 
 

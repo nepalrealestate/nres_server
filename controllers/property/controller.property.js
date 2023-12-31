@@ -13,6 +13,7 @@ const {
   getLandByID,
   getLandWithOwnerByID,
   getPendingLand,
+  getLandFavourite,
 } = require("../../models/services/property/service.land");
 const {
   getPropertyWithAds,
@@ -910,6 +911,20 @@ const handleDeleteHomeLoan = async (req,res)=>{
 }
 
 
+const handleGetFavouriteProperty = async function (req,res){
+
+  const user_id = req.id;
+  
+  const [limit,offset] = handleLimitOffset(req);
+
+  try {
+    const response = await getLandFavourite(user_id,limit,offset);
+    return res.status(200).json(response)
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
 module.exports = {
   handleGetPropertyWithAds,
   handleGetProperty,
@@ -938,6 +953,7 @@ module.exports = {
   handleUpdatePropertyShootSchedule,
   handleInsertHomeLoan,
   handleGetHomeLoan,
-  handleDeleteHomeLoan
+  handleDeleteHomeLoan,
+  handleGetFavouriteProperty
 
 };

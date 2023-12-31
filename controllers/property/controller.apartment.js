@@ -266,6 +266,7 @@ const handleInsertApartmentFavourite = async (req,res)=>{
 }
 
 
+
 const handleDeleteApartmentFavourite = async (req,res)=>{
   const {property_id} = req.params;
   const user_id = req.id;

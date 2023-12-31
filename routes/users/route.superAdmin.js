@@ -74,6 +74,7 @@ router.delete("/service/provider/:provider_id",superAdminVerifyToken,handleDelet
 
 
 
+
 // property Related Routes
 router.get("/property",superAdminVerifyToken,handleGetPropertyWithAds);
 router.get("/property/sold",superAdminVerifyToken,handleGetSoldProperty);

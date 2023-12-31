@@ -325,6 +325,23 @@ async function deleteApartmentFavourite(property_id,user_id){
     })
 }
 
+async function getApartmentFavourite(user_id,limit,offset){
+
+    return await ApartmentFavourite.findAll({
+        where:{
+            user_id:user_id
+        },
+        include:[{
+            model:Apartment,
+            as:'favourite'
+        }],
+        limit:limit,
+        offset:offset
+    })
+}
+
+
+
 
 
 module.exports = {insertApartment,
@@ -348,5 +365,6 @@ module.exports = {insertApartment,
     deletePendingApartment,
     updateApartmentListingType,
     insertApartmentFavourite,
-    deleteApartmentFavourite
+    deleteApartmentFavourite,
+    getApartmentFavourite
     };

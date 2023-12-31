@@ -495,6 +495,8 @@ async function deleteHomeLoan(id){
 }
 
 
+
+
 module.exports = {
   getPropertyWithAds,
   insertPropertyShootSchedule,
