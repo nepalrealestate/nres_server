@@ -7,6 +7,14 @@ async function insertBlog(blog){
     return await Blog.create(blog);
 }
 
+async function updateBlog(blog_id,blog){
+    return await Blog.update(blog,{
+        where:{
+            blog_id:blog_id
+        }
+    })
+}
+
 async function getBlog(condition,limit,offset){
     return await Blog.findAll({
         where:condition,
@@ -27,4 +35,4 @@ async function deleteBlog(id){
     })
 }
 
-module.exports = {insertBlog,getBlog,getBlogById,deleteBlog}
+module.exports = {insertBlog,getBlog,getBlogById,deleteBlog,updateBlog}

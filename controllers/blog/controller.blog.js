@@ -1,6 +1,6 @@
 
 const {UploadImage, deleteFiles, deleteSingleImage} = require("../../middlewares/middleware.uploadFile");
-const { insertBlog, getBlog, getBlogById, deleteBlog } = require("../../models/services/blog/service.blog");
+const { insertBlog, getBlog, getBlogById, deleteBlog, updateBlog } = require("../../models/services/blog/service.blog");
 const { uploadOnCloudinary } = require("../../utils/cloudinary");
 const {utility, handleErrorResponse, handleLimitOffset} = require("../controller.utils");
 const upload = new UploadImage("uploads/blog/",2*1024*1024).upload.single("image");
@@ -24,18 +24,14 @@ const handleInsertBlog = async (req, res) => {
         }
 
         try {
-            let cloudinaryResponse = null;
-            if(image)
-              cloudinaryResponse = await uploadOnCloudinary(image,"blog");
-            if(cloudinaryResponse){
-                image = cloudinaryResponse.secure_url;
-            }
             const blog = await insertBlog({title,body,image});
+            uploadOnCloudinary(image,"blog").then(async(response)=>{
+                if(response){
+                    const updateResponse = await updateBlog(blog.dataValues.blog_id,{image:response.secure_url});
+                }
+            })
             return res.status(200).json({message:"Blog Posted"});
         } catch (error) {
-            if(cloudinaryResponse){
-                deleteFromCloudinary(cloudinaryResponse);
-            }
             handleErrorResponse(res,error);            
         }
     }

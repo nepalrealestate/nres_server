@@ -23,6 +23,9 @@ const {
   uploadOnCloudinary,
   deleteFromCloudinary,
 } = require("../utils/cloudinary");
+const { updateApartment } = require("../models/services/property/service.apartment");
+const { updateHouse } = require("../models/services/property/service.house");
+const { updateLand } = require("../models/services/property/service.land");
 
 const saltRound = 10;
 
@@ -442,24 +445,13 @@ function propertyUtility(property_type) {
     console.log(images);
     console.log("this is image Array", imageArray);
 
-    //console.log(property,imageObject)
-    let cloudinaryResponse;
     try {
       const value = await validateSchema[property_type](property);
       console.log("Validate schema", value);
-
-      cloudinaryResponse = await uploadMultipleOnCloudinary(
-        imageArray,
-        property_type
-      );
-      console.log(cloudinaryResponse);
-      if (!cloudinaryResponse) {
-        return res.status(500).json({ message: "Unable to upload image" });
-      }
       // update object - store some value
       let updatedProperty = {
         ...property,
-        property_image: cloudinaryResponse,
+        property_image: null,
         approved_by: admin_id,
         owner_id: owner_id,
         status: status,
@@ -467,10 +459,26 @@ function propertyUtility(property_type) {
       console.log("")
 
       const response = await addPropertyCB(updatedProperty);
+      uploadMultipleOnCloudinary(imageArray,property_type).then((data)=>{
+        if(data){
+          const property_id = response.dataValues.property_id;
+          if(property_type === "apartment"){
+            const apartmentUpdate = updateApartment(property_id,{property_image:data})
+          }
+          if(property_type === "house"){
+            const houseUpdate = updateHouse(property_id,{property_image:data})
+          }
+          if(property_type === "land"){
+            const landUpdate = updateLand(property_id,{property_image:data})
+          }
+        }
+      })
+      
       const notify = {
         user_id: req.id,
         user_type: req.user_type,
         notification: `New ${propertyType} Upload By ${req.user_type}`,
+        //add url later
       };
       insertNotification(notify).catch((err) => {
         console.log(err);
@@ -479,15 +487,15 @@ function propertyUtility(property_type) {
 
       return res.status(200).json({ message: `${propertyType} insert` });
     } catch (error) {
-      //delete from cloudinary
-      if(imageArray && !cloudinaryResponse){
-        deleteFiles(imageArray)
-      }
-      if (cloudinaryResponse) {
-        let linkArray = Object.values(cloudinaryResponse);
+      // //delete from cloudinary
+      // if(imageArray && !cloudinaryResponse){
+      //   deleteFiles(imageArray)
+      // }
+      // if (cloudinaryResponse) {
+      //   let linkArray = Object.values(cloudinaryResponse);
 
-        deleteMultipleFromCloudinary(linkArray);
-      }
+      //   deleteMultipleFromCloudinary(linkArray);
+      // }
 
       return handleErrorResponse(res, error);
     }

@@ -1,4 +1,5 @@
 const logger = require("../../../utils/errorLogging/logger");
+const { areKeysNumeric } = require("../../../utils/helperFunction/helper");
 const db = require("../../model.index");
 const { getPropertyId, updatePropertyId } = require("./service.property");
 
@@ -55,6 +56,17 @@ async function updateLand(property_id,updateData){
         where: { property_id: property_id },
         attributes: ['property_image']
     });
+    console.log(existingLand.dataValues.property_image)
+    console.log(areKeysNumeric(updateData.property_image));
+    console.log("This is update image",updateData.property_image)
+    if(existingLand && !existingLand.dataValues.property_image && areKeysNumeric(updateData.property_image)){
+        //image is not present then if image have already key value then update direclty
+        console.log("This is update image after insert",updateData.property_image)
+            return await Land.update(updateData, {
+                where: { property_id: property_id }
+            });
+        
+    }
 
     // Parse the existing property_image JSON object or initialize an empty object
     console.log("This is existing land",existingLand)

@@ -12,11 +12,13 @@ const {
   insertServiceProviderRating,
   deleteServiceProvider,
   getServiceProviderByID,
+  updateServiceProvider,
 } = require("../../models/services/nres_service/service.nres_service");
 const {
   uploadOnCloudinary,
   deleteFromCloudinary,
 } = require("../../utils/cloudinary");
+const logger = require("../../utils/errorLogging/logger");
 
 const imagePath = "uploads/users/agent/images";
 const maxSixe = 2 * 1024 * 1024;
@@ -43,7 +45,7 @@ const handleRegisterServiceProvider = async function (req, res, next) {
       municipality,
       ward_number,
     } = req.body;
-    console.log(req.body);
+
     const imagePath = req?.file?.path;
 
     const isEmailValid = utils.isValid.email(email);
@@ -70,22 +72,28 @@ const handleRegisterServiceProvider = async function (req, res, next) {
       profileImage: null,
     };
     try {
-      let cloudinaryResonse = null;
-      if (imagePath) {
-        cloudinaryResonse = await uploadOnCloudinary(imagePath,"service");
+      const response = await registerServiceProvider(values);
+      if(imagePath){
+        console.log("I am here")
+        uploadOnCloudinary(imagePath,"service").then(async (result)=>{
+          console.log("Image Upload Success",result)
+          if(result){
+            const updateResponse = await updateServiceProvider(response.dataValues.id,{profileImage:result.secure_url});
+            console.log("Image Upload Success",updateResponse);
+          }else{
+            console.log("Image Upload Failed");
+            logger.error("Image Upload Failed");
+          }
+          
+        })
       }
-      if (!cloudinaryResonse) {
-        return res.status(400).json({ message: "Image Upload Failed" });
-      }
-      values.profileImage = cloudinaryResonse.secure_url;
-      const response = registerServiceProvider(values);
       return res
         .status(200)
         .json({ message: "Service Provider Registration success" });
     } catch (error) {
-      if (cloudinaryResonse) {
-        deleteFromCloudinary(cloudinaryResonse);
-      }
+      // if (cloudinaryResonse) {
+      //   deleteFromCloudinary(cloudinaryResonse);
+      //}
       utility.handleErrorResponse(res, error);
     }
   }

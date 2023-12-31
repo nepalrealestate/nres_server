@@ -7,6 +7,14 @@ async function registerServiceProvider(data) {
     return await ServiceProvider.create(data);
 }
 
+async function updateServiceProvider(provider_id,data){
+    return await ServiceProvider.update(data,{
+        where:{
+            id:provider_id
+        }
+    })
+}
+
 async function getServiceProvider(condition, limit, offset) {
     let whereConditions = {};
     if(condition.search){
@@ -86,5 +94,6 @@ module.exports = {
     getPendingServiceProvider,
     verifyServiceProvider,
     deleteServiceProvider,
-    insertServiceProviderRating
+    insertServiceProviderRating,
+    updateServiceProvider
 };

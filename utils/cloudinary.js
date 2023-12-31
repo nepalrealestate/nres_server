@@ -87,7 +87,7 @@ const uploadMultipleOnCloudinary = async (localFilePathsArray, folderName) => {
                 folder: folderName,
                 quality: "auto",
             }).then(uploadResponse => {
-                uploadedResponseURL[index] = uploadResponse.secure_url;
+                uploadedResponseURL[Number(index)] = uploadResponse.secure_url;
                // console.log("Uploaded", uploadedResponseURL);
                 fs.unlinkSync(localPath);
             });
