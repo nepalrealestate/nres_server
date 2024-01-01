@@ -175,8 +175,10 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
         return res.status(401).send({ message: "Invalid Email or Password" });
       }
     }
+    console.log("This is user",user)
 
-    const token = jwt.sign({ id: user.id }, JWT_KEY, {
+    const token = jwt.sign({ id: user.id,email: user.email, 
+      name: user.name,user_type:user_type }, JWT_KEY, {
       expiresIn: tokenExpireTime,
     });
 
@@ -208,48 +210,24 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
   };
 
   const verifyToken = async function (req, res, next) {
-    //in req.headers we get cookie in array
-    const cookies = req.headers.cookie;
-    //  console.log(req.headers)
-    //  console.log(req.cookies)
-
-    //const cookies = req.cookies;
-    // console.log(cookies);
-    console.log("THIS IS COOKIES", cookies);
-    if (!cookies) {
-      console.log("No cookies Bro !!!!!!!");
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    let token;
-    const cookieArray = cookies.split(";"); // Split into individual cookies
-    // Loop through each cookie to find the token
-    for (let i = 0; i < cookieArray.length; i++) {
-      const cookie = cookieArray[i].trim().split("=");
-      if (cookie[0] === "id") {
-        token = cookie[1];
-        break;
+    try {
+      const token = req.cookies?.id || req.header('Authorization')?.replace("Bearer",""); // header for mobile
+      if (!token) {
+          throw new ApiError(401, 'Unauthorized request');
       }
-    }
-
-    // const token = cookies.split("=")[1];
-    // console.log(token);
-    if (!token) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    jwt.verify(String(token), JWT_KEY, (err, user) => {
-      if (err) {
-        console.log(err);
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      console.log(user.id);
-      //set request id
-      req.id = user?.id;
+      console.log("this is token ", token);
+  
+      const decode = await jwt.verify(token, JWT_KEY);
+      console.log("this is decode ", decode);
+      
+      // can find user form db and attach to req
+      req.id = decode.id;
       req.user_type = user_type;
-      console.log(req.id, req.user_type);
-      console.log("Token Verify !!!");
+      console.log("this is decode ",decode)
       next();
-    });
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid Token" });
+  }
   };
 
   const refreshToken = async (req, res, next) => {
@@ -296,8 +274,25 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
   };
 
   const logout = async (req, res) => {
-    res.clearCookie("id");
-    return res.status(200).json({ message: "Successfully Logout" });
+    // verify cookie and delete it
+    try {
+      const token = req.cookies?.id || req.header('Authorization')?.replace("Bearer",""); // header for mobile
+      if (!token) {
+          throw new ApiError(401, 'Unauthorized request');
+      }
+      console.log("this is token ", token);
+      console.log("I am here");
+      const decode = await jwt.verify(token, JWT_KEY);
+      console.log("I am also here")
+
+      return res.status(200)
+      .clearCookie('id')
+      .json({ message: "Successfully Logout" });
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid Token" });
+  }
+
+    
   };
 
   return {

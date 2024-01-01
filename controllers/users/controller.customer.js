@@ -177,9 +177,14 @@ const handleGetCustomerIsLoggedIn = async (req, res) => {
 
 const handleUpdateCustomerProfile = async (req, res) => {
   let customer_id = null;
+  console.log("This is Update Profile");
+  console.log(req.id);
+  console.log(req.user_type)
   if (req.id && req.user_type === "customer") {
+   
     customer_id = req.id;
   } else {
+    console.log('reject from here')
     return res.status(400).json({ message: "Bad Request" });
   }
 
@@ -189,9 +194,10 @@ const handleUpdateCustomerProfile = async (req, res) => {
 
   async function updateProfile() {
 
-    const updateData= req.body;
+    const updateData= JSON.parse(req.body?.updateData);
     
     const updateProfile = await updateCustomerProfile(customer_id,updateData);
+    console.log("Update Profile",updateProfile)
     if(!updateProfile){
       return res.status(400).json({message:"Unable To Update Profile"})
     }

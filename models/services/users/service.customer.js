@@ -84,21 +84,28 @@ async function updateCustomerProfile(id,data){
     
     // if name or email , then update user_account
     // if profile_image or address or property_limit, then update customer_profile
-    const {name,email,profile_image,address,property_limit} = data;
+    const {name,email,phone_number,profile_image,address,property_limit} = data;
     let result;
-    if(name || email){
-        result = await User.update({
-            name:name,
-            email:email
-        },{
+    console.log("data",data);
+    console.log("id",id);
+    
+    let profile = {};
+    if(name)profile.name = name;
+    if(email)profile.email = email;
+    if(phone_number)profile.phone_number = phone_number;
+    let profileData = {};
+    if(profile_image)profileData.profile_image = profile_image;
+    if(address)profileData.address = address;
+    if(property_limit)profileData.property_limit = property_limit;
+
+    console.log("profile",profile);
+    if(name || email || phone_number){
+        result = await User.update(profile,{
             where:{user_id:id}
         })
-    }else if(profile_image || address || property_limit){
-        result = await CustomerProfile.update({
-            profile_image:profile_image,
-            address:address,
-            property_limit:property_limit
-        },{
+    }
+    if(profile_image || address || property_limit){
+        result = await CustomerProfile.update(profileData,{
             where:{user_id:id}
         })
     }
