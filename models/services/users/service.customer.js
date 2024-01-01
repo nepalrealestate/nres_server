@@ -1,6 +1,7 @@
 const db = require('../../model.index');
 
 const User = db.UserModel.User;
+const CustomerProfile = db.UserModel.CustomerProfile;
 
 
 
@@ -58,7 +59,17 @@ async function getCustomerProfile(id) {
             nest: true,
             subQuery: false,
         });
+        console.log("result", result);
+         // Map properties from customerProfile to customer
+         if (result?.customerProfile) {
+            console.log("result.customerProfile", result.customerProfile)
+            result.profile_image = result.customerProfile.profile_image;
+            result.address = result.customerProfile.address;
+            result.property_limit = result.customerProfile.property_limit;
 
+            // Remove customerProfile from the result
+            delete result.customerProfile;
+        }
         return result;
     } catch (error) {
         console.error("Error in getCustomerProfile:", error);
@@ -69,13 +80,35 @@ async function getCustomerProfile(id) {
 
 
 
-async function updateCustomerProfile(id){
+async function updateCustomerProfile(id,data){
     
+    // if name or email , then update user_account
+    // if profile_image or address or property_limit, then update customer_profile
+    const {name,email,profile_image,address,property_limit} = data;
+    let result;
+    if(name || email){
+        result = await User.update({
+            name:name,
+            email:email
+        },{
+            where:{user_id:id}
+        })
+    }else if(profile_image || address || property_limit){
+        result = await CustomerProfile.update({
+            profile_image:profile_image,
+            address:address,
+            property_limit:property_limit
+        },{
+            where:{user_id:id}
+        })
+    }
+
+    return result;
 }
 
 
 
 
-module.exports ={registerCustomer,findCustomer,findCustomerPassword,getCustomer,getCustomerProfile};
+module.exports ={registerCustomer,findCustomer,findCustomerPassword,getCustomer,getCustomerProfile,updateCustomerProfile};
 
 

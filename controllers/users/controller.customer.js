@@ -7,6 +7,7 @@ const {
   findCustomer,
   getCustomer,
   getCustomerProfile,
+  updateCustomerProfile,
 } = require("../../models/services/users/service.customer");
 const {
   getUser,
@@ -24,6 +25,7 @@ const { UploadImage } = require("../../middlewares/middleware.uploadFile");
 const {
   getSingleCustomerChat,
 } = require("../../models/services/chat/service.customerChat");
+const { uploadOnCloudinary, deleteFromCloudinary } = require("../../utils/cloudinary");
 
 const upload = new UploadImage(
   "uploads/users/customer/images",
@@ -185,7 +187,40 @@ const handleUpdateCustomerProfile = async (req, res) => {
     utils.handleMulterError(req, res, err, updateProfile, false);
   });
 
-  async function updateProfile() {}
+  async function updateProfile() {
+
+    const updateData= req.body;
+    
+    const updateProfile = await updateCustomerProfile(customer_id,updateData);
+    if(!updateProfile){
+      return res.status(400).json({message:"Unable To Update Profile"})
+    }
+
+    if(req.file){
+      const profile_image = req.file.path;
+      uploadOnCloudinary(profile_image,"customer").then(async (result)=>{
+        if(result){
+          // get prevoius profile image
+          const {profile_image:previousProfileImage} = await getCustomerProfile(customer_id);
+          if(previousProfileImage){
+            // delete previous profile image
+            deleteFromCloudinary(previousProfileImage);
+          }
+          const updateImage = await updateCustomerProfile(customer_id,{profile_image});
+          console.log("Update Imgae",updateImage)
+        }
+      })
+      
+      if(!updateImage){
+        return res.status(400).json({message:"Unable To Update Profile Image"})
+      }
+    }
+
+    return res.status(200).json({message:"Profile Updated Successfully"})
+
+
+
+  }
 };
 
 const handleGetCustomer = async (req, res) => {
@@ -319,6 +354,7 @@ module.exports = {
   handleCustomerRegistration,
   handleCustomerLogin,
   handleGetCustomer,
+  handleUpdateCustomerProfile,
   customerVerifyToken,
   handleGetCustomerByID,
   handleGetBuyer,
@@ -328,4 +364,5 @@ module.exports = {
   handleCustomerPasswordReset,
   handleGetCustomerIsLoggedIn,
   customerLogout,
+  
 };

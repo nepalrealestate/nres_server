@@ -61,23 +61,10 @@ function customerProfileModel(sequelize,DataTypes){
       },
       onDelete: 'CASCADE'
     },
-    profileImage:{
+    profile_image:{
       type:DataTypes.STRING,
     },
-    province:{
-      type:DataTypes.STRING,
-      
-    },
-    district:{
-      type:DataTypes.STRING,
-    },
-    municipality:{
-      type:DataTypes.STRING,
-    },
-    ward_number:{
-      type:DataTypes.INTEGER,
-    },
-    area_name:{
+    address:{
       type:DataTypes.STRING
     },
     property_limit:{
