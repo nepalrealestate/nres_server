@@ -22,6 +22,9 @@ async function getServiceProvider(condition, limit, offset) {
             {
                 name:{[db.Op.like]:condition.search},
                 service_type:{[db.Op.like]:condition.search},
+                province:{[db.Op.like]:condition.search},
+                district:{[db.Op.like]:condition.search},
+                municipality:{[db.Op.like]:condition.search},
 
             }
         ]

@@ -181,8 +181,8 @@ db.Views={
 // db.UserModel.Customer.hasMany(db.PropertyModel.House,{foreignKey:'customer_id'});
 
 // user Account with customer profile and agent profile
-db.UserModel.User.hasOne(db.UserModel.CustomerProfile,{foreignKey:'user_id'});
-db.UserModel.CustomerProfile.belongsTo(db.UserModel.User,{foreignKey:'user_id'});
+db.UserModel.User.hasOne(db.UserModel.CustomerProfile,{foreignKey:'user_id',as:'customerProfile'});
+db.UserModel.CustomerProfile.belongsTo(db.UserModel.User,{foreignKey:'user_id',as:'customerProfile'});
 
 db.UserModel.User.hasOne(db.UserModel.AgentProfile,{foreignKey:'user_id'});
 db.UserModel.AgentProfile.belongsTo(db.UserModel.User,{foreignKey:'user_id'});

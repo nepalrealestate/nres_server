@@ -36,16 +36,38 @@ async function findCustomerPassword(id){
 async function getCustomer(id){
     return  await User.findByPk(id);
 }
+async function getCustomerProfile(id) {
+    try {
+        const result = await UserAccount.findOne({
+            where: {
+                user_id: id,
+                user_type: "customer"
+            },
+            include: [{
+                model: db.UserModel.CustomerProfile,
+                as: 'customerProfile',
+                
+            }],
+            attributes: [
+                'name',
+                'email',
+                'phone_number',
+                
+            ],
+            raw: true,
+            nest: true,
+            subQuery: false,
+        });
 
-async function getCustomerProfile(id){
-    return await User.findOne({
-        where:{
-            user_id:id,user_type:"customer"
-        },
-        attributes:['name','email','phone_number'],
-        raw:true
-    })
+        return result;
+    } catch (error) {
+        console.error("Error in getCustomerProfile:", error);
+        throw error; // Re-throw the error for further handling
+    }
 }
+
+
+
 
 async function updateCustomerProfile(id){
     

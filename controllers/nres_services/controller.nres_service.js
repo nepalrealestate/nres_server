@@ -112,7 +112,7 @@ const handleGetServiceProvider = async function (req, res) {
   } catch (error) {
     utility.handleErrorResponse(res, error);
   }
-  return utils.getSearchData(req, res, getServiceProvider);
+  
 };
 const handleGetServiceProviderByID = async function (req, res) {
   const provider_id = req.params.provider_id;

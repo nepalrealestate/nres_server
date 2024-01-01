@@ -69,7 +69,8 @@ router.get("/customer/seller/:seller_id",superAdminVerifyToken,handleGetSellerBy
 router.get("/service/provider",superAdminVerifyToken,handleGetServiceProvider)
 router.get("/service/provider/:provider_id",superAdminVerifyToken,handleGetServiceProviderByID)
 router.patch("/service/provider/:provider_id",superAdminVerifyToken,handleVerifyServiceProvider)
-router.delete("/service/provider/:provider_id",superAdminVerifyToken,handleDeleteServiceProvider);
+router.delete("/service/provider/:provider_id",superAdminVerifyToken,handleDeleteServiceProvider)
+
 
 
 

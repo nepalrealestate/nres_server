@@ -22,6 +22,8 @@ router.post("/forgetPassword",handleCustomerPasswordReset)
 router.post("/logout",customerLogout);
 
 
+
+
 router.get("/isLoggedIn",customerVerifyToken,handleGetCustomerIsLoggedIn)
 
 // test this route
