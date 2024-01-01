@@ -217,9 +217,6 @@ const handleUpdateCustomerProfile = async (req, res) => {
         }
       })
       
-      if(!updateImage){
-        return res.status(400).json({message:"Unable To Update Profile Image"})
-      }
     }
 
     return res.status(200).json({message:"Profile Updated Successfully"})
