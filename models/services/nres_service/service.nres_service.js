@@ -17,19 +17,16 @@ async function updateServiceProvider(provider_id,data){
 
 async function getServiceProvider(condition, limit, offset) {
     let whereConditions = {};
-    if(condition.search){
+    if (condition.search) {
+        location = condition.search;
         whereConditions[db.Op.or] = [
-            {
-                name:{[db.Op.like]:condition.search},
-                service_type:{[db.Op.like]:condition.search},
-                province:{[db.Op.like]:condition.search},
-                district:{[db.Op.like]:condition.search},
-                municipality:{[db.Op.like]:condition.search},
-
-            }
-        ]
-
-    }
+          {service_type: { [db.Op.like]: `%${location}%` } },
+          { province: { [db.Op.like]: `%${location}%` } },
+          { district: { [db.Op.like]: `%${location}%` } },
+          { municipality: { [db.Op.like]: `%${location}%` } },
+        ];
+      }
+    console.log("THis is search condition",whereConditions)
     const data = await ServiceProvider.findAll({
         where: whereConditions,
         limit: limit,
