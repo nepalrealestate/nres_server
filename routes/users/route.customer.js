@@ -1,6 +1,6 @@
 const express = require("express");
 const { handleInsertAgentRating, handleAgentRating } = require("../../controllers/users/controller.agent");
-const { handleCustomerRegistration, handleCustomerLogin, handleGetCustomer, customerVerifyToken, handleGetCustomerProfile, handleCustomerPasswordReset, handleGetCustomerIsLoggedIn, customerLogout, handleUpdateCustomerProfile } = require("../../controllers/users/controller.customer");
+const { handleCustomerRegistration, handleCustomerLogin, handleGetCustomer, customerVerifyToken, handleGetCustomerProfile, handleCustomerPasswordReset, handleGetCustomerIsLoggedIn, customerLogout, handleUpdateCustomerProfile, handleUpdateCustomerPassword } = require("../../controllers/users/controller.customer");
 const { handleAddHouse, handleGetHouse, handleInsertHouseFavourite, handleDeleteHouseFavourite } = require("../../controllers/property/controller.house");
 const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty, handleGetPropertyPriorityLocation, handleInsertPropertyFieldVisitRequest, handleGetFavouriteProperty } = require("../../controllers/property/controller.property");
 const { handleAddLand, handleGetLand, handleInsertLandFavourite, handleDeleteLandFavourite } = require("../../controllers/property/controller.land");
@@ -21,7 +21,10 @@ router.get("/",customerVerifyToken,handleGetCustomerProfile)
 router.post("/forgetPassword",handleCustomerPasswordReset)
 router.post("/logout",customerLogout);
 
-router.patch("/profile",customerVerifyToken,handleUpdateCustomerProfile)
+router.patch("/profile",customerVerifyToken,handleUpdateCustomerProfile);
+
+//change password
+router.patch("/password",customerVerifyToken,handleUpdateCustomerPassword)
 
 
 
@@ -46,8 +49,6 @@ router.get("/property/apartment",customerVerifyToken,handleGetApartment);
 //property Count 
 router.get("/property/count",customerVerifyToken,handleCountLisitingProperty)
 
-//change password
-router.patch("/password",customerVerifyToken,)
 
 
 

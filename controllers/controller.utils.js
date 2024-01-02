@@ -274,21 +274,21 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
   };
 
   const logout = async (req, res) => {
-    // verify cookie and delete it
+    
     try {
       const token = req.cookies?.id || req.header('Authorization')?.replace("Bearer",""); // header for mobile
       if (!token) {
-          throw new ApiError(401, 'Unauthorized request');
+          return res.status(401).json({ message: "Unauthorized request" });
       }
       console.log("this is token ", token);
       console.log("I am here");
       const decode = await jwt.verify(token, JWT_KEY);
       console.log("I am also here")
-
       return res.status(200)
       .clearCookie('id')
       .json({ message: "Successfully Logout" });
   } catch (error) {
+    console.log(error)
     return res.status(401).json({ message: "Invalid Token" });
   }
 

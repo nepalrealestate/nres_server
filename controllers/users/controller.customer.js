@@ -201,18 +201,21 @@ const handleUpdateCustomerProfile = async (req, res) => {
     if(!updateProfile){
       return res.status(400).json({message:"Unable To Update Profile"})
     }
+    console.log("req.file",req.file)
 
     if(req.file){
       const profile_image = req.file.path;
       uploadOnCloudinary(profile_image,"customer").then(async (result)=>{
         if(result){
           // get prevoius profile image
-          const {profile_image:previousProfileImage} = await getCustomerProfile(customer_id);
+          const customerData = await getCustomerProfile(customer_id);
+          console.log("This is customer Data",customerData)
+          const previousProfileImage = customerData?.profile_image;
           if(previousProfileImage){
             // delete previous profile image
             deleteFromCloudinary(previousProfileImage);
           }
-          const updateImage = await updateCustomerProfile(customer_id,{profile_image});
+          const updateImage = await updateCustomerProfile(customer_id,{profile_image:result.secure_url});
           console.log("Update Imgae",updateImage)
         }
       })
@@ -225,6 +228,34 @@ const handleUpdateCustomerProfile = async (req, res) => {
 
   }
 };
+
+const handleUpdateCustomerPassword = async (req, res) => {
+  const customer_id = req.id;
+  const { oldPassword, newPassword } = req.body;
+  if(!oldPassword || !newPassword ){
+    return res.status(400).json({message:"Please Enter Password"})
+  }
+  // check old password
+  try {
+    const customer = await findUserByID("customer",customer_id);
+    if(!customer){
+      return res.status(400).json({message:"Customer Not Found"})
+    }
+    const isPasswordMatch = await bcrypt.compare(oldPassword,customer?.dataValues?.password)
+    if(!isPasswordMatch){
+      return res.status(400).json({message:"Password Not Match"})
+    }
+    const hashPassword = await bcrypt.hash(newPassword,saltRound);
+    const updatePassword = await updateCustomerPassword(customer_id,hashPassword);
+    if(!updatePassword){
+      return res.status(400).json({message:"Unable To Update Password"})
+    }
+    return res.status(200).json({message:"Password Updated Successfully"})
+  } catch (error) {
+    utility.handleErrorResponse(res,error);
+  }
+ 
+}
 
 const handleGetCustomer = async (req, res) => {
   let condition = {};
@@ -367,5 +398,5 @@ module.exports = {
   handleCustomerPasswordReset,
   handleGetCustomerIsLoggedIn,
   customerLogout,
-  
+  handleUpdateCustomerPassword
 };

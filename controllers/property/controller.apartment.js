@@ -107,6 +107,9 @@ const handleApproveApartment = async (req, res) => {
   // handle approved apartment and shift unapproved apartmnet to approved apartment table
 
   const { property_id } = req.params;
+  if(!property_id){
+    return res.status(400).json({message:"Bad Request"})
+  }
 
   console.log(property_id);
   const staff_id = req.id;

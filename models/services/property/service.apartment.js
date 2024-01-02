@@ -248,7 +248,7 @@ async function deletePendingApartment(property_id){
 }
 
 async function approveApartment(staff_id,property_id){
-        return await House.update({status:'approved',approved_by:staff_id},{where:{property_id:property_id}});  
+        return await Apartment.update({status:'approved',approved_by:staff_id},{where:{property_id:property_id}});  
 }
 
 async function updateApartmentListingType(property_id,listing_type){

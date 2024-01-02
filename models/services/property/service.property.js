@@ -164,9 +164,9 @@ async function getPropertyWithOwner(condition,limit,offset){
       model:db.UserModel.User,
       as:'owner',
       attributes:['name','email','phone_number'],
-      raw:true
+      //raw:true
     }],
-    raw:true
+    //raw:true
   })
 }
 

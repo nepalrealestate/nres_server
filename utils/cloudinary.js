@@ -142,7 +142,7 @@ const deleteMultipleFromCloudinary = async (linkArray) => {
         let deletePromises = [];
 
         linkArray.forEach(link => {
-                //console.log("This is link",link);
+                console.log("This is link",link);
                 const splittedLink = link.split("/");
                // console.log("This is splitted link",splittedLink)
                 const publicId = extractPublicIdFromURL(link)
