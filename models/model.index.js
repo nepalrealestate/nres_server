@@ -88,7 +88,6 @@ db.PropertyModel = {
     PropertyFieldVisitRequest : require('./property/model.property').propertyFieldVisitRequestModel(sequelize,DataTypes),
     PropertyFieldVisitComment : require('./property/model.property').propertyFieldVisitCommentModel(sequelize,DataTypes),
     PropertyFieldVisitOTP : require('./property/model.property').propertyFieldVisitOTPModel(sequelize,DataTypes),
-    PropertyFieldVisit : require('./property/model.property').propertyFieldVisit(sequelize,DataTypes),
 
     //HomeLoan : require('./property/model.house').homeLoanModel(sequelize,DataTypes),
     HomeLoan : require('./property/model.property').homeLoanModel(sequelize,DataTypes),

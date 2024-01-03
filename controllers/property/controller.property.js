@@ -79,6 +79,9 @@ const {
   insertNotification,
 } = require("../../models/services/notification/service.notification");
 
+
+
+
 const handleGetPropertyWithAds = async function (req, res) {
   const [limit, offset] = handleLimitOffset(req);
 
@@ -198,83 +201,48 @@ const handleGetPropertyPriorityLocation = async function (req, res) {
 };
 
 const handleInsertPropertyFieldVisitRequest = async function (req, res) {
-  let { name, email, contact, property_id, property_type, request_date } =
-    req.body;
-  console.log(req.body);
+  try {
+    let { name, email, phone_number, property_id, property_type, request_date } =
+      req.body;
 
-  if(!property_id && !property_type){
-    return res.status(400).json({message:"Please Select Property"});
-  }
-
-  let user = null;
-  if ((req.id && req.user_type === "agent") || req.user_type === "customer") {
-    user.user_id = req.id;
-  } else if (!req.id || req.user_type !== "customer") {
-    // this handle customer with login and admin
-    if (!email || !name || !contact) {
+    if (!property_id || !property_type || !request_date) {
       return res.status(400).json({ message: "Bad Request" });
     }
 
-    try {
-      console.log("Email before send", email);
-      const findUser = await findUserByEmail("customer", email);
-      if (findUser) {
-        user = findUser.dataValues;
-      }
+    let user = {};
 
-      if (!findUser) {
-        //create user
-        console.log("User Not Found", findUser);
-        const password = generator.generate({ length: 10, numbers: true });
-
-        const [hashPassword, hashPasswordError] = await wrapAwait(
-          bcrypt.hash(password, 10)
-        );
-        if (hashPasswordError) {
-          return handleErrorResponse(res, hashPasswordError);
-        }
-        const customerData = {
-          user_type: "customer",
-          name: name,
-          email: email,
-          phone_number: contact,
-          password: hashPassword,
-        };
-        console.log(customerData);
-        const accountResponse = await registerUser(customerData);
-
-        console.log("Account Created", accountResponse);
-        if (accountResponse?.dataValues) {
-          user = accountResponse.dataValues;
-          sendPasswordEmail(accountResponse.dataValues.email, password).catch(
-            (err) => {
-              logger.error("Error While Send Email ", err);
-              console.log("Error while send Email ", email);
-            }
-          );
-        }
-      }
-    } catch (error) {
-      return handleErrorResponse(res, error);
+    if ((req.id && req.user_type === "agent") || req.user_type === "customer") {
+      user.id = req.id;
     }
 
-    try {
-      console.log("this is User",user);
-      const data = await insertPropertyFieldVisitRequest({
-        user_id: user.id,
-        property_id,
-        property_type,
-        request_date,
-      });
-      console.log(data);
-      return res
-        .status(200)
-        .json({ message: "created Property Field Visit Request " });
-    } catch (error) {
-      handleErrorResponse(res, error);
+    if (req.id && req.user_type === "admin") {
+      // this handle customer with login and admin
+      if (!email || !name || !phone_number) {
+        return res.status(400).json({ message: "Bad Request" });
+      }
+      let findUser = await findUserByEmail("customer", email);
+      if(!findUser){
+        return res.status(400).json({message:"User Not Found"})
+      }
+      user.id = findUser?.dataValues?.id;
     }
+    const data = await insertPropertyFieldVisitRequest({
+      user_id: user.id,
+      property_id,
+      property_type,
+      request_date,
+    });
+
+    console.log(data);
+
+    return res
+      .status(200)
+      .json({ message: "created Property Field Visit Request " });
+  } catch (error) {
+     handleErrorResponse(res, error);
   }
 };
+
 
 const handleGetPropertyFieldVisitRequest = async function (req, res) {
   const [limit, offset] = handleLimitOffset(req);
@@ -290,7 +258,7 @@ const handleGetPropertyFieldVisitRequest = async function (req, res) {
     console.log(response);
     return res.status(200).json(response);
   } catch (error) {
-    handleErrorResponse(res, error);
+    return handleErrorResponse(res, error);
   }
 };
 
@@ -625,119 +593,53 @@ const handleCountLisitingProperty = async function (req, res) {
 const handleInsertRequestedProperty = async function (req, res) {
   const {
     property_type,
+    request_for,
     province,
     district,
-    municipality,
     area_name,
-    ward,
     name,
     email,
     address,
     phone_number,
     otherDetails, // This will contain all properties not listed above
   } = req.body;
+  if(!property_type || !request_for || !province || !district || !area_name){
+    return res.status(400).json({message:"Please Provide Property Information"})
+  }
 
   const requestedProperty = {
     property_type,
+    request_for,
     province,
     district,
-    municipality,
     area_name,
-    ward,
     name,
     email,
     address,
-    contact: phone_number,
+    phone_number: phone_number,
     property_details: otherDetails,
   };
-  console.log("this is request body", req.body);
-  console.log(requestedProperty);
-  let user = null;
-  // requested by user
-  if ((req.id && req.user_type === "agent") || req.user_type === "customer") {
-    const userData = await findUserByID(req.user_type, req.id);
-    if(!userData){
-      return res.status(400).json({message:"Please Provide Information"})
-    }
-    requestedProperty.name = userData?.dataValues?.name;
-    requestedProperty.email = userData?.dataValues?.email;
-    requestedProperty.contact = userData?.dataValues?.phone_number;
-  }  
-    // this handle customer without login and admin
-  if (
-      !requestedProperty.email ||
-      !requestedProperty.name ||
-      !requestedProperty.contact   
-   ) {
-      return res.status(400).json({ message: "Bad Request" });
-    }
-
-    try {
-      const data = await insertRequestedProperty(requestedProperty);
-      return res.status(200).json({ message: "Successfully Inserted" });
-    } catch (error) {
-      handleErrorResponse(res, error);
-    }
   
-
-
-
-
-  // try {
-  //   if (!user) {
-  //     //find user or  create user
-  //     const customer = await findUserByEmail(requestedProperty.email);
-
-  //     if (!customer) {
-        // const password = generator.generate({ length: 10, numbers: true });
-        // const [hashPassword, hashPasswordError] = await wrapAwait(
-        //   bcrypt.hash(password, 10)
-        // );
-        // if (hashPasswordError) {
-        //   handleErrorResponse(res, hashPasswordError);
-        // }
-
-        // const customerData = {
-        //   user_type: "customer",
-        //   name: requestedProperty.name,
-        //   email: requestedProperty.email,
-        //   phone_number: requestedProperty.contact,
-        //   password: hashPassword,
-        // };
-        // console.log(customerData);
-        // const accountResponse = await registerUser(
-        //   "customer",
-        //   customerData.name,
-        //   customerData.email,
-        //   customerData.phone_number,
-        //   customerData.password
-        // );
-        // console.log("Account Created", accountResponse);
-        // if (accountResponse?.dataValues) {
-        //   user = accountResponse.dataValues;
-        //   sendPasswordEmail(accountResponse.dataValues.email, password).catch(
-        //     (err) => {
-        //       logger.error("Error While Send Email ", err);
-        //       console.log("Error while send Email ", email);
-        //     }
-        //   );
-        // }
-  //     } else {
-  //       user = customer.dataValues;
-  //     }
-  //   }
-  // } catch (error) {
-  //   return handleErrorResponse(res, error);
-  // }
-  // console.log("User Found Or create", user);
-  // if (!user) return res.status(500).json({ message: "Unable Process Request" });
-  // // delete name , email ,contact from requested Proeprty
-  // delete requestedProperty.name;
-  // delete requestedProperty.email;
-  // delete requestedProperty.contact;
-  // // add user id to requested property
-  // requestedProperty.user_id = user.id;
-  
+  // if request by agent or customer 
+  if(req.id && req.user_type === "agent" || req.user_type === "customer"){
+    requestedProperty.user_id = req.id;
+  }else{
+    //request is made by admin
+    if(!name || !email || !phone_number){
+      return res.status(400).json({message:"Please Owner Provide Information"})
+    }
+    const user = await findUserByEmail("customer",email);
+    if(!user){
+      return res.status(400).json({message:"User Not Found"})
+    }
+    requestedProperty.user_id = user?.dataValues.id;
+  }
+  try {
+    const data = await insertRequestedProperty(requestedProperty);
+    return res.status(200).json({ message: "Successfully Inserted" });
+  } catch (error) {
+    handleErrorResponse(res, error);
+  }
 };
 
 const handleGetRequestProperty = async function (req, res) {
@@ -867,14 +769,21 @@ const handleGetPropertyList = async function (req, res) {
 };
 
 const handleInsertHomeLoan = async (req,res)=>{
-  const {name,email,phone_number,loan_amount,property_id,property_type} = req.body;
+  const {loan_amount,property_id,property_type} = req.body;
+  const user_id = req.id;
 
-  if(!name  || !phone_number || !loan_amount){
+  if( !loan_amount || !property_id || !property_type || !user_id){
     return res.status(400).json({message:"Bad Request"});
   }
 
   try {
-    const response = await insertHomeLoan({name,email,phone_number,loan_amount,property_id,property_type});
+    const response = await insertHomeLoan({
+      user_id,
+      loan_amount,
+      property_id,
+      property_type,
+     
+    })
 
     return res.status(200).json({message:"Successfully Inserted"})
   } catch (error) {

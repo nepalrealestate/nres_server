@@ -176,6 +176,9 @@ async function getApartmentByID(property_id,requiredAttributes=null){
         attributes:requiredAttributes
     })
     console.log("Data WIth Views",data)
+    if(!data){
+        return null
+    }
     if(data && data.apartmentViews && data.apartmentViews.dataValues && data.apartmentViews.dataValues.views!==null){
         data.dataValues.views = data.apartmentViews.dataValues.views;
     }else{

@@ -190,7 +190,6 @@ async function countListingProperty(condition){
 async function getLatestPropertyPriorityLocation(condition, limit, offset) {
   let orderConditions = [];
   let whereConditions = {};
-
   // sorting 
   if(condition.sort){
     let order = condition.order?condition.order : "DESC";

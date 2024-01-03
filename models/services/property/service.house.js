@@ -162,8 +162,11 @@ async function deleteHouseImage(property_id,imageLink){
         }],
         attributes :  requiredAttributes
     })
-    if(data && data.houseViews && data.houseViews.dataValues && data.houseViews.dataValues.views !== null){
-        data.dataValues.views = data.houseViews.dataValues.views;
+    if(!data){
+        return null
+    }
+    if(data && data?.houseViews && data.houseViews?.dataValues && data.houseViews.dataValues?.views !== null){
+        data.dataValues.views = data.houseViews?.dataValues?.views;
         
     }else{
         data.dataValues.views = 0;

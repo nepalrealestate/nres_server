@@ -438,7 +438,13 @@ function houseFavouriteModel(sequelize,DataTypes){
       onDelete: 'CASCADE'
     },
   },{
-    freezeTableName:true
+    freezeTableName:true,
+    primaryKey: ['property_id', 'user_id'],
+    uniqueKeys: {
+      unique_property_user: {
+        fields: ['property_id', 'user_id']
+      }
+    }
   })
 }
 

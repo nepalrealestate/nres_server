@@ -104,7 +104,7 @@ async function getLand(condition){
 }
 
 async function getLandByID(property_id, requiredAttributes = null) {
-    const result = await Land.findOne({
+    const data = await Land.findOne({
       where: { property_id: property_id },
       include: [
         {
@@ -116,16 +116,19 @@ async function getLandByID(property_id, requiredAttributes = null) {
       ],
       attributes: requiredAttributes,
     });
+    if(!data){
+        return null
+    }
   
-    if (result && result.landViews && result.landViews.dataValues && result.landViews.dataValues.views !== null) {
-      result.dataValues.views = result.landViews.dataValues.views;
+    if (data && data.landViews && data.landViews.dataValues && data.landViews.dataValues.views !== null) {
+      data.dataValues.views = data.landViews.dataValues.views;
       
     } else {
-      result.dataValues.views = 0;
+      data.dataValues.views = 0;
     }
-    delete result.dataValues.landViews;
+    delete data.dataValues.landViews;
   
-    return result;
+    return data;
   }
   
   

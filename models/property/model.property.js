@@ -156,25 +156,111 @@ function propertyViewAdminModel(sequelize, DataTypes) {
 function propertyViewClientModel(sequelize, DataTypes) {
   async function createPropertyView() {
     const sql = `
-    CREATE OR REPLACE VIEW ${propertyClientView} AS
-    
-  
-    SELECT   h.property_id,h.property_type, h.property_name,h.property_for,h.listed_for,h.province,h.district, h.municipality,h.area_name,h.latitude,h.longitude,h.price,h.social_media,h.property_image, COALESCE(house_views.views, 0) AS views,h.owner_id,h.listing_type,h.status, h.createdAt,h.updatedAt
+    CREATE OR REPLACE VIEW property_view_client AS
+  SELECT
+    property_id,
+    property_type,
+    property_name,
+    property_for,
+    listed_for,
+    province,
+    district,
+    municipality,
+    area_name,
+    latitude,
+    longitude,
+    price,
+    social_media,
+    property_image,
+    views,
+    owner_id,
+    listing_type,
+    status,
+    createdAt,
+    updatedAt
+  FROM (
+    SELECT
+      h.property_id AS property_id,
+      property_type,
+      property_name,
+      property_for,
+      listed_for,
+      province,
+      district,
+      municipality,
+      area_name,
+      latitude,
+      longitude,
+      price,
+      social_media,
+      property_image,
+      COALESCE(house_views.views, 0) AS views,
+      owner_id,
+      listing_type,
+      status,
+      h.createdAt,
+      h.updatedAt,
+      ROW_NUMBER() OVER (PARTITION BY h.property_id ORDER BY h.createdAt) AS row_num
+    FROM nres.property_house AS h
+    LEFT JOIN nres.property_house_views_count AS house_views ON h.property_id = house_views.property_id
 
-    FROM ${DB_NAME}.property_house  as h LEFT JOIN ${DB_NAME}.property_house_views_count as house_views ON h.property_id=house_views.property_id
-   
-    UNION 
-   
-    SELECT l.property_id,l.property_type, l.property_name,l.property_for,l.listed_for,l.province,l.district,l.municipality,l.area_name,l.latitude,l.longitude,l.price,l.social_media,l.property_image, COALESCE(land_views.views, 0) AS views, l.owner_id,l.listing_type,l.status,l.createdAt ,l.updatedAt
-  
-  
-    FROM ${DB_NAME}.property_land as l  LEFT JOIN ${DB_NAME}.property_land_views_count as land_views ON l.property_id=land_views.property_id
-    
     UNION
-   
-    SELECT a.property_id,a.property_type, a.property_name,a.property_for, a.listed_for,a.province,a.district, a.municipality,a.area_name,a.latitude,a.longitude,a.price,a.social_media,a.property_image, COALESCE(apartment_views.views, 0) AS views,a.owner_id,a.listing_type,a.status, a.createdAt ,a.updatedAt
-  
-    FROM ${DB_NAME}.property_apartment as a LEFT JOIN ${DB_NAME}.property_apartment_views_count as apartment_views ON a.property_id=apartment_views.property_id 
+
+    SELECT
+      l.property_id AS property_id,
+      property_type,
+      property_name,
+      property_for,
+      listed_for,
+      province,
+      district,
+      municipality,
+      area_name,
+      latitude,
+      longitude,
+      price,
+      social_media,
+      property_image,
+      COALESCE(land_views.views, 0) AS views,
+      owner_id,
+      listing_type,
+      status,
+      l.createdAt,
+      l.updatedAt,
+      ROW_NUMBER() OVER (PARTITION BY l.property_id ORDER BY l.createdAt) AS row_num
+    FROM nres.property_land AS l
+    LEFT JOIN nres.property_land_views_count AS land_views ON l.property_id = land_views.property_id
+
+    UNION
+
+    SELECT
+      a.property_id AS property_id,
+      property_type,
+      property_name,
+      property_for,
+      listed_for,
+      province,
+      district,
+      municipality,
+      area_name,
+      latitude,
+      longitude,
+      price,
+      social_media,
+      property_image,
+      COALESCE(apartment_views.views, 0) AS views,
+      owner_id,
+      listing_type,
+      status,
+      a.createdAt,
+      a.updatedAt,
+      ROW_NUMBER() OVER (PARTITION BY a.property_id ORDER BY a.createdAt) AS row_num
+    FROM nres.property_apartment AS a
+    LEFT JOIN nres.property_apartment_views_count AS apartment_views ON a.property_id = apartment_views.property_id
+  ) AS subquery
+  WHERE row_num = 1;
+
+
   `;
 
     try {
@@ -368,42 +454,13 @@ function propertyFieldVisitRequestModel(sequelize,DataTypes){
     schedule_date:{
       type:DataTypes.DATE,
     },
-    visit_status:{
-      type:DataTypes.ENUM('not-schedule','schedule','visited'),
-      defaultValue:'not-schedule'
-    },
     status:{
-      type:DataTypes.ENUM('pending','approve'),
+      type:DataTypes.ENUM('pending','schedule','visited','not-visited'),
       defaultValue:'pending'
     }
 
   },
   { 
-    hooks:{
-      beforeCreate:async (instance,options)=>{
-        const {property_id,property_type} = instance;
-        console.log(instance)
-
-        //const modelName = capitalizeFirstLetter(property_type);
-        const modelName = `property_${property_type}`
-        
-        console.log(sequelize.models[modelName])
-        // check property exists for not with property type and 
-        console.log(sequelize.models[modelName])
-        const property = await sequelize.models[modelName].findOne({
-          where:{
-           property_id:property_id,
-            property_type:property_type
-          }
-        })
-       
-
-        if(!property){
-          throw new sequelize.Sequelize.ValidationError(`Invalid Propery ID ${property_id} for ${property_type}`)
-          
-        }
-      }
-    },
     freezeTableName:true
   }
   )
@@ -440,16 +497,6 @@ function propertyFieldVisitCommentModel(sequelize,DataTypes){
   
 
   },{
-    // hooks:{
-    //   beforeValidate: (instance)=>{
-    //     if(instance.staff_id && instance.superAdmin_id){
-    //       throw new sequelize.ValidationError('Only one of staff_id or superAdmin_id can be set.')
-    //     }
-    //     if (!instance.staff_id && !instance.superAdmin_id) {
-    //       throw new sequelize.ValidationError('Either staff_id or superAdmin_id must be set.');
-    //     }
-    //   }
-    // },
       freezeTableName:true
     
   })
@@ -490,36 +537,6 @@ function propertyFieldVisitOTPModel(sequelize,DataTypes){
 }
 
 
-function propertyFieldVisit(sequelize,DataTypes){
-  return sequelize.define('property_field_visit',{
-    field_visit_id:{
-      type:DataTypes.INTEGER,
-      references:{
-        model:'property_field_visit_request',
-        key:'field_visit_id'
-      },
-      onDelete:'SET NULL'
-    },
-    customer_id:{
-        type:DataTypes.INTEGER,
-        references:{
-          model:'user_userAccount',
-          key:'user_id'
-        },
-        onDelete:'SET NULL',
-      },
-      property_id:{
-        type:DataTypes.INTEGER,
-        allowNull:false,
-      },
-      property_type:{
-        type:DataTypes.ENUM('house','apartment','land') 
-      }
-    },{
-      freezeTableName:true,
-    })
-
-}
 
 
 
@@ -533,38 +550,29 @@ function requestedPropertyModel(sequelize,DataTypes){
     property_type:{
       type:DataTypes.ENUM('house','apartment','land')
     },
+    request_for:{
+      type:DataTypes.ENUM('sale','rent','buy')
+    },
     province:{
       type:DataTypes.STRING
     },
     district:{
       type:DataTypes.STRING
     },
-    municipality:{
-      type:DataTypes.STRING
-    },
     area_name:{
-      type:DataTypes.STRING
-    },
-    ward:{
       type:DataTypes.STRING
     },
     property_details:{
       type:DataTypes.JSON
     },
-    name:{
-      type:DataTypes.STRING,
-      required:true
-    },
-    email:{
-      type:DataTypes.STRING,
-    },
-    contact:{
-      type:DataTypes.STRING,
-      required:true
-    },
-    address:{
-      type:DataTypes.STRING
-    },
+    user_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'CASCADE'
+    }
   },{
     freezeTableName:true
   })
@@ -603,15 +611,13 @@ function favouritePropertyModel(sequelize,DataTypes){
 
 function homeLoanModel(sequelize,DataTypes){
   return HomeLoan = sequelize.define('property_home_loan',{
-    name:{
-      type:DataTypes.STRING,
-      allowNull:false
-    },
-    email:{
-      type:DataTypes.STRING,
-    },
-    phone_number:{
-      type:DataTypes.STRING,
+    user_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'CASCADE'
     },
     loan_amount:{
       type:DataTypes.STRING,
@@ -623,6 +629,7 @@ function homeLoanModel(sequelize,DataTypes){
     property_type:{
       type:DataTypes.ENUM('house','apartment','land')
     },
+   
   
   },{
     freezeTableName:true
@@ -639,7 +646,6 @@ module.exports = {
   propertyFieldVisitRequestModel, 
   propertyFieldVisitCommentModel,
   propertyFieldVisitOTPModel,
-  propertyFieldVisit,
   requestedPropertyModel,
   favouritePropertyModel,
   homeLoanModel

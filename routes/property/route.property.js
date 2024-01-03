@@ -18,12 +18,7 @@ const router = express.Router();
 
 
 
- // property request
- router.post("/request",handleInsertRequestedProperty)
 
-
-// property field visit Request - 
-router.post("/fieldVisit",handleInsertPropertyFieldVisitRequest)
 
 
 
