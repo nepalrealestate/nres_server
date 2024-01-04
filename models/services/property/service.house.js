@@ -331,7 +331,8 @@ async function getHouseFavourite(user_id,limit,offset){
             as:'favourite',
         }],
         limit:limit,
-        offset:offset
+        offset:offset,
+        attributes:{exclude:['createdAt','updatedAt']},
     
     })
 

@@ -57,9 +57,7 @@ const checkPropertyValid  = async (req,res,next) => {
         return res.status(400).json({message:"property_id is required"})
     }
     let property_type = req.body?.property_type;
-    console.log(property_id,property_type)
-    console.log(property_type=="house");
-    console.log(property_type!="house")
+  
     if( property_type != "house" && property_type != "apartment" && property_type != "land"){
         return res.status(400).json({message:"valid property_type is required"})
     }

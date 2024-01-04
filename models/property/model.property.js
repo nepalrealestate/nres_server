@@ -455,13 +455,19 @@ function propertyFieldVisitRequestModel(sequelize,DataTypes){
       type:DataTypes.DATE,
     },
     status:{
-      type:DataTypes.ENUM('pending','schedule','visited','not-visited'),
-      defaultValue:'pending'
+      type:DataTypes.ENUM('not-schedule','schedule','visited','not-visited','cancelled'),
+      defaultValue:'not-schedule'
     }
 
   },
   { 
-    freezeTableName:true
+    freezeTableName:true,
+    primaryKey: ['property_id', 'user_id'],
+    uniqueKeys: {
+      unique_property_user: {
+        fields: ['property_id', 'user_id']
+      }
+    }
   }
   )
 
@@ -603,7 +609,13 @@ function favouritePropertyModel(sequelize,DataTypes){
       onDelete:'CASCADE'
     }
   },{
-    freezeTableName:true
+    freezeTableName:true,
+    primaryKey: ['property_id', 'user_id'],
+    uniqueKeys: {
+      unique_property_user: {
+        fields: ['property_id', 'user_id']
+      }
+    }
   })
 }
 
@@ -632,7 +644,13 @@ function homeLoanModel(sequelize,DataTypes){
    
   
   },{
-    freezeTableName:true
+    freezeTableName:true,
+    primaryKey: ['property_id', 'user_id'],
+    uniqueKeys: {
+      unique_property_user: {
+        fields: ['property_id', 'user_id']
+      }
+    }
   })
 }
 

@@ -2,7 +2,7 @@ const express = require("express");
 const { handleInsertAgentRating, handleAgentRating } = require("../../controllers/users/controller.agent");
 const { handleCustomerRegistration, handleCustomerLogin, handleGetCustomer, customerVerifyToken, handleGetCustomerProfile, handleCustomerPasswordReset, handleGetCustomerIsLoggedIn, customerLogout, handleUpdateCustomerProfile, handleUpdateCustomerPassword } = require("../../controllers/users/controller.customer");
 const { handleAddHouse, handleGetHouse, handleInsertHouseFavourite, handleDeleteHouseFavourite } = require("../../controllers/property/controller.house");
-const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty, handleGetPropertyPriorityLocation, handleInsertPropertyFieldVisitRequest, handleGetFavouriteProperty, handleInsertHomeLoan } = require("../../controllers/property/controller.property");
+const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty, handleGetPropertyPriorityLocation, handleInsertPropertyFieldVisitRequest, handleGetFavouriteProperty, handleInsertHomeLoan, handleGetPropertyFieldVisitRequest, handleGetUserFieldVisitRequest } = require("../../controllers/property/controller.property");
 const { handleAddLand, handleGetLand, handleInsertLandFavourite, handleDeleteLandFavourite } = require("../../controllers/property/controller.land");
 const { handleAddApartment, handleGetApartment, handleInsertApartmentFavourite, handleDeleteApartmentFavourite } = require("../../controllers/property/controller.apartment");
 const { handleGetSingleCustomerChat } = require("../../controllers/chat/controller.customerChat");
@@ -71,6 +71,9 @@ router.get("/previousChat",customerVerifyToken,handleGetSingleCustomerChat)
 
 // property field visit Request - 
 router.post("/property/fieldVisit",customerVerifyToken,checkPropertyValid,handleInsertPropertyFieldVisitRequest)
+router.get("/property/fieldVisit",customerVerifyToken,handleGetUserFieldVisitRequest)
+//todo this
+
 //user property field visit requested property
 // user property field visit status - visited, not visited, pending
 // user property field visit data
@@ -88,8 +91,10 @@ router.delete("/property/house/favourite/:property_id",customerVerifyToken,handl
 router.delete("/property/apartment/favourite/:property_id",customerVerifyToken,handleDeleteApartmentFavourite)
 router.delete("/property/land/favourite/:property_id",customerVerifyToken,handleDeleteLandFavourite);
 
-// get favourite property 
+router.post("/property/favourite/:property_id",customerVerifyToken,checkPropertyValid,handleInsertHouseFavourite)
 router.get("/property/favourite",customerVerifyToken,handleGetFavouriteProperty)
+
+
 
 
 // post user home loan request

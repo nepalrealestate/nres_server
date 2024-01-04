@@ -8,6 +8,7 @@ const {
   getHouseByID,
   getHouseWithOwnerByID,
   getPendingHouse,
+  getHouseFavourite,
 } = require("../../models/services/property/service.house");
 const {
   getLandByID,
@@ -52,6 +53,7 @@ const {
   insertHomeLoan,
   getHomeLoan,
   deleteHomeLoan,
+  getUserFieldVisitRequest,
 } = require("../../models/services/property/service.property");
 const {
   findCustomer,
@@ -246,12 +248,21 @@ const handleInsertPropertyFieldVisitRequest = async function (req, res) {
 
 const handleGetPropertyFieldVisitRequest = async function (req, res) {
   const [limit, offset] = handleLimitOffset(req);
-
+  condition = {};
+  //if request from user
+  if ((req.id && req.user_type === "customer") || req.user_type === "agent") {
+    condition.user_id = req.id;
+  }
   let searchQuery = req?.query?.search;
+  if(searchQuery){
+    condition.search = searchQuery;
+    delete req.query.search;
+  }
+
 
   try {
     const response = await getPropertyFieldVisitRequest(
-      searchQuery,
+      condition,
       limit,
       offset
     );
@@ -261,6 +272,18 @@ const handleGetPropertyFieldVisitRequest = async function (req, res) {
     return handleErrorResponse(res, error);
   }
 };
+
+const handleGetUserFieldVisitRequest = async function (req,res){
+  const user_id = req.id;
+  const [limit,offset] = handleLimitOffset(req);
+  try {
+    const response = await getUserFieldVisitRequest({user_id},limit,offset);
+    return res.status(200).json(response);
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
 
 const handleGetPropertyFieldVisitRequestByID = async function (req, res) {
   const field_visit_id = req.params?.field_visit_id;
@@ -819,6 +842,17 @@ const handleDeleteHomeLoan = async (req,res)=>{
   }
 }
 
+const handleInsertFavouriteProperty = async function(req,res){
+
+  const user_id = req.id;
+  const property_id = req.params.property_id;
+  const property_type = req.params?.property_type;
+  if(!property_id || !property_type){
+    return res.status(400).json({message:"Bad Request"})
+  }
+  
+
+}
 
 const handleGetFavouriteProperty = async function (req,res){
 
@@ -827,8 +861,26 @@ const handleGetFavouriteProperty = async function (req,res){
   const [limit,offset] = handleLimitOffset(req);
 
   try {
-    const response = await getLandFavourite(user_id,limit,offset);
+    const response = await getHouseFavourite(user_id,limit,offset);
     return res.status(200).json(response)
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+const handleIsPropertyFavourite = async function(req,res){
+  const user_id = req.id;
+  const property_id = req.params.property_id;
+  const property_type = req.params?.property_type;
+  if(!property_id){
+    return res.status(400).json({message:"Bad Request"})
+  }
+  try {
+    const response = await getHouseFavourite(user_id,null,null,property_id);
+    if(response.length === 0){
+      return res.status(200).json({message:"Not Favourite"})
+    }
+    return res.status(200).json({message:"Favourite"})
   } catch (error) {
     handleErrorResponse(res,error)
   }
@@ -863,6 +915,7 @@ module.exports = {
   handleInsertHomeLoan,
   handleGetHomeLoan,
   handleDeleteHomeLoan,
-  handleGetFavouriteProperty
+  handleGetFavouriteProperty,
+  handleGetUserFieldVisitRequest
 
 };

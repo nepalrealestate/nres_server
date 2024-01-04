@@ -12,6 +12,7 @@ const PropertyShootScheduleComment = db.PropertyModel.PropertyShootScheduleComme
 const RequestedProperty = db.PropertyModel.RequestedProperty;
 const SoldPropertyView = db.Views.SoldPropertyView;
 const HomeLoan = db.PropertyModel.HomeLoan;
+const PropertyFavourite = db.PropertyModel.PropertyFavourite
 
 // get latest property insert id
 async function getPropertyId() {
@@ -276,14 +277,13 @@ async function insertPropertyFieldVisitRequest(data) {
 
 async function getPropertyFieldVisitRequest(condition,limit,offset){
   let whereConditions = {};
-  if(condition){
+  if(condition?.search){
     whereConditions[db.Op.or] = [
-      {name:{[db.Op.like]:`%${condition}`}},
-      {property_type:{[db.Op.like]:`%${condition}`}}
+      {name:{[db.Op.like]:`%${condition.search}%`}},
+      {property_type:{[db.Op.like]:`%${condition.search}%`}}
     ]
   }
-
-
+  whereConditions = {...condition,...whereConditions}
   return await PropertyFieldVisitRequest.findAll({
     where:whereConditions,
     limit:limit,
@@ -295,6 +295,14 @@ async function getPropertyFieldVisitRequest(condition,limit,offset){
       required: false  // This ensures that the join is a LEFT OUTER JOIN, not an INNER JOIN
     }],
    
+  })
+}
+
+async function getUserFieldVisitRequest(condition,limit,offset){
+  return await PropertyFieldVisitRequest.findAll({
+    where:condition,
+    limit:limit,
+    offset:offset,   
   })
 }
 
@@ -494,6 +502,19 @@ async function deleteHomeLoan(id){
 }
 
 
+//favourite Property
+// async function getFavouriteProperty(condition,limit,offset){
+//   return await db.sequelize.literal(
+    
+//   )
+// }
+async function insertFavouriteProperty(data){
+  return await PropertyFavourite.creat(data)
+}
+async function getFavouriteProperty(condition,limit,offset){
+
+}
+
 
 
 module.exports = {
@@ -515,6 +536,7 @@ module.exports = {
   insertPropertyFieldVisit,
   getPropertyFieldVisitRequest,
   getPropertyFieldVisitRequestByID,
+
   insertPropertyShootScheduleComment,
   getPropertyShootScheduleComment,
   deletePropertyShootSchedule,
@@ -531,5 +553,8 @@ module.exports = {
   updatePropertyShootSchedule,
   insertHomeLoan,
   getHomeLoan,
-  deleteHomeLoan
+  deleteHomeLoan,
+  getUserFieldVisitRequest,
+
+  insertFavouriteProperty
 };
