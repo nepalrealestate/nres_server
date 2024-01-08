@@ -94,7 +94,7 @@ router.get("/property/fieldVisit",customerVerifyToken,handleGetUserFieldVisitReq
 
 router.post("/property/favourite/:property_id",customerVerifyToken,checkPropertyValid,handleInsertFavouriteProperty)
 router.get("/property/favourite",customerVerifyToken,handleGetFavouriteProperty)
-router.get("/property/isFavourite/:property_id",customerVerifyToken,checkPropertyValid,handleIsPropertyFavourite)
+router.get("/property/:property_type/isFavourite/:property_id",customerVerifyToken,checkPropertyValid,handleIsPropertyFavourite)
 router.delete("/property/favourite/:property_id",customerVerifyToken,checkPropertyValid,handleDeleteFavouriteProperty)
 
 

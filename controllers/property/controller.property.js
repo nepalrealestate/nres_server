@@ -892,7 +892,7 @@ const handleGetFavouriteProperty = async function (req,res){
 const handleIsPropertyFavourite = async function(req,res){
   const user_id = req.id;
   const property_id = req.params.property_id;
-  const property_type = req.body?.property_type;
+  const property_type = req.params?.property_type;
   if(!property_id && !property_type){
     return res.status(400).json({message:"Bad Request"})
   }
