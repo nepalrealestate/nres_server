@@ -893,10 +893,11 @@ const handleIsPropertyFavourite = async function(req,res){
   const user_id = req.id;
   const property_id = req.params.property_id;
   const property_type = req.params?.property_type;
+  console.log(property_id,property_type)
   if(!property_id && !property_type){
     return res.status(400).json({message:"Bad Request"})
   }
-  console.log(property_id,property_type)
+  
   try {
     const {count,rows} = await getFavouriteProperty({user_id,property_id,property_type});
    
