@@ -54,6 +54,7 @@ const {
   getHomeLoan,
   deleteHomeLoan,
   getUserFieldVisitRequest,
+  insertFavouriteProperty,
 } = require("../../models/services/property/service.property");
 const {
   findCustomer,
@@ -846,26 +847,41 @@ const handleInsertFavouriteProperty = async function(req,res){
 
   const user_id = req.id;
   const property_id = req.params.property_id;
-  const property_type = req.params?.property_type;
+  const property_type = req.body?.property_type;
   if(!property_id || !property_type){
     return res.status(400).json({message:"Bad Request"})
   }
-  
-
+try {
+    const response = await insertFavouriteProperty({
+      property_id,
+      property_type,
+      user_id
+    })
+    return res.status(200).json({message:"Successfully Inserted"})
+} catch (error) {
+  handleErrorResponse(res,error)
+}
 }
 
+// get all favourite proeprty - need to think processss
+
 const handleGetFavouriteProperty = async function (req,res){
-
-  const user_id = req.id;
+  // get all property id and property type from favourite table , and search in corresponding table
+  // house , apartment , land;
   
-  const [limit,offset] = handleLimitOffset(req);
+  // find property_id and property_type from favourite table
+  //const favouriteProperty = await getFa
 
-  try {
-    const response = await getHouseFavourite(user_id,limit,offset);
-    return res.status(200).json(response)
-  } catch (error) {
-    handleErrorResponse(res,error)
-  }
+  // const user_id = req.id;
+  
+  // const [limit,offset] = handleLimitOffset(req);
+
+  // try {
+  //   const response = await getHouseFavourite(user_id,limit,offset);
+  //   return res.status(200).json(response)
+  // } catch (error) {
+  //   handleErrorResponse(res,error)
+  // }
 }
 
 const handleIsPropertyFavourite = async function(req,res){
@@ -916,6 +932,7 @@ module.exports = {
   handleGetHomeLoan,
   handleDeleteHomeLoan,
   handleGetFavouriteProperty,
-  handleGetUserFieldVisitRequest
+  handleGetUserFieldVisitRequest,
+  handleInsertFavouriteProperty
 
 };

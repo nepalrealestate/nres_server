@@ -587,12 +587,8 @@ function requestedPropertyModel(sequelize,DataTypes){
 
 
 function favouritePropertyModel(sequelize,DataTypes){
-  return FavouriteProperty = sequelize.define('favorite_property',{
-    id:{
-      type:DataTypes.INTEGER,
-      primaryKey:true,
-      autoIncrement:true
-    },
+  return FavouriteProperty = sequelize.define('property_favourite',{
+   
     property_id:{
       type:DataTypes.INTEGER,
       allowNull:false
