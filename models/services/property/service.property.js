@@ -12,7 +12,7 @@ const PropertyShootScheduleComment = db.PropertyModel.PropertyShootScheduleComme
 const RequestedProperty = db.PropertyModel.RequestedProperty;
 const SoldPropertyView = db.Views.SoldPropertyView;
 const HomeLoan = db.PropertyModel.HomeLoan;
-const PropertyFavourite = db.PropertyModel.PropertyFavourite
+const FavouriteProperty  = db.PropertyModel.FavouriteProperty
 
 // get latest property insert id
 async function getPropertyId() {
@@ -509,9 +509,14 @@ async function deleteHomeLoan(id){
 //   )
 // }
 async function insertFavouriteProperty(data){
-  return await PropertyFavourite.creat(data)
+  return await FavouriteProperty.create(data)
 }
 async function getFavouriteProperty(condition,limit,offset){
+  return await FavouriteProperty.findAndCountAll({
+    where:condition,
+    limit:limit,
+    offset:offset,
+  })
 
 }
 
@@ -556,5 +561,6 @@ module.exports = {
   deleteHomeLoan,
   getUserFieldVisitRequest,
 
-  insertFavouriteProperty
+  insertFavouriteProperty,
+  getFavouriteProperty
 };

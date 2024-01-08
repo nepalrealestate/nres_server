@@ -55,6 +55,7 @@ const {
   deleteHomeLoan,
   getUserFieldVisitRequest,
   insertFavouriteProperty,
+  getFavouriteProperty,
 } = require("../../models/services/property/service.property");
 const {
   findCustomer,
@@ -870,11 +871,14 @@ const handleGetFavouriteProperty = async function (req,res){
   // house , apartment , land;
   
   // find property_id and property_type from favourite table
-  //const favouriteProperty = await getFa
+  const [limit,offset] = handleLimitOffset(req);
+  const favouriteProperty = await getFavouriteProperty({user_id:req.id},limit,offset);
+  console.log(favouriteProperty);
+  return res.send("GOOD")
 
   // const user_id = req.id;
   
-  // const [limit,offset] = handleLimitOffset(req);
+  // 
 
   // try {
   //   const response = await getHouseFavourite(user_id,limit,offset);
