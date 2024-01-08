@@ -521,6 +521,11 @@ async function getFavouriteProperty(condition,limit,offset){
   })
 
 }
+async function deleteFavouriteProperty(condition){
+  return await FavouriteProperty.destroy({
+    where:condition
+  })
+}
 
 
 
@@ -564,5 +569,6 @@ module.exports = {
   getUserFieldVisitRequest,
 
   insertFavouriteProperty,
-  getFavouriteProperty
+  getFavouriteProperty,
+  deleteFavouriteProperty
 };

@@ -56,6 +56,7 @@ const {
   getUserFieldVisitRequest,
   insertFavouriteProperty,
   getFavouriteProperty,
+  deleteFavouriteProperty,
 } = require("../../models/services/property/service.property");
 const {
   findCustomer,
@@ -898,7 +899,7 @@ const handleIsPropertyFavourite = async function(req,res){
   console.log(property_id,property_type)
   try {
     const {count,rows} = await getFavouriteProperty({user_id,property_id,property_type});
-    console.log(response); 
+   
     if(count === 0){
       return res.status(400).json({message:"Not Favourite",isFavourite:false})
     }
@@ -907,6 +908,27 @@ const handleIsPropertyFavourite = async function(req,res){
       message:"Favourite"
     })
     //return res.status(200).json({message:"Favourite"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+const handleDeleteFavouriteProperty = async function(req,res){
+  const user_id = req.id;
+  const property_id = req.params.property_id;
+  const property_type = req.body?.property_type;
+  if(!property_id && !property_type){
+    return res.status(400).json({message:"Bad Request"})
+  }
+  console.log(property_id,property_type)
+  try {
+    const deletedFavourite = await deleteFavouriteProperty({user_id,property_id,property_type});
+    console.log(deletedFavourite);
+    if(deletedFavourite === 0){
+      return res.status(400).json({message:"Not Favourite"})
+    }
+    return res.status(200).json({message:"Successfully Deleted"})
+    
   } catch (error) {
     handleErrorResponse(res,error)
   }
@@ -944,6 +966,7 @@ module.exports = {
   handleGetFavouriteProperty,
   handleGetUserFieldVisitRequest,
   handleInsertFavouriteProperty,
-  handleIsPropertyFavourite
+  handleIsPropertyFavourite,
+  handleDeleteFavouriteProperty
 
 };
