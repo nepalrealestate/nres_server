@@ -651,6 +651,8 @@ function homeLoanModel(sequelize,DataTypes){
 }
 
 
+
+
 module.exports = {
   propertyIdTrackerModel,
   propertyViewAdminModel,

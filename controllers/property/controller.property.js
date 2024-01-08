@@ -872,35 +872,41 @@ const handleGetFavouriteProperty = async function (req,res){
   
   // find property_id and property_type from favourite table
   const [limit,offset] = handleLimitOffset(req);
-  const favouriteProperty = await getFavouriteProperty({user_id:req.id},limit,offset);
+  const {count , rows:favouriteProperty} = await getFavouriteProperty({user_id:req.id},limit,offset);
   console.log(favouriteProperty);
-  return res.send("GOOD")
-
-  // const user_id = req.id;
+  if(favouriteProperty.length === 0){
+    return res.status(404).json({message:"No Favourite Property Found"})
+  }
+  // loop through favourite property and find property
+  let properties =[];
+  await Promise.all(favouriteProperty.map(async (property)=>{
+    const {property_id,property_type} = property;
+    const {properties:propertyData,totalCount} =  await getLatestPropertyPriorityLocation({property_id,property_type});
+     properties.push(propertyData[0]?.dataValues);
+  }))
   
-  // 
-
-  // try {
-  //   const response = await getHouseFavourite(user_id,limit,offset);
-  //   return res.status(200).json(response)
-  // } catch (error) {
-  //   handleErrorResponse(res,error)
-  // }
+  return res.status(200).json({properties,totalCount:count})
 }
 
 const handleIsPropertyFavourite = async function(req,res){
   const user_id = req.id;
   const property_id = req.params.property_id;
-  const property_type = req.params?.property_type;
-  if(!property_id){
+  const property_type = req.body?.property_type;
+  if(!property_id && !property_type){
     return res.status(400).json({message:"Bad Request"})
   }
+  console.log(property_id,property_type)
   try {
-    const response = await getHouseFavourite(user_id,null,null,property_id);
-    if(response.length === 0){
-      return res.status(200).json({message:"Not Favourite"})
+    const {count,rows} = await getFavouriteProperty({user_id,property_id,property_type});
+    console.log(response); 
+    if(count === 0){
+      return res.status(400).json({message:"Not Favourite",isFavourite:false})
     }
-    return res.status(200).json({message:"Favourite"})
+    return res.status(200).json({
+      isFavourite:true,
+      message:"Favourite"
+    })
+    //return res.status(200).json({message:"Favourite"})
   } catch (error) {
     handleErrorResponse(res,error)
   }
@@ -937,6 +943,7 @@ module.exports = {
   handleDeleteHomeLoan,
   handleGetFavouriteProperty,
   handleGetUserFieldVisitRequest,
-  handleInsertFavouriteProperty
+  handleInsertFavouriteProperty,
+  handleIsPropertyFavourite
 
 };

@@ -511,11 +511,13 @@ async function deleteHomeLoan(id){
 async function insertFavouriteProperty(data){
   return await FavouriteProperty.create(data)
 }
+
 async function getFavouriteProperty(condition,limit,offset){
   return await FavouriteProperty.findAndCountAll({
     where:condition,
     limit:limit,
     offset:offset,
+    raw:true
   })
 
 }
