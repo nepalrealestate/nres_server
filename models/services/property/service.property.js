@@ -1,4 +1,4 @@
-const sequelize = require("../../../db.config");
+
 const db = require("../../model.index");
 const PropertyAdminView = db.Views.PropertyViewAdmin;
 const PropertyShootSchedule = db.PropertyModel.PropertyShootSchedule;
@@ -13,6 +13,9 @@ const RequestedProperty = db.PropertyModel.RequestedProperty;
 const SoldPropertyView = db.Views.SoldPropertyView;
 const HomeLoan = db.PropertyModel.HomeLoan;
 const FavouriteProperty  = db.PropertyModel.FavouriteProperty
+const PropertyMoreInfoRequest = db.PropertyModel.PropertyMoreInfoRequest
+const PropertyNegotiation = db.PropertyModel.PropertyNegotiation;
+const PropertyAgreement = db.PropertyModel.PropertyAgreement;
 
 // get latest property insert id
 async function getPropertyId() {
@@ -48,7 +51,8 @@ async function getPropertyWithAds(condition, limit, offset) {
       { province: { [db.Op.like]: `%${location}%` } },
       { district: { [db.Op.like]: `%${location}%` } },
       { municipality: { [db.Op.like]: `%${location}%` } },
-      { area_name: { [db.Op.like]: `%${location}` } }
+      { area_name: { [db.Op.like]: `%${location}` } },
+      { property_id: { [db.Op.like]: `%${location}%` }},
     ];
   }
   if (condition.property_type) {
@@ -130,7 +134,14 @@ async function getProperty(condition, limit, offset) {
     offset: offset,
   });
 }
-
+async function getPropertyName(condition) {
+  return await PropertyViewClient.findOne({
+    where: condition,
+    attributes: ["property_name"],
+    order: [["createdAt", "DESC"]],
+   
+  });
+}
 async function getPropertyWithOwner(condition,limit,offset){
 
   let orderConditions = [["createdAt", "DESC"]];
@@ -194,7 +205,6 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
   // sorting 
   if(condition.sort){
     let order = condition.order?condition.order : "DESC";
-    console.log("THis is order sort sort sort",condition.sort)
     orderConditions.push([condition.sort, order]);
   }else{
     orderConditions.push(["createdAt", "DESC"])
@@ -216,7 +226,8 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
       { province: { [db.Op.like]: `%${location}%` } },
       { district: { [db.Op.like]: `%${location}%` } },
       { municipality: { [db.Op.like]: `%${location}%` } },
-      { area_name: { [db.Op.like]: `%${location}` } }
+      { area_name: { [db.Op.like]: `%${location}` } },
+      { property_id: { [db.Op.like]: `%${location}%` }},
     ];
   }
 
@@ -247,12 +258,8 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
   delete condition.district;
   delete condition.sort;
   delete condition.order;
-  console.log("THis is condition ,",condition)
-  console.log("This is order order order",orderConditions)
   
-
   whereConditions = {...condition,...whereConditions}
-  console.log(whereConditions)
   const [properties, totalCount] = await Promise.all([
     PropertyViewClient.findAll({
         where: whereConditions,
@@ -306,6 +313,12 @@ async function getUserFieldVisitRequest(condition,limit,offset){
   })
 }
 
+async function getUserFieldVisitRequestByID(field_visit_id,user_id){
+  return await PropertyFieldVisitRequest.findOne({
+    where:{field_visit_id:field_visit_id,user_id:user_id}
+  })
+}
+
 async function getPropertyFieldVisitRequestByID(field_visit_id,attributes=null){
 
   return await PropertyFieldVisitRequest.findOne({
@@ -323,7 +336,6 @@ async function getPropertyFieldVisitRequestByID(field_visit_id,attributes=null){
   })
 
 }
-
 
 async function updatePropertyFieldVisitRequest(updateCondition,field_visit_id){
   return await PropertyFieldVisitRequest.update(updateCondition,{
@@ -508,8 +520,22 @@ async function deleteHomeLoan(id){
     
 //   )
 // }
-async function insertFavouriteProperty(data){
-  return await FavouriteProperty.create(data)
+async function insertOrDeleteFavouriteProperty(data){
+  // Check if the data already exists
+  const existingProperty = await FavouriteProperty.findOne({
+    where: data
+  });
+
+  if (existingProperty) {
+    // Data exists, so delete it
+    return await FavouriteProperty.destroy({
+      where: data
+    });
+    console.log('Existing data deleted.');
+  }
+
+  // Insert the new data
+  return await FavouriteProperty.create(data);
 }
 
 async function getFavouriteProperty(condition,limit,offset){
@@ -527,13 +553,68 @@ async function deleteFavouriteProperty(condition){
   })
 }
 
+async function insertPropertyMoreInfoRequest(data){
+  return await PropertyMoreInfoRequest.create(data);
+}
 
+async function deletePropertyMoreInfoRequest(request_id){
+  return await PropertyMoreInfoRequest.destroy({where:{id:request_id}})
+} 
+
+async function getPropertyMoreInfoRequest(condition,limit,offset){
+  return await PropertyMoreInfoRequest.findAndCountAll({
+    where:condition,
+    limit:limit,
+    offset:offset
+  })
+}
+
+// field visit property negotiation
+async function insertPropertyNegotiation(data){
+  return await PropertyNegotiation.create(data);
+}
+
+async function getPropertyNegotiation(condition,limit,offset){
+  return await PropertyNegotiation.findAndCountAll({
+    where:condition,
+    limit:limit,
+    offset:offset,
+    raw:true
+  })
+}
+
+async function deletePropertyNegotiation(condition){
+  return await PropertyNegotiation.destroy({
+    where:condition
+  })
+}
+
+// field visit property agreement
+async function insertPropertyAgreement(data){
+  return await PropertyAgreement.create(data);
+}
+
+async function getPropertyAgreement(condition,limit,offset){
+  return await PropertyAgreement.findAndCountAll({
+    where:condition,
+    limit:limit,
+    offset:offset,
+    raw:true
+  })
+}
+
+async function deletePropertyAgreement(condition){
+  return await PropertyAgreement.destroy({
+    where:condition
+  })
+}
 
 module.exports = {
   getPropertyWithAds,
   insertPropertyShootSchedule,
   getPropertyShootSchedule,
   getProperty,
+  getPropertyName,
   getPropertyWithOwner,
   getLatestPropertyPriorityLocation,
   getPropertyId,
@@ -548,6 +629,14 @@ module.exports = {
   insertPropertyFieldVisit,
   getPropertyFieldVisitRequest,
   getPropertyFieldVisitRequestByID,
+  getUserFieldVisitRequestByID,
+  insertPropertyNegotiation,
+  getPropertyNegotiation,
+  deletePropertyNegotiation,
+  insertPropertyAgreement,
+  getPropertyAgreement,
+  deletePropertyAgreement,
+
 
   insertPropertyShootScheduleComment,
   getPropertyShootScheduleComment,
@@ -568,7 +657,13 @@ module.exports = {
   deleteHomeLoan,
   getUserFieldVisitRequest,
 
-  insertFavouriteProperty,
+  insertOrDeleteFavouriteProperty,
   getFavouriteProperty,
-  deleteFavouriteProperty
+  deleteFavouriteProperty,
+
+  insertPropertyMoreInfoRequest,
+  deletePropertyMoreInfoRequest,
+  getPropertyMoreInfoRequest
+  
+
 };

@@ -13,6 +13,8 @@ const {
   deleteServiceProvider,
   getServiceProviderByID,
   updateServiceProvider,
+  getServiceProviderWithOutPhoneNumber,
+  insertServiceProviderRequest,
 } = require("../../models/services/nres_service/service.nres_service");
 const {
   uploadOnCloudinary,
@@ -75,14 +77,14 @@ const handleRegisterServiceProvider = async function (req, res, next) {
     try {
       const response = await registerServiceProvider(values);
       if(imagePath){
-        console.log("I am here")
+        //console.log("I am here")
         uploadOnCloudinary(imagePath,"service").then(async (result)=>{
-          console.log("Image Upload Success",result)
+          //console.log("Image Upload Success",result)
           if(result){
             const updateResponse = await updateServiceProvider(response.dataValues.id,{profileImage:result.secure_url});
-            console.log("Image Upload Success",updateResponse);
+            //console.log("Image Upload Success",updateResponse);
           }else{
-            console.log("Image Upload Failed");
+            //console.log("Image Upload Failed");
             logger.error("Image Upload Failed");
           }
           
@@ -114,6 +116,23 @@ const handleGetServiceProvider = async function (req, res) {
   }
   
 };
+const handleGetServiceProviderWithOutPhoneNumber = async function (req, res) {
+  const [limit, offset] = utility.handleLimitOffset(req);
+  const condition = {};
+  if (req.query?.search) {
+    condition.search = req.query.search;
+  }
+  try {
+    const response = await getServiceProviderWithOutPhoneNumber(
+      condition,
+      limit,
+      offset
+    );
+    return res.status(200).json(response);
+  } catch (error) {
+    utility.handleErrorResponse(res, error);
+  }
+}
 const handleGetServiceProviderByID = async function (req, res) {
   const provider_id = req.params.provider_id;
   try {
@@ -121,7 +140,7 @@ const handleGetServiceProviderByID = async function (req, res) {
     if (!data) {
       return res.status(404).json({ message: "No Service Provider Found" });
     }
-    console.log(data);
+    //console.log(data);
     return res.status(200).json(data);
   } catch (error) {}
 };
@@ -129,7 +148,7 @@ const handleGetServiceProviderByID = async function (req, res) {
 const handleVerifyServiceProvider = async function (req, res) {
   let { provider_id } = req.params;
   let { status } = req.body;
-  console.log("Provider ID", provider_id);
+  //console.log("Provider ID", provider_id);
   
   if (status !== "approved" && status !== "pending") {
     return res
@@ -142,7 +161,7 @@ const handleVerifyServiceProvider = async function (req, res) {
 
     return res.status(200).json({ message: "Update Successfully" });
   } catch (error) {
-    console.log(error);
+    //console.log(error);
     utility.handleErrorResponse(res, error);
   }
 };
@@ -155,13 +174,13 @@ const handleDeleteServiceProvider = async function (req, res) {
       return res.status(400).json({ message: "No Service Provider Found" });
     }
     const data = await deleteServiceProvider(provider_id);
-    console.log("Before Delete", data);
+    //console.log("Before Delete", data);
     if (data === 0) {
       return res.status(400).json({ message: "No Service Provider Found" });
     }
-    console.log("Delete Service Provider");
+    //console.log("Delete Service Provider");
     if (provider.dataValues?.profileImage) {
-      console.log("Delete Service Provider");
+      //console.log("Delete Service Provider");
       deleteSingleImage(provider.dataValues.profileImage);
     }
 
@@ -188,6 +207,18 @@ const handleInsertServiceProviderRating = async function (req, res) {
   }
 };
 
+const handleInsertServiceProviderRequest = async function (req,res){
+  const {provider_id} = req.params;
+  const user_id = req.id;
+ 
+  try {
+    const data = await insertServiceProviderRequest({provider_id:provider_id,user_id:user_id});
+    return res.status(200).json({message:"Request Submit Successfully"});
+  } catch (error) {
+    utility.handleErrorResponse(res,error);
+  }
+}
+
 module.exports = {
   handleRegisterServiceProvider,
   handleGetServiceProvider,
@@ -195,4 +226,6 @@ module.exports = {
   handleVerifyServiceProvider,
   handleDeleteServiceProvider,
   handleInsertServiceProviderRating,
+  handleGetServiceProviderWithOutPhoneNumber,
+  handleInsertServiceProviderRequest
 };

@@ -486,9 +486,6 @@ function propertyFieldVisitCommentModel(sequelize,DataTypes){
     comment:{
       type:DataTypes.TEXT,
       allowNull:false,
-      validate: {
-        notEmpty: true,
-      },
     },
 
     user_id:{
@@ -542,6 +539,67 @@ function propertyFieldVisitOTPModel(sequelize,DataTypes){
   })
 }
 
+function requestPropertyNegotiationModel(sequelize,DataTypes){
+  return sequelize.define('property_field_visit_negotiation',{
+    field_visit_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'property_field_visit_request',
+        key:'field_visit_id'
+      },
+      onDelete:'CASCADE'
+    },
+    user_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'CASCADE',
+    },
+    negotiation:{
+      type:DataTypes.TEXT,
+      allowNull:false
+    },
+   
+  },{
+    freezeTableName:true,
+    indexes: [{
+      unique: true,
+      fields: ['field_visit_id', 'user_id']
+  }]
+  })
+}
+
+function requestPropertyAgreementModel(sequelize,DataTypes){
+
+  return sequelize.define('property_field_visit_agreement',{
+    field_visit_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'property_field_visit_request',
+        key:'field_visit_id'
+      },
+      onDelete:'CASCADE'
+    },
+    user_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'CASCADE',
+    },
+   
+  },{
+    freezeTableName:true,
+    indexes: [{
+      unique: true,
+      fields: ['field_visit_id', 'user_id']
+  }]
+  })
+
+}
 
 
 
@@ -650,6 +708,34 @@ function homeLoanModel(sequelize,DataTypes){
   })
 }
 
+function propertyMoreInfoRequestModel(sequelize,DataTypes){
+  return PropertyMoreInfoRequest = sequelize.define('property_more_info_request',{
+    user_id:{
+      type:DataTypes.INTEGER,
+      references:{
+        model:'user_userAccount',
+        key:'user_id'
+      },
+      onDelete:'CASCADE'
+    },
+    property_id:{
+      type:DataTypes.INTEGER,
+    },
+    property_type:{
+      type:DataTypes.ENUM('house','apartment','land')
+    },
+
+  },{
+    freezeTableName:true,
+    primaryKey: ['property_id', 'user_id'],
+    uniqueKeys: {
+      unique_property_user: {
+        fields: ['property_id', 'user_id']
+      }
+    }
+  })
+}
+
 
 
 
@@ -664,5 +750,8 @@ module.exports = {
   propertyFieldVisitOTPModel,
   requestedPropertyModel,
   favouritePropertyModel,
-  homeLoanModel
+  homeLoanModel,
+  propertyMoreInfoRequestModel,
+  requestPropertyNegotiationModel,
+  requestPropertyAgreementModel
 };

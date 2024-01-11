@@ -1,6 +1,7 @@
 const db = require("../../model.index");
 const ServiceProvider = db.ServiceModel.ServiceProvider
 const ServiceProviderRating = db.ServiceModel.ServiceProviderRating
+const ServiceProviderRequest = db.ServiceModel.ServiceProviderRequest
 
 
 async function registerServiceProvider(data) {
@@ -37,6 +38,31 @@ async function getServiceProvider(condition, limit, offset) {
 
     return data;
 
+}
+
+async function getServiceProviderWithOutPhoneNumber(condition, limit, offset) {
+    let whereConditions = {};
+    if (condition.search) {
+        location = condition.search;
+        whereConditions[db.Op.or] = [
+          {service_type: { [db.Op.like]: `%${location}%` } },
+          { province: { [db.Op.like]: `%${location}%` } },
+          { district: { [db.Op.like]: `%${location}%` } },
+          { municipality: { [db.Op.like]: `%${location}%` } },
+        ];
+    }
+    whereConditions.status = "approved"
+    console.log("THis is search condition",whereConditions)
+    const data = await ServiceProvider.findAll({
+        where: whereConditions,
+        limit: limit,
+        offset: offset,
+        attributes: { exclude: ['phone_number'] },
+        raw: true
+
+    })
+
+    return data;
 }
 
 async function getServiceProviderByID(provider_id) {
@@ -86,6 +112,11 @@ async function insertServiceProviderRating(data) {
 }
 
 
+async function insertServiceProviderRequest(data){
+    return await ServiceProviderRequest.create(data);
+
+}
+
 
 module.exports = {
     registerServiceProvider,
@@ -95,5 +126,7 @@ module.exports = {
     verifyServiceProvider,
     deleteServiceProvider,
     insertServiceProviderRating,
-    updateServiceProvider
+    updateServiceProvider,
+    getServiceProviderWithOutPhoneNumber,
+    insertServiceProviderRequest
 };

@@ -36,7 +36,8 @@ db.ServiceModel={
     ServiceProvider:require('./nres_services/model.nres_service').serviceProviderModel(sequelize,DataTypes),
 
 
-    ServiceProviderRating:require('./nres_services/model.nres_service').serviceProviderRatingModel(sequelize,DataTypes)
+    ServiceProviderRating:require('./nres_services/model.nres_service').serviceProviderRatingModel(sequelize,DataTypes),
+    ServiceProviderRequest:require('./nres_services/model.nres_service').serviceProviderRequestModel(sequelize,DataTypes)
 }
 
 
@@ -89,13 +90,18 @@ db.PropertyModel = {
     PropertyFieldVisitComment : require('./property/model.property').propertyFieldVisitCommentModel(sequelize,DataTypes),
     PropertyFieldVisitOTP : require('./property/model.property').propertyFieldVisitOTPModel(sequelize,DataTypes),
 
+    PropertyNegotiation : require('./property/model.property').requestPropertyNegotiationModel(sequelize,DataTypes),
+    PropertyAgreement: require('./property/model.property').requestPropertyAgreementModel(sequelize,DataTypes),
+
     //HomeLoan : require('./property/model.house').homeLoanModel(sequelize,DataTypes),
     HomeLoan : require('./property/model.property').homeLoanModel(sequelize,DataTypes),
 
     FavouriteProperty : require('./property/model.property').favouritePropertyModel(sequelize,DataTypes),
     HouseFavourite : require("./property/model.house").houseFavouriteModel(sequelize,DataTypes),
     ApartmentFavourite : require("./property/model.apartment").apartmentFavouriteModel(sequelize,DataTypes),
-    LandFavourite : require("./property/model.land").landFavouriteModel(sequelize,DataTypes)
+    LandFavourite : require("./property/model.land").landFavouriteModel(sequelize,DataTypes),
+
+    PropertyMoreInfoRequest : require("./property/model.property").propertyMoreInfoRequestModel(sequelize,DataTypes),
     
 };
 

@@ -57,6 +57,12 @@ const {
   insertFavouriteProperty,
   getFavouriteProperty,
   deleteFavouriteProperty,
+  insertOrDeleteFavouriteProperty,
+  insertPropertyMoreInfoRequest,
+  deletePropertyMoreInfoRequest,
+  getPropertyMoreInfoRequest,
+  getPropertyName,
+  getUserFieldVisitRequestByID,
 } = require("../../models/services/property/service.property");
 const {
   findCustomer,
@@ -194,12 +200,12 @@ const handleGetPropertyPriorityLocation = async function (req, res) {
       limit,
       offSet
     );
-    console.log(data.properties);
+    
     //update views of property
     //await updateViewsCount()
     return res.status(200).json(data);
   } catch (error) {
-    console.log(error);
+   
     handleErrorResponse(res, error);
     // return res.status(500).json({ message: "Internal Error " });
   }
@@ -276,12 +282,63 @@ const handleGetPropertyFieldVisitRequest = async function (req, res) {
   }
 };
 
-const handleGetUserFieldVisitRequest = async function (req,res){
+const handleGetUserFieldVisitRequest = async function (req, res) {
   const user_id = req.id;
-  const [limit,offset] = handleLimitOffset(req);
+  const [limit, offset] = handleLimitOffset(req);
   try {
-    const response = await getUserFieldVisitRequest({user_id},limit,offset);
+    const response = await getUserFieldVisitRequest({ user_id }, limit, offset);
+    if (!response) {
+      return res.status(404).json({ message: "Field Visit Request Not Found" });
+    }
+    let propertyPromise = [];
+    for (const request of response) {
+      let property_id = request.dataValues.property_id;
+      let property_type = request.dataValues.property_type;
+      // find property name
+      propertyPromise.push(getPropertyName({ property_id, property_type }));
+    }
+
+    const propertyResponses = await Promise.all(propertyPromise);
+
+    // Add property_name to each request in the response
+    response.forEach((request, index) => {
+      request.dataValues.property_name = propertyResponses[index]?.dataValues.property_name; // Assuming propertyResponses[index] contains the property name
+    });
+
     return res.status(200).json(response);
+  } catch (error) {
+    handleErrorResponse(res, error);
+  }
+};
+
+const handleUpdateUserFieldVisitRequest = async function (req, res) {
+  const user_id = req.id;
+  const visit_id = req.params?.visit_id;
+  const {status}  = req.body;
+  if(!status){
+    return res.status(400).json({message:"Bad Request"})
+  }
+  if(status !== "visited" && status !== "not-visited" && status !== "cancelled"){
+    return res.status(400).json({message:"Invalid Status"})
+  }
+  try {
+    // check status if already cancelled or visited return 
+    const checkStatus = await getUserFieldVisitRequestByID(visit_id,user_id);
+    if(!checkStatus){
+      return res.status(404).json({message:"Field Visit Request Not Found"})
+    }
+    if(checkStatus?.dataValues?.status !=="schedule" && checkStatus?.dataValues?.status ==="not-schedule"){
+      return res.status(400).json({message:"Field Visit Request Not Schedule Yet"})
+    }
+    if(checkStatus?.dataValues.status === "cancelled" || checkStatus?.dataValues.status === "visited"){
+      return res.status(400).json({message:"Already Cancelled or Visited"})
+    }
+    const [updateResponse] = await updatePropertyFieldVisitRequest({status},visit_id);
+    if(updateResponse === 0){
+      return res.status(404).json({message:"Field Visit Request Not Found"})
+    }
+    return res.status(200).json({message:"Update Successfull",data:updateResponse})
+    
   } catch (error) {
     handleErrorResponse(res,error)
   }
@@ -378,21 +435,35 @@ const handleUpdatePropertyFieldVisitRequest = async function (req, res) {
   }
 };
 
-const handleInsertPropertyFieldVisitRequestComment = async function (req, res) {
+const handleInsertPropertyFieldVisitRequestCommentByUser = async function (req, res) {
   let user_id = req.id; // user will only comment
-  let field_visit_id = req.params.field_visit_id;
+  let field_visit_id = req.params?.visit_id;
   let { comment } = req.body;
+  // need to have field visit status === visited for comment
 
-  console.log(user_id, field_visit_id, comment);
+  if(!comment){
+    return res.status(400).json({message:"Please Provide Comment"})
+  }
 
   try {
+    //check field visit request status
+    const checkStatus = await getUserFieldVisitRequestByID(field_visit_id,user_id);
+    if(!checkStatus){
+      return res.status(404).json({message:"Field Visit Request Not Found"})
+    }
+    if(checkStatus?.dataValues.status!=="visited"){
+      return res.status(400).json({message:"Field Visit Request Not Visited Yet"})
+    }
+    console.log(field_visit_id,user_id,comment)
     const response = await insertPropertyFieldVisitComment(
-      field_visit_id,
+      {field_visit_id,
       user_id,
-      comment
+      comment}
     );
-    console.log(response);
-    return res.status(200).json({ message: "Comment Insert Successfull" });
+    if(!response){
+      return res.status(400).json({message:"Unable To Insert Comment"})
+    }
+    return res.status(200).json({ message: "Comment Insert Successfull" ,data:response?.toJSON()});
   } catch (error) {
     handleErrorResponse(res, error);
   }
@@ -845,7 +916,7 @@ const handleDeleteHomeLoan = async (req,res)=>{
   }
 }
 
-const handleInsertFavouriteProperty = async function(req,res){
+const handleInsertOrDeleteFavouriteProperty = async function(req,res){
 
   const user_id = req.id;
   const property_id = req.params.property_id;
@@ -854,12 +925,25 @@ const handleInsertFavouriteProperty = async function(req,res){
     return res.status(400).json({message:"Bad Request"})
   }
 try {
-    const response = await insertFavouriteProperty({
+    const response = await insertOrDeleteFavouriteProperty({
       property_id,
       property_type,
       user_id
     })
-    return res.status(200).json({message:"Successfully Inserted"})
+    if(!response){
+      return res.status(400).json({message:"Unable To Add Favourite"})
+    }
+    if(response === 0){
+      return res.status(400).json({message:"Unable To Remove Favourite"})
+    }
+    console.log(response);
+    if( response === 1){
+      return res.status(200).json({
+        message:"Removed From Favourite",
+      })
+    }
+    
+    return res.status(200).json({message:"Added To Favourite"})
 } catch (error) {
   handleErrorResponse(res,error)
 }
@@ -935,6 +1019,62 @@ const handleDeleteFavouriteProperty = async function(req,res){
   }
 }
 
+const handleInsertPropertyMoreInfoRequest= async function(req,res){
+  const user_id  = req.id;
+  const property_id = req.params.property_id;
+  const property_type = req.params?.property_type;
+
+  try {
+    const response = await insertPropertyMoreInfoRequest({user_id,property_id,property_type});
+    if(!response){
+      return res.status(400).json({message:"Unable To Insert More Info Request"})
+    }
+    return res.status(200).json({message:"Successfully Inserted"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+const handleDeletePropertyMoreInfoRequest = async function(req,res){
+  const request_id = req.params.request_id;
+
+  try {
+    const response = await deletePropertyMoreInfoRequest(request_id);
+    if(response === 0){
+      return res.status(400).json({message:"Unable To Delete More Info Request"})
+    }
+    return res.status(200).json({message:"Successfully Deleted"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+
+}
+
+const handleGetPropertyMoreInfoRequest = async function(req,res){
+  const [limit,offset] = handleLimitOffset(req);
+  
+  try {
+    const response = await getPropertyMoreInfoRequest({},limit,offset);
+    return res.status(200).json(response)
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+const handleInsertPropertyNegotiation = async function(req,res){
+  const user_id = req.id;
+  const field_visit_id = req.params?.visit_id;
+  const {negotiation} = req.body;
+  if(!negotiation){
+    return res.status(400).json({message:"Please Provide Negotiation"})
+  }
+  try {
+    const response = await insertPropertyFieldVisitComment({field_visit_id,user_id,negotiation});
+    return res.status(200).json({message:"Successfully Inserted"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
 module.exports = {
   handleGetPropertyWithAds,
   handleGetProperty,
@@ -944,6 +1084,8 @@ module.exports = {
   handleGetPropertyFieldVisitRequest,
   handleGetPropertyFieldVisitRequestByID,
   handleDeletePropertyFieldVisiteRequest,
+  handleUpdateUserFieldVisitRequest, // field visit request
+  handleInsertPropertyFieldVisitRequestCommentByUser,
   handleGetPropertyFieldVisitOTP,
   handleMatchPropertyFieldVisitOTP,
   handleInsertPropertyShootSchedule,
@@ -966,8 +1108,11 @@ module.exports = {
   handleDeleteHomeLoan,
   handleGetFavouriteProperty,
   handleGetUserFieldVisitRequest,
-  handleInsertFavouriteProperty,
+  handleInsertOrDeleteFavouriteProperty,
   handleIsPropertyFavourite,
-  handleDeleteFavouriteProperty
+  handleDeleteFavouriteProperty,
+  handleInsertPropertyMoreInfoRequest,
+  handleDeletePropertyMoreInfoRequest,
+  handleGetPropertyMoreInfoRequest
 
 };

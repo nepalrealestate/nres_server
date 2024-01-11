@@ -56,7 +56,7 @@ async function getAllStaff(condition){
 
 async function updateStaff(id,updateData,option={}){
     if(updateData.password)delete updateData.password;
-    console.log("This is update Data",updateData);
+
     return await StaffProfile.update(updateData,{
         where:{staff_id:id}
     },option)

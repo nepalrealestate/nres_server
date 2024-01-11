@@ -2,13 +2,14 @@ const express = require("express");
 const { handleInsertAgentRating, handleAgentRating } = require("../../controllers/users/controller.agent");
 const { handleCustomerRegistration, handleCustomerLogin, handleGetCustomer, customerVerifyToken, handleGetCustomerProfile, handleCustomerPasswordReset, handleGetCustomerIsLoggedIn, customerLogout, handleUpdateCustomerProfile, handleUpdateCustomerPassword } = require("../../controllers/users/controller.customer");
 const { handleAddHouse, handleGetHouse, handleInsertHouseFavourite, handleDeleteHouseFavourite } = require("../../controllers/property/controller.house");
-const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty, handleGetPropertyPriorityLocation, handleInsertPropertyFieldVisitRequest, handleGetFavouriteProperty, handleInsertHomeLoan, handleGetPropertyFieldVisitRequest, handleGetUserFieldVisitRequest, handleInsertFavouriteProperty, handleIsPropertyFavourite, handleDeleteFavouriteProperty } = require("../../controllers/property/controller.property");
+const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty, handleGetPropertyPriorityLocation, handleInsertPropertyFieldVisitRequest, handleGetFavouriteProperty, handleInsertHomeLoan, handleGetPropertyFieldVisitRequest, handleGetUserFieldVisitRequest, handleInsertFavouriteProperty, handleIsPropertyFavourite, handleDeleteFavouriteProperty, handleInsertOrDeleteFavouriteProperty, handleInsertPropertyMoreInfoRequest, handleUpdateUserFieldVisitRequest, handleInsertPropertyFieldVisitRequestCommentByUser } = require("../../controllers/property/controller.property");
 const { handleAddLand, handleGetLand, handleInsertLandFavourite, handleDeleteLandFavourite } = require("../../controllers/property/controller.land");
 const { handleAddApartment, handleGetApartment, handleInsertApartmentFavourite, handleDeleteApartmentFavourite } = require("../../controllers/property/controller.apartment");
 const { handleGetSingleCustomerChat } = require("../../controllers/chat/controller.customerChat");
 const { checkCustomerPropertyLimitation, checkPropertyValid } = require("../../middlewares/property/middleware.property");
 const { googleSignInVerify } = require("../../middlewares/middleware.auth");
 const { createCustomerIfNotExists } = require("../../middlewares/user/user.middleware");
+const { handleInsertServiceProviderRequest } = require("../../controllers/nres_services/controller.nres_service");
 
 
 const router = express.Router();
@@ -72,6 +73,8 @@ router.get("/previousChat",customerVerifyToken,handleGetSingleCustomerChat)
 // property field visit Request - 
 router.post("/property/fieldVisit",customerVerifyToken,checkPropertyValid,handleInsertPropertyFieldVisitRequest)
 router.get("/property/fieldVisit",customerVerifyToken,handleGetUserFieldVisitRequest)
+router.patch("/property/fieldVisit/:visit_id",customerVerifyToken,handleUpdateUserFieldVisitRequest)
+router.post("/property/fieldVisit/comment/:visit_id",customerVerifyToken,handleInsertPropertyFieldVisitRequestCommentByUser)
 
 //todo this
 
@@ -92,16 +95,23 @@ router.get("/property/fieldVisit",customerVerifyToken,handleGetUserFieldVisitReq
 // router.delete("/property/apartment/favourite/:property_id",customerVerifyToken,handleDeleteApartmentFavourite)
 // router.delete("/property/land/favourite/:property_id",customerVerifyToken,handleDeleteLandFavourite);
 
-router.post("/property/favourite/:property_id",customerVerifyToken,checkPropertyValid,handleInsertFavouriteProperty)
+router.post("/property/favourite/:property_id",customerVerifyToken,checkPropertyValid,handleInsertOrDeleteFavouriteProperty)
 router.get("/property/favourite",customerVerifyToken,handleGetFavouriteProperty)
 router.get("/property/:property_type/isFavourite/:property_id",customerVerifyToken,checkPropertyValid,handleIsPropertyFavourite)
 router.delete("/property/favourite/:property_id",customerVerifyToken,checkPropertyValid,handleDeleteFavouriteProperty)
 
-
+// if favourite property exits then delete if not then create - todo
 
 
 // post user home loan request
 router.post("/homeLoan",customerVerifyToken,checkPropertyValid,handleInsertHomeLoan);
+
+
+// post property more info request
+router.post("/property/more-info-request/:property_type/:property_id",customerVerifyToken,checkPropertyValid,handleInsertPropertyMoreInfoRequest)
+
+// get service provider request
+router.post("/serviceProvider/request/:provider_id",customerVerifyToken,handleInsertServiceProviderRequest)
 
 
 module.exports = router;

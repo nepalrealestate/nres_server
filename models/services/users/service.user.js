@@ -52,7 +52,6 @@ async function getUser(condition, limit, offset) {
 
 
 async function findUserByEmail(user_type = 'customer', email) {
-    console.log("find user by email", email)
     return await User.findOne({
         where: { user_type: user_type, email: email },
         attributes: [['user_id', 'id'], 'user_type', 'name', 'email', 'password'],

@@ -95,4 +95,28 @@ function serviceProviderRatingModel(sequelize,Datatypes){
   })
 }
 
-module.exports = {serviceProviderModel,serviceProviderRatingModel}
+
+function serviceProviderRequestModel(sequelize,Datatypes){
+  return serviceProviderRequest = sequelize.define('service_provider_request',{
+    provider_id:{
+      type:Datatypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'service_provider',
+        key:'id'
+      }
+    },
+    user_id:{
+      type:Datatypes.INTEGER,
+      allowNull:false,
+      references:{
+        model:'user_userAccount',
+        key:'user_id'
+      }
+    },
+  },{
+    freezeTableName:true
+  })
+}
+
+module.exports = {serviceProviderModel,serviceProviderRatingModel,serviceProviderRequestModel}

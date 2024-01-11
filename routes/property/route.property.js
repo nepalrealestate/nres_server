@@ -13,7 +13,6 @@ const router = express.Router();
 
 
  router.get("/",handleGetPropertyPriorityLocation)
- router.get("/ads",handleGetAds)
  router.get("/list",handleGetPropertyList)
 
 

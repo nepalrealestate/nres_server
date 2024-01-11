@@ -6,7 +6,7 @@ const CustomerProfile = db.UserModel.CustomerProfile;
 
 
 async function registerCustomer(data){
-    console.log(data)
+ 
     return await User.create({
         user_type:"customer",
         name:data.name,
@@ -59,10 +59,10 @@ async function getCustomerProfile(id) {
             nest: true,
             subQuery: false,
         });
-        console.log("result", result);
+        
          // Map properties from customerProfile to customer
          if (result?.customerProfile) {
-            console.log("result.customerProfile", result.customerProfile)
+           
             result.profile_image = result.customerProfile.profile_image;
             result.address = result.customerProfile.address;
             result.property_limit = result.customerProfile.property_limit;
@@ -86,8 +86,7 @@ async function updateCustomerProfile(id,data){
     // if profile_image or address or property_limit, then update customer_profile
     const {name,email,phone_number,profile_image,address,property_limit} = data;
     let result;
-    console.log("data",data);
-    console.log("id",id);
+   
     
     let profile = {};
     if(name)profile.name = name;
@@ -98,7 +97,7 @@ async function updateCustomerProfile(id,data){
     if(address)profileData.address = address;
     if(property_limit)profileData.property_limit = property_limit;
 
-    console.log("profile",profile);
+   
     if(name || email || phone_number){
         result = await User.update(profile,{
             where:{user_id:id}
