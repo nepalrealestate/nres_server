@@ -67,31 +67,18 @@ const handleGetAgentIsLoggedIn = async (req, res) => {
 }
 
 const handleAgentRegistration = async (req, res) => {
+  const { name, email, phoneNumber, password, confirmPassword } = req.body;
 
-  const {
-     name,
-      email,
-      phoneNumber,
-      password,
-      confirmPassword,
-  } = req.body;
-  console.log(req.body)
+  if (!name || !email || !phoneNumber || !password || !confirmPassword) {
+    return res.status(400).json({ message: "Missing fields" });
+  }
 
   const isEmailValid = utils.isValid.email(email);
   const isPhoneNumberValid = utils.isValid.phoneNumber(phoneNumber);
   const isPasswordValid = utils.isValid.password(password, confirmPassword);
 
-  if (!name) {
-    return res.status(400).json({ message: "field missing" });
-  }
-  if (!isEmailValid) {
-    return res.status(400).json({ message: "Invalid Email" });
-  }
-  if (!isPhoneNumberValid) {
-    return res.status(400).json({ message: "Invalid Phone Number" });
-  }
-  if (!isPasswordValid) {
-    return res.status(400).json({ message: "Invalid Password" });
+  if (!isEmailValid || !isPhoneNumberValid || !isPasswordValid) {
+    return res.status(400).json({ message: "invalid input" });
   }
 
   const [hashPassword, hashPasswordError] = await wrapAwait(
@@ -111,9 +98,7 @@ const handleAgentRegistration = async (req, res) => {
   };
 
   try {
-    console.log("Before register",values)
     const response = await registerUser(values);
-    console.log(response);
     return res.status(200).json({ message: "Agent Registration success" })
   } catch (error) {
     utility.handleErrorResponse(res,error);
@@ -124,10 +109,20 @@ const handleAgentRegistration = async (req, res) => {
 const handleAgentLogin = async (req, res) => {
   const { email } = req.body;
   try {
-    const agent = await findUserByEmail("agent",email);
-    if (!agent) {
+    let agent = null;
+    if(req.loginType === "google"){
+       agent = await findUserByEmail("agent",email);
+      if(!agent){
+        return res.status(404).json({message:"No Agent Found"});
+      }
+      return auth.login(req, res, agent.dataValues);
+    }
+    agent = await findUserByEmail("agent",email);
+    if (!agent && req.loginType !== "google") {
       return res.status(404).json({ message: "No Agent Found" });
     }
+
+
     return auth.login(req, res, agent.dataValues);
   } catch (error) {
     utility.handleErrorResponse(res,error)

@@ -515,15 +515,8 @@ function propertyFieldVisitOTPModel(sequelize,DataTypes){
         model:'property_field_visit_request',
         key:'field_visit_id'
       },
-      onDelete:'CASCADE'
-    },
-    customer_id:{
-      type:DataTypes.INTEGER,
-      references:{
-        model:'user_userAccount',
-        key:'user_id'
-      },
       onDelete:'CASCADE',
+      unique:true
     },
     otp:{
       type:DataTypes.INTEGER,
@@ -532,10 +525,6 @@ function propertyFieldVisitOTPModel(sequelize,DataTypes){
    
   },{
     freezeTableName:true,
-    indexes: [{
-      unique: true,
-      fields: ['field_visit_id', 'customer_id']
-  }]
   })
 }
 

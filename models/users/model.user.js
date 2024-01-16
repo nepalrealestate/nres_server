@@ -88,12 +88,11 @@ function agentProfileModel(sequelize,DataTypes){
       onDelete: 'CASCADE'
     },
     identification_type:{
-      type:DataTypes.ENUM('citizenship','passport','driving_license'),
+      type:DataTypes.STRING,
       notEmpty:true
     },
     identification_number:{
       type:DataTypes.STRING,
-      unique:true,
       
     },
     identification_image:{
@@ -118,10 +117,10 @@ function agentProfileModel(sequelize,DataTypes){
     area_name:{
       type:DataTypes.STRING
     },
-
     verified:{
-      type:DataTypes.BOOLEAN,
-      defaultValue:false
+      type:DataTypes.ENUM("pending","verified","rejected"),
+      defaultValue:"pending"
+      
     },
     verified_by:{
       type:DataTypes.INTEGER,

@@ -127,7 +127,7 @@ router.get("/property/field-visit-request",staffVerifyToken,handleGetPropertyFie
 
 router.get("/property/field-visit-request/:field_visit_id",staffVerifyToken,handleGetPropertyFieldVisitRequestByID);
 
-router.patch("/property/field-visit-request/:field_visit_id",staffVerifyToken,handleUpdatePropertyFieldVisitRequest)
+//router.patch("/property/field-visit-request/:field_visit_id",staffVerifyToken,handleUpdatePropertyFieldVisitRequest)
 
 router.delete("/property/field-visit-request/:field_visit_id",staffVerifyToken,handleDeletePropertyFieldVisiteRequest)
 

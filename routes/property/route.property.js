@@ -15,10 +15,7 @@ const router = express.Router();
  router.get("/",handleGetPropertyPriorityLocation)
  router.get("/list",handleGetPropertyList)
 
-
-
-
-
+ 
 
 
  // property analytics

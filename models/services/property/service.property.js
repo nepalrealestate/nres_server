@@ -354,8 +354,16 @@ async function insertPropertyFieldVisitComment(data) {
   return await PropertyFieldVisitComment.create(data);
 }
 
+async function getPropertyFieldVisitComment(field_visit_id,limit,offset){
+  return await PropertyFieldVisitComment.findAndCountAll({
+    where:{field_visit_id:field_visit_id},
+    limit:limit,
+    offset:offset
+  })
+}
+
 async function insertPropertyFieldVisitOTP(data){
-  return await PropertyFieldVisitOTP.create(data)
+  return await PropertyFieldVisitOTP.create(data);
 }
 async function getPropertyFieldVisitOTP(field_visit_id){
   return await PropertyFieldVisitOTP.findOne({where:{
@@ -623,6 +631,7 @@ module.exports = {
   updatePropertyFieldVisitRequest,
   deletePropertyFieldVisitRequest,
   insertPropertyFieldVisitComment,
+  getPropertyFieldVisitComment,
   insertPropertyFieldVisitOTP,
   getPropertyFieldVisitOTP,
   deletePropertyFieldVisitOTP,

@@ -11,7 +11,7 @@ const { handleGetCustomer, handleGetCustomerByID, handleGetBuyer, handleGetSelle
 const { handleAddApartment, handleGetApartment, handleUpdateApartmentAds, handleUpdateApartment, handleDeleteApartment, handleGetApartmentByID, handleInsertApartmentComment, handleGetApartmentComment, handleSoldApartment, handleGetSoldApartmentByID, handleApproveApartment, handleGetPendingApartmentByID, handleDeletePendingApartment, handleUpdateApartmentListingType, handleDeleteApartmentImage } = require("../../controllers/property/controller.apartment");
 const { handleAddHouse, handleGetHouse, handleUpdateHouse, handleDeleteHouse, handleGetHouseByID, handleInsertHouseComment, handleGetHouseComment, handleUpdateHouseAds, handleSoldHouse, handleGetSoldHouseByID, handleApproveHouse, handleGetPendingHouseByID, handleDeletePendingHouse, handleUpdateHouseListingType, handleDeleteHouseImage } = require("../../controllers/property/controller.house");
 const { handleAddLand, handleGetLand, handleUpdateLand, handleDeleteLand, handleGetLandByID, handleInsertLandComment, handleGetLandComment, handleUpdateLandAds, handleSoldLand, handleGetSoldLandByID, handleApproveLand, handleGetPendingLandByID, handleDeletePendingLand, handleUpdateLandListingType, handleDeleteLandImage } = require("../../controllers/property/controller.land");
-const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleDeletePropertyFieldVisiteRequest, handleUpdatePropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP, handleGetRequestProperty, handleInsertRequestedProperty, handleDeleteRequestedProperty, handleDeletePropertyShootSchedule, handleGetRequestPropertyByID, handleGetSoldProperty, handleGetPendingProperty, handleGetPropertyAnalytics, handleUpdatePropertyShootSchedule, handleGetHomeLoan, handleDeleteHomeLoan } = require("../../controllers/property/controller.property");
+const { handleInsertPropertyFieldVisitRequest, handleGetPropertyWithAds, handleInsertPropertyShootSchedule, handleGetPropertyShootSchedule, handleInsertPropertyShootScheduleComment, handleGetPropertyShootScheduleComment, handleGetPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestByID, handleDeletePropertyFieldVisiteRequest, handleUpdatePropertyFieldVisitRequest, handleGetPropertyFieldVisitOTP, handleGetRequestProperty, handleInsertRequestedProperty, handleDeleteRequestedProperty, handleDeletePropertyShootSchedule, handleGetRequestPropertyByID, handleGetSoldProperty, handleGetPendingProperty, handleGetPropertyAnalytics, handleUpdatePropertyShootSchedule, handleGetHomeLoan, handleDeleteHomeLoan, handleScheduleFieldVisitRequest, handleMatchPropertyFieldVisitOTP } = require("../../controllers/property/controller.property");
 const { handleInsertBlog, handleGetBlog, handleGetBlogById, handleDeleteBlog } = require("../../controllers/blog/controller.blog");
 const { handleInsertOrUpdateAds, handleGetAds } = require("../../controllers/ads/controller.ads");
 const { handleGetNotification, handleUpdateNotificationSeen, handleUpdateAllNotificationSeen } = require("../../controllers/notification/controller.notification");
@@ -149,13 +149,17 @@ router.get("/property/field-visit-request",superAdminVerifyToken,handleGetProper
 
 router.get("/property/field-visit-request/:field_visit_id",superAdminVerifyToken,handleGetPropertyFieldVisitRequestByID);
 
-router.patch("/property/field-visit-request/:field_visit_id",superAdminVerifyToken,handleUpdatePropertyFieldVisitRequest)
+//router.patch("/property/field-visit-request/:field_visit_id",superAdminVerifyToken,handleUpdatePropertyFieldVisitRequest)
 
 router.delete("/property/field-visit-request/:field_visit_id",superAdminVerifyToken,handleDeletePropertyFieldVisiteRequest)
 
 router.get("/property/field-visit-request/otp/:field_visit_id",superAdminVerifyToken,handleGetPropertyFieldVisitOTP)
 
 router.post("/property/field-visit-request/comment/:field_visit_id",superAdminVerifyToken,)
+
+//schedule field visit status
+router.patch("/property/field-visit-request/schedule/:visit_id",superAdminVerifyToken,handleScheduleFieldVisitRequest)
+
 
 // router.post("/property/field-visit-request-otp/:field_visit_id",superAdminVerifyToken,)
 

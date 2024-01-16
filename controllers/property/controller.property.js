@@ -63,12 +63,14 @@ const {
   getPropertyMoreInfoRequest,
   getPropertyName,
   getUserFieldVisitRequestByID,
+  findOrCreatePropertyFieldVisitOTP,
+  getPropertyFieldVisitComment,
 } = require("../../models/services/property/service.property");
 const {
   findCustomer,
   registerCustomer,
 } = require("../../models/services/users/service.customer");
-const { getRandomNumber } = require("../../utils/helperFunction/helper");
+const { getRandomNumber, isISODate } = require("../../utils/helperFunction/helper");
 const {
   handleErrorResponse,
   handleLimitOffset,
@@ -291,11 +293,54 @@ const handleGetUserFieldVisitRequest = async function (req, res) {
       return res.status(404).json({ message: "Field Visit Request Not Found" });
     }
     let propertyPromise = [];
+    let fieldVisitOtpPromise = [];
     for (const request of response) {
-      let property_id = request.dataValues.property_id;
-      let property_type = request.dataValues.property_type;
+      let property_id = request.dataValues?.property_id;
+      let property_type = request.dataValues?.property_type;
+      let field_visit_id = request.dataValues?.field_visit_id;
+     
+
       // find property name
       propertyPromise.push(getPropertyName({ property_id, property_type }));
+      // find field visit otp
+      fieldVisitOtpPromise.push(getPropertyFieldVisitOTP(field_visit_id));
+
+    }
+
+    const propertyResponses = await Promise.all(propertyPromise);
+    const fieldVisitOtpResponses = await Promise.all(fieldVisitOtpPromise);
+
+    // Add property_name to each request in the response
+    response.forEach((request, index) => {
+      request.dataValues.property_name = propertyResponses[index]?.dataValues.property_name; // Assuming propertyResponses[index] contains the property name
+      request.dataValues.otp = fieldVisitOtpResponses[index]?.dataValues?.otp || null;
+      console.log(request.dataValues);
+      console.log(fieldVisitOtpResponses[index])
+    });
+
+    return res.status(200).json(response);
+  } catch (error) {
+    handleErrorResponse(res, error);
+  }
+};
+
+const handleGetOwnerPropertyFieldVisitRequest = async function (req, res) {
+  const user_id = req.id;
+  const [limit, offset] = handleLimitOffset(req);
+  try {
+    const response = await getUserFieldVisitRequest({ user_id }, limit, offset);
+    if (!response) {
+      return res.status(404).json({ message: "Field Visit Request Not Found" });
+    }
+    let propertyPromise = [];
+   
+    for (const request of response) {
+      let property_id = request.dataValues?.property_id;
+      let property_type = request.dataValues?.property_type;
+      
+      // find property name
+      propertyPromise.push(getPropertyName({ property_id, property_type }));
+      
     }
 
     const propertyResponses = await Promise.all(propertyPromise);
@@ -309,7 +354,7 @@ const handleGetUserFieldVisitRequest = async function (req, res) {
   } catch (error) {
     handleErrorResponse(res, error);
   }
-};
+}
 
 const handleUpdateUserFieldVisitRequest = async function (req, res) {
   const user_id = req.id;
@@ -318,7 +363,10 @@ const handleUpdateUserFieldVisitRequest = async function (req, res) {
   if(!status){
     return res.status(400).json({message:"Bad Request"})
   }
-  if(status !== "visited" && status !== "not-visited" && status !== "cancelled"){
+  if(status === "visited"){
+    return res.status(400).json({message:"Cannot Update Status To Visited"})
+  }
+  if(status !== "not-visited" && status !== "cancelled"){
     return res.status(400).json({message:"Invalid Status"})
   }
   try {
@@ -327,9 +375,12 @@ const handleUpdateUserFieldVisitRequest = async function (req, res) {
     if(!checkStatus){
       return res.status(404).json({message:"Field Visit Request Not Found"})
     }
-    if(checkStatus?.dataValues?.status !=="schedule" && checkStatus?.dataValues?.status ==="not-schedule"){
-      return res.status(400).json({message:"Field Visit Request Not Schedule Yet"})
+    if(checkStatus?.dataValues.status ==="visited"){
+      return res.status(400).json({message:"Already Visited"})
     }
+    // if(checkStatus?.dataValues?.status !=="schedule" && checkStatus?.dataValues?.status ==="not-schedule"){
+    //   return res.status(400).json({message:"Field Visit Request Not Schedule Yet"})
+    // }
     if(checkStatus?.dataValues.status === "cancelled" || checkStatus?.dataValues.status === "visited"){
       return res.status(400).json({message:"Already Cancelled or Visited"})
     }
@@ -344,6 +395,40 @@ const handleUpdateUserFieldVisitRequest = async function (req, res) {
   }
 }
 
+const handleScheduleFieldVisitRequest = async function (req, res) {
+  const visit_id = req.params?.visit_id;
+  const {schedule_date} = req.body;
+  if(!isISODate(schedule_date)){
+    return res.status(400).json({message:"Invalid Date Format"})
+  }
+  try {
+    const [updateResponse] = await updatePropertyFieldVisitRequest({schedule_date,visit_status:"schedule"},visit_id);
+    if(updateResponse === 0){
+      return res.status(404).json({message:"Unable to update Field Visit Request"})
+    }
+    // find field visit request otp 
+    const fieldVisitOtp = await getPropertyFieldVisitOTP(visit_id);
+
+    if(fieldVisitOtp){
+      return res.status(200).json({message:"OTP Already Generated",otp:fieldVisitOtp?.dataValues?.otp})
+    }
+    //after schedule generate otp
+    const otp = getRandomNumber(100000, 999999);
+    
+    const otpResponse = await insertPropertyFieldVisitOTP(
+            {
+              field_visit_id:visit_id,
+              otp: otp
+            },
+          );
+
+    return res.status(200).json({message:"Update Successfull",otp:otpResponse?.dataValues?.otp})
+
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+
+}
 
 const handleGetPropertyFieldVisitRequestByID = async function (req, res) {
   const field_visit_id = req.params?.field_visit_id;
@@ -378,62 +463,62 @@ const handleGetPropertyFieldVisitRequestByID = async function (req, res) {
   }
 };
 
-const handleUpdatePropertyFieldVisitRequest = async function (req, res) {
-  const field_visit_id = req.params?.field_visit_id;
+// const handleUpdatePropertyFieldVisitRequest = async function (req, res) {
+//   const field_visit_id = req.params?.field_visit_id;
 
-  console.log(req.body);
+//   console.log(req.body);
 
-  const updateCondition = {};
+//   const updateCondition = {};
 
-  if (req.body?.schedule_date) {
-    updateCondition.schedule_date = req.body.schedule_date;
-    updateCondition.visit_status = "schedule";
-    updateCondition.status = "approve";
+//   if (req.body?.schedule_date) {
+//     updateCondition.schedule_date = req.body.schedule_date;
+//     updateCondition.visit_status = "schedule";
+//     updateCondition.status = "approve";
 
-  }
-  if (Object.keys(updateCondition).length === 0) {
-    return res.status(400).json({ message: "Bad Request" });
-  }
+//   }
+//   if (Object.keys(updateCondition).length === 0) {
+//     return res.status(400).json({ message: "Bad Request" });
+//   }
 
-  try {
-    const response = await updatePropertyFieldVisitRequest(
-      updateCondition,
-      field_visit_id
-    );
-    console.log(response);
-    if (response["0"] === 1) {
-      if (updateCondition?.visit_status === "schedule") {
-        console.log(updateCondition);
-        const updateRequest = await getPropertyFieldVisitRequestByID(
-          field_visit_id,
-          ["user_id", "property_id", "property_type", "visit_status"]
-        );
+//   try {
+//     const response = await updatePropertyFieldVisitRequest(
+//       updateCondition,
+//       field_visit_id
+//     );
+//     console.log(response);
+//     if (response["0"] === 1) {
+//       if (updateCondition?.visit_status === "schedule") {
+//         console.log(updateCondition);
+//         const updateRequest = await getPropertyFieldVisitRequestByID(
+//           field_visit_id,
+//           ["user_id", "property_id", "property_type", "visit_status"]
+//         );
 
-        console.log(updateRequest);
-        if (updateRequest?.dataValues?.visit_status === "schedule" &&
-        updateRequest?._previousDataValues?.visit_status !== "schedule") {
-          const otp = getRandomNumber(100000, 999999);
-          console.log(otp);
-          const otpInsert = {
-            field_visit_id: field_visit_id,
-            customer_id: updateRequest.dataValues.user_id,
-            otp: otp,
-            property_id: updateRequest.dataValues.property_id,
-            property_type: updateRequest.dataValues.property_type,
-          };
+//         console.log(updateRequest);
+//         if (updateRequest?.dataValues?.visit_status === "schedule" &&
+//         updateRequest?._previousDataValues?.visit_status !== "schedule") {
+//           const otp = getRandomNumber(100000, 999999);
+//           console.log(otp);
+//           const otpInsert = {
+//             field_visit_id: field_visit_id,
+//             customer_id: updateRequest.dataValues.user_id,
+//             otp: otp,
+//             property_id: updateRequest.dataValues.property_id,
+//             property_type: updateRequest.dataValues.property_type,
+//           };
 
-          const insertOTPResponse = await insertPropertyFieldVisitOTP(
-            otpInsert
-          );
-        }
-      }
-    }
+//           const insertOTPResponse = await insertPropertyFieldVisitOTP(
+//             otpInsert
+//           );
+//         }
+//       }
+//     }
 
-    return res.status(200).json({ message: "Update Successfull" });
-  } catch (error) {
-    handleErrorResponse(res, error);
-  }
-};
+//     return res.status(200).json({ message: "Update Successfull" });
+//   } catch (error) {
+//     handleErrorResponse(res, error);
+//   }
+// };
 
 const handleInsertPropertyFieldVisitRequestCommentByUser = async function (req, res) {
   let user_id = req.id; // user will only comment
@@ -468,6 +553,21 @@ const handleInsertPropertyFieldVisitRequestCommentByUser = async function (req, 
     handleErrorResponse(res, error);
   }
 };
+const handleGetPropertyFieldVisitRequestComment = async function (req, res) {
+  let visit_id = req.params?.visit_id;
+  const [limit, offset] = handleLimitOffset(req);
+  try {
+    const {count , rows:comment} = await getPropertyFieldVisitComment(visit_id,limit,offset);
+    if(count===0 || !comment){
+      return res.status(404).json({message:"Field Visit Request Comment Not Found"})
+    }
+    return res.status(200).json({count,comment});
+  } catch (error) {
+    
+  }
+}
+
+
 
 const handleDeletePropertyFieldVisiteRequest = async function (req, res) {
   const field_visit_id = req.params?.field_visit_id;
@@ -501,34 +601,30 @@ const handleGetPropertyFieldVisitOTP = async function (req, res) {
 };
 
 const handleMatchPropertyFieldVisitOTP = async function (req, res) {
-  const field_visit_id = req.params?.field_visit_id;
+  const visit_id = req.params?.visit_id;
   const otp = req.body?.otp;
   if (!otp) {
     return res.status(400).json({ message: "Please Provide OTP" });
   }
   try {
-    const response = await getPropertyFieldVisitOTP(field_visit_id);
-    if (Array.isArray(response)) {
-      if (response.length === 0) {
-        return res.status(400).json({ message: "OTP not found" });
-      }
-    }
+    const response = await getPropertyFieldVisitOTP(visit_id);
     if (!response) {
-      return res.status(400).json({ message: "OTP not found" });
+      return res.status(404).json({ message: "OTP Not Found" });
     }
-
-    if (response.dataValues.otp !== otp) {
+    
+    console.log(response.dataValues.otp,otp)
+    if (Number(response.dataValues.otp) !== Number(otp)) {
       return res.status(400).json({ message: "Invalid OTP" });
     }
-
     // update property field visit request to visited
-    const updateVisitStatusResponse = await updatePropertyFieldVisitRequest({visit_status:"visited"},field_visit_id)
-    console.log(updateVisitStatusResponse);
-    return response.status(200).json({ message: "OTP Match" });
+    const updateVisitStatusResponse = await updatePropertyFieldVisitRequest({status:"visited"},visit_id)
+    return res.status(200).json({ message: "OTP Match" });
   } catch (error) {
     handleErrorResponse(res,error)
   }
 };
+
+
 
 const handleInsertPropertyShootSchedule = async function (req, res) {
   const {
@@ -1080,14 +1176,18 @@ module.exports = {
   handleGetProperty,
   handleGetPropertyPriorityLocation,
   handleInsertPropertyFieldVisitRequest,
-  handleUpdatePropertyFieldVisitRequest,
+  //handleUpdatePropertyFieldVisitRequest,
   handleGetPropertyFieldVisitRequest,
   handleGetPropertyFieldVisitRequestByID,
   handleDeletePropertyFieldVisiteRequest,
   handleUpdateUserFieldVisitRequest, // field visit request
   handleInsertPropertyFieldVisitRequestCommentByUser,
+  handleGetPropertyFieldVisitRequestComment,
+  handleGetOwnerPropertyFieldVisitRequest, // For Owner
   handleGetPropertyFieldVisitOTP,
   handleMatchPropertyFieldVisitOTP,
+  handleScheduleFieldVisitRequest,
+
   handleInsertPropertyShootSchedule,
   handleGetPropertyShootSchedule,
   handleDeletePropertyShootSchedule,
