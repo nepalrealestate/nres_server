@@ -71,11 +71,11 @@ router.get("/previousChat",customerVerifyToken,handleGetSingleCustomerChat)
 
 
 // property field visit Request - 
-router.post("/property/fieldVisit",customerVerifyToken,checkPropertyValid,handleInsertPropertyFieldVisitRequest)
-router.get("/property/fieldVisit",customerVerifyToken,handleGetUserFieldVisitRequest)
-router.patch("/property/fieldVisit/:visit_id",customerVerifyToken,handleUpdateUserFieldVisitRequest)
-router.post("/property/fieldVisit/comment/:visit_id",customerVerifyToken,handleInsertPropertyFieldVisitRequestCommentByUser)
-
+router.post("/property/field-visit-request",customerVerifyToken,checkPropertyValid,handleInsertPropertyFieldVisitRequest)
+router.get("/property/field-visit-request",customerVerifyToken,handleGetUserFieldVisitRequest)
+router.patch("/property/field-visit-request/:visit_id",customerVerifyToken,handleUpdateUserFieldVisitRequest)
+router.post("/property/field-visit-request/comment/:visit_id",customerVerifyToken,handleInsertPropertyFieldVisitRequestCommentByUser)
+router.get("/property/field-visit-request/comment:visit_id",customerVerifyToken,handleGetPropertyFieldVisitRequest)
 //match field visit request - enter otp
 router.patch("/property/owner/field-visit-request/match/:visit_id",customerVerifyToken,handleMatchPropertyFieldVisitOTP)
 // own property field visit request

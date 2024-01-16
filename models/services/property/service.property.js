@@ -354,13 +354,14 @@ async function insertPropertyFieldVisitComment(data) {
   return await PropertyFieldVisitComment.create(data);
 }
 
-async function getPropertyFieldVisitComment(field_visit_id,limit,offset){
+async function getPropertyFieldVisitComment(condition,limit,offset){
   return await PropertyFieldVisitComment.findAndCountAll({
-    where:{field_visit_id:field_visit_id},
+    where:condition,
     limit:limit,
     offset:offset
   })
 }
+
 
 async function insertPropertyFieldVisitOTP(data){
   return await PropertyFieldVisitOTP.create(data);

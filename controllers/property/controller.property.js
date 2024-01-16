@@ -557,7 +557,7 @@ const handleGetPropertyFieldVisitRequestComment = async function (req, res) {
   let visit_id = req.params?.visit_id;
   const [limit, offset] = handleLimitOffset(req);
   try {
-    const {count , rows:comment} = await getPropertyFieldVisitComment(visit_id,limit,offset);
+    const {count , rows:comment} = await getPropertyFieldVisitComment({field_visit_id:visit_id},limit,offset);
     if(count===0 || !comment){
       return res.status(404).json({message:"Field Visit Request Comment Not Found"})
     }
@@ -567,7 +567,20 @@ const handleGetPropertyFieldVisitRequestComment = async function (req, res) {
   }
 }
 
-
+const handleGetPropertyFieldVisitRequestCommentByUser = async function (req, res) {
+  let visit_id = req.params?.visit_id;
+  let user_id = req.id;
+  const [limit, offset] = handleLimitOffset(req);
+  try {
+    const {count , rows:comment} = await getPropertyFieldVisitComment({field_visit_id:visit_id,user_id:user_id},limit,offset);
+    if(count===0 || !comment){
+      return res.status(404).json({message:"Field Visit Request Comment Not Found"})
+    }
+    return res.status(200).json({count,comment});
+  } catch (error) {
+    
+  }
+}
 
 const handleDeletePropertyFieldVisiteRequest = async function (req, res) {
   const field_visit_id = req.params?.field_visit_id;
@@ -1182,6 +1195,7 @@ module.exports = {
   handleDeletePropertyFieldVisiteRequest,
   handleUpdateUserFieldVisitRequest, // field visit request
   handleInsertPropertyFieldVisitRequestCommentByUser,
+  handleGetPropertyFieldVisitRequestCommentByUser,
   handleGetPropertyFieldVisitRequestComment,
   handleGetOwnerPropertyFieldVisitRequest, // For Owner
   handleGetPropertyFieldVisitOTP,
