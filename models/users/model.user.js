@@ -119,7 +119,7 @@ function agentProfileModel(sequelize,DataTypes){
       type:DataTypes.STRING
     },
     status:{
-      type:DataTypes.ENUM("pending","verified","rejected"),
+      type:DataTypes.ENUM("pending","verified"),
       defaultValue:"pending"
       
     },

@@ -56,7 +56,11 @@ router.delete("/staff/:staff_id",superAdminVerifyToken,handleStaffDelete);
 
 // agent related routes
 router.get("/agent",superAdminVerifyToken,handleGetAllAgent);
-
+//todo 1- verify agent
+//todo 2- delete agent
+//todo 3- get agent by id
+//todo 4- get agent all filteration
+//todo 5- only login after verified
 
 //customer 
 router.get("/customer",superAdminVerifyToken,handleGetCustomer);

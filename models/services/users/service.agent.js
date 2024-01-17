@@ -56,13 +56,15 @@ async function getAgentByID(id){
 
 
 async function getAllAgent(condition,limit,offSet){
-    return await Agent.findAll({
-        where:condition,
+    return await User.find({
+        where:{user_type:"agent",...condition},
         attributes: ['agent_id', 'name', 'email', 'phone_number', 'identification_type', 'identification_number', 'image', 'status'],
         limit: limit,
         offset: offSet
     })
 }
+
+
 
 
 

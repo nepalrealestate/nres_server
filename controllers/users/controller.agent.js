@@ -101,7 +101,7 @@ const handleAgentRegistration = async (req, res) => {
     return res.status(500).json({ message: "Something happen" });
   }
   //transaction
-  const transaction = await db.sequelize.transaction();
+  const transaction = await db.sequelize.transaction();// wait for 10 min
  
   try {
     const agentAccountResponse = await db.UserModel.User.create({
@@ -137,17 +137,52 @@ const handleAgentRegistration = async (req, res) => {
      
       uploadMultipleOnCloudinary([identification_image,profile_image],`user/agent/${agentAccountResponse.toJSON().user_id}-${name}`).then(async (response)=>{
         console.log(response)
-        agentProfileResponse.profile_image = response['0'];
-        agentProfileResponse.identification_image = response['1']
+        //agentProfileResponse.profile_image = response['0'];
+        //agentProfileResponse.identification_image = response['1']
         
-        console.log(agentProfileResponse.toJSON())
-        await agentProfileResponse.save();
-        await transaction.commit();
+        //console.log(agentProfileResponse.toJSON())
+       // await agentProfileResponse.save();
+        const [updateImage] = await db.UserModel.AgentProfile.update({
+          profile_image:response['0'],
+          identification_image:response['1']
+        },{
+          where:{
+            user_id:agent_id
+          }
+        })
+        console.log(updateImage)
+
+        
+        
       })
     }  
+    await transaction.commit();
     return res.status(200).json({ message: "Agent Registration success" })
   } catch (error) {
     transaction.rollback()
+    utility.handleErrorResponse(res,error)
+  }
+}
+
+const handleAgentVerification = async (req, res) => {
+  let { agent_id } = req.params;
+  let admin_id = req.id;
+  let { status } = req.body;
+
+  try {
+    const [updateResponse] = db.UserModel.AgentProfile.update({
+      status: status,
+      verified_by: admin_id,
+    },{
+      where:{
+        user_id:agent_id
+      }
+    })
+    if(updateResponse === 0){
+      return res.status(400).json({message:"Unable to update"})
+    }
+    return res.status(200).json({message:"Successfully Updated"})
+  } catch (error) {
     utility.handleErrorResponse(res,error)
   }
 }
@@ -287,9 +322,31 @@ const handleUpdateAgentPassword = async (req, res) => {
   return user.updateProfilePassword(req, res, updateAgentPassword);
 };
 
-const handleGetAllAgent = async (req, res) => {
-  return utils.getSearchData(req, res, getAllAgent);
-};
+//todo 
+const handleGetAllAgent = async(req,res)=>{
+  const [limit,offset] = utility.handleLimitOffset(req)
+
+  try {
+    console.log("Hellllll")
+    const {count,rows}= await db.UserModel.User.findAndCountAll({
+      where:{user_type:"agent"},
+      attributes: ['user_id','user_type', 'name', 'email', 'phone_number'],
+      limit: limit,
+      offset: offset,
+      order:[["createdAt","DESC"]],
+      raw:true
+    })
+    if(count === 0){
+      return res.status(404).json({message:"No Agent Found"})
+    }
+    return res.status(200).json({data:rows,count:count})
+
+  } catch (error) {
+    utility.handleErrorResponse(res,error)
+  }
+
+}
+
 
 const handleInsertAgentRating = async (req, res) => {
   //this request comes from customer router;
@@ -310,6 +367,7 @@ const agentVerifyToken = async (req, res, next) => {
 
 module.exports = {
   handleAgentRegistration,
+  handleAgentVerification,
   handleGetAgent,
   handleAgentLogin,
   handleAgentVerifyToken,
