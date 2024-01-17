@@ -7,13 +7,18 @@ const { handleGetLand, handleAddLand } = require("../../controllers/property/con
 const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty, handleGetProperty, handleGetPropertyPriorityLocation } = require("../../controllers/property/controller.property");
 const { checkAgentPropertyLimitation } = require("../../middlewares/property/middleware.property");
 
+const {UploadImage} = require("../../middlewares/middleware.uploadFile.js")
+const {upload} = new UploadImage("uploads/users/agent/images",2*1024*1024);
+// const uploadIdentification = new UploadImage("uploads/users/agent/identification",2*1024*1024).upload.single("identification_image");
+// const uploadProfile = new UploadImage("uploads/users/agent/profile",2*1024*1024).upload.single("profile_image");
+
 const router  = express.Router();
 
 
 
 
 router.get("/",agentVerifyToken,handleGetAgent);
-router.post("/register",handleAgentRegistration);
+router.post("/register",upload.array("image",2),handleAgentRegistration);
 router.post("/login",handleAgentLogin);
 router.post("/forgetPassword",handleAgentPasswordReset);
 router.post("/rating",handleAgentRating)

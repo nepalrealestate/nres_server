@@ -40,9 +40,10 @@ function userAccountModel(sequelize,DataTypes){
             // Check user_type and create corresponding profile
             if (user.user_type === 'customer') {
               await sequelize.models.user_customerProfile.create({ user_id: user.user_id });
-            } else if (user.user_type === 'agent') {
-              await sequelize.models.user_agentProfile.create({ user_id: user.user_id });
-            }
+            } 
+            // else if (user.user_type === 'agent') {
+            //   await sequelize.models.user_agentProfile.create({ user_id: user.user_id });
+            // }
           },
         }
     })
@@ -99,7 +100,7 @@ function agentProfileModel(sequelize,DataTypes){
       type:DataTypes.STRING,
    
     },
-    profileImage:{
+    profile_image:{
       type:DataTypes.STRING,
     },
     province:{
@@ -117,7 +118,7 @@ function agentProfileModel(sequelize,DataTypes){
     area_name:{
       type:DataTypes.STRING
     },
-    verified:{
+    status:{
       type:DataTypes.ENUM("pending","verified","rejected"),
       defaultValue:"pending"
       

@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const db = require("../../models/model.index")
 
 const { wrapAwait } = require("../../errorHandling");
 
@@ -18,8 +19,9 @@ const {
   getAgentByID,
 } = require("../../models/services/users/service.agent");
 const utility = require("../controller.utils");
-const { getUser, registerUser, findUserByEmail, findUserByID, updateAgentPassword } = require("../../models/services/users/service.user");
+const { getUser, registerUser, findUserByEmail, findUserByID, updateAgentPassword, createAgentProfile } = require("../../models/services/users/service.user");
 const { countListingProperty } = require("../../models/services/property/service.property");
+const { uploadOnCloudinary, uploadMultipleOnCloudinary } = require("../../utils/cloudinary");
 
 const saltRound = 10;
 const tokenExpireTime = "7d";
@@ -31,7 +33,7 @@ const utils = utility.utility();
 
 const imagePath = "uploads/users/agent/images";
 const maxSize = 2 * 1024 * 1024;
-const { upload } = new UploadImage(imagePath, maxSize);
+const  upload  = new UploadImage(imagePath, maxSize);
 
 const handleGetAgent = async (req, res) => {
 
@@ -67,17 +69,27 @@ const handleGetAgentIsLoggedIn = async (req, res) => {
 }
 
 const handleAgentRegistration = async (req, res) => {
-  const { name, email, phoneNumber, password, confirmPassword } = req.body;
+  /**
+   * First image for profile image
+   * second image for identification image
+   */
 
-  if (!name || !email || !phoneNumber || !password || !confirmPassword) {
+  const { name, email, phone_number, password, identification_type,identification_number,province,district,municipality,ward_number,area_name } = req.body;
+  console.log(req.body)
+  console.log(req.files)
+  const identification_image = req?.files[1]?.path;
+  const profile_image = req?.files[0]?.path;
+  if(!identification_image || !profile_image){
+    return res.status(400).json({message:"Please provide identification image"})
+  }
+  
+  if (!name || !email || !phone_number || !password ) {
     return res.status(400).json({ message: "Missing fields" });
   }
-
   const isEmailValid = utils.isValid.email(email);
-  const isPhoneNumberValid = utils.isValid.phoneNumber(phoneNumber);
-  const isPasswordValid = utils.isValid.password(password, confirmPassword);
+  const isPhoneNumberValid = utils.isValid.phoneNumber(phone_number);
 
-  if (!isEmailValid || !isPhoneNumberValid || !isPasswordValid) {
+  if (!isEmailValid || !isPhoneNumberValid) {
     return res.status(400).json({ message: "invalid input" });
   }
 
@@ -88,23 +100,57 @@ const handleAgentRegistration = async (req, res) => {
     console.log(hashPasswordError);
     return res.status(500).json({ message: "Something happen" });
   }
-
-  const values = {
-    user_type:"agent",
-    name: name,
-    email: email,
-    phone_number: phoneNumber,
-    password: hashPassword,
-  };
-
+  //transaction
+  const transaction = await db.sequelize.transaction();
+ 
   try {
-    const response = await registerUser(values);
+    const agentAccountResponse = await db.UserModel.User.create({
+      user_type:"agent",
+      name: name,
+      email: email,
+      phone_number: phone_number,
+      password: hashPassword,
+    }
+    ,{
+      transaction:transaction
+    })
+
+    const agent_id = agentAccountResponse.toJSON().user_id;
+
+
+    const agentProfileResponse= await db.UserModel.AgentProfile.create({
+      user_id:agent_id,
+      identification_type,
+      identification_number,
+      identification_image:null,
+      profile_image:null,
+      province,
+      district,
+      municipality,
+      ward_number,
+      area_name,
+    },{
+      transaction:transaction
+    })
+
+    if(identification_image){
+     
+      uploadMultipleOnCloudinary([identification_image,profile_image],`user/agent/${agentAccountResponse.toJSON().user_id}-${name}`).then(async (response)=>{
+        console.log(response)
+        agentProfileResponse.profile_image = response['0'];
+        agentProfileResponse.identification_image = response['1']
+        
+        console.log(agentProfileResponse.toJSON())
+        await agentProfileResponse.save();
+        await transaction.commit();
+      })
+    }  
     return res.status(200).json({ message: "Agent Registration success" })
   } catch (error) {
-    utility.handleErrorResponse(res,error);
+    transaction.rollback()
+    utility.handleErrorResponse(res,error)
   }
-
-}  
+}
 
 const handleAgentLogin = async (req, res) => {
   const { email } = req.body;

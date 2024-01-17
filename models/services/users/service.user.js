@@ -13,6 +13,7 @@ async function registerUser(data, options = {}) {
         phone_number: data.phone_number,
         password: data.password
     }, options)
+    console.log("I am here")
     if (user) {
         user.id = user.user_id;
 
@@ -194,6 +195,11 @@ async function isAgentVerified(user_id) {
 
 
 
+async function createAgentProfile(data, options = {}) {
+    return await AgentProfile.create(data, options)
+
+}
+
 
 
 
@@ -209,5 +215,6 @@ module.exports = {
     updateAgentPassword,
     getCustomerProfile,
     getCustomerPropertyLimit,
-    isAgentVerified
+    isAgentVerified,
+    createAgentProfile,
 }
