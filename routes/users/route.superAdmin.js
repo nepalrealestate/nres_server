@@ -5,7 +5,7 @@ const {handleGetSuperAdmin,handleSuperAdminRegistration,handleSuperAdminLogin, s
 const { handleGetCustomerChatList, handleGetSingleCustomerChat, handleGetSingleCustomerChatForAdmin } = require("../../controllers/chat/controller.customerChat");
 const { handleGetStaffChatList, handleInsertStaffGroup, handleDeleteStaffFromGroup } = require("../../controllers/chat/controller.staffChat");
 const { handleStaffRegistration, handleGetAllStaff, handleStaffUpdate, handleStaffDelete, handleGetStaffByID, handleCreateStaffAccountAccess, handleDeleteStaffAccountAccess } = require("../../controllers/users/controller.staff");
-const { handleGetAllAgent } = require("../../controllers/users/controller.agent");
+const { handleGetAllAgent, handleVerifyAgent, handleGetAgentCountByProvince } = require("../../controllers/users/controller.agent");
 const { handleGetServiceProvider, handleVerifyServiceProvider, handleDeleteServiceProvider, handleGetServiceProviderByID } = require("../../controllers/nres_services/controller.nres_service");
 const { handleGetCustomer, handleGetCustomerByID, handleGetBuyer, handleGetSeller, handleGetSellerByID } = require("../../controllers/users/controller.customer");
 const { handleAddApartment, handleGetApartment, handleUpdateApartmentAds, handleUpdateApartment, handleDeleteApartment, handleGetApartmentByID, handleInsertApartmentComment, handleGetApartmentComment, handleSoldApartment, handleGetSoldApartmentByID, handleApproveApartment, handleGetPendingApartmentByID, handleDeletePendingApartment, handleUpdateApartmentListingType, handleDeleteApartmentImage } = require("../../controllers/property/controller.apartment");
@@ -56,11 +56,14 @@ router.delete("/staff/:staff_id",superAdminVerifyToken,handleStaffDelete);
 
 // agent related routes
 router.get("/agent",superAdminVerifyToken,handleGetAllAgent);
+router.patch("/agent/:agent_id",superAdminVerifyToken,handleVerifyAgent)
+router.get("/agent/count",superAdminVerifyToken,handleGetAgentCountByProvince);
+
 //todo 1- verify agent
-//todo 2- delete agent
 //todo 3- get agent by id
 //todo 4- get agent all filteration
-//todo 5- only login after verified
+//todo 5- only login after verified - middleware 
+
 
 //customer 
 router.get("/customer",superAdminVerifyToken,handleGetCustomer);

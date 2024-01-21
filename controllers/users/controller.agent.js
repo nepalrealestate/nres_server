@@ -58,6 +58,31 @@ const handleGetAgent = async (req, res) => {
   }
 };
 
+const handleGetAgentCountByProvince = async (req, res) => {
+  try {
+    
+    const agents = await db.UserModel.User.findAll({
+      where: { user_type: "agent" },
+  attributes: [
+    [db.sequelize.literal('`user_agentProfile`.`province`'), 'province'],
+    [db.sequelize.fn('COUNT', '`user_userAccount`.`user_id`'), 'agentCount'],
+  ],
+  include: [
+    {
+      model: db.UserModel.AgentProfile,
+      attributes: [],
+    },
+  ],
+  group: ['user_agentProfile.province', 'user_userAccount.user_id'], // Include user_id in the GROUP BY clause
+  raw: true,
+    })
+
+    return res.status(200).json({agents});
+  } catch (error) {
+    utility.handleErrorResponse(res, error);
+  }
+}
+
 const handleGetAgentIsLoggedIn = async (req, res) => {
   const agent_id = req.id;
   try {
@@ -72,13 +97,15 @@ const handleAgentRegistration = async (req, res) => {
   /**
    * First image for profile image
    * second image for identification image
+   * 
    */
 
   const { name, email, phone_number, password, identification_type,identification_number,province,district,municipality,ward_number,area_name } = req.body;
   console.log(req.body)
   console.log(req.files)
-  const identification_image = req?.files[1]?.path;
-  const profile_image = req?.files[0]?.path;
+  const identification_image = req?.files?.identification_image[0]?.path;
+  const profile_image = req?.files?.profile_image[0]?.path;
+  
   if(!identification_image || !profile_image){
     return res.status(400).json({message:"Please provide identification image"})
   }
@@ -164,13 +191,17 @@ const handleAgentRegistration = async (req, res) => {
   }
 }
 
-const handleAgentVerification = async (req, res) => {
+const handleVerifyAgent = async (req, res) => {
   let { agent_id } = req.params;
   let admin_id = req.id;
+ 
   let { status } = req.body;
+  if(status !== "verified" && status !== "pending"){
+    return res.status(400).json({message:"Invalid Status"})
+  }
 
   try {
-    const [updateResponse] = db.UserModel.AgentProfile.update({
+    const [updateResponse] = await db.UserModel.AgentProfile.update({
       status: status,
       verified_by: admin_id,
     },{
@@ -186,6 +217,9 @@ const handleAgentVerification = async (req, res) => {
     utility.handleErrorResponse(res,error)
   }
 }
+
+
+
 
 const handleAgentLogin = async (req, res) => {
   const { email } = req.body;
@@ -327,14 +361,20 @@ const handleGetAllAgent = async(req,res)=>{
   const [limit,offset] = utility.handleLimitOffset(req)
 
   try {
-    console.log("Hellllll")
+
     const {count,rows}= await db.UserModel.User.findAndCountAll({
       where:{user_type:"agent"},
       attributes: ['user_id','user_type', 'name', 'email', 'phone_number'],
+      include:[
+        {
+          model:db.UserModel.AgentProfile,
+          attributes:['identification_type','identification_number','identification_image','profile_image','province','district','municipality','ward_number','area_name','status']
+        }
+      ],
       limit: limit,
       offset: offset,
       order:[["createdAt","DESC"]],
-      raw:true
+     
     })
     if(count === 0){
       return res.status(404).json({message:"No Agent Found"})
@@ -346,6 +386,7 @@ const handleGetAllAgent = async(req,res)=>{
   }
 
 }
+
 
 
 const handleInsertAgentRating = async (req, res) => {
@@ -367,8 +408,9 @@ const agentVerifyToken = async (req, res, next) => {
 
 module.exports = {
   handleAgentRegistration,
-  handleAgentVerification,
+  handleVerifyAgent,
   handleGetAgent,
+  handleGetAgentCountByProvince,
   handleAgentLogin,
   handleAgentVerifyToken,
   handleAgentPasswordReset,

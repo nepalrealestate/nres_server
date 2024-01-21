@@ -73,6 +73,36 @@ const createCustomerIfNotExists = async (req, res, next) => {
 
 };
 
+
+const checkAgentIsVerified  = async (req,res,next)=>{
+  //berefore user logged in 
+  //check user is verified or not
+  const {email} = req.body;
+  try {
+    const findUser = await db.UserModel.User.findOne({
+      where:{email:email,user_type:"agent"},
+      attributes:['user_id','user_type'],
+      include : {
+        model:db.UserModel.AgentProfile,
+        attributes:['status']
+      },
+      
+    })
+    if(!findUser){
+      return res.status(400).json({message:"User Not Found"})
+    }
+    const agent = findUser.toJSON();
+    console.log(agent);
+    if(agent?.user_agentProfile?.status !== "verified"){
+      return res.status(400).json({message:"Please Wait Until Your Account is Verified"})
+    }
+    next();
+  } catch (error) {
+    handleErrorResponse(res, error);
+  }
+}
+
 module.exports = {
   createCustomerIfNotExists,
+  checkAgentIsVerified
 };

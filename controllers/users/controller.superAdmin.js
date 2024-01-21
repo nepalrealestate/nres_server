@@ -10,7 +10,7 @@ const {
 
 const saltRound = 10;
 const tokenExpireTime = "7d";
-const JWT_KEY = process.env.JWT_KEY_AGENT;
+const JWT_KEY = process.env.JWT_KEY_SUPERADMIN;
 const auth = utility.authUtility(
   tokenExpireTime,
   saltRound,
