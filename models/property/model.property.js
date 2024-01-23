@@ -156,7 +156,7 @@ function propertyViewAdminModel(sequelize, DataTypes) {
 function propertyViewClientModel(sequelize, DataTypes) {
   async function createPropertyView() {
     const sql = `
-    CREATE OR REPLACE VIEW property_view_client AS
+    CREATE OR REPLACE VIEW ${propertyClientView} AS
   SELECT
     property_id,
     property_type,
@@ -201,8 +201,8 @@ function propertyViewClientModel(sequelize, DataTypes) {
       h.createdAt,
       h.updatedAt,
       ROW_NUMBER() OVER (PARTITION BY h.property_id ORDER BY h.createdAt) AS row_num
-    FROM nres.property_house AS h
-    LEFT JOIN nres.property_house_views_count AS house_views ON h.property_id = house_views.property_id
+    FROM ${DB_NAME}.property_house AS h
+    LEFT JOIN ${DB_NAME}.property_house_views_count AS house_views ON h.property_id = house_views.property_id
 
     UNION
 
@@ -228,8 +228,8 @@ function propertyViewClientModel(sequelize, DataTypes) {
       l.createdAt,
       l.updatedAt,
       ROW_NUMBER() OVER (PARTITION BY l.property_id ORDER BY l.createdAt) AS row_num
-    FROM nres.property_land AS l
-    LEFT JOIN nres.property_land_views_count AS land_views ON l.property_id = land_views.property_id
+    FROM ${DB_NAME}.property_land AS l
+    LEFT JOIN ${DB_NAME}.property_land_views_count AS land_views ON l.property_id = land_views.property_id
 
     UNION
 
@@ -255,8 +255,8 @@ function propertyViewClientModel(sequelize, DataTypes) {
       a.createdAt,
       a.updatedAt,
       ROW_NUMBER() OVER (PARTITION BY a.property_id ORDER BY a.createdAt) AS row_num
-    FROM nres.property_apartment AS a
-    LEFT JOIN nres.property_apartment_views_count AS apartment_views ON a.property_id = apartment_views.property_id
+    FROM ${DB_NAME}.property_apartment AS a
+    LEFT JOIN ${DB_NAME}.property_apartment_views_count AS apartment_views ON a.property_id = apartment_views.property_id
   ) AS subquery
   WHERE row_num = 1;
 
