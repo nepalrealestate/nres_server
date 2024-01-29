@@ -199,15 +199,98 @@ async function countListingProperty(condition){
 
 }
 
+// async function getLatestPropertyPriorityLocation(condition, limit, offset) {
+//   let orderConditions = [];
+//   let whereConditions = {};
+//   // sorting 
+//   if(condition.sort){
+//     let order = condition.order?condition.order : "DESC";
+//     orderConditions.push([condition.sort, order]);
+//   }else{
+//     orderConditions.push(["createdAt", "DESC"])
+//   }
+
+//   if (condition.district) {
+//     orderConditions.unshift([
+//       db.sequelize.literal(
+//         `(CASE WHEN district='${condition.district}' THEN 1 ELSE 2 END)`
+//       ),
+//       "ASC",
+//     ]);
+//     delete condition.district;
+//   }
+//   let location;
+//   if (condition.location) {
+//     location = condition.location.trim();
+//     whereConditions[db.Op.or] = [
+//       { province: { [db.Op.like]: `%${location}%` } },
+//       { district: { [db.Op.like]: `%${location}%` } },
+//       { municipality: { [db.Op.like]: `%${location}%` } },
+//       { area_name: { [db.Op.like]: `%${location}` } },
+//       { property_id: { [db.Op.like]: `%${location}%` }},
+//       {property_name:{[db.Op.like]:`%${location}%`}},
+//       {property_type:{[db.Op.like]:`%${location}%`}},
+//       {listed_for:{[db.Op.like]:`%${location}%`}}
+//     ];
+//   }
+
+//   // Handle price range filtering
+//   if (condition.priceRange) {
+//     if (condition.priceRange.minPrice && condition.priceRange.maxPrice) {
+//       whereConditions.price = {
+//         [db.Op.between]: [
+//           condition.priceRange.minPrice,
+//           condition.priceRange.maxPrice,
+//         ],
+//       };
+//     } else if (condition.priceRange.minPrice) {
+//       whereConditions.price = {
+//         [db.Op.gte]: condition.priceRange.minPrice,
+//       };
+//     } else if (condition.priceRange.maxPrice) {
+//       whereConditions.price = {
+//         [db.Op.lte]: condition.priceRange.maxPrice,
+//       };
+//     }
+
+
+//   }
+
+//   delete condition.location;
+//   delete condition.priceRange;
+//   delete condition.district;
+//   delete condition.sort;
+//   delete condition.order;
+  
+//   whereConditions = {...condition,...whereConditions}
+//   const [properties, totalCount] = await Promise.all([
+//     PropertyViewClient.findAll({
+//         where: whereConditions,
+//         attributes: [
+//             'property_id', 'property_type', 'property_for', 'property_name',
+//             'listed_for', 'price', 'district', 'municipality', 'area_name',
+//             'latitude', 'longitude', 'social_media', 'property_image', 'views','listing_type'
+//         ],
+//         order: orderConditions,
+//         limit: limit,
+//         offset: offset,
+//     }),
+//     PropertyViewClient.count({ where: whereConditions })
+// ]);
+// return {properties,totalCount};
+// }
+
+// todo : fix priority location - if house for sale . the priority house not land which have sale
 async function getLatestPropertyPriorityLocation(condition, limit, offset) {
   let orderConditions = [];
   let whereConditions = {};
-  // sorting 
-  if(condition.sort){
-    let order = condition.order?condition.order : "DESC";
+  
+  // Sorting
+  if (condition.sort) {
+    let order = condition.order ? condition.order : "DESC";
     orderConditions.push([condition.sort, order]);
-  }else{
-    orderConditions.push(["createdAt", "DESC"])
+  } else {
+    orderConditions.push(["createdAt", "DESC"]);
   }
 
   if (condition.district) {
@@ -219,16 +302,36 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
     ]);
     delete condition.district;
   }
+
   let location;
   if (condition.location) {
-    location = condition.location;
+    location = condition.location.trim();
     whereConditions[db.Op.or] = [
       { province: { [db.Op.like]: `%${location}%` } },
       { district: { [db.Op.like]: `%${location}%` } },
       { municipality: { [db.Op.like]: `%${location}%` } },
       { area_name: { [db.Op.like]: `%${location}` } },
-      { property_id: { [db.Op.like]: `%${location}%` }},
+      { property_id: { [db.Op.like]: `%${location}%` } },
+      { property_name: { [db.Op.like]: `%${location}%` } },
+      { property_type: { [db.Op.like]: `%${location}%` } },
+      { listed_for: { [db.Op.like]: `%${location}%` } },
     ];
+
+    // Handle dynamic keyword search
+    const keywords = condition.location.split(' ');
+    keywords.forEach(keyword => {
+      whereConditions[db.Op.or].push({
+        [db.Op.or]: [
+          { property_type: { [db.Op.like]: `%${keyword}%` } },
+          { listed_for: { [db.Op.like]: `%${keyword}%` } },
+          { property_name: { [db.Op.like]: `%${keyword}%` } },
+          { province: { [db.Op.like]: `%${location}%` } },
+          { district: { [db.Op.like]: `%${location}%` } },
+          { municipality: { [db.Op.like]: `%${location}%` } },
+          { area_name: { [db.Op.like]: `%${location}` } },
+        ],
+      });
+    });
   }
 
   // Handle price range filtering
@@ -249,33 +352,36 @@ async function getLatestPropertyPriorityLocation(condition, limit, offset) {
         [db.Op.lte]: condition.priceRange.maxPrice,
       };
     }
-
-
   }
 
+  // Remove unnecessary conditions
   delete condition.location;
   delete condition.priceRange;
   delete condition.district;
   delete condition.sort;
   delete condition.order;
-  
-  whereConditions = {...condition,...whereConditions}
+
+  whereConditions = { ...condition, ...whereConditions };
+
   const [properties, totalCount] = await Promise.all([
     PropertyViewClient.findAll({
-        where: whereConditions,
-        attributes: [
-            'property_id', 'property_type', 'property_for', 'property_name',
-            'listed_for', 'price', 'district', 'municipality', 'area_name',
-            'latitude', 'longitude', 'social_media', 'property_image', 'views','listing_type'
-        ],
-        order: orderConditions,
-        limit: limit,
-        offset: offset,
+      where: whereConditions,
+      attributes: [
+        'property_id', 'property_type', 'property_for', 'property_name',
+        'listed_for', 'price', 'district', 'municipality', 'area_name',
+        'latitude', 'longitude', 'social_media', 'property_image', 'views', 'listing_type'
+      ],
+      order: orderConditions,
+      limit: limit,
+      offset: offset,
     }),
-    PropertyViewClient.count({ where: whereConditions })
-]);
-return {properties,totalCount};
+    PropertyViewClient.count({ where: whereConditions }),
+  ]);
+
+  return { properties, totalCount };
 }
+
+
 
 
 async function insertPropertyFieldVisitRequest(data) {

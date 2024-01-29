@@ -1132,9 +1132,10 @@ const handleInsertPropertyMoreInfoRequest= async function(req,res){
   const user_id  = req.id;
   const property_id = req.params.property_id;
   const property_type = req.params?.property_type;
+  const description = req.body?.description;
 
   try {
-    const response = await insertPropertyMoreInfoRequest({user_id,property_id,property_type});
+    const response = await insertPropertyMoreInfoRequest({user_id,property_id,property_type,description});
     if(!response){
       return res.status(400).json({message:"Unable To Insert More Info Request"})
     }

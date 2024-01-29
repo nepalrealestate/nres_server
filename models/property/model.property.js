@@ -713,6 +713,9 @@ function propertyMoreInfoRequestModel(sequelize,DataTypes){
     property_type:{
       type:DataTypes.ENUM('house','apartment','land')
     },
+    description:{
+      type:DataTypes.STRING
+    }
 
   },{
     freezeTableName:true,

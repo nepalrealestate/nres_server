@@ -7,7 +7,7 @@ const {
 const path = "uploads/property/apartment"; //path from source
 const maxImageSize = 2 * 1024 * 1024;
 
-const upload = new UploadImage(path, maxImageSize).upload.array("image", 10);
+const upload = new UploadImage(path, maxImageSize).upload.array("image",20);
 const updateUpload = new UploadImage(path, maxImageSize).upload.single("image");
 const multer = require("multer");
 const {Utility, propertyUtility, utility, handleErrorResponse} = require("../controller.utils");
