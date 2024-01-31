@@ -714,7 +714,7 @@ function propertyMoreInfoRequestModel(sequelize,DataTypes){
       type:DataTypes.ENUM('house','apartment','land')
     },
     description:{
-      type:DataTypes.STRING
+      type:DataTypes.TEXT
     }
 
   },{
