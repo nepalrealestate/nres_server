@@ -1159,6 +1159,7 @@ const handleDeletePropertyMoreInfoRequest = async function(req,res){
 
 }
 
+
 const handleGetPropertyMoreInfoRequest = async function(req,res){
   const [limit,offset] = handleLimitOffset(req);
   
@@ -1169,6 +1170,7 @@ const handleGetPropertyMoreInfoRequest = async function(req,res){
     handleErrorResponse(res,error)
   }
 }
+
 
 const handleInsertPropertyNegotiation = async function(req,res){
   const user_id = req.id;
@@ -1184,6 +1186,8 @@ const handleInsertPropertyNegotiation = async function(req,res){
     handleErrorResponse(res,error)
   }
 }
+
+
 
 module.exports = {
   handleGetPropertyWithAds,
@@ -1228,6 +1232,8 @@ module.exports = {
   handleDeleteFavouriteProperty,
   handleInsertPropertyMoreInfoRequest,
   handleDeletePropertyMoreInfoRequest,
-  handleGetPropertyMoreInfoRequest
+  handleGetPropertyMoreInfoRequest,
+
+  handleInsertPropertyNegotiation,
 
 };

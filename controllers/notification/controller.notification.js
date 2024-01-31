@@ -4,11 +4,6 @@ const { findUserByID } = require("../../models/services/users/service.user")
 const { handleLimitOffset, handleErrorResponse } = require("../controller.utils")
 
 
-function insertNotification(){
-    
-}
-
-
 const handleGetNotification = async function(req,res){
 
     const [limit,offset] = handleLimitOffset(req)
