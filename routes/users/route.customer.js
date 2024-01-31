@@ -71,17 +71,17 @@ router.get("/previousChat",customerVerifyToken,handleGetSingleCustomerChat)
 
 
 // property field visit Request - 
-router.post("/property/field-visit-request",customerVerifyToken,checkPropertyValid,handleInsertPropertyFieldVisitRequest)
-router.get("/property/field-visit-request",customerVerifyToken,handleGetUserFieldVisitRequest)
-router.patch("/property/field-visit-request/:visit_id",customerVerifyToken,handleUpdateUserFieldVisitRequest)
-router.post("/property/field-visit-request/comment/:visit_id",customerVerifyToken,handleInsertPropertyFieldVisitRequestCommentByUser)
-router.get("/property/field-visit-request/comment:visit_id",customerVerifyToken,handleGetPropertyFieldVisitRequest)
+router.post("/property/fieldVisit",customerVerifyToken,checkPropertyValid,handleInsertPropertyFieldVisitRequest)
+router.get("/property/fieldVisit",customerVerifyToken,handleGetUserFieldVisitRequest)
+router.patch("/property/fieldVisit/:visit_id",customerVerifyToken,handleUpdateUserFieldVisitRequest)
+router.post("/property/fieldVisit/comment/:visit_id",customerVerifyToken,handleInsertPropertyFieldVisitRequestCommentByUser)
+router.get("/property/fieldVisit/comment:visit_id",customerVerifyToken,handleGetPropertyFieldVisitRequest)
 //match field visit request - enter otp
-router.patch("/property/owner/field-visit-request/match/:visit_id",customerVerifyToken,handleMatchPropertyFieldVisitOTP)
+router.patch("/property/owner/fieldVisit/match/:visit_id",customerVerifyToken,handleMatchPropertyFieldVisitOTP)
 // own property field visit request
-router.get("/property/owner/field-visit-request",customerVerifyToken,handleGetOwnerPropertyFieldVisitRequest)
+router.get("/property/owner/fieldVisit",customerVerifyToken,handleGetOwnerPropertyFieldVisitRequest)
 // get property field visit request comment by user for owner
-router.get("/property/owner/field-visit-request/comment/:visit_id",customerVerifyToken,handleGetPropertyFieldVisitRequestComment)
+router.get("/property/owner/fieldVisit/comment/:visit_id",customerVerifyToken,handleGetPropertyFieldVisitRequestComment)
 
 //todo this
 
