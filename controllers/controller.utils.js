@@ -211,9 +211,9 @@ function authUtility(tokenExpireTime, saltRound, JWT_KEY, user_type) {
 
   const verifyToken = async function (req, res, next) {
     try {
-      const token = req.cookies?.id || req.header('Authorization')?.replace("Bearer",""); // header for mobile
+      const token = req.cookies?.id || req?.header('Authorization')?.replace("Bearer",""); // header for mobile
       if (!token) {
-          throw new ApiError(401, 'Unauthorized request');
+          return res.status(401).json({ message: "Unauthorized request" });
       }
       console.log("this is token ", token);
   

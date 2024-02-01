@@ -2,7 +2,7 @@ const express = require("express");
 const { handleInsertAgentRating, handleAgentRating } = require("../../controllers/users/controller.agent");
 const { handleCustomerRegistration, handleCustomerLogin, handleGetCustomer, customerVerifyToken, handleGetCustomerProfile, handleCustomerPasswordReset, handleGetCustomerIsLoggedIn, customerLogout, handleUpdateCustomerProfile, handleUpdateCustomerPassword } = require("../../controllers/users/controller.customer");
 const { handleAddHouse, handleGetHouse, handleInsertHouseFavourite, handleDeleteHouseFavourite } = require("../../controllers/property/controller.house");
-const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty, handleGetPropertyPriorityLocation, handleInsertPropertyFieldVisitRequest, handleGetFavouriteProperty, handleInsertHomeLoan, handleGetPropertyFieldVisitRequest, handleGetUserFieldVisitRequest, handleInsertFavouriteProperty, handleIsPropertyFavourite, handleDeleteFavouriteProperty, handleInsertOrDeleteFavouriteProperty, handleInsertPropertyMoreInfoRequest, handleUpdateUserFieldVisitRequest, handleInsertPropertyFieldVisitRequestCommentByUser, handleMatchPropertyFieldVisitOTP, handleGetOwnerPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestComment } = require("../../controllers/property/controller.property");
+const { handleCountLisitingProperty, handleInsertRequestedProperty, handleGetRequestProperty, handleGetPropertyPriorityLocation, handleInsertPropertyFieldVisitRequest, handleGetFavouriteProperty, handleInsertHomeLoan, handleGetPropertyFieldVisitRequest, handleGetUserFieldVisitRequest, handleInsertFavouriteProperty, handleIsPropertyFavourite, handleDeleteFavouriteProperty, handleInsertOrDeleteFavouriteProperty, handleInsertPropertyMoreInfoRequest, handleUpdateUserFieldVisitRequest, handleInsertPropertyFieldVisitRequestCommentByUser, handleMatchPropertyFieldVisitOTP, handleGetOwnerPropertyFieldVisitRequest, handleGetPropertyFieldVisitRequestComment, handleInsertPropertyNegotiation } = require("../../controllers/property/controller.property");
 const { handleAddLand, handleGetLand, handleInsertLandFavourite, handleDeleteLandFavourite } = require("../../controllers/property/controller.land");
 const { handleAddApartment, handleGetApartment, handleInsertApartmentFavourite, handleDeleteApartmentFavourite } = require("../../controllers/property/controller.apartment");
 const { handleGetSingleCustomerChat } = require("../../controllers/chat/controller.customerChat");
@@ -119,6 +119,9 @@ router.post("/property/more-info-request/:property_type/:property_id",customerVe
 
 // get service provider request
 router.post("/serviceProvider/request/:provider_id",customerVerifyToken,handleInsertServiceProviderRequest)
+
+// request for negotiation
+router.post("/property/negotiation/:visit_id",customerVerifyToken,checkPropertyValid,handleInsertPropertyNegotiation)
 
 
 module.exports = router;
