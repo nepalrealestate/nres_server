@@ -81,6 +81,7 @@ const handleGetAgentCountByProvince = async (req, res) => {
     if(!agents){
       return res.status(404).json({message:"No Agent Found"})
     }
+  
     const totalCount = agents.reduce((accumulator, currentValue) => accumulator + currentValue?.agentCount, 0);
     console.log(totalCount)
 
