@@ -59,8 +59,10 @@ const handleGetAgent = async (req, res) => {
 };
 
 const handleGetAgentCountByProvince = async (req, res) => {
+
+  console.log("GET AGENT COUNT BY PROVINCE")
+
   try {
-    
     const agents = await db.UserModel.User.findAll({
       where: { user_type: "agent" },
   attributes: [
@@ -76,8 +78,13 @@ const handleGetAgentCountByProvince = async (req, res) => {
   group: ['user_agentProfile.province', 'user_userAccount.user_id'], // Include user_id in the GROUP BY clause
   raw: true,
     })
+    if(!agents){
+      return res.status(404).json({message:"No Agent Found"})
+    }
+    const totalCount = agents.reduce((accumulator, currentValue) => accumulator + currentValue?.agentCount, 0);
+    console.log(totalCount)
 
-    return res.status(200).json({agents});
+    return res.status(200).json({count:totalCount,agents});
   } catch (error) {
     utility.handleErrorResponse(res, error);
   }
@@ -100,8 +107,8 @@ const handleAgentRegistration = async (req, res) => {
    * 
    */
 
-  const { name, email, phone_number, password, identification_type,identification_number,province,district,municipality,ward_number,area_name } = req.body;
-  console.log(req.body)
+  const { name, email, phone_number, password, identification_type,identification_number,province,district,municipality,ward_number,area_name } = req.body.data ? JSON.parse(req.body.data) : req.body;
+  console.log(req.body.data)
   console.log(req.files)
   const identification_image = req?.files?.identification_image[0]?.path;
   const profile_image = req?.files?.profile_image[0]?.path;
@@ -368,7 +375,7 @@ const handleGetAllAgent = async(req,res)=>{
       include:[
         {
           model:db.UserModel.AgentProfile,
-          attributes:['identification_type','identification_number','identification_image','profile_image','province','district','municipality','ward_number','area_name','status']
+          attributes:['status']
         }
       ],
       limit: limit,
@@ -385,6 +392,20 @@ const handleGetAllAgent = async(req,res)=>{
     utility.handleErrorResponse(res,error)
   }
 
+}
+
+
+const handleGetAgentByID = async(req,res)=>{
+  const {agent_id} = req.params;
+  try {
+    const agent = await db.UserModel.AgentProfile.findByPk(agent_id);
+    if(!agent){
+      return res.status(404).json({message:"No Agent Found"})
+    }
+    return res.status(200).json({agent})
+  } catch (error) {
+    utility.handleErrorResponse(res,error)
+  }
 }
 
 
@@ -410,6 +431,7 @@ module.exports = {
   handleAgentRegistration,
   handleVerifyAgent,
   handleGetAgent,
+  handleGetAgentByID,
   handleGetAgentCountByProvince,
   handleAgentLogin,
   handleAgentVerifyToken,

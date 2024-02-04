@@ -325,10 +325,25 @@ const handleGetUserFieldVisitRequest = async function (req, res) {
 };
 
 const handleGetOwnerPropertyFieldVisitRequest = async function (req, res) {
+
+  //todo logic
   const user_id = req.id;
   const [limit, offset] = handleLimitOffset(req);
+
   try {
-    const response = await getUserFieldVisitRequest({ user_id }, limit, offset);
+
+    //get all property of owner
+    const ownerProperty = await getProperty({owner_id:user_id});
+    
+    const propertyId = ownerProperty.map(property=>property.dataValues.property_id);
+    const propertyType = ownerProperty.map(property=>property.dataValues.property_type);
+
+    let fieldVisitRequestPromise = ownerProperty.map((property,index)=>{
+      getUserFieldVisitRequest({ property_id:propertyId[index], property_type:propertyType[index] }, limit, offset)
+     })
+
+     const response = await Promise.all(fieldVisitRequestPromise);
+
     if (!response) {
       return res.status(404).json({ message: "Field Visit Request Not Found" });
     }
@@ -1159,19 +1174,19 @@ const handleDeletePropertyMoreInfoRequest = async function(req,res){
 
 }
 
-
+//todo return user name ,email and phone number with agent also
 const handleGetPropertyMoreInfoRequest = async function(req,res){
   const [limit,offset] = handleLimitOffset(req);
   
   try {
-    const response = await getPropertyMoreInfoRequest({},limit,offset);
-    return res.status(200).json(response)
+    const {count,rows:data} = await getPropertyMoreInfoRequest({},limit,offset);
+    return res.status(200).json({count,data})
   } catch (error) {
     handleErrorResponse(res,error)
   }
 }
 
-
+//todo return user name email and phone number with agent also
 const handleInsertPropertyNegotiation = async function(req,res){
   const user_id = req.id;
   const field_visit_id = req.params?.visit_id;

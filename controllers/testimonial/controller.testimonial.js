@@ -3,8 +3,8 @@ const { handleErrorResponse } = require("../controller.utils");
 
 const handleInsertTestimonial = async (req, res) => {
     try {
-        const {name,testimonial} = req.body;
-        const response = await insertTestimonial({name,testimonial});
+        const {name,testimonial,rating} = req.body;
+        const response = await insertTestimonial({name,testimonial,rating});
         return res.status(200).json({
             message: "Testimonial inserted successfully",
             data: response

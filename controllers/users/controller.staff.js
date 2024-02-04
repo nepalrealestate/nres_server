@@ -18,7 +18,7 @@ const utility = require("../controller.utils");
 
 const saltRound = 10;
 const tokenExpireTime = "7d";
-const JWT_KEY = process.env.JWT_KEY_AGENT;
+const JWT_KEY = process.env.JWT_KEY_STAFF;
 const auth = utility.authUtility(tokenExpireTime, saltRound, JWT_KEY, "staff");
 
 const utils = utility.utility();

@@ -193,36 +193,39 @@ const handleUpdateCustomerProfile = async (req, res) => {
   });
 
   async function updateProfile() {
-
-    const updateData= JSON.parse(req.body?.updateData);
-    
-    const updateProfile = await updateCustomerProfile(customer_id,updateData);
-    console.log("Update Profile",updateProfile)
-    if(!updateProfile){
-      return res.status(400).json({message:"Unable To Update Profile"})
-    }
-    console.log("req.file",req.file)
-
-    if(req.file){
-      const profile_image = req.file.path;
-      uploadOnCloudinary(profile_image,"customer").then(async (result)=>{
-        if(result){
-          // get prevoius profile image
-          const customerData = await getCustomerProfile(customer_id);
-          console.log("This is customer Data",customerData)
-          const previousProfileImage = customerData?.profile_image;
-          if(previousProfileImage){
-            // delete previous profile image
-            deleteFromCloudinary(previousProfileImage);
-          }
-          const updateImage = await updateCustomerProfile(customer_id,{profile_image:result.secure_url});
-          console.log("Update Imgae",updateImage)
-        }
-      })
+    try {
+      const updateData= JSON.parse(req.body?.updateData);
       
+      const updateProfile = await updateCustomerProfile(customer_id,updateData);
+      console.log("Update Profile",updateProfile)
+      if(!updateProfile){
+        return res.status(400).json({message:"Unable To Update Profile"})
+      }
+      console.log("req.file",req.file)
+  
+      if(req.file){
+        const profile_image = req.file.path;
+        uploadOnCloudinary(profile_image,"customer").then(async (result)=>{
+          if(result){
+            // get prevoius profile image
+            const customerData = await getCustomerProfile(customer_id);
+            console.log("This is customer Data",customerData)
+            const previousProfileImage = customerData?.profile_image;
+            if(previousProfileImage){
+              // delete previous profile image
+              deleteFromCloudinary(previousProfileImage);
+            }
+            const updateImage = await updateCustomerProfile(customer_id,{profile_image:result.secure_url});
+            console.log("Update Imgae",updateImage)
+          }
+        })
+        
+      }
+  
+      return res.status(200).json({message:"Profile Updated Successfully"})
+    } catch (error) {
+      utility.handleErrorResponse(res,error);
     }
-
-    return res.status(200).json({message:"Profile Updated Successfully"})
 
 
 

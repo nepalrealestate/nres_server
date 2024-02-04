@@ -75,7 +75,7 @@ router.post("/property/fieldVisit",customerVerifyToken,checkPropertyValid,handle
 router.get("/property/fieldVisit",customerVerifyToken,handleGetUserFieldVisitRequest)
 router.patch("/property/fieldVisit/:visit_id",customerVerifyToken,handleUpdateUserFieldVisitRequest)
 router.post("/property/fieldVisit/comment/:visit_id",customerVerifyToken,handleInsertPropertyFieldVisitRequestCommentByUser)
-router.get("/property/fieldVisit/comment:visit_id",customerVerifyToken,handleGetPropertyFieldVisitRequest)
+router.get("/property/fieldVisit/comment/:visit_id",customerVerifyToken,handleGetPropertyFieldVisitRequestComment)
 //match field visit request - enter otp
 router.patch("/property/owner/fieldVisit/match/:visit_id",customerVerifyToken,handleMatchPropertyFieldVisitOTP)
 // own property field visit request

@@ -7,6 +7,9 @@ function testimonialModel(sequelize,DataTypes){
         name: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        rating:{
+            type:DataTypes.STRING
         }
     },{
         freezeTableName: true,
