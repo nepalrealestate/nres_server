@@ -65,6 +65,9 @@ const {
   getUserFieldVisitRequestByID,
   findOrCreatePropertyFieldVisitOTP,
   getPropertyFieldVisitComment,
+  insertPropertyNegotiation,
+  getPropertyNegotiation,
+  deletePropertyNegotiation,
 } = require("../../models/services/property/service.property");
 const {
   findCustomer,
@@ -1019,8 +1022,24 @@ const handleGetHomeLoan = async (req,res)=>{
     condition = req.query;
   }
   try {
-    const response = await getHomeLoan(condition,limit,offset);
-    return res.status(200).json(response)
+    const {count,rows:homeLoan} = await getHomeLoan(condition,limit,offset);
+    if(count === 0){
+      return res.status(404).json({message:"No Home Loan Found"})
+    }
+    let userPromise = homeLoan.map((val)=>{
+      return db.UserModel.User.findByPk(val?.user_id,{
+        attributes:["name","email","phone_number"],
+        raw:true
+      })
+    })
+
+    const userHomeLoan = await Promise.all(userPromise);
+     // Merge data and userMoreInfoRequest arrays
+     const responseData = data.map((request, index) => ({
+      ...request,
+      ...userHomeLoan[index] // Assuming user info is available as JSON
+  }));;
+    return res.status(200).json({count,data:responseData})
   } catch (error) {
     handleErrorResponse(res,error)
   }
@@ -1159,8 +1178,10 @@ const handleInsertPropertyMoreInfoRequest= async function(req,res){
     handleErrorResponse(res,error)
   }
 }
+
+
 const handleDeletePropertyMoreInfoRequest = async function(req,res){
-  const request_id = req.params.request_id;
+  const request_id = req.params.id;
 
   try {
     const response = await deletePropertyMoreInfoRequest(request_id);
@@ -1180,11 +1201,30 @@ const handleGetPropertyMoreInfoRequest = async function(req,res){
   
   try {
     const {count,rows:data} = await getPropertyMoreInfoRequest({},limit,offset);
-    return res.status(200).json({count,data})
+    console.log(data);
+    if(count === 0){
+      return res.status(404).json({message:"No More Info Request Found"})
+    }
+    let userPromise = data.map((val)=>{
+      return db.UserModel.User.findByPk(val?.user_id,{
+        attributes:["name","email","phone_number"],
+        raw:true
+      })
+    })
+
+    const userMoreInfoRequest = await Promise.all(userPromise);
+     // Merge data and userMoreInfoRequest arrays
+     const responseData = data.map((request, index) => ({
+      ...request,
+      ...userMoreInfoRequest[index] // Assuming user info is available as JSON
+  }));;
+
+    return res.status(200).json({count,data:responseData})
   } catch (error) {
     handleErrorResponse(res,error)
   }
 }
+
 
 //todo return user name email and phone number with agent also
 const handleInsertPropertyNegotiation = async function(req,res){
@@ -1195,13 +1235,54 @@ const handleInsertPropertyNegotiation = async function(req,res){
     return res.status(400).json({message:"Please Provide Negotiation"})
   }
   try {
-    const response = await insertPropertyFieldVisitComment({field_visit_id,user_id,negotiation});
+    const response = await insertPropertyNegotiation({field_visit_id,user_id,negotiation});
     return res.status(200).json({message:"Successfully Inserted"})
   } catch (error) {
     handleErrorResponse(res,error)
   }
 }
 
+const handleGetPropertyNegotiation = async function(req,res){
+  const [limit,offset] = handleLimitOffset(req);
+  try {
+    const {count,rows:data} = await getPropertyNegotiation({},limit,offset);
+    if(count === 0){
+      return res.status(404).json({message:"No Negotiation Found"})
+    }
+    let userPromise = data.map((val)=>{
+      return db.UserModel.User.findByPk(val?.user_id,{
+        attributes:["name","email","phone_number"],
+        raw:true
+      })
+    })
+
+    const userNegotiation = await Promise.all(userPromise);
+     // Merge data and userMoreInfoRequest arrays
+     const responseData = data.map((request, index) => ({
+      ...request,
+      ...userNegotiation[index] // Assuming user info is available as JSON
+  }));;
+
+    return res.status(200).json({count,data:responseData})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
+
+const handleDeletePropertyNegotiation = async function(req,res){
+  const id = req.params?.id;
+  try {
+    const response = await deletePropertyNegotiation({
+      id:id
+    });
+    if(response === 0){
+      return res.status(400).json({message:"Unable To Delete Negotiation"})
+    }
+    return res.status(200).json({message:"Successfully Deleted"})
+  } catch (error) {
+    handleErrorResponse(res,error)
+  }
+}
 
 
 module.exports = {
@@ -1250,5 +1331,7 @@ module.exports = {
   handleGetPropertyMoreInfoRequest,
 
   handleInsertPropertyNegotiation,
+  handleGetPropertyNegotiation,
+  handleDeletePropertyNegotiation
 
 };

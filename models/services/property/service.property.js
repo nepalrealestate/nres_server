@@ -615,10 +615,11 @@ async function insertHomeLoan(homeLoan){
 }
 
 async function getHomeLoan(condition,limit,offset){
-  return await HomeLoan.findAll({
+  return await HomeLoan.findAndCountAll({
       where:condition,
       limit:limit,
-      offset:offset
+      offset:offset,
+      raw:true
   })
 }
 
@@ -680,7 +681,8 @@ async function getPropertyMoreInfoRequest(condition,limit,offset){
   return await PropertyMoreInfoRequest.findAndCountAll({
     where:condition,
     limit:limit,
-    offset:offset
+    offset:offset,
+    raw:true
   })
 }
 
