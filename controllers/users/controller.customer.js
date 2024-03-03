@@ -194,6 +194,9 @@ const handleUpdateCustomerProfile = async (req, res) => {
 
   async function updateProfile() {
     try {
+      if (!req.body?.updateData) {
+        return res.status(400).json({ message: "Please Enter Update Data" });
+      }
       const updateData= JSON.parse(req.body?.updateData);
       
       const updateProfile = await updateCustomerProfile(customer_id,updateData);
