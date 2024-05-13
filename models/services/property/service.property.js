@@ -504,7 +504,6 @@ async function getRequestProperty(condition, limit, offset) {
       whereConditions[db.Op.or] = [
           { province: { [db.Op.like]: `%${condition.search}%` } },
           { district: { [db.Op.like]: `%${condition.search}%` } },
-          { municipality: { [db.Op.like]: `%${condition.search}%` } },
           { area_name: { [db.Op.like]: `%${condition.search}%` } },
           { property_type: { [db.Op.like]: `%${condition.search}%` } },
           //{ '$User.name$': { [db.Op.like]: `%${condition.search}%` } } // Note this line
@@ -516,6 +515,11 @@ async function getRequestProperty(condition, limit, offset) {
 
   return await RequestedProperty.findAll({
       where: whereConditions,
+      include:[{
+        model:db.UserModel.User,
+        as:'request_by',
+        attributes:['user_id','name','email','phone_number']
+      }],
       order: [['createdAt', 'DESC']],
       limit: limit,
       offset: offset

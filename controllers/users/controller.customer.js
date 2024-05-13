@@ -17,6 +17,7 @@ const {
   getSellerByID,
   findUserByEmail,
   updateCustomerPassword,
+  getBuyerByID,
 } = require("../../models/services/users/service.user");
 const {
   countListingProperty,
@@ -194,6 +195,7 @@ const handleUpdateCustomerProfile = async (req, res) => {
 
   async function updateProfile() {
     try {
+      console.log(req.body)
       if (!req.body?.updateData) {
         return res.status(400).json({ message: "Please Enter Update Data" });
       }
@@ -310,6 +312,19 @@ const handleGetBuyer = async (req, res) => {
   }
 };
 
+const handleGetBuyerByID = async (req, res) => {
+  const { buyer_id } = req.params;
+  console.log("This is For Single Buyer");
+  try {
+    const data = await getBuyerByID(buyer_id);
+    return res.status(200).json(data);
+  } catch (error) {
+    utility.handleErrorResponse(res, error);
+  }
+
+}
+
+
 const handleGetSeller = async (req, res) => {
   let condition = {};
   condition.user_type = "customer";
@@ -398,6 +413,7 @@ module.exports = {
   customerVerifyToken,
   handleGetCustomerByID,
   handleGetBuyer,
+  handleGetBuyerByID,
   handleGetSeller,
   handleGetSellerByID,
   handleGetCustomerProfile,

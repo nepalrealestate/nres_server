@@ -89,16 +89,16 @@ async function getBuyer(condition,limit,offset ,attributes = null) {
     whereConditions.user_type = condition.user_type;
     return await User.findAndCountAll({
         where: whereConditions,
-        attributes: attributes,
+        attributes: ['user_id', 'name', 'email', 'phone_number'],
         include: [{
-            model: db.PropertyModel.RequestedProperty,
+            model:db.PropertyModel.RequestedProperty,
             required: true,
             attributes: ['property_type']
 
         }],
         limit: limit,
         offset: offset,
-        order:orderConditions,
+        //order:orderConditions,
         raw:true,
     })
 }
@@ -138,6 +138,8 @@ async function getSeller(condition,limit,offset) {
             required: true,
             attributes: ['property_type']
         }],
+        limit: limit,
+        offset: offset,
         order:orderConditions,
         raw:true
     })
@@ -152,7 +154,15 @@ async function getSellerByID(user_id) {
             required: true,
             attributes: ['property_type', 'property_id', 'listed_for', 'price', 'province', 'district', 'municipality', 'area_name']
 
-        }]
+        },{
+            model:db.UserModel.CustomerProfile,
+            attributes:['profile_image','address','property_limit'],
+            as:'customerProfile'
+        },{
+            model:db.UserModel.AgentProfile,
+            attributes:['profile_image','province','district','municipality','ward_number','area_name'],
+        }
+    ]
     })
 }
 
@@ -209,6 +219,7 @@ module.exports = {
     findUserByID,
     getUser,
     getBuyer,
+    getBuyerByID,
     getSeller,
     getSellerByID,
     updateCustomerPassword,

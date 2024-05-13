@@ -29,7 +29,7 @@ router.post("/login",handleStaffLogin);
 router.post("/logout",handleStaffLogout)
 
 
-router.put("/forgetPassword",handleStaffPasswordReset);
+router.post("/forgetPassword",handleStaffPasswordReset);
 
 
 router.get("/isLoggedIn",staffVerifyToken,async (req, res) => {
